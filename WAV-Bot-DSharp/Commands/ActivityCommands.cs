@@ -34,11 +34,11 @@ namespace WAV_Bot_DSharp.Commands
         public async Task GetActivity(CommandContext commandContext,
             [Description("Number of page")] int page) 
         {
-            int totalPages = await activity.GetTotalPages();
+            int totalPages = await activity.GetTotalPagesAsync();
 
             if (page <= totalPages && page > 0)
             { 
-                List<UserInfo> users = await activity.ViewActivityInfo(page);
+                List<UserInfo> users = await activity.ViewActivityInfoAsync(page);
 
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
                     .WithFooter($"Pages: {page} of {totalPages}")
@@ -66,7 +66,7 @@ namespace WAV_Bot_DSharp.Commands
         [Command("update-all-users"), Description("Update all users on this guild and update DB")]
         public async Task UpdateUsers(CommandContext commandContext)
         {
-            int newMembers = await activity.UpdateCurrentUsers();
+            int newMembers = await activity.UpdateCurrentUsersAsync();
             await commandContext.RespondAsync($"Успешно. Количество новых записей: {newMembers}");
         }
 
@@ -80,7 +80,7 @@ namespace WAV_Bot_DSharp.Commands
         public async Task ManualUpdateToCurrent(CommandContext commandContext,
             [Description("User to update")] DiscordMember member)
         {
-            await activity.ManualUpdateToPresent(member.Id);
+            await activity.ManualUpdateToPresentAsync(member.Id);
             await commandContext.RespondAsync($"Успешно. {member.DisplayName}: {DateTime.Now}");
         }
 
@@ -96,8 +96,53 @@ namespace WAV_Bot_DSharp.Commands
             [Description("User to update")] DiscordMember member,
             [Description("Specified datetime")] DateTime dateTime)
         {
-            await activity.ManualUpdate(member.Id, dateTime);
+            await activity.ManualUpdateAsync(member.Id, dateTime);
             await commandContext.RespondAsync($"Успешно. {member.DisplayName}: {dateTime}");
+        }
+
+        /// <summary>
+        /// Проверяет наличие всех пользователей из БД на сервере и удаляет неправильные записи
+        /// </summary>
+        /// <param name="commandContext">Контекст команды</param>
+        /// <returns></returns>
+        [Command("exclute-absent"), Description("Manual update user activity to specified date")]
+        public async Task ExcludeAbsentUsers(CommandContext commandContext)
+        {
+            int absentCountawait  = await activity.ExcludeAbsentUsersAsync();
+            await commandContext.RespondAsync($"Успешно. Удалено {absentCountawait} записей.");
+        }
+
+        /// <summary>
+        /// Возвращает список пользователей, которые уже слишком дого находятся AFK
+        /// </summary>
+        /// <param name="commandContext">Контекст команды</param>
+        /// <param name="page">Номер страницы</param>
+        /// <returns></returns>
+        [Command("who-is-next"), Description("Get list of AFK users")]
+        public async Task WhoIsNext(CommandContext commandContext,
+            [Description("Number of page")] int page)
+        {
+            List<UserInfo> users = await activity.GetAFKUsersAsync(page);
+
+            if (users.Count == 0)
+            {
+                await commandContext.RespondAsync("Вроде все ещё шевелятся... пока...");
+                return;
+            }
+
+            int totalPages = users.Count / ActivityService.PAGE_SIZE + 1;
+
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+                .WithFooter($"Pages: {page} of {totalPages}")
+                .WithTitle("Users list");
+
+            foreach (UserInfo user in users)
+            {
+                DiscordMember member = await commandContext.Guild.GetMemberAsync(user.Uid);
+                embed.AddField($"{(member.DisplayName == string.Empty ? user.Uid.ToString() : member.DisplayName)}", $"{user.LastActivity.ToShortDateString()} {user.LastActivity.ToLongTimeString()} ({(int)(DateTime.Now - user.LastActivity).TotalDays} days AFK)");
+            }
+
+            await commandContext.RespondAsync("Вот от них уже мертвечиной несёт.", embed: embed);
         }
     }
 }

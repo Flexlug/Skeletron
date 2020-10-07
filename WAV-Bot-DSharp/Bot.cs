@@ -63,7 +63,7 @@ namespace WAV_Bot_DSharp
         {
             Logger.Debug("Configuring services");
             Services = new ServiceCollection()
-                .AddDbContext<UsersContext>(ServiceLifetime.Transient)
+                .AddDbContext<UsersContext>()
                 .AddSingleton<ILogger>(Logger)
                 .AddSingleton(Discord)
                 .AddSingleton<IActivityService, ActivityService>()

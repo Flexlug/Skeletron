@@ -9,14 +9,15 @@ namespace WAV_Bot_DSharp.Services.Entities
     public class UsersContext : DbContext
     {
         public DbSet<UserInfo> Users { get; set; }
-        
+
         public UsersContext()
         {
-            Database.Migrate();
+            Database.EnsureCreated();
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options) 
-            => options.UseSqlite("Data Source=Users.db")
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+            => options.UseSqlite("Data Source=users.db")
                       .EnableDetailedErrors();
+
     }
 }

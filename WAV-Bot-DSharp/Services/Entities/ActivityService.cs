@@ -11,6 +11,8 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
+using WAV_Bot_DSharp.Threading;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -19,34 +21,42 @@ namespace WAV_Bot_DSharp.Services.Entities
     /// </summary>
     public class ActivityService : IActivityService
     {
+        public static readonly int PAGE_SIZE = 10;
+
         private readonly TimeSpan MAX_AFK_TIME = TimeSpan.FromDays(30);
         private readonly ulong WAV_UID = 708860200341471264;
-        private readonly int PAGE_SIZE = 10;
+
+        BackgroundQueue queue;
 
         IServiceProvider provider;
 
         private int objectsCount;
 
         DiscordGuild guild;
-        //UsersContext usersDb;
-        UsersContext usersDb
-        {
-            get
-            {
-                return provider.GetService(typeof(UsersContext)) as UsersContext;
-            }
-        }
+        UsersContext usersDb;
+        //UsersContext usersDb
+        //{
+        //    get
+        //    {
+        //        return provider.GetService(typeof(UsersContext)) as UsersContext;
+        //    }
+        //}
 
         ILogger logger;
-        
-        public ActivityService(IServiceProvider provider, DiscordClient client, ILogger logger)
+
+        public ActivityService(UsersContext users, DiscordClient client, ILogger logger)
         {
-            this.provider = provider;
+            //this.provider = provider;
+            this.usersDb = users;
             this.logger = logger;
             guild = client.GetGuildAsync(WAV_UID).Result;
+            queue = new BackgroundQueue();
 
-            usersDb.Database.BeginTransaction();
-            objectsCount = usersDb.Database.ExecuteSqlCommand("SELECT COUNT(*) FROM Users");
+            using (var transaction = usersDb.Database.BeginTransaction())
+            {
+                objectsCount = usersDb.Users.Count();
+                transaction.Commit();
+            }
 
             ConfigureEvents(client);
         }
@@ -76,16 +86,19 @@ namespace WAV_Bot_DSharp.Services.Entities
         private async Task Client_OnMessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e) => await RequestUpdateUser(e.Author, "Message created");
         private async Task Client_OnInviteCreated(DiscordClient sender, DSharpPlus.EventArgs.InviteCreateEventArgs e) => await RequestUpdateUser(e.Invite.Inviter, "Invite created");
 
+
+
+
         /// <summary>
         /// Обновить пользователя в базе данных
         /// </summary>
         /// <param name="user"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        private async Task RequestUpdateUser(DiscordUser user, string reason) 
+        private async Task RequestUpdateUser(DiscordUser user, string reason)
         {
             logger.Info($"UserUpdate: {user.Username}: {reason}");
-            await ManualUpdateToPresent(user.Id);
+            await ManualUpdateToPresentAsync(user.Id);
         }
 
         /// <summary>
@@ -93,25 +106,37 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// </summary>
         /// <param name="users">Uid пользователя</param>
         /// <returns>Если true, то в БД были изменения, иначе false</returns>
-        public async Task<bool> AddUser(ulong user)
+        public bool AddUser(ulong user)
         {
-            UserInfo userInfo = await usersDb.Users.FirstOrDefaultAsync(x => x.Uid == user);
-
-            if (userInfo == null)
+            try
             {
-                await usersDb.AddAsync(new UserInfo()
+                using (var transaction = usersDb.Database.BeginTransaction())
                 {
-                    LastActivity = DateTime.Now,
-                    Uid = user
-                });
-                await usersDb.SaveChangesAsync();
+                    UserInfo userInfo = usersDb.Users.FirstOrDefault(x => x.Uid == user);
 
-                objectsCount++;
+                    if (userInfo == null)
+                    {
+                        usersDb.Add(new UserInfo()
+                        {
+                            LastActivity = DateTime.Now,
+                            Uid = user
+                        });
+                        usersDb.SaveChanges();
 
-                return true;
+                        objectsCount++;
+                        transaction.Commit();
+                        return true;
+                    }
+
+                    transaction.Commit();
+                    return false;
+                }
             }
-
-            return false;
+            catch (Exception e)
+            {
+                logger.Error(e, "Error in AddUser method");
+                return false;
+            }
         }
 
         /// <summary>
@@ -119,80 +144,133 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// </summary>
         /// <param name="page">Номер страницы</param>
         /// <returns>Список AFK пользователей</returns>
-        public async Task<List<UserInfo>> GetAFKUsers(int page)
+        public List<UserInfo> GetAFKUsers(int page)
         {
-            return await usersDb.Users.Select(x => x)
-                                      .Where(x => DateTime.Now - x.LastActivity > MAX_AFK_TIME)
-                                      .OrderBy(x => x.LastActivity)
-                                      .AsNoTracking()
-                                      .ToListAsync();
+            try
+            {
+                using (var transaction = usersDb.Database.BeginTransaction())
+                {
+                    List<UserInfo> users = usersDb.Users.ToList();
+
+                    users = users.Where(x => DateTime.Now - x.LastActivity > MAX_AFK_TIME)
+                                 .OrderBy(x => x.LastActivity)
+                                 .ToList();
+
+                    transaction.Commit();
+                    return users;
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Error in GetAFKUSers");
+                return null;
+            }
         }
 
         /// <summary>
         /// Обновить список пользователей и добавить недостающих в базу данных
         /// </summary>
         /// <returns>Количество добавленных пользователей</returns>
-        public async Task<int> UpdateCurrentUsers()
+        public int UpdateCurrentUsers()
         {
-            IReadOnlyCollection<DiscordUser> allUsers = await guild.GetAllMembersAsync();
-
-            List<UserInfo> newUsers = new List<UserInfo>();
-
-            foreach(DiscordUser user in allUsers)
+            try
             {
-                // проверяем, есть ли юзер в бд
-                if (await usersDb.Users.FirstOrDefaultAsync(x => x.Uid == user.Id) == null ? true : false)
+                using (var transaction = usersDb.Database.BeginTransaction())
                 {
-                    newUsers.Add(new UserInfo()
+                    IReadOnlyCollection<DiscordUser> allUsers = guild.GetAllMembersAsync().Result;
+
+                    List<UserInfo> newUsers = new List<UserInfo>();
+                    foreach (DiscordUser user in allUsers)
                     {
-                        LastActivity = DateTime.Now,
-                        Uid = user.Id
-                    });
+                        UserInfo us = usersDb.Users.FirstOrDefault(x => x.Uid == user.Id);
+
+                        // проверяем, есть ли юзер в бд
+                        if (us == null ? true : false)
+                        {
+                            newUsers.Add(new UserInfo()
+                            {
+                                LastActivity = DateTime.Now,
+                                Uid = user.Id
+                            });
+                        }
+                    }
+
+                    if (newUsers.Count != 0)
+                    {
+                        usersDb.Users.AddRange(newUsers);
+                        usersDb.SaveChanges();
+                        objectsCount += newUsers.Count;
+                    }
+
+                    transaction.Commit();
+
+                    return newUsers.Count;
                 }
             }
-
-            if (newUsers.Count != 0)
+            catch (Exception e)
             {
-                await usersDb.AddRangeAsync(newUsers);
-                await usersDb.SaveChangesAsync();
-                objectsCount += newUsers.Count;
+                logger.Error(e, "Error in UpdateCurrentUsers");
+                return 0;
             }
-
-            return newUsers.Count;
         }
+
         /// <summary>
         /// Удалить лишние записи в базе данных
         /// </summary>
         /// <returns>Количество удалённых записей</returns>
-        public async Task<int> ExcludeAbsentUsers()
+        public int ExcludeAbsentUsers()
         {
-            List<UserInfo> absentUsers = new List<UserInfo>();
-
-            foreach(UserInfo user in usersDb.Users)
-                if (await guild.GetMemberAsync(user.Uid) == null ? true : false)
-                    usersDb.Add(user);
-
-            if (absentUsers.Count != 0)
+            try
             {
-                usersDb.Users.RemoveRange(absentUsers);
-                objectsCount -= absentUsers.Count;
-                await usersDb.SaveChangesAsync();
-            }
+                using (var transaction = usersDb.Database.BeginTransaction())
+                {
+                    List<UserInfo> absentUsers = new List<UserInfo>();
+                    List<UserInfo> existingUsers = usersDb.Users.ToList();
 
-            return absentUsers.Count;
+                    foreach (UserInfo user in existingUsers)
+                        if (guild.GetMemberAsync(user.Uid).Result == null ? true : false)
+                            usersDb.Add(user);
+
+                    if (absentUsers.Count != 0)
+                    {
+                        usersDb.Users.RemoveRange(absentUsers);
+                        objectsCount -= absentUsers.Count;
+                        usersDb.SaveChanges();
+                    }
+
+
+                    transaction.Commit();
+                    return absentUsers.Count;
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Error in ExcludeAbsentUsers");
+                return 0;
+            }
         }
 
         /// <summary>
         /// Записывает новое время активности пользователя
         /// </summary>
         /// <param name="users">Uid пользователя</param>
-        public async Task ManualUpdateToPresent(ulong user)
+        public void ManualUpdateToPresent(ulong user)
         {
-            UserInfo userInfo = await usersDb.Users.FirstAsync(x => x.Uid == user);
-            userInfo.LastActivity = DateTime.Now;
+            try
+            {
+                using (var transaction = usersDb.Database.BeginTransaction())
+                {
+                    UserInfo userInfo = usersDb.Users.First(x => x.Uid == user);
+                    userInfo.LastActivity = DateTime.Now;
+                    usersDb.SaveChanges();
 
-            Task.WaitAll();
-            await usersDb.SaveChangesAsync();
+                    transaction.Commit();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Error in ManualUpdateToPresent");
+            }
         }
 
         /// <summary>
@@ -201,12 +279,23 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// <param name="user">Uid пользователя</param>
         /// <param name="dateTime">Дата и время, на которое необходимо обновить активность</param>
         /// <returns></returns>
-        public async Task ManualUpdate(ulong user, DateTime dateTime)
+        public void ManualUpdate(ulong user, DateTime dateTime)
         {
-            UserInfo userInfo = await usersDb.Users.FirstAsync(x => x.Uid == user);
-            userInfo.LastActivity = dateTime;
+            try
+            {
+                using (var transaction = usersDb.Database.BeginTransaction())
+                {
+                    UserInfo userInfo = usersDb.Users.First(x => x.Uid == user);
+                    userInfo.LastActivity = dateTime;
 
-            await usersDb.SaveChangesAsync();
+                    usersDb.SaveChanges();
+                    transaction.Commit();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Error in ManualUpdate");
+            }
         }
 
         /// <summary>
@@ -214,44 +303,94 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// </summary>
         /// <param name="page">Номер страницы</param>
         /// <returns>Страницу с информацией о пользователях</returns>
-        public async Task<List<UserInfo>> ViewActivityInfo(int page)
+        public List<UserInfo> ViewActivityInfo(int page)
         {
-            return await usersDb.Users.OrderBy(x => x.LastActivity)
-                                      .Skip((page - 1) * PAGE_SIZE)
-                                      .Take(PAGE_SIZE)
-                                      .AsNoTracking()
-                                      .ToListAsync();
+            try
+            {
+                using (var transaction = usersDb.Database.BeginTransaction())
+                {
+                    List<UserInfo> users = usersDb.Users.OrderBy(x => x.LastActivity)
+                                          .Skip((page - 1) * PAGE_SIZE)
+                                          .Take(PAGE_SIZE)
+                                          .AsNoTracking()
+                                          .ToList();
+
+                    transaction.Commit();
+                    return users;
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Error in ViewActivityInfo");
+                return null;
+            }
         }
-        
+
         /// <summary>
         /// Получить информацию об активности пользователя
         /// </summary>
         /// <param name="user">Uid пользователя</param>
         /// <returns>Дату последней активности пользователя</returns>
-        public async Task<UserInfo> GetUser(ulong user)
+        public UserInfo GetUser(ulong user)
         {
-            return await usersDb.Users.AsNoTracking()
-                                      .FirstAsync(x => x.Uid == user);
+            try
+            {
+                using (var transaction = usersDb.Database.BeginTransaction())
+                {
+                    UserInfo userInfo = usersDb.Users.AsNoTracking()
+                                                     .First(x => x.Uid == user);
+
+                    transaction.Commit();
+                    return userInfo;
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Error in GetUser");
+                return null;
+            }
         }
 
         /// <summary>
         /// Удаляет пользователя из списка отслеживания
         /// </summary>
         /// <param name="users">Uid пользователя</param>
-        public async Task RemoveUser(ulong user)
+        public void RemoveUser(ulong user)
         {
-            UserInfo info = await usersDb.Users.FirstAsync(x => x.Uid == user);
-            usersDb.Remove(info);
+            try
+            {
+                using (var transaction = usersDb.Database.BeginTransaction())
+                {
+                    UserInfo info = usersDb.Users.First(x => x.Uid == user);
+                    usersDb.Remove(info);
 
-            objectsCount--;
+                    objectsCount--;
 
-            await usersDb.SaveChangesAsync();
+                    usersDb.SaveChanges();
+                    transaction.Commit();
+                }
+            }
+
+            catch (Exception e)
+            {
+                logger.Error(e, "Error in RemoveUser");
+            }
         }
 
         /// <summary>
         /// Получить общее количество страниц
         /// </summary>
         /// <returns>Количество страниц в базе данных</returns>
-        public async Task<int> GetTotalPages() => objectsCount / PAGE_SIZE + 1;
+        public async Task<int> GetTotalPagesAsync() => objectsCount / PAGE_SIZE + 1;
+
+        public Task<int> UpdateCurrentUsersAsync() => queue.QueueTask(() => UpdateCurrentUsers());
+        public Task<int> ExcludeAbsentUsersAsync() => queue.QueueTask(() => ExcludeAbsentUsers());
+        public Task<List<UserInfo>> ViewActivityInfoAsync(int page) => queue.QueueTask(() => ViewActivityInfo(page));
+        public Task<List<UserInfo>> GetAFKUsersAsync(int page) => queue.QueueTask(() => GetAFKUsers(page));
+        public Task RemoveUserAsync(ulong user) => queue.QueueTask(() => RemoveUser(user));
+        public Task<bool> AddUserAsync(ulong user) => queue.QueueTask(() => AddUser(user));
+        public Task<UserInfo> GetUserAsync(ulong user) => queue.QueueTask(() => GetUser(user));
+        public Task ManualUpdateToPresentAsync(ulong user) => queue.QueueTask(() => ManualUpdateToPresent(user));
+        public Task ManualUpdateAsync(ulong user, DateTime dateTime) => queue.QueueTask(() => ManualUpdate(user, dateTime));
     }
 }
