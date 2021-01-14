@@ -4,6 +4,8 @@ using System.Text;
 
 using Microsoft.EntityFrameworkCore;
 
+using WAV_Bot_DSharp.Services.Structures;
+
 namespace WAV_Bot_DSharp.Services.Entities
 {
     public class UsersContext : DbContext

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using DSharpPlus.Entities;
 using WAV_Bot_DSharp.Services.Entities;
+using WAV_Bot_DSharp.Services.Structures;
 
 namespace WAV_Bot_DSharp.Services
 {
@@ -17,13 +18,13 @@ namespace WAV_Bot_DSharp.Services
         /// Обновить список пользователей и добавить недостающих в базу данных
         /// </summary>
         /// <returns>Количество добавленных пользователей</returns>
-        public Task<int> UpdateCurrentUsersAsync();
+        public Task<int> UpdateCurrentUsersAsync(IReadOnlyDictionary<ulong, DiscordMember> allUsers);
 
         /// <summary>
         /// Удалить лишние записи в базе данных
         /// </summary>
         /// <returns>Количество удалённых записей</returns>
-        public Task<int> ExcludeAbsentUsersAsync();
+        public Task<int> ExcludeAbsentUsersAsync(IReadOnlyDictionary<ulong, DiscordMember> currentMembers);
 
         /// <summary>
         /// Получить информацию об активности пользователей в пагинированной панели.

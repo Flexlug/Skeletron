@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -10,9 +11,10 @@ using NLog;
 using DSharpPlus;
 using DSharpPlus.Entities;
 
-using Microsoft.EntityFrameworkCore;
-using System.Threading;
 using WAV_Bot_DSharp.Threading;
+using WAV_Bot_DSharp.Services.Structures;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -28,10 +30,9 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         BackgroundQueue queue;
 
-        IServiceProvider provider;
-
         private int objectsCount;
 
+        DiscordClient client;
         DiscordGuild guild;
         UsersContext usersDb;
         //UsersContext usersDb
@@ -46,9 +47,10 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         public ActivityService(UsersContext users, DiscordClient client, ILogger logger)
         {
-            //this.provider = provider;
+            this.client = client;
             this.usersDb = users;
             this.logger = logger;
+
             guild = client.GetGuildAsync(WAV_UID).Result;
             queue = new BackgroundQueue();
 
@@ -59,6 +61,8 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
 
             ConfigureEvents(client);
+
+            logger.Info("ActivityService loaded");
         }
 
         /// <summary>
@@ -85,9 +89,6 @@ namespace WAV_Bot_DSharp.Services.Entities
         private async Task Client_OnMessageDeleted(DiscordClient sender, DSharpPlus.EventArgs.MessageDeleteEventArgs e) => await RequestUpdateUser(e.Message.Author, "Message deleted");
         private async Task Client_OnMessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e) => await RequestUpdateUser(e.Author, "Message created");
         private async Task Client_OnInviteCreated(DiscordClient sender, DSharpPlus.EventArgs.InviteCreateEventArgs e) => await RequestUpdateUser(e.Invite.Inviter, "Invite created");
-
-
-
 
         /// <summary>
         /// Обновить пользователя в базе данных
@@ -171,16 +172,14 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// Обновить список пользователей и добавить недостающих в базу данных
         /// </summary>
         /// <returns>Количество добавленных пользователей</returns>
-        public int UpdateCurrentUsers()
+        public int UpdateCurrentUsers(IReadOnlyDictionary<ulong, DiscordMember> allUsers)
         {
             try
             {
                 using (var transaction = usersDb.Database.BeginTransaction())
                 {
-                    IReadOnlyCollection<DiscordUser> allUsers = guild.GetAllMembersAsync().Result;
-
                     List<UserInfo> newUsers = new List<UserInfo>();
-                    foreach (DiscordUser user in allUsers)
+                    foreach (DiscordUser user in allUsers.Values)
                     {
                         UserInfo us = usersDb.Users.FirstOrDefault(x => x.Uid == user.Id);
 
@@ -218,7 +217,7 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// Удалить лишние записи в базе данных
         /// </summary>
         /// <returns>Количество удалённых записей</returns>
-        public int ExcludeAbsentUsers()
+        public int ExcludeAbsentUsers(IReadOnlyDictionary<ulong, DiscordMember> currentMembers)
         {
             try
             {
@@ -228,8 +227,11 @@ namespace WAV_Bot_DSharp.Services.Entities
                     List<UserInfo> existingUsers = usersDb.Users.ToList();
 
                     foreach (UserInfo user in existingUsers)
-                        if (guild.GetMemberAsync(user.Uid).Result == null ? true : false)
-                            usersDb.Add(user);
+                        if (!currentMembers.ContainsKey(user.Uid))
+                        {
+                            logger.Info($"Going to delete {user.Uid}");
+                            absentUsers.Add(user);
+                        }
 
                     if (absentUsers.Count != 0)
                     {
@@ -383,8 +385,8 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// <returns>Количество страниц в базе данных</returns>
         public async Task<int> GetTotalPagesAsync() => objectsCount / PAGE_SIZE + 1;
 
-        public Task<int> UpdateCurrentUsersAsync() => queue.QueueTask(() => UpdateCurrentUsers());
-        public Task<int> ExcludeAbsentUsersAsync() => queue.QueueTask(() => ExcludeAbsentUsers());
+        public Task<int> UpdateCurrentUsersAsync(IReadOnlyDictionary<ulong, DiscordMember> allUsers) => queue.QueueTask(() => UpdateCurrentUsers(allUsers));
+        public Task<int> ExcludeAbsentUsersAsync(IReadOnlyDictionary<ulong, DiscordMember> allUsers) => queue.QueueTask(() => ExcludeAbsentUsers(allUsers));
         public Task<List<UserInfo>> ViewActivityInfoAsync(int page) => queue.QueueTask(() => ViewActivityInfo(page));
         public Task<List<UserInfo>> GetAFKUsersAsync(int page) => queue.QueueTask(() => GetAFKUsers(page));
         public Task RemoveUserAsync(ulong user) => queue.QueueTask(() => RemoveUser(user));

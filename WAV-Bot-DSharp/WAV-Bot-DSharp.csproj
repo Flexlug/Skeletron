@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00737" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00737" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00737" />
-    <PackageReference Include="DSharpPlus.Rest" Version="4.0.0-nightly-00737" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00737" />
+    <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00738" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00738" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00738" />
+    <PackageReference Include="DSharpPlus.Rest" Version="4.0.0-nightly-00738" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00738" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />

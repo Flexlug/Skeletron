@@ -140,7 +140,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync("Забанен по причине долбоёб.", embed: new DiscordEmbedBuilder().WithAuthor(discordMember.DisplayName, iconUrl: discordMember.AvatarUrl)
                                                                            .WithTitle("**BANNED**")
                                                                            .WithDescription($"Reason: {(reason != string.Empty ? reason : "not stated")}")
-                                                                           .Build());
+                                                                           .Build());  
         }
     }
 }

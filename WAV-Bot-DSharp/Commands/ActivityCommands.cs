@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
+using NLog;
 using WAV_Bot_DSharp.Services;
 using WAV_Bot_DSharp.Services.Entities;
+using WAV_Bot_DSharp.Services.Structures;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -17,11 +21,14 @@ namespace WAV_Bot_DSharp.Commands
     [RequirePermissions(Permissions.Administrator)]
     public class ActivityCommands : BaseCommandModule
     {
+        IReadOnlyDictionary<ulong, DiscordMember> serverUsers;
         IActivityService activity;
+        ILogger logger;
 
-        public ActivityCommands(IActivityService activityService)
+        public ActivityCommands(IActivityService activityService, ILogger logger)
         {
             this.activity = activityService;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -46,8 +53,17 @@ namespace WAV_Bot_DSharp.Commands
 
                 foreach(UserInfo user in users)
                 {
-                    DiscordMember member = await commandContext.Guild.GetMemberAsync(user.Uid);
-                    embed.AddField($"{(member.DisplayName == string.Empty ? user.Uid.ToString() : member.DisplayName)}", $"{user.LastActivity.ToShortDateString()} {user.LastActivity.ToLongTimeString()} ({(int)(DateTime.Now - user.LastActivity).TotalDays} days AFK)");
+                    DiscordMember member = null;
+                    try
+                    {
+                         member = await commandContext.Guild.GetMemberAsync(user.Uid);
+                    }
+                    catch(Exception e) 
+                    {
+                        logger.Warn($"Can't find user {user.Uid}");
+                    }
+
+                    embed.AddField($"{(member == null ? user.Uid.ToString() : member.DisplayName)}", $"{user.LastActivity.ToShortDateString()} {user.LastActivity.ToLongTimeString()} ({(int)(DateTime.Now - user.LastActivity).TotalDays} days AFK)");
                 }
 
                 await commandContext.RespondAsync("", embed:embed);
@@ -66,7 +82,10 @@ namespace WAV_Bot_DSharp.Commands
         [Command("update-all-users"), Description("Update all users on this guild and update DB")]
         public async Task UpdateUsers(CommandContext commandContext)
         {
-            int newMembers = await activity.UpdateCurrentUsersAsync();
+            IReadOnlyCollection<DiscordMember> allUsers = await commandContext.Guild.GetAllMembersAsync();
+            Dictionary<ulong, DiscordMember> usersAndIDs = new Dictionary<ulong, DiscordMember>(allUsers.Select(x => new KeyValuePair<ulong, DiscordMember>(x.Id, x)));
+
+            int newMembers = await activity.UpdateCurrentUsersAsync(usersAndIDs);
             await commandContext.RespondAsync($"Успешно. Количество новых записей: {newMembers}");
         }
 
@@ -105,10 +124,13 @@ namespace WAV_Bot_DSharp.Commands
         /// </summary>
         /// <param name="commandContext">Контекст команды</param>
         /// <returns></returns>
-        [Command("exclute-absent"), Description("Manual update user activity to specified date")]
+        [Command("exclude-absent"), Description("Manual update user activity to specified date")]
         public async Task ExcludeAbsentUsers(CommandContext commandContext)
         {
-            int absentCountawait  = await activity.ExcludeAbsentUsersAsync();
+            IReadOnlyCollection<DiscordMember> allUsers = await commandContext.Guild.GetAllMembersAsync();
+            Dictionary<ulong, DiscordMember> usersAndIDs = new Dictionary<ulong, DiscordMember>(allUsers.Select(x => new KeyValuePair<ulong, DiscordMember>(x.Id, x)));
+
+            int absentCountawait  = await activity.ExcludeAbsentUsersAsync(usersAndIDs);
             await commandContext.RespondAsync($"Успешно. Удалено {absentCountawait} записей.");
         }
 
