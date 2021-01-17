@@ -1,5 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
 using WAV_Osu_NetApi;
+using WAV_Osu_NetApi.Models;
 
 namespace WAV_Osu_NetApi_Test
 {
@@ -7,11 +13,100 @@ namespace WAV_Osu_NetApi_Test
     {
         static void Main(string[] args)
         {
-            BanchoApi api = new BanchoApi(2962, "qsEuIBjTQBNc5wXbYETsGNYWZWe7acH6fC6pwRFj");
-            Console.WriteLine(api.Authorize());
-            api.GetUserRecentScores("6885792");
+            //BanchoApi api = new BanchoApi(2962, "qsEuIBjTQBNc5wXbYETsGNYWZWe7acH6fC6pwRFj");
+            //Console.WriteLine(api.ReloadToken());
 
-            Console.ReadKey();
+            GatariApi api = new GatariApi();
+
+            #region Get best scores
+            //List<Score> scores = api.GetUserBestScores("9604150", 100);
+
+            //Console.WriteLine($"Scores count: {scores.Count}");
+
+            //string scores_s = JsonConvert.SerializeObject(scores);
+            //using (StreamWriter sw = new StreamWriter("best_scores_mindblock.json"))
+            //    sw.Write(scores_s);
+
+            //Console.ReadKey();
+            #endregion
+
+            #region Bancho tracker
+            //DateTime last_score = DateTime.Now;
+            //while (true)
+            //{
+            //    List<WAV_Osu_NetApi.Models.Bancho.Score> new_scores = new List<WAV_Osu_NetApi.Models.Bancho.Score>();
+            //    List<WAV_Osu_NetApi.Models.Bancho.Score> available_scores = api.GetUserRecentScores("6885792", true, 10);
+
+            //    DateTime latest_score = last_score;
+            //    foreach (var score in available_scores)
+            //        if (score.created_at > last_score)
+            //        {
+            //            new_scores.Add(score);
+            //            if (latest_score < score.created_at)
+            //                latest_score = score.created_at;
+            //        }
+
+            //    if (new_scores.Count != 0)
+            //    {
+            //        Console.WriteLine();
+            //        foreach (var score in new_scores)
+            //        {
+            //            Console.WriteLine($"Title: {score.beatmapset.title} [{score.beatmap.version}]");
+            //            Console.WriteLine($"Artist: {score.beatmapset.artist}");
+            //            Console.WriteLine($"{score.rank}, {score.accuracy}%, {score.pp}, {score.statistics.count_300}, {score.statistics.count_100}, {score.statistics.count_50}, {score.statistics.count_miss}");
+            //            Console.WriteLine();
+            //        }
+
+            //        last_score = latest_score;
+            //    }
+            //    else
+            //    {
+            //        Console.Write(".");
+            //    }
+
+            //    Thread.Sleep(10000);
+            //}
+            #endregion
+
+            #region Gatari tracker
+            DateTime last_score = DateTime.Now - TimeSpan.FromDays(3);
+            while (true)
+            {
+                List<WAV_Osu_NetApi.Models.Gatari.Score> new_scores = new List<WAV_Osu_NetApi.Models.Gatari.Score>();
+                List<WAV_Osu_NetApi.Models.Gatari.Score> available_scores = api.GetUserRecentScores(21129, true, 3);
+
+                //Console.WriteLine(available_scores.Last().time);
+
+                DateTime latest_score = last_score;
+                foreach (var score in available_scores)
+                    if (score.time > last_score)
+                    {
+                        new_scores.Add(score);
+                        if (latest_score < score.time)
+                            latest_score = score.time;
+                    }
+
+                if (new_scores.Count != 0)
+                {
+                    Console.WriteLine();
+                    foreach (var score in new_scores)
+                    {
+                        Console.WriteLine($"Title: {score.beatmap.song_name}");
+                        Console.WriteLine($"{score.ranking}, {score.accuracy}%, {score.pp}, {score.count_300}, {score.count_100}, {score.count_50}, {score.count_miss}");
+                        Console.WriteLine();
+                    }
+
+                    last_score = latest_score;
+                }
+                else
+                {
+                    Console.Write(".");
+                }
+
+                Thread.Sleep(10000);
+            }
+
+            #endregion
         }
     }
 }

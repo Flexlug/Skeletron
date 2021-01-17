@@ -68,6 +68,7 @@ namespace WAV_Bot_DSharp
                 .AddSingleton(Discord)
                 //.AddSingleton<IOsuService, OsuService>()
                 .AddSingleton<IActivityService, ActivityService>()
+                .AddSingleton<ITrackService, TrackService>()
                 .BuildServiceProvider();
         }
 
@@ -88,6 +89,7 @@ namespace WAV_Bot_DSharp
             //CommandsNext.RegisterCommands<OsuCommands>();
             CommandsNext.RegisterCommands<VoiceCommands>();
             CommandsNext.RegisterCommands<ActivityCommands>();
+            CommandsNext.RegisterCommands<TrackCommands>();
 
             // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;

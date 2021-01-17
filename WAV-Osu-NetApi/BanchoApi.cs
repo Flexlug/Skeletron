@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 using RestSharp;
 
-using WAV_Osu_NetApi.Models;
+using WAV_Osu_NetApi.Models.Bancho;
 
 namespace WAV_Osu_NetApi
 {
@@ -17,7 +17,22 @@ namespace WAV_Osu_NetApi
         private readonly string Secret;
         private readonly int ClientId;
 
-        private string Token = string.Empty;
+        private string _token;
+        private string Token
+        {
+            get
+            {
+                if (DateTime.Now >= TokenExpireDate)
+                    ReloadToken();
+
+                return _token;
+            }
+            set
+            {
+                _token = value;
+            }
+        }
+        private DateTime TokenExpireDate;
 
         private readonly string UrlBase = @"https://osu.ppy.sh/";
 
@@ -27,9 +42,11 @@ namespace WAV_Osu_NetApi
         {
             this.Secret = secret;
             this.ClientId = client_id;
+
+            ReloadToken();
         }
 
-        public bool Authorize()
+        public bool ReloadToken()
         {
             IRestRequest req = new RestRequest(UrlBase + $@"oauth/token")
                 .AddParameter("client_id", ClientId)
@@ -41,7 +58,9 @@ namespace WAV_Osu_NetApi
             try
             {
                 TokenResponse token = JsonConvert.DeserializeObject<TokenResponse>(resp.Content);
+                this.TokenExpireDate = DateTime.Now + TimeSpan.FromSeconds(token.Expires);
                 this.Token = token.Token;
+
                 return true;
             }
             catch (Exception)
@@ -50,17 +69,31 @@ namespace WAV_Osu_NetApi
             }
         }
 
-        public List<RecentScore> GetUserRecentScores(string user)
+        public List<Score> GetUserRecentScores(string user, bool include_fails, int limit)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{user}/scores/recent")
                 .AddHeader(@"Authorization", $@"Bearer {Token}")
-                .AddParameter("limit", 3);
+                .AddParameter("include_fails", include_fails)
+                .AddParameter("limit", limit);
 
             IRestResponse resp = client.Execute(req);
 
-            List<RecentScore> scores = JsonConvert.DeserializeObject<List<RecentScore>>(resp.Content);
+            List<Score> scores = JsonConvert.DeserializeObject<List<Score>>(resp.Content);
 
-            return null;
+            return scores;
+        }
+
+        public List<Score> GetUserBestScores(string user, int limit)
+        {
+            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{user}/scores/best")
+                .AddHeader(@"Authorization", $@"Bearer {Token}")
+                .AddParameter("limit", limit);
+
+            IRestResponse resp = client.Execute(req);
+
+            List<Score> scores = JsonConvert.DeserializeObject<List<Score>>(resp.Content);
+
+            return scores;
         }
     }
 }
