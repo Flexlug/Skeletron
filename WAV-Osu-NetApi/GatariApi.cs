@@ -1,9 +1,12 @@
-﻿using Newtonsoft.Json;
-using RestSharp;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Text;
-using WAV_Osu_NetApi.Models.Gatari;
+using System.Collections.Generic;
+
+using RestSharp;
+
+using Newtonsoft.Json;
+
+using WAV_Osu_NetApi.Gatari.Models;
 
 namespace WAV_Osu_NetApi
 {

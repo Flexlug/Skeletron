@@ -16,6 +16,7 @@ using WAV_Bot_DSharp.Configurations;
 
 using NLog;
 using System.Globalization;
+using WAV_Bot_DSharp.Services.Interfaces;
 
 namespace WAV_Bot_DSharp
 {
@@ -64,11 +65,12 @@ namespace WAV_Bot_DSharp
             Logger.Debug("Configuring services");
             Services = new ServiceCollection()
                 .AddDbContext<UsersContext>()
+                .AddSingleton(Settings)
                 .AddSingleton<ILogger>(Logger)
                 .AddSingleton(Discord)
-                //.AddSingleton<IOsuService, OsuService>()
+                .AddSingleton<IOsuService, OsuService>()
                 .AddSingleton<IActivityService, ActivityService>()
-                .AddSingleton<ITrackService, TrackService>()
+                //.AddSingleton<ITrackService, TrackService>()
                 .BuildServiceProvider();
         }
 
@@ -86,10 +88,10 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<UserCommands>();
             CommandsNext.RegisterCommands<AdminCommands>();
             CommandsNext.RegisterCommands<DemonstrationCommands>();
-            //CommandsNext.RegisterCommands<OsuCommands>();
+            CommandsNext.RegisterCommands<OsuCommands>();
             CommandsNext.RegisterCommands<VoiceCommands>();
             CommandsNext.RegisterCommands<ActivityCommands>();
-            CommandsNext.RegisterCommands<TrackCommands>();
+            //CommandsNext.RegisterCommands<TrackCommands>();
 
             // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;

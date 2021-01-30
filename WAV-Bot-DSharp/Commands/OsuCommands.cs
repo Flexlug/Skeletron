@@ -6,6 +6,7 @@ using WAV_Bot_DSharp.Services;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using WAV_Bot_DSharp.Services.Interfaces;
 
 namespace WAV_Bot_DSharp.Commands
 {

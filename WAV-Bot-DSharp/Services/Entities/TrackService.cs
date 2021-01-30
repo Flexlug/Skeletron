@@ -1,17 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Timers;
+using System.Collections.Generic;
 
 using WAV_Bot_DSharp.Services.Structures;
 
 using WAV_Osu_NetApi;
 
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
+
+using WAV_Bot_DSharp.Services.Interfaces;
+
 using NLog;
+using WAV_Osu_NetApi.Gatari.Models;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -50,8 +54,8 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private async void CheckRecentGatari()
         {
-            List<WAV_Osu_NetApi.Models.Gatari.Score> new_scores = new List<WAV_Osu_NetApi.Models.Gatari.Score>();
-            List<WAV_Osu_NetApi.Models.Gatari.Score> available_scores = api.GetUserRecentScores(21129, true, 3);
+            List<WAV_Osu_NetApi.Gatari.Models.Score> new_scores = new List<WAV_Osu_NetApi.Gatari.Models.Score>();
+            List<WAV_Osu_NetApi.Gatari.Models.Score> available_scores = api.GetUserRecentScores(21129, true, 3);
 
             //Console.WriteLine(available_scores.Last().time);
 

@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+
 using WAV_Osu_NetApi;
-using WAV_Osu_NetApi.Models;
+
+using Newtonsoft.Json;
+using WAV_Osu_NetApi.Bancho.Models;
 
 namespace WAV_Osu_NetApi_Test
 {
@@ -13,10 +16,14 @@ namespace WAV_Osu_NetApi_Test
     {
         static void Main(string[] args)
         {
-            //BanchoApi api = new BanchoApi(2962, "qsEuIBjTQBNc5wXbYETsGNYWZWe7acH6fC6pwRFj");
-            //Console.WriteLine(api.ReloadToken());
+            Settings settings;
+            using (StreamReader sr = new StreamReader("credentials.json"))
+                settings = JsonConvert.DeserializeObject<Settings>(sr.ReadToEnd());
 
-            GatariApi api = new GatariApi();
+            BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
+            Console.WriteLine(api.ReloadToken());
+
+            //GatariApi api = new GatariApi();
 
             #region Get best scores
             //List<Score> scores = api.GetUserBestScores("9604150", 100);
@@ -69,6 +76,7 @@ namespace WAV_Osu_NetApi_Test
             #endregion
 
             #region Gatari tracker
+            /*
             DateTime last_score = DateTime.Now - TimeSpan.FromDays(3);
             while (true)
             {
@@ -105,6 +113,34 @@ namespace WAV_Osu_NetApi_Test
 
                 Thread.Sleep(10000);
             }
+            */
+            #endregion
+
+            #region Bancho search
+
+            var bms = api.Search("nanahira");
+            foreach (var bm in bms)
+                Console.WriteLine($"{bm.title}\n{bm.artist}");
+
+            #endregion
+
+            #region Bancho TryGetUsr
+
+            User validUser, invalidUser;
+
+            //api.TryGetUser(9604150, out validUser);
+            //api.TryGetUser(687687654, out invalidUser);
+
+            //Console.WriteLine(validUser);
+            //Console.WriteLine(invalidUser);
+
+            #endregion
+
+            #region Bancho Get Beatmapset
+
+            //api.GetSmth();
+            //Beatmapset bm = api.GetBeatmapset(372510);
+
 
             #endregion
         }

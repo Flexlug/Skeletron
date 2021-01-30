@@ -7,7 +7,7 @@ namespace WAV_Bot_DSharp
     {
         static void Main(string[] args)
         {
-            var settingsService = new SettingsService();
+            var settingsService = new SettingsLoader();
             using (var bot = new Bot(settingsService.LoadFromFile()))
             {
                 bot.RunAsync().GetAwaiter().GetResult();

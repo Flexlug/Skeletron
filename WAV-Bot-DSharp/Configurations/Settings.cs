@@ -8,8 +8,13 @@ namespace WAV_Bot_DSharp.Configurations
     {
         public static readonly IList<string> DefaultPrefixes = new List<string>() { "." };
 
+        // Discord credential
         public string Token { get; set; }
         public IList<string> Prefixes { get; set; }
+
+        // Bancho credentials
+        public int ClientId { get; set; }
+        public string Secret { get; set; }
 
         public Settings() : this("", DefaultPrefixes) { }
 

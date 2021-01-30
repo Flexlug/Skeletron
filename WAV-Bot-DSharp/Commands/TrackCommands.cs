@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WAV_Bot_DSharp.Services;
 using WAV_Bot_DSharp.Services.Entities;
+using WAV_Bot_DSharp.Services.Interfaces;
 
 namespace WAV_Bot_DSharp.Commands
 {

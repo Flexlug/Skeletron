@@ -25,5 +25,6 @@ namespace WAV_Bot_DSharp.Services.Structures
         /// Дата последней активности
         /// </summary>
         public DateTime LastActivity { get; set; }
+
     }
 }
