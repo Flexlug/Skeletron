@@ -37,7 +37,7 @@ namespace WAV_Osu_Recognizer
 
             Pix img = Pix.LoadFromFile(fileName);
 
-            Page pageName = ocr.Process(img, new Rect(1, 1, img.Width - 10, 135));
+            Page pageName = ocr.Process(img, new Rect(1, 1, img.Width - 10, (int)(img.Height * 0.13)));
             string mapName = pageName.GetText();
             pageName.Dispose();
 

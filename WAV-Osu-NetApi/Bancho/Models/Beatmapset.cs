@@ -7,7 +7,7 @@ namespace WAV_Osu_NetApi.Bancho.Models
     public class Beatmapset : BeatmapsetCompact
     {
         public Availability availability { get; set; }
-        public float bpm { get; set; }
+        public float? bpm { get; set; }
         public bool can_be_hyped { get; set; }
         public bool discussion_enabled { get; set; }
         public bool discussion_locked { get; set; }

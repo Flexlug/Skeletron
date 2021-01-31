@@ -118,7 +118,7 @@ namespace WAV_Osu_NetApi_Test
 
             #region Bancho search
 
-            var bms = api.Search("nanahira");
+            var bms = api.Search("Oznei Haman wa Mou Iranai [jump training]", WAV_Osu_NetApi.Bancho.QuerryParams.MapType.Any);
             foreach (var bm in bms)
                 Console.WriteLine($"{bm.title}\n{bm.artist}");
 

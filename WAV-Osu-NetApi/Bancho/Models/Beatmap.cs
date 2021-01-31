@@ -7,7 +7,7 @@ namespace WAV_Osu_NetApi.Bancho.Models
         public float accuracy { get; set; }
         public float ar { get; set; }
         public int beatmapset_id { get; set; }
-        public float bpm { get; set; }
+        public float? bpm { get; set; }
         public bool convert { get; set; }
         public int count_circles { get; set; }
         public int count_sliders { get; set; }

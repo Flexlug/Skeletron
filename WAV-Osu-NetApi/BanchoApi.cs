@@ -124,7 +124,7 @@ namespace WAV_Osu_NetApi
             {
                 beatmaps = JsonConvert.DeserializeObject<SearchResponse>(resp.Content);
             }
-            catch(Exception)
+            catch(Exception e)
             {
                 return null;
             }
