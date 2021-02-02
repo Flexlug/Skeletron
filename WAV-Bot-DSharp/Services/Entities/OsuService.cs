@@ -21,6 +21,7 @@ using WAV_Osu_Recognizer;
 using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Bancho.Models;
 using WAV_Bot_DSharp.Configurations;
+using WAV_Bot_DSharp.Threading;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -39,6 +40,8 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private BanchoApi api;
 
+        private BackgroundQueue queue;
+
         public OsuService(DiscordClient client, Settings settings, ILogger logger)
         {
             this.client = client;
@@ -48,6 +51,8 @@ namespace WAV_Bot_DSharp.Services.Entities
             webClient = new WebClient();
 
             api = new BanchoApi(settings.ClientId, settings.Secret);
+
+            queue = new BackgroundQueue();
 
             logger.Debug("Osu service started");
             ConfigureFilesInterceptor(client);
@@ -73,9 +78,13 @@ namespace WAV_Bot_DSharp.Services.Entities
             logger.Debug($"Detected attachments. Count: {attachments.Count}");
 
             foreach (DiscordAttachment attachment in attachments)
-                if (attachment.Width > 600 && attachment.Height > 800)
+                if (attachment.Width > 800 && attachment.Height > 600)
                 {
-                    ThreadPool.QueueUserWorkItem(new WaitCallback(delegate(object state) { ExecuteMessageTrack(e.Message, attachment); }));
+                    ThreadPool.QueueUserWorkItem(new WaitCallback(async delegate(object state) 
+                    { 
+                        await ExecuteMessageTrack(e.Message, attachment); 
+                    }));
+
                     break;
                 }
         }
@@ -85,7 +94,7 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// </summary>
         /// <param name="message">Отслеживаемое изображение</param>
         /// <param name="attachment">Картинка</param>
-        private void ExecuteMessageTrack(DiscordMessage message, DiscordAttachment attachment)
+        private async Task ExecuteMessageTrack(DiscordMessage message, DiscordAttachment attachment)
         {
             var interactivity = client.GetInteractivity();
             if (_pollEmojiCache == null)
@@ -95,7 +104,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                     };
             }
 
-            TimeSpan duration = TimeSpan.FromSeconds(5);
+            TimeSpan duration = TimeSpan.FromSeconds(10);
 
             // DoPollAsync adds automatically emojis out from an emoji array to a special message and waits for the "duration" of time to calculate results.
             var pollResult = interactivity.DoPollAsync(message, _pollEmojiCache, PollBehaviour.DeleteEmojis, duration);
@@ -104,12 +113,12 @@ namespace WAV_Bot_DSharp.Services.Entities
             if (questions > 0)
             {
                 //message.CreateReactionAsync(DiscordEmoji.FromName(client, ":white_check_mark:"));
-                var res = DownloadAndRecognizeImage(attachment);
+                var res = await queue.QueueTask(() => DownloadAndRecognizeImage(attachment));
 
                 if (res == null)
                 {
                     //message.DeleteAllReactionsAsync();
-                    message.CreateReactionAsync(DiscordEmoji.FromName(client, ":x:"));
+                    await message.CreateReactionAsync(DiscordEmoji.FromName(client, ":x:"));
                     return;
                 }
 
@@ -185,7 +194,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 embedBuilder.WithThumbnail(bms.covers.List2x);
                 embedBuilder.WithFooter(bms.tags);
 
-                message.RespondAsync(embed: embedBuilder.Build());
+                await message.RespondAsync(embed: embedBuilder.Build());
             }
             else
             {
@@ -209,7 +218,16 @@ namespace WAV_Bot_DSharp.Services.Entities
             foreach (string s in rawrecedText)
                 logger.Debug(s);
 
-            string recedText = rawrecedText.FirstOrDefault();
+            // Searching for first non-empty string
+            string recedText = string.Empty;
+
+            foreach (string s in rawrecedText)
+                if (!string.IsNullOrWhiteSpace(s))
+                {
+                    recedText = s;
+                    break;
+                }
+
             logger.Debug($"Recognized text: {recedText}");
 
             // Cut artist

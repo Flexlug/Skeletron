@@ -26,9 +26,9 @@ namespace WAV_Osu_NetApi_Test
             //GatariApi api = new GatariApi();
 
             #region Get best scores
-            //List<Score> scores = api.GetUserBestScores("9604150", 100);
+            List<Score> scores = api.GetUserBestScores(9604150, 100);
 
-            //Console.WriteLine($"Scores count: {scores.Count}");
+            Console.WriteLine($"Scores count: {scores.Count}");
 
             //string scores_s = JsonConvert.SerializeObject(scores);
             //using (StreamWriter sw = new StreamWriter("best_scores_mindblock.json"))
@@ -118,9 +118,9 @@ namespace WAV_Osu_NetApi_Test
 
             #region Bancho search
 
-            var bms = api.Search("Oznei Haman wa Mou Iranai [jump training]", WAV_Osu_NetApi.Bancho.QuerryParams.MapType.Any);
-            foreach (var bm in bms)
-                Console.WriteLine($"{bm.title}\n{bm.artist}");
+            //var bms = api.Search("Oznei Haman wa Mou Iranai [jump training]", WAV_Osu_NetApi.Bancho.QuerryParams.MapType.Any);
+            //foreach (var bm in bms)
+            //    Console.WriteLine($"{bm.title}\n{bm.artist}");
 
             #endregion
 
