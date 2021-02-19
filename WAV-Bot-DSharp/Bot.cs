@@ -17,6 +17,7 @@ using WAV_Bot_DSharp.Configurations;
 using NLog;
 using System.Globalization;
 using WAV_Bot_DSharp.Services.Interfaces;
+using DSharpPlus.Interactivity.Extensions;
 
 namespace WAV_Bot_DSharp
 {
@@ -89,7 +90,7 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<AdminCommands>();
             CommandsNext.RegisterCommands<DemonstrationCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
-            CommandsNext.RegisterCommands<VoiceCommands>();
+            //CommandsNext.RegisterCommands<VoiceCommands>();
             //CommandsNext.RegisterCommands<ActivityCommands>();
             //CommandsNext.RegisterCommands<TrackCommands>();
 
