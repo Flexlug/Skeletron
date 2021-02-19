@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -26,22 +26,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.0.0-rc1" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-rc1" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-rc1" />
-    <PackageReference Include="DSharpPlus.Rest" Version="4.0.0-rc1" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-rc1" />
+    <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00738" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00738" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00738" />
+    <PackageReference Include="DSharpPlus.Rest" Version="4.0.0-nightly-00738" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00738" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.8" />
-    <PackageReference Include="NAudio" Version="1.10.0" />    
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="NLog" Version="4.7.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.8" />
+    <PackageReference Include="NAudio" Version="1.10.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="NLog" Version="4.7.5" />
   </ItemGroup>
 
   <ItemGroup>
