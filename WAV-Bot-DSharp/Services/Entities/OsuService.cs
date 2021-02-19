@@ -22,6 +22,7 @@ using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Bancho.Models;
 using WAV_Bot_DSharp.Configurations;
 using WAV_Bot_DSharp.Threading;
+using DSharpPlus.Interactivity.Extensions;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -96,110 +97,87 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// <param name="attachment">Картинка</param>
         private async Task ExecuteMessageTrack(DiscordMessage message, DiscordAttachment attachment)
         {
-            var interactivity = client.GetInteractivity();
-            if (_pollEmojiCache == null)
+            var res = await queue.QueueTask(() => DownloadAndRecognizeImage(attachment));
+
+            if (res == null)
             {
-                _pollEmojiCache = new[] {
-                        DiscordEmoji.FromName(client, ":grey_question:")
-                    };
+                return;
             }
 
-            TimeSpan duration = TimeSpan.FromSeconds(10);
+            Beatmapset bms = res.Item1;
+            Beatmap bm = res.Item2;
 
-            // DoPollAsync adds automatically emojis out from an emoji array to a special message and waits for the "duration" of time to calculate results.
-            var pollResult = interactivity.DoPollAsync(message, _pollEmojiCache, PollBehaviour.DeleteEmojis, duration);
-            var questions = pollResult.Result[0].Total;
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
 
-            if (questions > 0)
+            TimeSpan mapLen = TimeSpan.FromSeconds(bm.total_length);
+
+            DiscordEmoji rankEmoji = null;
+            switch (bm.ranked)
             {
-                //message.CreateReactionAsync(DiscordEmoji.FromName(client, ":white_check_mark:"));
-                var res = await queue.QueueTask(() => DownloadAndRecognizeImage(attachment));
+                // ranked
+                case 1:
+                    rankEmoji = DiscordEmoji.FromGuildEmote(client, 805362757934383105);
+                    break;
 
-                if (res == null)
-                {
-                    //message.DeleteAllReactionsAsync();
-                    await message.CreateReactionAsync(DiscordEmoji.FromName(client, ":x:"));
-                    return;
-                }
+                // qualified
+                case 3:
+                    rankEmoji = DiscordEmoji.FromGuildEmote(client, 805364968593686549);
+                    break;
 
-                Beatmapset bms = res.Item1;
-                Beatmap bm = res.Item2;
+                // loved
+                case 4:
+                    rankEmoji = DiscordEmoji.FromGuildEmote(client, 805366123902009356);
+                    break;
 
-                DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
-                
-                TimeSpan mapLen = TimeSpan.FromSeconds(bm.total_length);
+                // other
+                default:
+                    rankEmoji = DiscordEmoji.FromGuildEmote(client, 805368650529767444);
+                    break;
+            }
 
-                DiscordEmoji rankEmoji = null;
-                switch (bm.ranked) {
-                    // ranked
-                    case 1:
-                        rankEmoji = DiscordEmoji.FromGuildEmote(client, 805362757934383105);
-                        break;
-
-                    // qualified
-                    case 3:
-                        rankEmoji = DiscordEmoji.FromGuildEmote(client, 805364968593686549);
-                        break;
-
-                    // loved
-                    case 4:
-                        rankEmoji = DiscordEmoji.FromGuildEmote(client, 805366123902009356);
-                        break;
-
-                    // other
-                    default:
-                        rankEmoji = DiscordEmoji.FromGuildEmote(client, 805368650529767444);
-                        break;
-                }
-
-                DiscordEmoji diffEmoji = null;
-                // Easy
-                if (bm.difficulty_rating <= 1)
-                    diffEmoji = DiscordEmoji.FromGuildEmote(client, 805376602824900648);
+            DiscordEmoji diffEmoji = null;
+            // Easy
+            if (bm.difficulty_rating <= 1)
+                diffEmoji = DiscordEmoji.FromGuildEmote(client, 805376602824900648);
+            else
+            {
+                // Normal
+                if (bm.difficulty_rating <= 2.7)
+                    diffEmoji = DiscordEmoji.FromGuildEmote(client, 805372074050322442);
                 else
                 {
-                    // Normal
-                    if (bm.difficulty_rating <= 2.7)
-                        diffEmoji = DiscordEmoji.FromGuildEmote(client, 805372074050322442);
+                    // Hard
+                    if (bm.difficulty_rating <= 4)
+                        diffEmoji = DiscordEmoji.FromGuildEmote(client, 805375515593670686);
                     else
                     {
-                        // Hard
-                        if (bm.difficulty_rating <= 4)
-                            diffEmoji = DiscordEmoji.FromGuildEmote(client, 805375515593670686);
+                        // Insane
+                        if (bm.difficulty_rating <= 5.2)
+                            diffEmoji = DiscordEmoji.FromGuildEmote(client, 805375873276575745);
                         else
                         {
-                            // Insane
-                            if (bm.difficulty_rating <= 5.2)
-                                diffEmoji = DiscordEmoji.FromGuildEmote(client, 805375873276575745);
+                            // Expert
+                            if (bm.difficulty_rating <= 6.3)
+                                diffEmoji = DiscordEmoji.FromGuildEmote(client, 805377293449953330);
                             else
                             {
-                                // Expert
-                                if (bm.difficulty_rating <= 6.3)
-                                    diffEmoji = DiscordEmoji.FromGuildEmote(client, 805377293449953330);
-                                else
-                                {
-                                    diffEmoji = DiscordEmoji.FromGuildEmote(client, 805377677661569065);
-                                }
+                                diffEmoji = DiscordEmoji.FromGuildEmote(client, 805377677661569065);
                             }
                         }
                     }
                 }
-
-
-                embedBuilder.WithTitle($"{rankEmoji}  {bms.artist} – {bms.title} by {bms.creator}");
-                embedBuilder.WithUrl(bm.url);
-                embedBuilder.AddField($"Length: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)}, BPM: {bm.bpm}", 
-                                      $"{diffEmoji}  [{bm.version}]\n▸Difficulty: {bm.difficulty_rating}★\n▸AR: {bm.ar} ▸CS: {bm.cs}",
-                                      true);
-                embedBuilder.WithThumbnail(bms.covers.List2x);
-                embedBuilder.WithFooter(bms.tags);
-
-                await message.RespondAsync(embed: embedBuilder.Build());
             }
-            else
-            {
-                //message.DeleteAllReactionsAsync();
-            }
+
+
+            embedBuilder.WithTitle($"{rankEmoji}  {bms.artist} – {bms.title} by {bms.creator}");
+            embedBuilder.WithUrl(bm.url);
+            embedBuilder.AddField($"Length: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)}, BPM: {bm.bpm}",
+                                  $"{diffEmoji}  **__[{bm.version}]__**\n▸**Difficulty**: {bm.difficulty_rating}★\n▸**AR**: {bm.ar} ▸**CS**: {bm.cs}",
+                                  true);
+            embedBuilder.WithThumbnail(bms.covers.List2x);
+            embedBuilder.WithFooter(bms.tags);
+
+            await message.RespondAsync(embed: embedBuilder.Build());
         }
 
         /// <summary>
