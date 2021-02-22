@@ -20,15 +20,15 @@ namespace WAV_Osu_NetApi_Test
             using (StreamReader sr = new StreamReader("credentials.json"))
                 settings = JsonConvert.DeserializeObject<Settings>(sr.ReadToEnd());
 
-            BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
-            Console.WriteLine(api.ReloadToken());
+            //BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
+            //Console.WriteLine(api.ReloadToken());
 
-            //GatariApi api = new GatariApi();
+            GatariApi api = new GatariApi();
 
             #region Get best scores
-            List<Score> scores = api.GetUserBestScores(9604150, 100);
+            //List<Score> scores = api.GetUserBestScores(9604150, 100);
 
-            Console.WriteLine($"Scores count: {scores.Count}");
+            ///Console.WriteLine($"Scores count: {scores.Count}");
 
             //string scores_s = JsonConvert.SerializeObject(scores);
             //using (StreamWriter sw = new StreamWriter("best_scores_mindblock.json"))
@@ -138,11 +138,13 @@ namespace WAV_Osu_NetApi_Test
 
             #region Bancho Get Beatmapset
 
-            //api.GetSmth();
             //Beatmapset bm = api.GetBeatmapset(372510);
 
 
             #endregion
+
+            api.TryRetrieveBeatmap(1114721);
+
         }
     }
 }

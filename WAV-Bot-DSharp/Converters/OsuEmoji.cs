@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using DSharpPlus;
 using DSharpPlus.Entities;
 
+using WAV_Osu_NetApi.Bancho.Models.Enums;
+using WAV_Osu_NetApi.Gatari.Models.Enums;
+
 namespace WAV_Bot_DSharp.Converters
 {
     public class OsuEmoji
@@ -44,22 +47,43 @@ namespace WAV_Bot_DSharp.Converters
             }
         }
 
-        public static DiscordEmoji BanchoRankStatus(WAV_Osu_NetApi.Bancho.Models.Enums.RankStatus rank, DiscordClient client)
+        public static DiscordEmoji BanchoRankStatus(RankStatus rank, DiscordClient client)
         {
             switch (rank)
             {
                 // ranked
-                case WAV_Osu_NetApi.Bancho.Models.Enums.RankStatus.Ranked:
+                case RankStatus.Ranked:
                     return DiscordEmoji.FromGuildEmote(client, 805362757934383105);
 
                 // qualified
-                case WAV_Osu_NetApi.Bancho.Models.Enums.RankStatus.Qualified:
+                case RankStatus.Qualified:
                     return DiscordEmoji.FromGuildEmote(client, 805364968593686549);
 
                 // loved
-                case WAV_Osu_NetApi.Bancho.Models.Enums.RankStatus.Loved:
+                case RankStatus.Loved:
                     return DiscordEmoji.FromGuildEmote(client, 805366123902009356);
-                    break;
+
+                // other
+                default:
+                    return DiscordEmoji.FromGuildEmote(client, 805368650529767444);
+            }
+        }
+
+        public static DiscordEmoji GatariRankStatus(GRankStatus rank, DiscordClient client)
+        {
+            switch (rank)
+            {
+                // ranked
+                case GRankStatus.Ranked:
+                    return DiscordEmoji.FromGuildEmote(client, 805362757934383105);
+
+                // qualified
+                case GRankStatus.Qualified:
+                    return DiscordEmoji.FromGuildEmote(client, 805364968593686549);
+
+                // loved
+                case GRankStatus.Loved:
+                    return DiscordEmoji.FromGuildEmote(client, 805366123902009356);
 
                 // other
                 default:

@@ -8,6 +8,6 @@ namespace WAV_Osu_NetApi.Gatari.Models
     {
         public int code { get; set; }
         public int count { get; set; }
-        public GBeatmap data { get; set; }
+        public List<GBeatmap> data { get; set; }
     }
 }

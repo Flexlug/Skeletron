@@ -7,6 +7,7 @@ using RestSharp;
 using Newtonsoft.Json;
 
 using WAV_Osu_NetApi.Gatari.Models;
+using System.Linq;
 
 namespace WAV_Osu_NetApi
 {
@@ -48,7 +49,7 @@ namespace WAV_Osu_NetApi
         public GBeatmap TryRetrieveBeatmap(int id)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"beatmaps/get")
-                .AddParameter("id", id);
+                .AddParameter("bb", id);
 
             IRestResponse resp = client.Execute(req);
 
@@ -62,7 +63,7 @@ namespace WAV_Osu_NetApi
                 return null;
             }
 
-            return g_resp?.data;
+            return g_resp?.data.FirstOrDefault();
         }
     }
 }
