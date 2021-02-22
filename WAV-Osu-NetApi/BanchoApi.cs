@@ -189,15 +189,6 @@ namespace WAV_Osu_NetApi
             return bm;
         }
 
-        public void GetSmth()
-        {
-            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmaps/372510")
-                            .AddHeader(@"Authorization", $@"Bearer {Token}");
-
-            IRestResponse resp = client.Execute(req);
-
-        }
-
         /// <summary>
         /// Tries to get user by his id
         /// </summary>
