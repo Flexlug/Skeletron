@@ -16,8 +16,6 @@ namespace WAV_Osu_NetApi
 
         private RestClient client = new RestClient();
 
-
-
         public List<Score> GetUserRecentScores(int user_id, bool include_fails, int limit)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"user/scores/recent")

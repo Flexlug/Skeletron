@@ -11,18 +11,15 @@ using NLog;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Enums;
 
+using WAV_Bot_DSharp.Threading;
+using WAV_Bot_DSharp.Configurations;
 using WAV_Bot_DSharp.Services.Interfaces;
 
 using WAV_Osu_Recognizer;
 
 using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Bancho.Models;
-using WAV_Bot_DSharp.Configurations;
-using WAV_Bot_DSharp.Threading;
-using DSharpPlus.Interactivity.Extensions;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -111,65 +108,12 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             TimeSpan mapLen = TimeSpan.FromSeconds(bm.total_length);
 
-            DiscordEmoji rankEmoji = null;
-            switch (bm.ranked)
-            {
-                // ranked
-                case 1:
-                    rankEmoji = DiscordEmoji.FromGuildEmote(client, 805362757934383105);
-                    break;
-
-                // qualified
-                case 3:
-                    rankEmoji = DiscordEmoji.FromGuildEmote(client, 805364968593686549);
-                    break;
-
-                // loved
-                case 4:
-                    rankEmoji = DiscordEmoji.FromGuildEmote(client, 805366123902009356);
-                    break;
-
-                // other
-                default:
-                    rankEmoji = DiscordEmoji.FromGuildEmote(client, 805368650529767444);
-                    break;
-            }
-
-            DiscordEmoji diffEmoji = null;
-            // Easy
-            if (bm.difficulty_rating <= 1)
-                diffEmoji = DiscordEmoji.FromGuildEmote(client, 805376602824900648);
-            else
-            {
-                // Normal
-                if (bm.difficulty_rating <= 2.7)
-                    diffEmoji = DiscordEmoji.FromGuildEmote(client, 805372074050322442);
-                else
-                {
-                    // Hard
-                    if (bm.difficulty_rating <= 4)
-                        diffEmoji = DiscordEmoji.FromGuildEmote(client, 805375515593670686);
-                    else
-                    {
-                        // Insane
-                        if (bm.difficulty_rating <= 5.2)
-                            diffEmoji = DiscordEmoji.FromGuildEmote(client, 805375873276575745);
-                        else
-                        {
-                            // Expert
-                            if (bm.difficulty_rating <= 6.3)
-                                diffEmoji = DiscordEmoji.FromGuildEmote(client, 805377293449953330);
-                            else
-                            {
-                                diffEmoji = DiscordEmoji.FromGuildEmote(client, 805377677661569065);
-                            }
-                        }
-                    }
-                }
-            }
+            DiscordEmoji banchoRankEmoji = Converters.OsuEmoji.BanchoRankStatus(bm.ranked, client);
+            DiscordEmoji diffEmoji = Converters.OsuEmoji.DiffEmoji(bm.difficulty_rating, client);
+            
 
 
-            embedBuilder.WithTitle($"{rankEmoji}  {bms.artist} – {bms.title} by {bms.creator}");
+            embedBuilder.WithTitle($"{banchoRankEmoji}  {bms.artist} – {bms.title} by {bms.creator}");
             embedBuilder.WithUrl(bm.url);
             embedBuilder.AddField($"Length: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)}, BPM: {bm.bpm}",
                                   $"{diffEmoji}  **__[{bm.version}]__**\n▸**Difficulty**: {bm.difficulty_rating}★\n▸**AR**: {bm.ar} ▸**CS**: {bm.cs}",
