@@ -28,9 +28,9 @@ namespace WAV_Osu_NetApi
 
             IRestResponse resp = client.Execute(req);
 
-            GatariResponse g_resp = JsonConvert.DeserializeObject<GatariResponse>(resp.Content);
+            GScoresResponse g_resp = JsonConvert.DeserializeObject<GScoresResponse>(resp.Content);
 
-            return g_resp.scores;
+            return g_resp.data;
         }
 
         public List<Score> GetUserBestScores(int user_id, int limit)
@@ -42,9 +42,9 @@ namespace WAV_Osu_NetApi
 
             IRestResponse resp = client.Execute(req);
 
-            GatariResponse g_resp = JsonConvert.DeserializeObject<GatariResponse>(resp.Content);
+            GScoresResponse g_resp = JsonConvert.DeserializeObject<GScoresResponse>(resp.Content);
 
-            return g_resp.scores;
+            return g_resp.data;
         }
 
         public Beatmap RetrieveBeatmap(int id)
@@ -54,9 +54,9 @@ namespace WAV_Osu_NetApi
 
             IRestResponse resp = client.Execute(req);
 
-            GatariResponse g_resp = JsonConvert.DeserializeObject<GatariResponse>(resp.Content);
+            GBeatmapResponse g_resp = JsonConvert.DeserializeObject<GBeatmapResponse>(resp.Content);
 
-            return g_resp.scores;
+            return g_resp.data;
         }
     }
 }
