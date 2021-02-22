@@ -45,16 +45,24 @@ namespace WAV_Osu_NetApi
             return g_resp.data;
         }
 
-        public Beatmap RetrieveBeatmap(int id)
+        public Beatmap TryRetrieveBeatmap(int id)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"beatmaps/get")
                 .AddParameter("id", id);
 
             IRestResponse resp = client.Execute(req);
 
-            GBeatmapResponse g_resp = JsonConvert.DeserializeObject<GBeatmapResponse>(resp.Content);
+            GBeatmapResponse g_resp = null;
+            try
+            {
+                g_resp = JsonConvert.DeserializeObject<GBeatmapResponse>(resp.Content);
+            }
+            catch(Exception)
+            {
+                return null;
+            }
 
-            return g_resp.data;
+            return g_resp?.data;
         }
     }
 }
