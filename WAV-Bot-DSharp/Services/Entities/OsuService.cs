@@ -41,6 +41,8 @@ namespace WAV_Bot_DSharp.Services.Entities
         private BanchoApi api;
         private GatariApi gapi;
 
+        private Dictionary<int, DateTime> ignoreList;
+
         private BackgroundQueue queue;
 
         public OsuService(DiscordClient client, Settings settings, ILogger logger)
@@ -50,6 +52,8 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             recognizer = new Recognizer();
             webClient = new WebClient();
+
+            ignoreList = new Dictionary<int, DateTime>();
 
             api = new BanchoApi(settings.ClientId, settings.Secret);
             gapi = new GatariApi();
@@ -108,6 +112,20 @@ namespace WAV_Bot_DSharp.Services.Entities
             Beatmapset banchoBeatmapset = res.Item1;
             Beatmap banchoBeatmap = res.Item2;
 
+            // Ignore beatmap for several minutes
+            foreach (var kvp in ignoreList)
+                if (DateTime.Now - kvp.Value > TimeSpan.FromSeconds(20))
+                    ignoreList.Remove(kvp.Key);
+
+            if (ignoreList.ContainsKey(banchoBeatmap.id))
+            {
+                logger.Info($"Beatmap is in ignore list {banchoBeatmap.id}");
+                return;
+            }
+
+            ignoreList.Add(banchoBeatmap.id, DateTime.Now);
+
+            // Contruct message
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
 
             TimeSpan mapLen = TimeSpan.FromSeconds(banchoBeatmap.total_length);
@@ -115,19 +133,18 @@ namespace WAV_Bot_DSharp.Services.Entities
             DiscordEmoji banchoRankEmoji = Converters.OsuEmoji.BanchoRankStatus(banchoBeatmap.ranked, client);
             DiscordEmoji diffEmoji = Converters.OsuEmoji.DiffEmoji(banchoBeatmap.difficulty_rating, client);
 
+            // Check gatari
             GBeatmap gBeatmap = gapi.TryRetrieveBeatmap(banchoBeatmap.id);
-
+            
             StringBuilder embedMsg = new StringBuilder();
-            embedMsg.AppendLine($"{diffEmoji}  **__[{banchoBeatmap.version}]__**\n▸**Difficulty**: {banchoBeatmap.difficulty_rating}★\n▸**CS**: {banchoBeatmap.cs} ▸**HP**: {banchoBeatmap.drain} ▸**AR**: {banchoBeatmap.ar}\n\nBancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{banchoBeatmapset.id}#osu/{banchoBeatmap.id})\Last updated: {banchoBeatmap.last_updated}");
+            embedMsg.AppendLine($"{diffEmoji}  **__[{banchoBeatmap.version}]__**\n▸**Difficulty**: {banchoBeatmap.difficulty_rating}★\n▸**CS**: {banchoBeatmap.cs} ▸**HP**: {banchoBeatmap.drain} ▸**AR**: {banchoBeatmap.ar}\n\nBancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{banchoBeatmapset.id}#osu/{banchoBeatmap.id})\nLast updated: {banchoBeatmap.last_updated}");
             if (!(gBeatmap is null))
             {
                 DiscordEmoji gatariRankEmoji = Converters.OsuEmoji.GatariRankStatus(gBeatmap.ranked, client);
-                embedMsg.AppendLine($"\nGatari: {gatariRankEmoji} : [link](https://osu.gatari.pw/s/{gBeatmap.beatmapset_id}#osu/{gBeatmap.beatmap_id})\Last updated: {(new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(gBeatmap.ranking_data)}");
+                embedMsg.AppendLine($"\nGatari: {gatariRankEmoji} : [link](https://osu.gatari.pw/s/{gBeatmap.beatmapset_id}#osu/{gBeatmap.beatmap_id})\nLast updated: {(new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(gBeatmap.ranking_data)}");
             }
 
-            //https://osu.ppy.sh/beatmapsets/517474#osu/1114721
-            //https://osu.gatari.pw/s/517474#osu/1114721
-
+            // Construct embed
             embedBuilder.WithTitle($"{banchoRankEmoji}  {banchoBeatmapset.artist} – {banchoBeatmapset.title} by {banchoBeatmapset.creator}");
             embedBuilder.WithUrl(banchoBeatmap.url);
             embedBuilder.AddField($"Length: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)}, BPM: {banchoBeatmap.bpm}",
