@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WAV_Osu_NetApi.Gatari.Models.Enums
 {
-    public enum RankStatus
+    public enum GRankStatus
     {
         NotRanked = 0,
         RecentlyUpdated = 1,

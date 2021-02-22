@@ -16,7 +16,7 @@ namespace WAV_Osu_NetApi
 
         private RestClient client = new RestClient();
 
-        public List<Score> GetUserRecentScores(int user_id, bool include_fails, int limit)
+        public List<GScore> GetUserRecentScores(int user_id, bool include_fails, int limit)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"user/scores/recent")
                 .AddParameter("id", user_id)
@@ -31,7 +31,7 @@ namespace WAV_Osu_NetApi
             return g_resp.data;
         }
 
-        public List<Score> GetUserBestScores(int user_id, int limit)
+        public List<GScore> GetUserBestScores(int user_id, int limit)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"user/scores/best")
                 .AddParameter("id", user_id)
@@ -45,7 +45,7 @@ namespace WAV_Osu_NetApi
             return g_resp.data;
         }
 
-        public Beatmap TryRetrieveBeatmap(int id)
+        public GBeatmap TryRetrieveBeatmap(int id)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"beatmaps/get")
                 .AddParameter("id", id);

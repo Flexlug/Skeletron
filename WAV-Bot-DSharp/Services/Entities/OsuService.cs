@@ -37,6 +37,7 @@ namespace WAV_Bot_DSharp.Services.Entities
         private Recognizer recognizer;
 
         private BanchoApi api;
+        private GatariApi gapi;
 
         private BackgroundQueue queue;
 
@@ -49,6 +50,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             webClient = new WebClient();
 
             api = new BanchoApi(settings.ClientId, settings.Secret);
+            gapi = new GatariApi();
 
             queue = new BackgroundQueue();
 
@@ -110,6 +112,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             DiscordEmoji banchoRankEmoji = Converters.OsuEmoji.BanchoRankStatus(bm.ranked, client);
             DiscordEmoji diffEmoji = Converters.OsuEmoji.DiffEmoji(bm.difficulty_rating, client);
+            
             
 
 

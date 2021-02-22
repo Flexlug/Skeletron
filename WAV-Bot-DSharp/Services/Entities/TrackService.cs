@@ -54,8 +54,8 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private async void CheckRecentGatari()
         {
-            List<WAV_Osu_NetApi.Gatari.Models.Score> new_scores = new List<WAV_Osu_NetApi.Gatari.Models.Score>();
-            List<WAV_Osu_NetApi.Gatari.Models.Score> available_scores = api.GetUserRecentScores(21129, true, 3);
+            List<WAV_Osu_NetApi.Gatari.Models.GScore> new_scores = new List<WAV_Osu_NetApi.Gatari.Models.GScore>();
+            List<WAV_Osu_NetApi.Gatari.Models.GScore> available_scores = api.GetUserRecentScores(21129, true, 3);
 
             //Console.WriteLine(available_scores.Last().time);
 

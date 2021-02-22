@@ -2,10 +2,10 @@ using System;
 
 namespace WAV_Osu_NetApi.Gatari.Models
 { 
-
-    public class Score    {
+    public class GScore
+    {
         public double accuracy { get; set; } 
-        public Beatmap beatmap { get; set; } 
+        public GBeatmap beatmap { get; set; } 
         public int completed { get; set; } 
         public int count_100 { get; set; } 
         public int count_300 { get; set; } 
