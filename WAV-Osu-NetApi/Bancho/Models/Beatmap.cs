@@ -1,4 +1,5 @@
 using System;
+using WAV_Osu_NetApi.Bancho.Models.Enums;
 
 namespace WAV_Osu_NetApi.Bancho.Models
 {
@@ -21,7 +22,7 @@ namespace WAV_Osu_NetApi.Bancho.Models
         public int mode_int { get; set; }
         public int passcount { get; set; }
         public int playcount { get; set; }
-        public int ranked { get; set; }
+        public RankStatus ranked { get; set; }
         public string status { get; set; }
         public string url { get; set; }
     }

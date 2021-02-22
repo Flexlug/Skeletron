@@ -46,5 +46,17 @@ namespace WAV_Osu_NetApi
 
             return g_resp.scores;
         }
+
+        public Beatmap RetrieveBeatmap(int id)
+        {
+            IRestRequest req = new RestRequest(UrlBase + $@"beatmaps/get")
+                .AddParameter("id", id);
+
+            IRestResponse resp = client.Execute(req);
+
+            GatariResponse g_resp = JsonConvert.DeserializeObject<GatariResponse>(resp.Content);
+
+            return g_resp.scores;
+        }
     }
 }

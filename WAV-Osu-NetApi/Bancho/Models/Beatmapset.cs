@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
+using System.Collections.Generic;
+
+using WAV_Osu_NetApi.Bancho.Models.Enums;
 
 namespace WAV_Osu_NetApi.Bancho.Models
 {
@@ -16,7 +18,7 @@ namespace WAV_Osu_NetApi.Bancho.Models
         public DateTime last_updated { get; set; }
         public string legacy_thread_url { get; set; }
         public Nominations nominations { get; set; }
-        public int ranked { get; set; }
+        public RankStatus ranked { get; set; }
         public DateTime? ranked_date { get; set; }
         public string source { get; set; }
         public bool storyboard { get; set; }
