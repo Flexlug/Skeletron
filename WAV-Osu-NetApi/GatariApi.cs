@@ -66,7 +66,7 @@ namespace WAV_Osu_NetApi
             return g_resp?.data.FirstOrDefault();
         }
 
-        public GUser TryRetrieveUser(string user)
+        public bool TryGetUser(string user, out GUser guser)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"beatmaps/get")
                 .AddParameter("u", user);
@@ -80,10 +80,12 @@ namespace WAV_Osu_NetApi
             }
             catch (Exception)
             {
-                return null;
+                guser = null;
+                return false;
             }
 
-            return g_resp?.data.FirstOrDefault();
+            guser = g_resp?.data.FirstOrDefault();
+            return true;
         }
     }
 }
