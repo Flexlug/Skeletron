@@ -27,7 +27,7 @@ namespace WAV_Osu_NetApi
 
             IRestResponse resp = client.Execute(req);
 
-            GScoresResponse g_resp = JsonConvert.DeserializeObject<GScoresResponse>(resp.Content);
+            GatariResponse<List<GScore>> g_resp = JsonConvert.DeserializeObject<GatariResponse<List<GScore>>>(resp.Content);
 
             return g_resp.data;
         }
@@ -41,7 +41,7 @@ namespace WAV_Osu_NetApi
 
             IRestResponse resp = client.Execute(req);
 
-            GScoresResponse g_resp = JsonConvert.DeserializeObject<GScoresResponse>(resp.Content);
+            GatariResponse<List<GScore>> g_resp = JsonConvert.DeserializeObject<GatariResponse<List<GScore>>>(resp.Content);
 
             return g_resp.data;
         }
@@ -53,12 +53,32 @@ namespace WAV_Osu_NetApi
 
             IRestResponse resp = client.Execute(req);
 
-            GBeatmapResponse g_resp = null;
+            GatariResponse<List<GBeatmap>> g_resp = null;
             try
             {
-                g_resp = JsonConvert.DeserializeObject<GBeatmapResponse>(resp.Content);
+                g_resp = JsonConvert.DeserializeObject<GatariResponse<List<GBeatmap>>>(resp.Content);
             }
             catch(Exception)
+            {
+                return null;
+            }
+
+            return g_resp?.data.FirstOrDefault();
+        }
+
+        public GUser TryRetrieveUser(string user)
+        {
+            IRestRequest req = new RestRequest(UrlBase + $@"beatmaps/get")
+                .AddParameter("u", user);
+
+            IRestResponse resp = client.Execute(req);
+
+            GatariResponse<List<GUser>> g_resp = null;
+            try
+            {
+                g_resp = JsonConvert.DeserializeObject<GatariResponse<List<GUser>>>(resp.Content);
+            }
+            catch (Exception)
             {
                 return null;
             }

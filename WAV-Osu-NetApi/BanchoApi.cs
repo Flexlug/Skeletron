@@ -201,9 +201,11 @@ namespace WAV_Osu_NetApi
                 .AddHeader(@"Authorization", $@"Bearer {Token}");
 
             IRestResponse resp = null;
+            User userInfo;
             try
             {
                 resp = client.Execute(req);
+                userInfo = JsonConvert.DeserializeObject<User>(resp.Content);
             }
             catch (Exception)
             {
@@ -211,7 +213,6 @@ namespace WAV_Osu_NetApi
                 return false;
             }
 
-            User userInfo = JsonConvert.DeserializeObject<User>(resp.Content);
 
             user = userInfo;
             return true;
