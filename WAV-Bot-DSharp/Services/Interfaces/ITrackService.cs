@@ -22,7 +22,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// </summary>
         /// <param name="u">Gatari user</param>
         /// <returns></returns>
-        public Task RemoveTrackRecent(GUser u);
+        public Task<bool> RemoveTrackRecent(GUser u);
 
         /// <summary>
         /// Start user tracking
@@ -36,6 +36,6 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// </summary>
         /// <param name="u">Bancho user</param>
         /// <returns></returns>
-        public Task RemoveTrackRecent(User u);
+        public Task<bool> RemoveTrackRecent(User u);
     }
 }

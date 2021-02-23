@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Text;
 using System.Timers;
+using System.Threading.Tasks;
 using System.Collections.Generic;
-
-using WAV_Bot_DSharp.Services.Structures;
-
-using WAV_Osu_NetApi;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
+using WAV_Osu_NetApi;
+using WAV_Osu_NetApi.Gatari.Models;
+using WAV_Osu_NetApi.Bancho.Models;
+
 using WAV_Bot_DSharp.Services.Interfaces;
+using WAV_Bot_DSharp.Services.Structures;
+using WAV_Bot_DSharp.Threading;
 
 using NLog;
-using WAV_Osu_NetApi.Gatari.Models;
-using System.Threading.Tasks;
-using WAV_Osu_NetApi.Bancho.Models;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -32,17 +32,24 @@ namespace WAV_Bot_DSharp.Services.Entities
         private DiscordClient client;
         private DiscordChannel gatariRecentChannel;
 
+        private BackgroundQueue queue;
+
+        private TrackedUserContext trackedUsers;
+
         GatariApi api = new GatariApi();
         DateTime last_score = DateTime.Now - TimeSpan.FromHours(2);
 
-        public TrackService(DiscordClient client, ILogger logger)
+        public TrackService(DiscordClient client, ILogger logger, TrackedUserContext trackedUsers)
         {
             timer = new Timer(10000);
             timer.Elapsed += Check;
             timer.Start();
 
+            queue = new BackgroundQueue();
+
             this.client = client;
             this.logger = logger;
+            this.trackedUsers = trackedUsers;
 
             gatariRecentChannel = client.GetChannelAsync(800124240908648469).Result;
             logger.Info($"Tracker gatari online! got channel: {gatariRecentChannel.Name}");
@@ -87,12 +94,17 @@ namespace WAV_Bot_DSharp.Services.Entities
         }
 
 
-        public Task AddTrack(User u)
+        public Task AddTrackRecent(GUser u)
         {
             throw new NotImplementedException();
         }
 
-        public Task AddTrackRecent(GUser u)
+        public Task<bool> RemoveTrackRecent(GUser u)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> RemoveTrackRecent(User u)
         {
             throw new NotImplementedException();
         }
@@ -101,16 +113,5 @@ namespace WAV_Bot_DSharp.Services.Entities
         {
             throw new NotImplementedException();
         }
-
-        public Task RemoveTrackRecent(GUser u)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RemoveTrackRecent(User u)
-        {
-            throw new NotImplementedException();
-        }
-
     }
 }
