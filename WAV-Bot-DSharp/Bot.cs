@@ -69,7 +69,7 @@ namespace WAV_Bot_DSharp
                 .AddSingleton(Settings)
                 .AddSingleton<ILogger>(Logger)
                 .AddSingleton(Discord)
-                .AddSingleton<IOsuService, OsuService>()
+                .AddSingleton<IRecognizerService, RecognizertService>()
                 //.AddSingleton<IActivityService, ActivityService>()
                 //.AddSingleton<ITrackService, TrackService>()
                 .BuildServiceProvider();

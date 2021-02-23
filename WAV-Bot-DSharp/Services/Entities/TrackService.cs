@@ -48,21 +48,16 @@ namespace WAV_Bot_DSharp.Services.Entities
             logger.Info($"Tracker gatari online! got channel: {gatariRecentChannel.Name}");
         }
 
-        public Task AddTrack(User u)
-        {
-            throw new NotImplementedException();
-        }
-
         private void Check(object sender, ElapsedEventArgs e)
         {
-            logger.Info("Checking scores...");
+            logger.Debug("Checking scores...");
             CheckRecentGatari();
         }
 
         private async void CheckRecentGatari()
         {
-            List<WAV_Osu_NetApi.Gatari.Models.GScore> new_scores = new List<WAV_Osu_NetApi.Gatari.Models.GScore>();
-            List<WAV_Osu_NetApi.Gatari.Models.GScore> available_scores = api.GetUserRecentScores(21129, true, 3);
+            List<GScore> new_scores = new List<GScore>();
+            List<GScore> available_scores = api.GetUserRecentScores(21129, true, 3);
 
             //Console.WriteLine(available_scores.Last().time);
 
@@ -80,7 +75,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 Console.WriteLine();
                 foreach (var score in new_scores)
                 {
-                    logger.Info("Found one! Sending to channel...");
+                    logger.Debug("Found one! Sending to channel...");
                     DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder();
                     await client.SendMessageAsync(gatariRecentChannel,
                         embed: discordEmbed.AddField("New score: ", $"▸ Title: {score.beatmap.song_name}\n▸ {score.ranking}, {score.accuracy}%, {score.pp}, {score.count_300}, {score.count_100}, {score.count_50}, {score.count_miss}")
@@ -90,5 +85,32 @@ namespace WAV_Bot_DSharp.Services.Entities
                 last_score = latest_score;
             }
         }
+
+
+        public Task AddTrack(User u)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddTrackRecent(GUser u)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddTrackRecent(User u)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveTrackRecent(GUser u)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveTrackRecent(User u)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

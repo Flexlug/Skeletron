@@ -28,7 +28,7 @@ namespace WAV_Bot_DSharp.Services.Entities
     /// <summary>
     /// Реализация сервиса, который будет отслеживать скриншоты и скоры из osu!
     /// </summary>
-    public class OsuService : IOsuService
+    public class RecognizertService : IRecognizerService
     {
         private DiscordEmoji[] _pollEmojiCache;
         private DiscordClient client;
@@ -45,7 +45,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private BackgroundQueue queue;
 
-        public OsuService(DiscordClient client, Settings settings, ILogger logger)
+        public RecognizertService(DiscordClient client, Settings settings, ILogger logger)
         {
             this.client = client;
             this.logger = logger;

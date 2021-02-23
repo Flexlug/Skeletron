@@ -15,9 +15,9 @@ namespace WAV_Bot_DSharp.Commands
     /// </summary>
     public class OsuCommands : BaseCommandModule
     {
-        IOsuService osu;
+        IRecognizerService osu;
 
-        public OsuCommands(IOsuService osu)
+        public OsuCommands(IRecognizerService osu)
         {
             this.osu = osu;
         }
