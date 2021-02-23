@@ -16,6 +16,8 @@ using WAV_Bot_DSharp.Services.Interfaces;
 
 using NLog;
 using WAV_Osu_NetApi.Gatari.Models;
+using System.Threading.Tasks;
+using WAV_Osu_NetApi.Bancho.Models;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -44,6 +46,11 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             gatariRecentChannel = client.GetChannelAsync(800124240908648469).Result;
             logger.Info($"Tracker gatari online! got channel: {gatariRecentChannel.Name}");
+        }
+
+        public Task AddTrack(User u)
+        {
+            throw new NotImplementedException();
         }
 
         private void Check(object sender, ElapsedEventArgs e)

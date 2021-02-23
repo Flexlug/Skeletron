@@ -21,11 +21,31 @@ namespace WAV_Bot_DSharp.Services.Structures
         /// <summary>
         /// Bancho id
         /// </summary>
-        public int? banchoId { get; set; }
+        public int? BanchoId { get; set; }
+
+        /// <summary>
+        /// If bancho's user recent scores are being tracked
+        /// </summary>
+        public bool BanchoTrackRecent { get; set; }
+
+        /// <summary>
+        /// If bancho's user top scores are being tracked
+        /// </summary>
+        public bool BanchoTrackTop { get; set; }
 
         /// <summary>
         /// Gatari id
         /// </summary>
-        public int? gatariId { get; set; }
+        public int? GatariId { get; set; }
+
+        /// <summary>
+        /// If gatari's user recent scores are being tracked
+        /// </summary>
+        public bool GatariTrackRecent { get; set; }
+
+        /// <summary>
+        /// If gatari's user top scores are being tracked
+        /// </summary>
+        public bool GatariTrackTop { get; set; }
     }
 }
