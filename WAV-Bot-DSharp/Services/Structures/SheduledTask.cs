@@ -12,15 +12,17 @@ namespace WAV_Bot_DSharp.Services.Structures
         private TimeSpan Interval { get; set; }
         private DateTime LastInvokeTime { get; set; }
 
+        public bool Repeat { get; set; }
+
         /// <summary>
         /// Задача, которая должна выполниться
         /// </summary>
-        public event Invoke OnInvoke;
-        public delegate void Invoke();
+        public Action Action;
 
-        public SheduledTask(TimeSpan interval)
+        public SheduledTask(TimeSpan interval, bool repeat)
         {
             this.Interval = interval;
+            this.Repeat = repeat;
         }
 
         /// <summary>
@@ -34,10 +36,5 @@ namespace WAV_Bot_DSharp.Services.Structures
             else
                 return false;
         }
-
-        /// <summary>
-        /// Запустить задачу
-        /// </summary>
-        public void InvokeTask() => OnInvoke.Invoke();
     }
 }
