@@ -15,27 +15,27 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// </summary>
         /// <param name="u">Gatari user</param>
         /// <returns></returns>
-        public Task AddTrackRecent(GUser u);
+        public Task AddTrackRecentAsync(GUser u);
 
         /// <summary>
         /// Stop user tracking
         /// </summary>
         /// <param name="u">Gatari user</param>
         /// <returns></returns>
-        public Task<bool> RemoveTrackRecent(GUser u);
+        public Task<bool> RemoveTrackRecentAsync(GUser u);
 
         /// <summary>
         /// Start user tracking
         /// </summary>
         /// <param name="u">Bancho user</param>
         /// <returns></returns>
-        public Task AddTrackRecent(User u);
+        public Task AddTrackRecentAsync(User u);
 
         /// <summary>
         /// Stop user tracking
         /// </summary>
         /// <param name="u">Bancho user</param>
         /// <returns></returns>
-        public Task<bool> RemoveTrackRecent(User u);
+        public Task<bool> RemoveTrackRecentAsync(User u);
     }
 }

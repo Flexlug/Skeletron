@@ -39,7 +39,8 @@ namespace WAV_Bot_DSharp
             Discord = new DiscordClient(new DiscordConfiguration
             {
                 Token = Settings.Token,
-                TokenType = TokenType.Bot
+                TokenType = TokenType.Bot,
+                MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Information
             });
 
             // Activating Interactivity module for the DiscordClient
@@ -66,12 +67,13 @@ namespace WAV_Bot_DSharp
             Logger.Debug("Configuring services");
             Services = new ServiceCollection()
                 .AddDbContext<UsersContext>()
+                .AddDbContext<TrackedUserContext>()
                 .AddSingleton(Settings)
                 .AddSingleton<ILogger>(Logger)
                 .AddSingleton(Discord)
-                .AddSingleton<IRecognizerService, RecognizertService>()
+                .AddSingleton<IRecognizerService, RecognizerService>()
                 //.AddSingleton<IActivityService, ActivityService>()
-                //.AddSingleton<ITrackService, TrackService>()
+                .AddSingleton<ITrackService, TrackService>()
                 .BuildServiceProvider();
         }
 
@@ -92,7 +94,7 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<OsuCommands>();
             //CommandsNext.RegisterCommands<VoiceCommands>();
             //CommandsNext.RegisterCommands<ActivityCommands>();
-            //CommandsNext.RegisterCommands<TrackCommands>();
+            CommandsNext.RegisterCommands<TrackCommands>();
 
             // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;

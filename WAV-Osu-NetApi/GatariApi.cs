@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Linq;
 using System.Collections.Generic;
 
 using RestSharp;
@@ -7,7 +8,7 @@ using RestSharp;
 using Newtonsoft.Json;
 
 using WAV_Osu_NetApi.Gatari.Models;
-using System.Linq;
+using WAV_Osu_NetApi.Gatari.Models.Responses;
 
 namespace WAV_Osu_NetApi
 {
@@ -17,19 +18,20 @@ namespace WAV_Osu_NetApi
 
         private RestClient client = new RestClient();
 
-        public List<GScore> GetUserRecentScores(int user_id, bool include_fails, int limit)
+        public List<GScore> GetUserRecentScores(int user_id, int mode, int limit, bool include_fails)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"user/scores/recent")
                 .AddParameter("id", user_id)
+                .AddParameter("mode", mode)
                 .AddParameter("p", 1)
                 .AddParameter("l", limit)
                 .AddParameter("f", Convert.ToInt32(include_fails));
 
             IRestResponse resp = client.Execute(req);
 
-            GatariResponse<List<GScore>> g_resp = JsonConvert.DeserializeObject<GatariResponse<List<GScore>>>(resp.Content);
+            GScoresResponse g_resp = JsonConvert.DeserializeObject<GScoresResponse>(resp.Content);
 
-            return g_resp.data;
+            return g_resp.scores;
         }
 
         public List<GScore> GetUserBestScores(int user_id, int limit)
@@ -41,9 +43,9 @@ namespace WAV_Osu_NetApi
 
             IRestResponse resp = client.Execute(req);
 
-            GatariResponse<List<GScore>> g_resp = JsonConvert.DeserializeObject<GatariResponse<List<GScore>>>(resp.Content);
+            GScoresResponse g_resp = JsonConvert.DeserializeObject<GScoresResponse>(resp.Content);
 
-            return g_resp.data;
+            return g_resp.scores;
         }
 
         public GBeatmap TryRetrieveBeatmap(int id)
@@ -53,10 +55,13 @@ namespace WAV_Osu_NetApi
 
             IRestResponse resp = client.Execute(req);
 
-            GatariResponse<List<GBeatmap>> g_resp = null;
+            GBeatmapResponse g_resp = null;
             try
             {
-                g_resp = JsonConvert.DeserializeObject<GatariResponse<List<GBeatmap>>>(resp.Content);
+                g_resp = JsonConvert.DeserializeObject<GBeatmapResponse>(resp.Content);
+
+                if (g_resp.code != 200)
+                    return null;
             }
             catch(Exception)
             {
@@ -66,17 +71,50 @@ namespace WAV_Osu_NetApi
             return g_resp?.data.FirstOrDefault();
         }
 
-        public bool TryGetUser(string user, out GUser guser)
+        public bool TryGetUser(string user, ref GUser guser)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"beatmaps/get")
+            IRestRequest req = new RestRequest(UrlBase + $@"users/get")
                 .AddParameter("u", user);
 
             IRestResponse resp = client.Execute(req);
 
-            GatariResponse<List<GUser>> g_resp = null;
+            GUserResponse g_resp = null;
             try
             {
-                g_resp = JsonConvert.DeserializeObject<GatariResponse<List<GUser>>>(resp.Content);
+                g_resp = JsonConvert.DeserializeObject<GUserResponse>(resp.Content);
+
+                if (g_resp.code != 200)
+                    return false;
+
+                if (g_resp.users is null || g_resp.users.Count == 0)
+                    return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            guser = g_resp?.users.FirstOrDefault();
+            return true;
+        }
+
+        public bool TryGetUser(int user, ref GUser guser)
+        {
+            IRestRequest req = new RestRequest(UrlBase + $@"users/get")
+                .AddParameter("u", user);
+
+            IRestResponse resp = client.Execute(req);
+
+            GUserResponse g_resp = null;
+            try
+            {
+                g_resp = JsonConvert.DeserializeObject<GUserResponse>(resp.Content);
+
+                if (g_resp.code != 200)
+                    return false;
+
+                if (g_resp.users is null || g_resp.users.Count == 0)
+                    return false;
             }
             catch (Exception)
             {
@@ -84,7 +122,7 @@ namespace WAV_Osu_NetApi
                 return false;
             }
 
-            guser = g_resp?.data.FirstOrDefault();
+            guser = g_resp?.users.FirstOrDefault();
             return true;
         }
     }

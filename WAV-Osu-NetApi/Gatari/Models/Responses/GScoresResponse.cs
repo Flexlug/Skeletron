@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace WAV_Osu_NetApi.Gatari.Models
+namespace WAV_Osu_NetApi.Gatari.Models.Responses
 {
-    public class GatariResponse<T>
+    public class GScoresResponse
     {
         public int code { get; set; }
         public int count { get; set; }
-        public T data { get; set; }
+        public List<GScore> scores { get; set; }
     }
 }

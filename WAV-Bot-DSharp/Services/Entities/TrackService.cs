@@ -18,6 +18,8 @@ using WAV_Bot_DSharp.Services.Structures;
 using WAV_Bot_DSharp.Threading;
 
 using NLog;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -31,13 +33,13 @@ namespace WAV_Bot_DSharp.Services.Entities
         private Timer timer;
         private DiscordClient client;
         private DiscordChannel gatariRecentChannel;
+        private int userIterator = 0;
 
         private BackgroundQueue queue;
 
-        private TrackedUserContext trackedUsers;
+        private TrackedUserContext trackedUsersDb;
 
-        GatariApi api = new GatariApi();
-        DateTime last_score = DateTime.Now - TimeSpan.FromHours(2);
+        GatariApi gapi = new GatariApi();
 
         public TrackService(DiscordClient client, ILogger logger, TrackedUserContext trackedUsers)
         {
@@ -49,28 +51,59 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             this.client = client;
             this.logger = logger;
-            this.trackedUsers = trackedUsers;
+            this.trackedUsersDb = trackedUsers;
 
             gatariRecentChannel = client.GetChannelAsync(800124240908648469).Result;
-            logger.Info($"Tracker gatari online! got channel: {gatariRecentChannel.Name}");
+            logger.Info($"Gatari tracker online! got channel: {gatariRecentChannel.Name}");
         }
 
         private void Check(object sender, ElapsedEventArgs e)
         {
-            logger.Debug("Checking scores...");
+            //logger.Debug("Checking scores...");
             CheckRecentGatari();
         }
 
         private async void CheckRecentGatari()
         {
+            TrackedUser user = NextGatariUser(ref userIterator);
+            if (user is null)
+                return;
+
+            logger.Trace(user.GatariId);
+
+            GUser guser = null;
+            if (!gapi.TryGetUser((int)user.GatariId, ref guser))
+            {
+                logger.Warn($"Couldn't find user {user.GatariId} on Gatari, but the record exists in database!");
+                return;
+            }
+
+            logger.Trace(guser.username);
+
+            userIterator++;
+
             List<GScore> new_scores = new List<GScore>();
-            List<GScore> available_scores = api.GetUserRecentScores(21129, true, 3);
+            List<GScore> available_scores = gapi.GetUserRecentScores((int)user.GatariId, 0, 3, false);
+            List<GScore> available_mania_scores = gapi.GetUserRecentScores((int)user.GatariId, 3, 3, false);
 
-            //Console.WriteLine(available_scores.Last().time);
+            available_scores.AddRange(available_mania_scores);
 
-            DateTime latest_score = last_score;
+            DateTime? latest_score = user.GatariRecentLastAt;
+
+            DateTime latest_score_avaliable_time = available_scores.Select(x => x.time)
+                                               .OrderByDescending(x => x)
+                                               .First() + TimeSpan.FromSeconds(10);
+
+            logger.Trace($"{latest_score_avaliable_time} : {latest_score}");
+
+            if (latest_score is null)
+            {
+                latest_score = latest_score_avaliable_time;
+                UpdateGatariRecentTime(user.Id, latest_score);
+            }
+
             foreach (var score in available_scores)
-                if (score.time > last_score)
+                if (score.time > latest_score)
                 {
                     new_scores.Add(score);
                     if (latest_score < score.time)
@@ -82,34 +115,172 @@ namespace WAV_Bot_DSharp.Services.Entities
                 Console.WriteLine();
                 foreach (var score in new_scores)
                 {
-                    logger.Debug("Found one! Sending to channel...");
-                    DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder();
-                    await client.SendMessageAsync(gatariRecentChannel,
-                        embed: discordEmbed.AddField("New score: ", $"▸ Title: {score.beatmap.song_name}\n▸ {score.ranking}, {score.accuracy}%, {score.pp}, {score.count_300}, {score.count_100}, {score.count_50}, {score.count_miss}")
-                                           .Build());
-                }
+                    TimeSpan mapLen = TimeSpan.FromSeconds(score.beatmap.hit_length);
 
-                last_score = latest_score;
+                    logger.Trace("Found one! Sending to channel...");
+                    DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder();
+                    discordEmbed.WithAuthor(guser.username, $"https://osu.gatari.pw/u/{guser.id}", $"https://a.gatari.pw/{guser.id}");
+                    discordEmbed.WithThumbnail($"https://assets.ppy.sh/beatmaps/{score.beatmap.beatmapset_id}/covers/list@2x.jpg");
+
+                    DiscordEmoji rankEmoji = Converters.OsuUtils.RankingEmoji(score.ranking, client);
+
+                    StringBuilder embedMessage = new StringBuilder();
+                    embedMessage.AppendLine($"[{score.beatmap.song_name}](https://osu.gatari.pw/s/{score.beatmap.beatmapset_id}#osu/{score.beatmap.beatmap_id})\n▸ **Difficulty**: {score.beatmap.difficulty} ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {Converters.OsuUtils.ModsToString(score.mods)}");
+                    embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy:##0.00}%** ▸ **{score.pp}** {Converters.OsuUtils.PPEmoji(client)} ▸ {score.max_combo}x/{score.beatmap.fc}x");
+                    
+                    //std
+                    if (score.play_mode == 0)
+                    {
+                        embedMessage.AppendLine($"▸ [{score.count_300} {Converters.OsuUtils.Hit300Emoji(client)}, {score.count_100} {Converters.OsuUtils.Hit100Emoji(client)}, {score.count_50} {Converters.OsuUtils.Hit50Emoji(client)}, {score.count_miss} {Converters.OsuUtils.MissEmoji(client)}]");
+                        discordEmbed.AddField($"New recent score osu!standard", embedMessage.ToString());
+                    }
+
+                    if (score.play_mode == 3)
+                    {
+                        embedMessage.AppendLine($"▸ [{score.count_300} {Converters.OsuUtils.Hit300Emoji(client)}, {score.count_katu} {Converters.OsuUtils.Hit200Emoji(client)}, {score.count_100} {Converters.OsuUtils.Hit100Emoji(client)}, {score.count_50} {Converters.OsuUtils.Hit50Emoji(client)}, {score.count_miss} {Converters.OsuUtils.MissEmoji(client)}]");
+                        discordEmbed.AddField($"New recent score osu!mania", embedMessage.ToString());
+                    }
+
+                    discordEmbed.WithFooter($"Played at: {score.time}");
+
+                    UpdateGatariRecentTime(user.Id, latest_score_avaliable_time);
+
+                    await client.SendMessageAsync(gatariRecentChannel,
+                        embed: discordEmbed.Build());
+                }
             }
         }
 
+        private void UpdateGatariRecentTime(ulong id, DateTime? dateTime)
+        {
+            try
+            {
+                using (var transaction = trackedUsersDb.Database.BeginTransaction())
+                {
+                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.Id == id);
 
-        public Task AddTrackRecent(GUser u)
+                    user.GatariRecentLastAt = dateTime;
+
+                    trackedUsersDb.SaveChanges();
+
+                    transaction.Commit();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error on UpdateGatariRecentTime {e.Message}\n{e.StackTrace}");
+            }
+        }
+
+        private TrackedUser NextGatariUser(ref int iter)
+        {
+            try
+            {
+                using (var transaction = trackedUsersDb.Database.BeginTransaction())
+                {
+                    List<TrackedUser> users = trackedUsersDb.TrackedUsers.Select(x => x)
+                                                                  .Where(x => x.GatariId != null && x.GatariTrackRecent)
+                                                                  .AsNoTracking()
+                                                                  .ToList();
+
+                    if (users.Count == 0)
+                        return null;
+
+                    if (iter >= users.Count) 
+                    {
+                        iter = 0;
+                    }
+
+                    transaction.Commit();
+                    return users[iter];
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error on NextGatariUser {e.Message}\n{e.StackTrace}");
+                return null;
+            }
+        }
+
+        private void AddTrackRecent(GUser u)
+        {
+            try
+            {
+                using (var transaction = trackedUsersDb.Database.BeginTransaction())
+                {
+                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.GatariId == u.id);
+
+                    if (user is null)
+                    {
+                        user = new TrackedUser()
+                        {
+                            BanchoId = null,
+                            BanchoTrackRecent = false,
+                            BanchoRecentLastAt = null,
+                            BanchoTopLastAt = null,
+                            BanchoTrackTop = false,
+                            GatariId = u.id,
+                            GatariTrackRecent = true,
+                            GatariRecentLastAt = DateTime.Now,
+                            GatariTrackTop = false,
+                            GatariTopLastAt = null
+                        };
+
+                        trackedUsersDb.TrackedUsers.Add(user);
+                    }
+                    else
+                    {
+                        user.GatariTrackRecent = true;
+                        user.GatariRecentLastAt = null;
+                    }
+
+                    trackedUsersDb.SaveChanges();
+                    transaction.Commit();
+                }
+            }
+            catch(Exception e)
+            {
+                logger.Error($"Error on AddTrackRecent {e.Message}\n{e.StackTrace}");
+            }
+        }
+
+        private bool RemoveTrackRecent(GUser u)
+        {
+            try
+            {
+                using (var transaction = trackedUsersDb.Database.BeginTransaction())
+                {
+                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.GatariId == u.id);
+
+                    if (user is null)
+                        return false;
+
+                    user.GatariTrackRecent = false;
+                    user.GatariRecentLastAt = null;
+                    trackedUsersDb.SaveChanges();
+
+                    transaction.Commit();
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error on RemoveTrackRecent {e.Message}\n{e.StackTrace}");
+                return false;
+            }
+        }
+
+        public Task AddTrackRecentAsync(GUser u) => queue.QueueTask(() => AddTrackRecent(u));
+        public Task<bool> RemoveTrackRecentAsync(GUser u) => queue.QueueTask(() => RemoveTrackRecent(u));
+
+
+        public Task<bool> RemoveTrackRecentAsync(User u)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> RemoveTrackRecent(GUser u)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> RemoveTrackRecent(User u)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddTrackRecent(User u)
+        public Task AddTrackRecentAsync(User u)
         {
             throw new NotImplementedException();
         }

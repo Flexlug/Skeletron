@@ -36,14 +36,14 @@ namespace WAV_Bot_DSharp.Commands
         public async Task TrackGatariRecent(CommandContext commandContext,
             [Description("Gatari username"), RemainingText] string nickname)
         {
-            GUser guser;
-            if (!gapi.TryGetUser(nickname, out guser))
+            GUser guser = null;
+            if (!gapi.TryGetUser(nickname, ref guser))
             {
                 await commandContext.RespondAsync($"Couldn't find user {nickname} on gatari.");
                 return;
             }
 
-            await tracking.AddTrackRecent(guser);
+            await tracking.AddTrackRecentAsync(guser);
             await commandContext.RespondAsync($"User's {(guser is null ? "" : $"[{guser.abbr}]")} {guser.username} recent scores are being tracked.");
         }
 
@@ -51,20 +51,20 @@ namespace WAV_Bot_DSharp.Commands
         public async Task StopTrackGatariTop(CommandContext commandContext,
             [Description("Gatari username"), RemainingText] string nickname)
         {
-            GUser guser;
-            if (!gapi.TryGetUser(nickname, out guser))
+            GUser guser = null;
+            if (!gapi.TryGetUser(nickname, ref guser))
             {
                 await commandContext.RespondAsync($"Couldn't find user {nickname} on gatari.");
                 return;
             }
 
-            if (!await tracking.RemoveTrackRecent(guser))
+            if (!await tracking.RemoveTrackRecentAsync(guser))
             {
                 await commandContext.RespondAsync($"Couldn't delete user. Maybe this user is not being tracked.");
                 return;
             }
 
-            await commandContext.RespondAsync($"User's {(guser is null ? "" : $"[{guser.abbr}]")} {guser.username} recent scores are being tracked.");
+            await commandContext.RespondAsync($"Stop tracking {(guser is null ? "" : $"[{guser.abbr}]")} {guser.username}.");
         }
     }
 }

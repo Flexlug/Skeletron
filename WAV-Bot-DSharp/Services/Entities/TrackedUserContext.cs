@@ -10,7 +10,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 {
     public class TrackedUserContext : DbContext
     {
-        public DbSet<TrackedUser> Users { get; set; }
+        public DbSet<TrackedUser> TrackedUsers { get; set; }
 
         public TrackedUserContext()
         {

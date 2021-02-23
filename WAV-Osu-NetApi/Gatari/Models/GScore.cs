@@ -1,4 +1,5 @@
 using System;
+using WAV_Osu_NetApi.Bancho.Models.Enums;
 
 namespace WAV_Osu_NetApi.Gatari.Models
 { 
@@ -17,7 +18,7 @@ namespace WAV_Osu_NetApi.Gatari.Models
         public int id { get; set; } 
         public bool isfav { get; set; } 
         public int max_combo { get; set; } 
-        public int mods { get; set; } 
+        public Mods mods { get; set; } 
         public int play_mode { get; set; } 
         public double pp { get; set; } 
         public string ranking { get; set; } 

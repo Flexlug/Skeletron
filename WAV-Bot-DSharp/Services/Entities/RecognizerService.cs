@@ -28,7 +28,7 @@ namespace WAV_Bot_DSharp.Services.Entities
     /// <summary>
     /// Реализация сервиса, который будет отслеживать скриншоты и скоры из osu!
     /// </summary>
-    public class RecognizertService : IRecognizerService
+    public class RecognizerService : IRecognizerService
     {
         private DiscordEmoji[] _pollEmojiCache;
         private DiscordClient client;
@@ -45,7 +45,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private BackgroundQueue queue;
 
-        public RecognizertService(DiscordClient client, Settings settings, ILogger logger)
+        public RecognizerService(DiscordClient client, Settings settings, ILogger logger)
         {
             this.client = client;
             this.logger = logger;
@@ -130,8 +130,8 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             TimeSpan mapLen = TimeSpan.FromSeconds(banchoBeatmap.total_length);
 
-            DiscordEmoji banchoRankEmoji = Converters.OsuEmoji.BanchoRankStatus(banchoBeatmap.ranked, client);
-            DiscordEmoji diffEmoji = Converters.OsuEmoji.DiffEmoji(banchoBeatmap.difficulty_rating, client);
+            DiscordEmoji banchoRankEmoji = Converters.OsuUtils.BanchoRankStatus(banchoBeatmap.ranked, client);
+            DiscordEmoji diffEmoji = Converters.OsuUtils.DiffEmoji(banchoBeatmap.difficulty_rating, client);
 
             // Check gatari
             GBeatmap gBeatmap = gapi.TryRetrieveBeatmap(banchoBeatmap.id);
@@ -140,8 +140,8 @@ namespace WAV_Bot_DSharp.Services.Entities
             embedMsg.AppendLine($"{diffEmoji}  **__[{banchoBeatmap.version}]__**\n▸**Difficulty**: {banchoBeatmap.difficulty_rating}★\n▸**CS**: {banchoBeatmap.cs} ▸**HP**: {banchoBeatmap.drain} ▸**AR**: {banchoBeatmap.ar}\n\nBancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{banchoBeatmapset.id}#osu/{banchoBeatmap.id})\nLast updated: {banchoBeatmap.last_updated}");
             if (!(gBeatmap is null))
             {
-                DiscordEmoji gatariRankEmoji = Converters.OsuEmoji.GatariRankStatus(gBeatmap.ranked, client);
-                embedMsg.AppendLine($"\nGatari: {gatariRankEmoji} : [link](https://osu.gatari.pw/s/{gBeatmap.beatmapset_id}#osu/{gBeatmap.beatmap_id})\nLast updated: {(new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(gBeatmap.ranking_data)}");
+                DiscordEmoji gatariRankEmoji = Converters.OsuUtils.GatariRankStatus(gBeatmap.ranked, client);
+                embedMsg.AppendLine($"\nGatari: {gatariRankEmoji} : [link](https://osu.gatari.pw/s/{gBeatmap.beatmapset_id}#osu/{gBeatmap.beatmap_id})\nLast updated: {(gBeatmap.ranking_data != 0 ? new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(gBeatmap.ranking_data).ToString() : "")}");
             }
 
             // Construct embed

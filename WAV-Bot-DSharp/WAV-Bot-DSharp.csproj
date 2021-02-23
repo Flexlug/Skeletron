@@ -26,6 +26,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Services\Entities\TrackService.cs~RF9cb4dc0.TMP" />
+    <None Remove="Services\Entities\TrackService.cs~RF9dffd96.TMP" />
+    <None Remove="trackedUsers.db-shm" />
+    <None Remove="trackedUsers.db-wal" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DSharpPlus" Version="4.0.0-rc1" />
     <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-rc1" />
     <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-rc1" />

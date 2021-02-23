@@ -14,11 +14,6 @@ namespace WAV_Bot_DSharp.Services.Structures
         public ulong Id { get; set; }
 
         /// <summary>
-        /// Uid пользователя
-        /// </summary>
-        public ulong Uid { get; set; }
-
-        /// <summary>
         /// Bancho id
         /// </summary>
         public int? BanchoId { get; set; }
@@ -29,9 +24,19 @@ namespace WAV_Bot_DSharp.Services.Structures
         public bool BanchoTrackRecent { get; set; }
 
         /// <summary>
+        /// Last time recent score was set
+        /// </summary>
+        public DateTime? BanchoRecentLastAt { get; set; }
+
+        /// <summary>
         /// If bancho's user top scores are being tracked
         /// </summary>
         public bool BanchoTrackTop { get; set; }
+
+        /// <summary>
+        /// Last time top score was set
+        /// </summary>
+        public DateTime? BanchoTopLastAt { get; set; }
 
         /// <summary>
         /// Gatari id
@@ -44,8 +49,18 @@ namespace WAV_Bot_DSharp.Services.Structures
         public bool GatariTrackRecent { get; set; }
 
         /// <summary>
+        /// Last time recent score was set
+        /// </summary>
+        public DateTime? GatariRecentLastAt { get; set; }
+
+        /// <summary>
         /// If gatari's user top scores are being tracked
         /// </summary>
         public bool GatariTrackTop { get; set; }
+
+        /// <summary>
+        /// Last time top score was set
+        /// </summary>
+        public DateTime? GatariTopLastAt { get; set; }
     }
 }
