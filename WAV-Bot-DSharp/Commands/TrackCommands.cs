@@ -20,6 +20,7 @@ namespace WAV_Bot_DSharp.Commands
     /// Class with demonstration of possibilities.
     /// Disclaimer: The code shouldn't be used exactly this way as it is, it's just there to give you some ideas.
     /// </summary>
+    [RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
     public class TrackCommands : BaseCommandModule
     {
         private ITrackService tracking;
