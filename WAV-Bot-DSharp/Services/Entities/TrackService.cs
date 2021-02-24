@@ -133,13 +133,13 @@ namespace WAV_Bot_DSharp.Services.Entities
                     //std
                     if (score.play_mode == 0)
                     {
-                        embedMessage.AppendLine($"▸ [{score.count_300} {Converters.OsuUtils.Hit300Emoji(client)}, {score.count_100} {Converters.OsuUtils.Hit100Emoji(client)}, {score.count_50} {Converters.OsuUtils.Hit50Emoji(client)}, {score.count_miss} {Converters.OsuUtils.MissEmoji(client)}]");
+                        embedMessage.AppendLine($"▸ {score.score} [{score.count_300} {Converters.OsuUtils.Hit300Emoji(client)}, {score.count_100} {Converters.OsuUtils.Hit100Emoji(client)}, {score.count_50} {Converters.OsuUtils.Hit50Emoji(client)}, {score.count_miss} {Converters.OsuUtils.MissEmoji(client)}]");
                         discordEmbed.AddField($"New recent score osu!standard", embedMessage.ToString());
                     }
 
                     if (score.play_mode == 3)
                     {
-                        embedMessage.AppendLine($"▸ [{score.count_300} {Converters.OsuUtils.Hit300Emoji(client)}, {score.count_katu} {Converters.OsuUtils.Hit200Emoji(client)}, {score.count_100} {Converters.OsuUtils.Hit100Emoji(client)}, {score.count_50} {Converters.OsuUtils.Hit50Emoji(client)}, {score.count_miss} {Converters.OsuUtils.MissEmoji(client)}]");
+                        embedMessage.AppendLine($"▸ {score.score} [{score.count_300} {Converters.OsuUtils.Hit300Emoji(client)}, {score.count_katu} {Converters.OsuUtils.Hit200Emoji(client)}, {score.count_100} {Converters.OsuUtils.Hit100Emoji(client)}, {score.count_50} {Converters.OsuUtils.Hit50Emoji(client)}, {score.count_miss} {Converters.OsuUtils.MissEmoji(client)}]");
                         discordEmbed.AddField($"New recent score osu!mania", embedMessage.ToString());
                     }
 
