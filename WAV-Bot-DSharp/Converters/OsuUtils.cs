@@ -95,13 +95,13 @@ namespace WAV_Bot_DSharp.Converters
         {
             switch (ranking)
             {
-                case "SSH":
+                case "XH":
                     return DiscordEmoji.FromGuildEmote(client, 800148121060769849);
 
                 case "SH":
                     return DiscordEmoji.FromGuildEmote(client, 800148343534649384);
 
-                case "SS":
+                case "X":
                     return DiscordEmoji.FromGuildEmote(client, 800147903250694216);
 
                 case "S":

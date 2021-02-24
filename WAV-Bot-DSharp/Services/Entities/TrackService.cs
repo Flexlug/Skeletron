@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Linq;
 using System.Timers;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -13,13 +14,13 @@ using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Gatari.Models;
 using WAV_Osu_NetApi.Bancho.Models;
 
+using WAV_Bot_DSharp.Threading;
 using WAV_Bot_DSharp.Services.Interfaces;
 using WAV_Bot_DSharp.Services.Structures;
-using WAV_Bot_DSharp.Threading;
+
+using Microsoft.EntityFrameworkCore;
 
 using NLog;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -120,13 +121,14 @@ namespace WAV_Bot_DSharp.Services.Entities
                     logger.Trace("Found one! Sending to channel...");
                     DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder();
                     discordEmbed.WithAuthor(guser.username, $"https://osu.gatari.pw/u/{guser.id}", $"https://a.gatari.pw/{guser.id}");
-                    discordEmbed.WithThumbnail($"https://assets.ppy.sh/beatmaps/{score.beatmap.beatmapset_id}/covers/list@2x.jpg");
+                    //discordEmbed.WithThumbnail($"https://assets.ppy.sh/beatmaps/{score.beatmap.beatmapset_id}/covers/list@2x.jpg");
+                    discordEmbed.WithThumbnail($"https://b.ppy.sh/thumb/{score.beatmap.beatmapset_id}.jpg");
 
                     DiscordEmoji rankEmoji = Converters.OsuUtils.RankingEmoji(score.ranking, client);
 
                     StringBuilder embedMessage = new StringBuilder();
-                    embedMessage.AppendLine($"[{score.beatmap.song_name}](https://osu.gatari.pw/s/{score.beatmap.beatmapset_id}#osu/{score.beatmap.beatmap_id})\n▸ **Difficulty**: {score.beatmap.difficulty} ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {Converters.OsuUtils.ModsToString(score.mods)}");
-                    embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy:##0.00}%** ▸ **{score.pp}** {Converters.OsuUtils.PPEmoji(client)} ▸ {score.max_combo}x/{score.beatmap.fc}x");
+                    embedMessage.AppendLine($"[{score.beatmap.song_name}](https://osu.gatari.pw/s/{score.beatmap.beatmapset_id}#osu/{score.beatmap.beatmap_id})\n▸ **Difficulty**: {score.beatmap.difficulty:##0.00}★ ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {Converters.OsuUtils.ModsToString(score.mods)}");
+                    embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy:##0.00}%** ▸ **{score.pp}** {Converters.OsuUtils.PPEmoji(client)} ▸ **{score.max_combo}x/{score.beatmap.fc}x**");
                     
                     //std
                     if (score.play_mode == 0)

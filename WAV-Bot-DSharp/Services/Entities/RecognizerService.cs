@@ -30,7 +30,6 @@ namespace WAV_Bot_DSharp.Services.Entities
     /// </summary>
     public class RecognizerService : IRecognizerService
     {
-        private DiscordEmoji[] _pollEmojiCache;
         private DiscordClient client;
         private ILogger logger;
 
