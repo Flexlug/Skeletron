@@ -9,6 +9,7 @@ using WAV_Osu_NetApi;
 
 using Newtonsoft.Json;
 using WAV_Osu_NetApi.Bancho.Models;
+using WAV_Osu_NetApi.Gatari.Models;
 
 namespace WAV_Osu_NetApi_Test
 {
@@ -24,6 +25,10 @@ namespace WAV_Osu_NetApi_Test
             //Console.WriteLine(api.ReloadToken());
 
             GatariApi api = new GatariApi();
+
+            GUser user = null;
+            api.TryGetUser("SheDiK YT", ref user);
+            Console.WriteLine(user);
 
             #region Get best scores
             //List<Score> scores = api.GetUserBestScores(9604150, 100);
@@ -143,7 +148,7 @@ namespace WAV_Osu_NetApi_Test
 
             #endregion
 
-            api.TryRetrieveBeatmap(1114721);
+            //api.TryRetrieveBeatmap(1114721);
 
         }
     }

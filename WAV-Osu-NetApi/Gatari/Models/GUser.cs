@@ -7,7 +7,7 @@ namespace WAV_Osu_NetApi.Gatari.Models
     public class GUser
     {
         public string abbr { get; set; }
-        public int clanid { get; set; }
+        public int? clanid { get; set; }
         public string country { get; set; }
         public int custom_hue { get; set; }
         public int favourite_mode { get; set; }
