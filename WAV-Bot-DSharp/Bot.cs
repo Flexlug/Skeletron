@@ -46,7 +46,7 @@ namespace WAV_Bot_DSharp
             // Activating Interactivity module for the DiscordClient
             Discord.UseInteractivity(new InteractivityConfiguration());
             // Activating VoiceNext module
-            Discord.UseVoiceNext(new VoiceNextConfiguration());
+            Discord.UseVoiceNext();
 
             // For correct datetime recognizing
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru-RU");
@@ -86,6 +86,7 @@ namespace WAV_Bot_DSharp
                 Services = Services
             };
             CommandsNext = Discord.UseCommandsNext(commandsNextConfiguration);
+            CommandsNext.SetHelpFormatter<CustomHelpFormatter>();
 
             // Registering command classes
             CommandsNext.RegisterCommands<UserCommands>();

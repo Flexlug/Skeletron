@@ -4,19 +4,19 @@ using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using WAV_Bot_DSharp.Commands;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
     public class CustomHelpFormatter : BaseHelpFormatter
     {
         protected DiscordEmbedBuilder _embed;
-        // protected StringBuilder _strBuilder;
 
         public CustomHelpFormatter(CommandContext ctx) : base(ctx)
         {
              _embed = new DiscordEmbedBuilder();
-            // _strBuilder = new StringBuilder();
 
             // Help formatters do support dependency injection.
             // Any required services can be specified by declaring constructor parameters. 
@@ -34,11 +34,30 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         public override BaseHelpFormatter WithSubcommands(IEnumerable<Command> cmds)
         {
-            foreach (var cmd in cmds)
+            Dictionary<string, List<string>> comsDict = new Dictionary<string, List<string>>();
+
+            foreach (var commands in cmds)
             {
-                 _embed.AddField(cmd.Name, cmd.Description);            
-                // _strBuilder.AppendLine($"{cmd.Name} - {cmd.Description}");
+                if (commands.Module is null)
+                    continue;
+
+                if (!(commands.Module is SingletonCommandModule))
+                    continue;
+
+                SkBaseCommandModule skModule = (commands.Module as SingletonCommandModule).Instance as SkBaseCommandModule;
+
+                if (string.IsNullOrEmpty(skModule.ModuleName))
+                    continue;
+
+                if (!comsDict.ContainsKey(skModule.ModuleName))
+                    comsDict.Add(skModule.ModuleName, new List<string>());
+
+                comsDict[skModule.ModuleName].Add($"`{commands.Name}` : {commands.Description}");
             }
+
+            foreach (var kvp in comsDict)
+                _embed.AddField(kvp.Key, string.Join('\n', kvp.Value));
+            _embed.WithTitle("Bot help");
 
             return this;
         }
@@ -46,7 +65,6 @@ namespace WAV_Bot_DSharp.Services.Entities
         public override CommandHelpMessage Build()
         {
              return new CommandHelpMessage(embed: _embed);
-            // return new CommandHelpMessage(content: _strBuilder.ToString());
         }
     }
 }

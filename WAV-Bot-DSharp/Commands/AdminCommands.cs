@@ -17,9 +17,14 @@ namespace WAV_Bot_DSharp.Commands
     /// Commands that can only be used by Server Administrators. The Administrator permission is required (or to be the server owner).
     /// </summary>
     [RequirePermissions(Permissions.BanMembers | Permissions.KickMembers | Permissions.ManageRoles)]
-    public sealed class AdminCommands : BaseCommandModule
+    public sealed class AdminCommands : SkBaseCommandModule
     {
         private DiscordEmoji[] _pollEmojiCache;
+
+        public AdminCommands()
+        {
+            ModuleName = "Admin";
+        }
 
         /// <summary>
         /// A simple emoji based yes/no poll.

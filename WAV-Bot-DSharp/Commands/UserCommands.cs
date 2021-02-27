@@ -10,10 +10,12 @@ namespace WAV_Bot_DSharp.Commands
     /// <summary>
     /// Commands that can be used by @everyone. 
     /// </summary>
-    [Group("Utils")]
-    public sealed class UserCommands : BaseCommandModule
+    public sealed class UserCommands : SkBaseCommandModule
     {
-        public UserCommands() {  }
+        public UserCommands() 
+        {
+            ModuleName = "Utils";
+        }
 
         /// <summary>
         /// Prints out the latency between the bot and discord api servers.

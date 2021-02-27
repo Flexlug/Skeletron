@@ -26,6 +26,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Commands\AdminCommands.cs~RFe9c064.TMP" />
+    <None Remove="Services\Entities\CustomHelpFormatter.cs~RFf90ddf.TMP" />
     <None Remove="Services\Entities\TrackService.cs~RF9cb4dc0.TMP" />
     <None Remove="Services\Entities\TrackService.cs~RF9dffd96.TMP" />
     <None Remove="trackedUsers.db-shm" />

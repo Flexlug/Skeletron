@@ -21,15 +21,16 @@ namespace WAV_Bot_DSharp.Commands
     /// Disclaimer: The code shouldn't be used exactly this way as it is, it's just there to give you some ideas.
     /// </summary>
     [RequireUserPermissions(DSharpPlus.Permissions.Administrator)]
-    public class TrackCommands : BaseCommandModule
+    public class TrackCommands : SkBaseCommandModule
     {
         private ITrackService tracking;
         private GatariApi gapi;
 
         public TrackCommands(ITrackService trackService)
         {
-            tracking = trackService;
+            ModuleName = "Tracking";
 
+            tracking = trackService;
             gapi = new GatariApi();
         }
 

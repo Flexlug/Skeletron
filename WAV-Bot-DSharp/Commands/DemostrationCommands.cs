@@ -8,7 +8,8 @@ namespace WAV_Bot_DSharp.Commands
     /// Class with demonstration of possibilities.
     /// Disclaimer: The code shouldn't be used exactly this way as it is, it's just there to give you some ideas.
     /// </summary>
-    public sealed class DemonstrationCommands : BaseCommandModule
+    [Hidden]
+    public sealed class DemonstrationCommands : SkBaseCommandModule
     {
         /// <summary>
         /// With this command you can send a message to any discord server (Guild) which the bot is a part of,
