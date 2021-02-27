@@ -44,7 +44,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         public TrackService(DiscordClient client, ILogger logger, TrackedUserContext trackedUsers)
         {
-            timer = new Timer(10000);
+            timer = new Timer(6000);
             timer.Elapsed += Check;
             timer.Start();
 
@@ -70,7 +70,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             if (user is null)
                 return;
 
-            logger.Trace(user.GatariId);
+            //logger.Debug(user.GatariId);
 
             GUser guser = null;
             if (!gapi.TryGetUser((int)user.GatariId, ref guser))
@@ -79,7 +79,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return;
             }
 
-            logger.Trace(guser.username);
+            //logger.Debug(guser.username);
 
             userIterator++;
 
@@ -95,7 +95,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                                                .OrderByDescending(x => x)
                                                .First() + TimeSpan.FromSeconds(10);
 
-            logger.Trace($"{latest_score_avaliable_time} : {latest_score}");
+            //logger.Debug($"{latest_score_avaliable_time} : {latest_score}");
 
             if (latest_score is null)
             {
@@ -118,7 +118,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 {
                     TimeSpan mapLen = TimeSpan.FromSeconds(score.beatmap.hit_length);
 
-                    logger.Trace("Found one! Sending to channel...");
+                    //logger.Debug("Found one! Sending to channel...");
                     DiscordEmbedBuilder discordEmbed = new DiscordEmbedBuilder();
                     discordEmbed.WithAuthor(guser.username, $"https://osu.gatari.pw/u/{guser.id}", $"https://a.gatari.pw/{guser.id}");
                     //discordEmbed.WithThumbnail($"https://assets.ppy.sh/beatmaps/{score.beatmap.beatmapset_id}/covers/list@2x.jpg");
@@ -132,7 +132,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                     
                     //std
                     if (score.play_mode == 0)
-                    {
+                    { 
                         embedMessage.AppendLine($"▸ {score.score} [{score.count_300} {Converters.OsuUtils.Hit300Emoji(client)}, {score.count_100} {Converters.OsuUtils.Hit100Emoji(client)}, {score.count_50} {Converters.OsuUtils.Hit50Emoji(client)}, {score.count_miss} {Converters.OsuUtils.MissEmoji(client)}]");
                         discordEmbed.AddField($"New recent score osu!standard", embedMessage.ToString());
                     }
@@ -223,7 +223,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                             BanchoTrackTop = false,
                             GatariId = u.id,
                             GatariTrackRecent = true,
-                            GatariRecentLastAt = DateTime.Now,
+                            GatariRecentLastAt = null,
                             GatariTrackTop = false,
                             GatariTopLastAt = null
                         };

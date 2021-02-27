@@ -17,17 +17,12 @@ namespace WAV_Bot_DSharp.Services.Entities
         public CustomHelpFormatter(CommandContext ctx) : base(ctx)
         {
              _embed = new DiscordEmbedBuilder();
-
-            // Help formatters do support dependency injection.
-            // Any required services can be specified by declaring constructor parameters. 
-
-            // Other required initialization here ...
         }
 
         public override BaseHelpFormatter WithCommand(Command command)
         {
+            _embed.WithTitle("Command help");
              _embed.AddField(command.Name, command.Description);            
-            // _strBuilder.AppendLine($"{command.Name} - {command.Description}");
 
             return this;
         }
@@ -57,7 +52,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             foreach (var kvp in comsDict)
                 _embed.AddField(kvp.Key, string.Join('\n', kvp.Value));
-            _embed.WithTitle("Bot help");
+            _embed.WithTitle("Commands overview");
 
             return this;
         }
