@@ -81,7 +81,7 @@ namespace WAV_Bot_DSharp.Commands
 
 
             User guser = null;
-            if (!bapi.TryGetUser(123, out guser))
+            if (!bapi.TryGetUser(123, ref guser))
             {
                 await commandContext.RespondAsync($"Couldn't find user {nickname} on gatari.");
                 return;
@@ -99,7 +99,7 @@ namespace WAV_Bot_DSharp.Commands
             return;
 
             User guser = null;
-            if (!bapi.TryGetUser(123, out guser))
+            if (!bapi.TryGetUser(123, ref guser))
             {
                 await commandContext.RespondAsync($"Couldn't find user {nickname} on gatari.");
                 return;

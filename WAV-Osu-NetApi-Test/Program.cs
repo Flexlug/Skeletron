@@ -21,12 +21,12 @@ namespace WAV_Osu_NetApi_Test
             using (StreamReader sr = new StreamReader("credentials.json"))
                 settings = JsonConvert.DeserializeObject<Settings>(sr.ReadToEnd());
 
-            //BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
-            //Console.WriteLine(api.ReloadToken());
+            BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
+            Console.WriteLine(api.ReloadToken());
 
-            GatariApi api = new GatariApi();
+            //GatariApi api = new GatariApi();
 
-            GUser user = null;
+            User user = null;
             api.TryGetUser(18699, ref user);
             Console.WriteLine(user);
 

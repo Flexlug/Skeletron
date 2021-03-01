@@ -99,6 +99,7 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<AdminCommands>();
             CommandsNext.RegisterCommands<DemonstrationCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
+            CommandsNext.RegisterCommands<FunCommands>();
             //CommandsNext.RegisterCommands<VoiceCommands>();
             //CommandsNext.RegisterCommands<ActivityCommands>();
             CommandsNext.RegisterCommands<TrackCommands>();

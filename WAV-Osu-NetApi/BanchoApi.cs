@@ -195,7 +195,7 @@ namespace WAV_Osu_NetApi
         /// <param name="userId">User's id</param>
         /// <param name="user">If successful, user's info will be returned via this ref</param>
         /// <returns></returns>
-        public bool TryGetUser(int userId, out User user)
+        public bool TryGetUser(int userId, ref User user)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{userId}")
                 .AddHeader(@"Authorization", $@"Bearer {Token}");

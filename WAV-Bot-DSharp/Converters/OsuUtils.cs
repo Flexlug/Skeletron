@@ -8,6 +8,7 @@ using DSharpPlus.Entities;
 using WAV_Osu_NetApi.Bancho.Models.Enums;
 using WAV_Osu_NetApi.Gatari.Models.Enums;
 using WAV_Osu_NetApi.Gatari.Models;
+using WAV_Osu_NetApi.Bancho.Models;
 
 namespace WAV_Bot_DSharp.Converters
 {
@@ -127,6 +128,8 @@ namespace WAV_Bot_DSharp.Converters
             return sb.ToString();
         }
 
+
+
         /// <summary>
         /// Get embed from gatari score and user information
         /// </summary>
@@ -178,6 +181,54 @@ namespace WAV_Bot_DSharp.Converters
             }
 
             embed.WithFooter($"Played at: {score.time}");
+
+            return embed.Build();
+        }
+
+        public DiscordEmbed BanchoScoreToEmbed(Score score, User user, TimeSpan mapLen)
+        {
+            DiscordEmoji rankEmoji = osuEmoji.RankingEmoji(score.rank);
+            Random rnd = new Random();
+
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
+
+            embed.WithAuthor(user.username, $"https://osu.ppy.sh/users{user.id}", $"https://a.ppy.sh/{user.id}?{rnd.Next(1000, 9999)}")
+                 .WithThumbnail($"https://b.ppy.sh/thumb/{score.beatmap.beatmapset_id}.jpg");
+
+
+            StringBuilder embedMessage = new StringBuilder();
+            embedMessage.AppendLine($"[{score.beatmapset.artist} - {score.beatmapset.title} [{score.beatmap.version}]](https://osu.ppy.sh/beatmapsets/{score.beatmapset.id}#osu/{score.beatmap.id})\n▸ **Difficulty**: {score.beatmap.difficulty_rating:##0.00}★ ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {string.Join(" ", score.mods)}");
+            embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy:##0.00}%** ▸ **{score.pp}** {osuEmoji.PPEmoji()} ▸ **{score.max_combo}x/{score.max_combo}x**");
+
+            // mania
+            if (score.mode_int == 3)    
+            {
+                embedMessage.AppendLine($"▸ {score.score} [{score.statistics.count_300} {osuEmoji.Hit300Emoji()}, {score.statistics.count_katu} {osuEmoji.Hit200Emoji()}, {score.statistics.count_100} {osuEmoji.Hit100Emoji()}, {score.statistics.count_50} {osuEmoji.Hit50Emoji()}, {score.statistics.count_miss} {osuEmoji.MissEmoji()}]");
+                embed.AddField($"New recent score osu!mania", embedMessage.ToString());
+            }
+
+            // ctb
+            if (score.mode_int == 2)
+            {
+                embedMessage.AppendLine($"▸ {score.score} [{score.statistics.count_300} {osuEmoji.Hit300Emoji()}, {score.statistics.count_katu} {osuEmoji.Hit200Emoji()}, {score.statistics.count_100} {osuEmoji.Hit100Emoji()}, {score.statistics.count_50} {osuEmoji.Hit50Emoji()}, {score.statistics.count_miss} {osuEmoji.MissEmoji()}]");
+                embed.AddField($"New recent score osu!ctb", embedMessage.ToString());
+            }
+
+            // taiko
+            if (score.mode_int == 1)
+            {
+                embedMessage.AppendLine($"▸ {score.score} [{score.statistics.count_300} {osuEmoji.Hit300Emoji()}, {score.statistics.count_katu} {osuEmoji.Hit200Emoji()}, {score.statistics.count_100} {osuEmoji.Hit100Emoji()}, {score.statistics.count_50} {osuEmoji.Hit50Emoji()}, {score.statistics.count_miss} {osuEmoji.MissEmoji()}]");
+                embed.AddField($"New recent score osu!taiko", embedMessage.ToString());
+            }
+
+            //std
+            if (score.mode_int == 0)
+            {
+                embedMessage.AppendLine($"▸ {score.score} [{score.statistics.count_300} {osuEmoji.Hit300Emoji()}, {score.statistics.count_100} {osuEmoji.Hit100Emoji()}, {score.statistics.count_50} {osuEmoji.Hit50Emoji()}, {score.statistics.count_miss} {osuEmoji.MissEmoji()}]");
+                embed.AddField($"New recent score osu!standard", embedMessage.ToString());
+            }
+
+            embed.WithFooter($"Played at: {score.created_at}");
 
             return embed.Build();
         }

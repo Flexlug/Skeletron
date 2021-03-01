@@ -36,6 +36,7 @@ namespace WAV_Bot_DSharp.Services.Entities
         private OsuUtils utils;
         private DiscordClient client;
         private DiscordChannel gatariRecentChannel;
+        private DiscordChannel banchoRecentChannel;
         private int gatariUserIterator = 0;
         private int banchoUserIterator = 0;
 
@@ -46,8 +47,9 @@ namespace WAV_Bot_DSharp.Services.Entities
         private TrackedUserContext trackedUsersDb;
 
         GatariApi gapi = new GatariApi();
+        BanchoApi bapi = null;
 
-        public TrackService(DiscordClient client, ILogger logger, TrackedUserContext trackedUsers, OsuUtils utils)
+        public TrackService(DiscordClient client, ILogger logger, TrackedUserContext trackedUsers, OsuUtils utils, BanchoApi bapi)
         {
             timer = new Timer(6000);
             timer.Elapsed += Check;
@@ -59,24 +61,30 @@ namespace WAV_Bot_DSharp.Services.Entities
             this.client = client;
             this.logger = logger;
             this.trackedUsersDb = trackedUsers;
+            this.bapi = bapi;
 
             gatariRecentChannel = client.GetChannelAsync(800124240908648469).Result;
+            banchoRecentChannel = client.GetChannelAsync(815949279566888961).Result;
             logger.Info($"Gatari tracker online! got channel: {gatariRecentChannel.Name}");
+            logger.Info($"Bancho tracker online! got channel: {banchoRecentChannel.Name}");
         }
 
         private void Check(object sender, ElapsedEventArgs e)
         {
             //logger.Debug("Checking scores...");
             CheckRecentGatari();
+            CheckRecentBancho();
         }
 
         private async void CheckRecentGatari()
         {
             TrackedUser user = NextGatariUser(ref gatariUserIterator);
+
             if (user is null)
                 return;
 
-            //logger.Debug(user.GatariId);
+            logger.Debug("Gatari");
+            logger.Debug(user.GatariId);
 
             GUser guser = null;
             if (!gapi.TryGetUser((int)user.GatariId, ref guser))
@@ -85,7 +93,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return;
             }
 
-            //logger.Debug(guser.username);
+            logger.Debug(guser.username);
 
             gatariUserIterator++;
 
@@ -101,12 +109,12 @@ namespace WAV_Bot_DSharp.Services.Entities
                                                .OrderByDescending(x => x)
                                                .First() + TimeSpan.FromSeconds(10);
 
-            //logger.Debug($"{latest_score_avaliable_time} : {latest_score}");
+            logger.Debug($"{latest_score_avaliable_time} : {latest_score}");
 
             if (latest_score is null)
             {
                 latest_score = latest_score_avaliable_time;
-                UpdateGatariRecentTime(user.Id, latest_score);
+                UpdateBanchoRecentTime(user.Id, latest_score);
             }
 
             foreach (var score in available_scores)
@@ -119,7 +127,6 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             if (new_scores.Count != 0)
             {
-                Console.WriteLine();
                 foreach (var score in new_scores)
                 {
                     TimeSpan mapLen = TimeSpan.FromSeconds(score.beatmap.hit_length);
@@ -127,6 +134,68 @@ namespace WAV_Bot_DSharp.Services.Entities
                     DiscordEmbed embed = utils.GatariScoreToEmbed(score, guser, mapLen);
 
                     UpdateGatariRecentTime(user.Id, latest_score_avaliable_time);
+
+                    await client.SendMessageAsync(gatariRecentChannel,
+                        embed: embed);
+                }
+            }
+        }
+
+        private async void CheckRecentBancho()
+        {
+            TrackedUser user = NextBanchoUser(ref banchoUserIterator);
+
+            if (user is null)
+                return;
+
+            logger.Debug("Bancho");
+            logger.Debug(user.GatariId);
+
+            User buser = null;
+            if (!bapi.TryGetUser((int)user.BanchoId, ref buser))
+            {
+                logger.Warn($"Couldn't find user {user.BanchoId} on Gatari, but the record exists in database!");
+                return;
+            }
+
+            logger.Debug(buser.username);
+
+            banchoUserIterator++;
+
+            List<Score> new_scores = new List<Score>();
+            List<Score> available_scores = bapi.GetUserRecentScores((int)user.BanchoId, false, 3);
+
+            DateTime? latest_score = user.BanchoRecentLastAt;
+
+            DateTime latest_score_avaliable_time = available_scores.Select(x => x.created_at)
+                                               .OrderByDescending(x => x)
+                                               .First() + TimeSpan.FromSeconds(10);
+
+            logger.Debug($"{latest_score_avaliable_time} : {latest_score}");
+
+            if (latest_score is null)
+            {
+                latest_score = latest_score_avaliable_time;
+                UpdateGatariRecentTime(user.Id, latest_score);
+            }
+
+            foreach (var score in available_scores)
+                if (score.created_at > latest_score)
+                {
+                    new_scores.Add(score);
+                    if (latest_score < score.created_at)
+                        latest_score = score.created_at;
+                }
+
+            if (new_scores.Count != 0)
+            {
+                foreach (var score in new_scores)
+                {
+                    TimeSpan mapLen = TimeSpan.FromSeconds(score.beatmap.hit_length);
+
+                    DiscordEmbed embed = utils.BanchoScoreToEmbed(score, buser, mapLen);
+
+                    UpdateBanchoRecentTime(user.Id, latest_score_avaliable_time);
 
                     await client.SendMessageAsync(gatariRecentChannel,
                         embed: embed);
