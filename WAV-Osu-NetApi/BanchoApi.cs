@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Text.Encodings.Web;
 using Newtonsoft.Json;
 
 using RestSharp;
 
 using WAV_Osu_NetApi.Bancho.Models;
+using WAV_Osu_NetApi.Bancho.Models.Responses;
 using WAV_Osu_NetApi.Bancho.QuerryParams;
 using WAV_Osu_NetApi.Converters;
 
@@ -61,6 +62,8 @@ namespace WAV_Osu_NetApi
         {
             this.Secret = secret;
             this.ClientId = client_id;
+
+            client.CookieContainer = new System.Net.CookieContainer();
 
             ReloadToken();
         }
@@ -192,6 +195,41 @@ namespace WAV_Osu_NetApi
         /// <summary>
         /// Tries to get user by his id
         /// </summary>
+        /// <param name="userNickname">User's nickname</param>
+        /// <param name="user">If successful, user's info will be returned via this ref</param>
+        /// <returns></returns>
+        public bool TryGetUser(string userNickname, ref User user)
+        {
+            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{userNickname}")
+                .AddHeader(@"Authorization", $@"Bearer {Token}");
+
+            IRestResponse resp = null;
+            User userInfo;
+            try
+            {
+                resp = client.Execute(req);
+                userInfo = JsonConvert.DeserializeObject<User>(resp.Content);
+
+                if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    user = null;
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+                user = null;
+                return false;
+            }
+
+
+            user = userInfo;
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to get user by his id
+        /// </summary>
         /// <param name="userId">User's id</param>
         /// <param name="user">If successful, user's info will be returned via this ref</param>
         /// <returns></returns>
@@ -206,6 +244,12 @@ namespace WAV_Osu_NetApi
             {
                 resp = client.Execute(req);
                 userInfo = JsonConvert.DeserializeObject<User>(resp.Content);
+
+                if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    user = null;
+                    return false;
+                }
             }
             catch (Exception)
             {
@@ -219,4 +263,3 @@ namespace WAV_Osu_NetApi
         }
     }
 }
-

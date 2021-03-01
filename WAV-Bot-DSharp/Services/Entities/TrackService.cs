@@ -51,7 +51,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         public TrackService(DiscordClient client, ILogger logger, TrackedUserContext trackedUsers, OsuUtils utils, BanchoApi bapi)
         {
-            timer = new Timer(6000);
+            timer = new Timer(20000);
             timer.Elapsed += Check;
             timer.Start();
 
@@ -73,7 +73,7 @@ namespace WAV_Bot_DSharp.Services.Entities
         {
             //logger.Debug("Checking scores...");
             CheckRecentGatari();
-            CheckRecentBancho();
+            //CheckRecentBancho();
         }
 
         private async void CheckRecentGatari()
@@ -149,7 +149,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return;
 
             logger.Debug("Bancho");
-            logger.Debug(user.GatariId);
+            logger.Debug(user.BanchoId);
 
             User buser = null;
             if (!bapi.TryGetUser((int)user.BanchoId, ref buser))
@@ -176,7 +176,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             if (latest_score is null)
             {
                 latest_score = latest_score_avaliable_time;
-                UpdateGatariRecentTime(user.Id, latest_score);
+                UpdateBanchoRecentTime(user.Id, latest_score);
             }
 
             foreach (var score in available_scores)
@@ -197,7 +197,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
                     UpdateBanchoRecentTime(user.Id, latest_score_avaliable_time);
 
-                    await client.SendMessageAsync(gatariRecentChannel,
+                    await client.SendMessageAsync(banchoRecentChannel,
                         embed: embed);
                 }
             }
@@ -374,25 +374,26 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
         }
 
-        private void AddBanchoTrackRecent(User u)
+        private void AddBanchoTrackRecent(int u)
         {
             try
             {
                 using (var transaction = trackedUsersDb.Database.BeginTransaction())
                 {
-                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.BanchoId == u.id);
+                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.BanchoId == u);
 
                     if (user is null)
                     {
                         user = new TrackedUser()
                         {
-                            BanchoId = null,
-                            BanchoTrackRecent = false,
+                            BanchoId = u,
+                            BanchoTrackRecent = true,
                             BanchoRecentLastAt = null,
                             BanchoTopLastAt = null,
                             BanchoTrackTop = false,
-                            GatariId = u.id,
-                            GatariTrackRecent = true,
+
+                            GatariId = null,
+                            GatariTrackRecent = false,
                             GatariRecentLastAt = null,
                             GatariTrackTop = false,
                             GatariTopLastAt = null
@@ -402,7 +403,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                     }
                     else
                     {
-                        user.GatariTrackRecent = true;
+                        user.BanchoTrackRecent = true;
                         user.GatariRecentLastAt = null;
                     }
 
@@ -416,13 +417,13 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
         }
 
-        private bool RemoveBanchoTrackRecent(User u)
+        private bool RemoveBanchoTrackRecent(int u)
         {
             try
             {
                 using (var transaction = trackedUsersDb.Database.BeginTransaction())
                 {
-                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.GatariId == u.id);
+                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.GatariId == u);
 
                     if (user is null)
                         return false;
@@ -445,16 +446,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         public Task AddGatariTrackRecentAsync(GUser u) => queue.QueueTask(() => AddGatariTrackRecent(u));
         public Task<bool> RemoveGagariTrackRecentAsync(GUser u) => queue.QueueTask(() => RemoveGatariTrackRecent(u));
-
-
-        public Task<bool> RemoveBanchoTrackRecentAsync(User u)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddBanchoTrackRecentAsync(User u)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<bool> RemoveBanchoTrackRecentAsync(int u) => queue.QueueTask(() => RemoveBanchoTrackRecent(u));
+        public Task AddBanchoTrackRecentAsync(int u) => queue.QueueTask(() => AddBanchoTrackRecent(u));
     }
 }

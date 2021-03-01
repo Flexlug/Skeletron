@@ -74,38 +74,32 @@ namespace WAV_Bot_DSharp.Commands
 
         [Command("track-bancho-recent"), Description("Start tracking user's recent scores on bancho")]
         public async Task TrackBanchoRecent(CommandContext commandContext,
-            [Description("Gatari username"), RemainingText] string nickname)
+            [Description("Bancho id")] int id)
         {
-            await commandContext.RespondAsync($"Disabled");
-            return;
-
-
             User guser = null;
-            if (!bapi.TryGetUser(123, ref guser))
+            if (!bapi.TryGetUser(id, ref guser))
             {
-                await commandContext.RespondAsync($"Couldn't find user {nickname} on gatari.");
+                await commandContext.RespondAsync($"Couldn't find user {id} on bancho.");
                 return;
             }
 
-            await tracking.RemoveBanchoTrackRecentAsync(guser);
-            //await commandContext.RespondAsync($"User's {(guser is null ? "" : $"[{guser.abbr}]")} {guser.username} recent scores are being tracked.");
+            await tracking.AddBanchoTrackRecentAsync(id);
+            await commandContext.RespondAsync($"User's {guser.username} recent scores are being tracked.");
         }
 
         [Command("stop-track-bancho-recent"), Description("Stop tracking user's recent scores on bancho")]
         public async Task StopTrackBachoRecent(CommandContext commandContext,
-            [Description("Gatari username"), RemainingText] string nickname)
+            [Description("Bancho id")] int id)
         {
-            await commandContext.RespondAsync($"Disabled");
-            return;
 
             User guser = null;
-            if (!bapi.TryGetUser(123, ref guser))
+            if (!bapi.TryGetUser(id, ref guser))
             {
-                await commandContext.RespondAsync($"Couldn't find user {nickname} on gatari.");
+                await commandContext.RespondAsync($"Couldn't find user {id} on bancho.");
                 return;
             }
 
-            if (!await tracking.RemoveBanchoTrackRecentAsync(guser))
+            if (!await tracking.RemoveBanchoTrackRecentAsync(id))
             {
                 await commandContext.RespondAsync($"Couldn't delete user. Maybe this user is not being tracked.");
                 return;

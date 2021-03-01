@@ -29,13 +29,13 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// </summary>
         /// <param name="u">Bancho user</param>
         /// <returns></returns>
-        public Task AddBanchoTrackRecentAsync(User u);
+        public Task AddBanchoTrackRecentAsync(int u);
 
         /// <summary>
         /// Stop user tracking
         /// </summary>
         /// <param name="u">Bancho user</param>
         /// <returns></returns>
-        public Task<bool> RemoveBanchoTrackRecentAsync(User u);
+        public Task<bool> RemoveBanchoTrackRecentAsync(int u);
     }
 }

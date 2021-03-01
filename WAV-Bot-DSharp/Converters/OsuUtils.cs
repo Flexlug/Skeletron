@@ -192,7 +192,7 @@ namespace WAV_Bot_DSharp.Converters
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
 
-            embed.WithAuthor(user.username, $"https://osu.ppy.sh/users{user.id}", $"https://a.ppy.sh/{user.id}?{rnd.Next(1000, 9999)}")
+            embed.WithAuthor(user.username, $"https://osu.ppy.sh/users/{user.id}", $"https://a.ppy.sh/{user.id}?{rnd.Next(1000, 9999)}")
                  .WithThumbnail($"https://b.ppy.sh/thumb/{score.beatmap.beatmapset_id}.jpg");
 
 

@@ -26,9 +26,13 @@ namespace WAV_Osu_NetApi_Test
 
             //GatariApi api = new GatariApi();
 
-            User user = null;
-            api.TryGetUser(18699, ref user);
-            Console.WriteLine(user);
+            //Beatmapset bm = api.GetBeatmapset(372510);
+
+
+            User users = null;
+            api.TryGetUser(6885792, ref users);
+            api.TryGetUser("flexlug", ref users);
+            Console.WriteLine(users);
 
             #region Get best scores
             //List<Score> scores = api.GetUserBestScores(9604150, 100);
