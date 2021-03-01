@@ -27,7 +27,7 @@ namespace WAV_Osu_NetApi_Test
             GatariApi api = new GatariApi();
 
             GUser user = null;
-            api.TryGetUser("SheDiK YT", ref user);
+            api.TryGetUser(18699, ref user);
             Console.WriteLine(user);
 
             #region Get best scores

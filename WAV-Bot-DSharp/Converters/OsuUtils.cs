@@ -7,139 +7,29 @@ using DSharpPlus.Entities;
 
 using WAV_Osu_NetApi.Bancho.Models.Enums;
 using WAV_Osu_NetApi.Gatari.Models.Enums;
+using WAV_Osu_NetApi.Gatari.Models;
 
 namespace WAV_Bot_DSharp.Converters
 {
     public class OsuUtils
     {
-        public static DiscordEmoji DiffEmoji(float rating, DiscordClient client)
+        private DiscordClient client { get; set; }
+        private OsuEmoji osuEmoji { get; set; }
+
+        public OsuUtils(DiscordClient client, OsuEmoji emoji)
         {
-            // Easy
-            if (rating <= 1)
-                return DiscordEmoji.FromGuildEmote(client, 805376602824900648);
-            else
-            {
-                // Normal
-                if (rating <= 2.7)
-                    return DiscordEmoji.FromGuildEmote(client, 805372074050322442);
-                else
-                {
-                    // Hard
-                    if (rating <= 4)
-                        return DiscordEmoji.FromGuildEmote(client, 805375515593670686);
-                    else
-                    {
-                        // Insane
-                        if (rating <= 5.2)
-                            return DiscordEmoji.FromGuildEmote(client, 805375873276575745);
-                        else
-                        {
-                            // Expert
-                            if (rating <= 6.3)
-                                return DiscordEmoji.FromGuildEmote(client, 805377293449953330);
-                            else
-                            {
-                                return DiscordEmoji.FromGuildEmote(client, 805377677661569065);
-                            }
-                        }
-                    }
-                }
-            }
+            this.client = client;
+            this.osuEmoji = emoji;
         }
 
-        public static DiscordEmoji BanchoRankStatus(RankStatus rank, DiscordClient client)
+        /// <summary>
+        /// Translate osu mods to string
+        /// </summary>
+        /// <param name="mods">Osu mods</param>
+        /// <returns></returns>
+        public string ModsToString(Mods mods)
         {
-            switch (rank)
-            {
-                // ranked
-                case RankStatus.Ranked:
-                    return DiscordEmoji.FromGuildEmote(client, 805362757934383105);
-
-                // qualified
-                case RankStatus.Qualified:
-                    return DiscordEmoji.FromGuildEmote(client, 805364968593686549);
-
-                // loved
-                case RankStatus.Loved:
-                    return DiscordEmoji.FromGuildEmote(client, 805366123902009356);
-
-                // other
-                default:
-                    return DiscordEmoji.FromGuildEmote(client, 805368650529767444);
-            }
-        }
-
-        public static DiscordEmoji GatariRankStatus(GRankStatus rank, DiscordClient client)
-        {
-            switch (rank)
-            {
-                // ranked
-                case GRankStatus.Ranked:
-                    return DiscordEmoji.FromGuildEmote(client, 805362757934383105);
-
-                // qualified
-                case GRankStatus.Qualified:
-                    return DiscordEmoji.FromGuildEmote(client, 805364968593686549);
-
-                // loved
-                case GRankStatus.Loved:
-                    return DiscordEmoji.FromGuildEmote(client, 805366123902009356);
-
-                // other
-                default:
-                    return DiscordEmoji.FromGuildEmote(client, 805368650529767444);
-            }
-        }
-
-        public static DiscordEmoji RankingEmoji(string ranking, DiscordClient client)
-        {
-            switch (ranking)
-            {
-                case "XH":
-                    return DiscordEmoji.FromGuildEmote(client, 800148121060769849);
-
-                case "SH":
-                    return DiscordEmoji.FromGuildEmote(client, 800148343534649384);
-
-                case "X":
-                    return DiscordEmoji.FromGuildEmote(client, 800147903250694216);
-
-                case "S":
-                    return DiscordEmoji.FromGuildEmote(client, 800147562673471560);
-
-                case "A":
-                    return DiscordEmoji.FromGuildEmote(client, 800147041774862340);
-
-                case "B":
-                    return DiscordEmoji.FromGuildEmote(client, 800147303124959282);
-
-                case "C":
-                    return DiscordEmoji.FromGuildEmote(client, 800147422927650847);
-
-                case "D":
-                    return DiscordEmoji.FromGuildEmote(client, 800147539797868554);
-
-                case "F":
-                    return DiscordEmoji.FromGuildEmote(client, 800182320459284501);
-
-                default:
-                    {
-                        Console.WriteLine($"Couldn't find emoji for rank {ranking}");
-                        return DiscordEmoji.FromGuildEmote(client, 805368650529767444);
-                    }
-            }
-        }
-
-        public static DiscordEmoji PPEmoji(DiscordClient client) => DiscordEmoji.FromGuildEmote(client, 807875369981181972);
-        public static DiscordEmoji Hit300Emoji(DiscordClient client) => DiscordEmoji.FromGuildEmote(client, 800176276719271987);
-        public static DiscordEmoji Hit200Emoji(DiscordClient client) => DiscordEmoji.FromGuildEmote(client, 800176276542586891);
-        public static DiscordEmoji Hit100Emoji(DiscordClient client) => DiscordEmoji.FromGuildEmote(client, 800176276559495189); 
-        public static DiscordEmoji Hit50Emoji(DiscordClient client) => DiscordEmoji.FromGuildEmote(client, 800176276744175657);
-        public static DiscordEmoji MissEmoji(DiscordClient client) => DiscordEmoji.FromGuildEmote(client, 800151438553776178);
-
-        public static string ModsToString(Mods mods)
-        {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(20);
 
             if (mods is Mods.None)
                 return " NM";
@@ -236,6 +126,62 @@ namespace WAV_Bot_DSharp.Converters
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// Get embed from gatari score and user information
+        /// </summary>
+        /// <param name="score">Gatari score</param>
+        /// <param name="user">Gatari user</param>
+        /// <param name="mapLen">Map's length</param>
+        /// <returns></returns>
+        public DiscordEmbed GatariScoreToEmbed(GScore score, GUser user, TimeSpan mapLen)
+        {
+            DiscordEmoji rankEmoji = osuEmoji.RankingEmoji(score.ranking);
+            Random rnd = new Random();
+
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
+
+            embed.WithAuthor(user.username, $"https://osu.gatari.pw/u/{user.id}", $"https://a.gatari.pw/{user.id}?{rnd.Next(1000, 9999)}")
+                 .WithThumbnail($"https://b.ppy.sh/thumb/{score.beatmap.beatmapset_id}.jpg");
+
+
+            StringBuilder embedMessage = new StringBuilder();
+            embedMessage.AppendLine($"[{score.beatmap.song_name}](https://osu.gatari.pw/s/{score.beatmap.beatmapset_id}#osu/{score.beatmap.beatmap_id})\n▸ **Difficulty**: {score.beatmap.difficulty:##0.00}★ ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {ModsToString(score.mods)}");
+            embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy:##0.00}%** ▸ **{score.pp}** {osuEmoji.PPEmoji()} ▸ **{score.max_combo}x/{score.beatmap.fc}x**");
+
+            // mania
+            if (score.play_mode == 3)
+            {
+                embedMessage.AppendLine($"▸ {score.score} [{score.count_300} {osuEmoji.Hit300Emoji()}, {score.count_katu} {osuEmoji.Hit200Emoji()}, {score.count_100} {osuEmoji.Hit100Emoji()}, {score.count_50} {osuEmoji.Hit50Emoji()}, {score.count_miss} {osuEmoji.MissEmoji()}]");
+                embed.AddField($"New recent score osu!mania", embedMessage.ToString());
+            }
+
+            // ctb
+            if (score.play_mode == 2)
+            {
+                embedMessage.AppendLine($"▸ {score.score} [{score.count_300} {osuEmoji.Hit300Emoji()}, {score.count_katu} {osuEmoji.Hit200Emoji()}, {score.count_100} {osuEmoji.Hit100Emoji()}, {score.count_50} {osuEmoji.Hit50Emoji()}, {score.count_miss} {osuEmoji.MissEmoji()}]");
+                embed.AddField($"New recent score osu!ctb", embedMessage.ToString());
+            }
+
+            // taiko
+            if (score.play_mode == 1)
+            {
+                embedMessage.AppendLine($"▸ {score.score} [{score.count_300} {osuEmoji.Hit300Emoji()}, {score.count_katu} {osuEmoji.Hit200Emoji()}, {score.count_100} {osuEmoji.Hit100Emoji()}, {score.count_50} {osuEmoji.Hit50Emoji()}, {score.count_miss} {osuEmoji.MissEmoji()}]");
+                embed.AddField($"New recent score osu!taiko", embedMessage.ToString());
+            }
+
+            //std
+            if (score.play_mode == 0)
+            {
+                embedMessage.AppendLine($"▸ {score.score} [{score.count_300} {osuEmoji.Hit300Emoji()}, {score.count_100} {osuEmoji.Hit100Emoji()}, {score.count_50} {osuEmoji.Hit50Emoji()}, {score.count_miss} {osuEmoji.MissEmoji()}]");
+                embed.AddField($"New recent score osu!standard", embedMessage.ToString());
+            }
+
+            embed.WithFooter($"Played at: {score.time}");
+
+            return embed.Build();
+        }
+
     }
 }
 

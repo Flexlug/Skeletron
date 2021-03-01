@@ -18,6 +18,8 @@ using NLog;
 using System.Globalization;
 using WAV_Bot_DSharp.Services.Interfaces;
 using DSharpPlus.Interactivity.Extensions;
+using WAV_Osu_NetApi;
+using WAV_Bot_DSharp.Converters;
 
 namespace WAV_Bot_DSharp
 {
@@ -71,6 +73,10 @@ namespace WAV_Bot_DSharp
                 .AddSingleton(Settings)
                 .AddSingleton<ILogger>(Logger)
                 .AddSingleton(Discord)
+                .AddSingleton<OsuEmoji>()
+                .AddSingleton<OsuUtils>()
+                .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
+                .AddSingleton(new GatariApi())
                 .AddSingleton<IRecognizerService, RecognizerService>()
                 //.AddSingleton<IActivityService, ActivityService>()
                 .AddSingleton<ITrackService, TrackService>()

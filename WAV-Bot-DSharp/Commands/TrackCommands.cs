@@ -13,6 +13,7 @@ using WAV_Bot_DSharp.Services.Interfaces;
 
 using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Gatari.Models;
+using WAV_Osu_NetApi.Bancho.Models;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -25,16 +26,18 @@ namespace WAV_Bot_DSharp.Commands
     {
         private ITrackService tracking;
         private GatariApi gapi;
+        private BanchoApi bapi;
 
-        public TrackCommands(ITrackService trackService)
+        public TrackCommands(ITrackService trackService, BanchoApi bapi, GatariApi gapi)
         {
             ModuleName = "Tracking";
 
             tracking = trackService;
-            gapi = new GatariApi();
+            this.gapi = gapi;
+            this.bapi = bapi;
         }
 
-        [Command("track-gatari-recent"), Description("Start user's recent scores on gatari")]
+        [Command("track-gatari-recent"), Description("Start tracking user's recent scores on gatari")]
         public async Task TrackGatariRecent(CommandContext commandContext,
             [Description("Gatari username"), RemainingText] string nickname)
         {
@@ -45,12 +48,12 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            await tracking.AddTrackRecentAsync(guser);
+            await tracking.AddGatariTrackRecentAsync(guser);
             await commandContext.RespondAsync($"User's {(guser is null ? "" : $"[{guser.abbr}]")} {guser.username} recent scores are being tracked.");
         }
 
-        [Command("stop-track"), Description("Start user's recent scores on gatari")]
-        public async Task StopTrackGatariTop(CommandContext commandContext,
+        [Command("stop-track-gatari-recent"), Description("Stop tracking user's recent scores on gatari")]
+        public async Task StopTrackGatariRecent(CommandContext commandContext,
             [Description("Gatari username"), RemainingText] string nickname)
         {
             GUser guser = null;
@@ -60,13 +63,55 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            if (!await tracking.RemoveTrackRecentAsync(guser))
+            if (!await tracking.RemoveGagariTrackRecentAsync(guser))
             {
                 await commandContext.RespondAsync($"Couldn't delete user. Maybe this user is not being tracked.");
                 return;
             }
 
             await commandContext.RespondAsync($"Stop tracking {(guser is null ? "" : $"[{guser.abbr}]")} {guser.username}.");
+        }
+
+        [Command("track-bancho-recent"), Description("Start tracking user's recent scores on bancho")]
+        public async Task TrackBanchoRecent(CommandContext commandContext,
+            [Description("Gatari username"), RemainingText] string nickname)
+        {
+            await commandContext.RespondAsync($"Disabled");
+            return;
+
+
+            User guser = null;
+            if (!bapi.TryGetUser(123, out guser))
+            {
+                await commandContext.RespondAsync($"Couldn't find user {nickname} on gatari.");
+                return;
+            }
+
+            await tracking.RemoveBanchoTrackRecentAsync(guser);
+            //await commandContext.RespondAsync($"User's {(guser is null ? "" : $"[{guser.abbr}]")} {guser.username} recent scores are being tracked.");
+        }
+
+        [Command("stop-track-bancho-recent"), Description("Stop tracking user's recent scores on bancho")]
+        public async Task StopTrackBachoRecent(CommandContext commandContext,
+            [Description("Gatari username"), RemainingText] string nickname)
+        {
+            await commandContext.RespondAsync($"Disabled");
+            return;
+
+            User guser = null;
+            if (!bapi.TryGetUser(123, out guser))
+            {
+                await commandContext.RespondAsync($"Couldn't find user {nickname} on gatari.");
+                return;
+            }
+
+            if (!await tracking.RemoveBanchoTrackRecentAsync(guser))
+            {
+                await commandContext.RespondAsync($"Couldn't delete user. Maybe this user is not being tracked.");
+                return;
+            }
+
+            //await commandContext.RespondAsync($"Stop tracking {(guser is null ? "" : $"[{guser.abbr}]")} {guser.username}.");
         }
     }
 }
