@@ -34,6 +34,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private Timer timer;
         private OsuUtils utils;
+        private OsuEmoji emoji;
         private DiscordClient client;
         private DiscordChannel gatariRecentChannel;
         private DiscordChannel banchoRecentChannel;
@@ -49,15 +50,16 @@ namespace WAV_Bot_DSharp.Services.Entities
         GatariApi gapi = new GatariApi();
         BanchoApi bapi = null;
 
-        public TrackService(DiscordClient client, ILogger logger, TrackedUserContext trackedUsers, OsuUtils utils, BanchoApi bapi)
+        public TrackService(DiscordClient client, ILogger logger, TrackedUserContext trackedUsers, OsuUtils utils, OsuEmoji emoji, BanchoApi bapi)
         {
-            timer = new Timer(20000);
+            timer = new Timer(10000);
             timer.Elapsed += Check;
             timer.Start();
 
             queue = new BackgroundQueue();
 
             this.utils = utils;
+            this.emoji = emoji;
             this.client = client;
             this.logger = logger;
             this.trackedUsersDb = trackedUsers;
@@ -73,7 +75,7 @@ namespace WAV_Bot_DSharp.Services.Entities
         {
             //logger.Debug("Checking scores...");
             CheckRecentGatari();
-            //CheckRecentBancho();
+            CheckRecentBancho();
         }
 
         private async void CheckRecentGatari()
@@ -98,8 +100,8 @@ namespace WAV_Bot_DSharp.Services.Entities
             gatariUserIterator++;
 
             List<GScore> new_scores = new List<GScore>();
-            List<GScore> available_scores = gapi.GetUserRecentScores((int)user.GatariId, 0, 3, false);
-            List<GScore> available_mania_scores = gapi.GetUserRecentScores((int)user.GatariId, 3, 3, false);
+            List<GScore> available_scores = gapi.GetUserRecentScores((int)user.GatariId, 0, 3, true);
+            List<GScore> available_mania_scores = gapi.GetUserRecentScores((int)user.GatariId, 3, 3, true);
 
             available_scores.AddRange(available_mania_scores);
 
@@ -129,14 +131,37 @@ namespace WAV_Bot_DSharp.Services.Entities
             {
                 foreach (var score in new_scores)
                 {
+                    UpdateGatariRecentTime(user.Id, latest_score_avaliable_time);
                     TimeSpan mapLen = TimeSpan.FromSeconds(score.beatmap.hit_length);
 
-                    DiscordEmbed embed = utils.GatariScoreToEmbed(score, guser, mapLen);
+                    Beatmap bb = bapi.GetBeatmap(score.beatmap.beatmap_id);
 
-                    UpdateGatariRecentTime(user.Id, latest_score_avaliable_time);
+                    bool shouldPost = true,
+                         trackingFailed = false;
 
-                    await client.SendMessageAsync(gatariRecentChannel,
-                        embed: embed);
+                    if (score.ranking.Equals("F"))
+                    {
+                        trackingFailed = true;
+                        if (!utils.CheckFailedScoreProgress(score, bb, 0.8) && !score.mods.HasFlag(WAV_Osu_NetApi.Bancho.Models.Enums.Mods.NoFail))
+                        {
+                            shouldPost = false;
+                        }
+                    }
+
+
+                    if (shouldPost)
+                    {
+                        DiscordEmbed embed = utils.GatariScoreToEmbed(score, guser, mapLen);
+
+                        string msgContent = null;
+
+                        if (trackingFailed)
+                            msgContent = $"Press {emoji.RankingEmoji("F")}";
+
+                        await client.SendMessageAsync(gatariRecentChannel,
+                            embed: embed,
+                            content: msgContent);
+                    }
                 }
             }
         }
@@ -163,7 +188,16 @@ namespace WAV_Bot_DSharp.Services.Entities
             banchoUserIterator++;
 
             List<Score> new_scores = new List<Score>();
-            List<Score> available_scores = bapi.GetUserRecentScores((int)user.BanchoId, false, 3);
+            List<Score> available_scores = bapi.GetUserRecentScores((int)user.BanchoId, true, 0, 3);
+            List<Score> available_mania_scores = bapi.GetUserRecentScores((int)user.BanchoId, true, 3, 3);
+
+            available_scores.AddRange(available_mania_scores);
+
+            if (available_scores is null || available_scores.Count == 0)
+            {
+                logger.Info($"No recent scores");
+                return;
+            }
 
             DateTime? latest_score = user.BanchoRecentLastAt;
 
@@ -191,14 +225,36 @@ namespace WAV_Bot_DSharp.Services.Entities
             {
                 foreach (var score in new_scores)
                 {
+                    UpdateBanchoRecentTime(user.Id, latest_score_avaliable_time);
                     TimeSpan mapLen = TimeSpan.FromSeconds(score.beatmap.hit_length);
 
-                    DiscordEmbed embed = utils.BanchoScoreToEmbed(score, buser, mapLen);
+                    // For max_combo info
+                    score.beatmap = bapi.GetBeatmap(score.beatmap.id);
 
-                    UpdateBanchoRecentTime(user.Id, latest_score_avaliable_time);
+                    bool shouldPost = true,
+                         trackingFailed = false;
 
-                    await client.SendMessageAsync(banchoRecentChannel,
-                        embed: embed);
+                    if (score.rank.Equals("F"))
+                    {
+                        trackingFailed = true;
+                        if (!utils.CheckFailedScoreProgress(score, 0.8) && !score.mods.Contains("NM"))
+                        {
+                            shouldPost = false;
+                        }
+                    }
+
+                    if (shouldPost) {
+                        DiscordEmbed embed = utils.BanchoScoreToEmbed(score, buser, mapLen);
+
+                        string msgContent = null;
+
+                        if (trackingFailed)
+                            msgContent = $"Press {emoji.RankingEmoji("F")}";
+
+                        await client.SendMessageAsync(banchoRecentChannel,
+                            embed: embed,
+                            content: msgContent);
+                    }
                 }
             }
         }

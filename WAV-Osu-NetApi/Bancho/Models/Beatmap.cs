@@ -25,7 +25,7 @@ namespace WAV_Osu_NetApi.Bancho.Models
         public RankStatus ranked { get; set; }
         public Beatmapset beatmapset { get; set; }
         public Failtimes failtimes { get; set; }
-        public int max_combo { get; set; }
+        public int? max_combo { get; set; }
         public string status { get; set; }
         public string url { get; set; }
     }

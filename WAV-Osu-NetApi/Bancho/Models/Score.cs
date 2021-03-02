@@ -11,7 +11,7 @@ namespace WAV_Osu_NetApi.Bancho.Models
         public double accuracy { get; set; }
         public List<string> mods { get; set; }
         public int score { get; set; }
-        public int max_combo { get; set; }
+        public int? max_combo { get; set; }
         public bool perfect { get; set; }
         public Statistics statistics { get; set; }
         public double? pp { get; set; }

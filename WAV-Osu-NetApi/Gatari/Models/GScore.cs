@@ -20,7 +20,7 @@ namespace WAV_Osu_NetApi.Gatari.Models
         public int max_combo { get; set; } 
         public Mods mods { get; set; } 
         public int play_mode { get; set; } 
-        public double pp { get; set; } 
+        public double? pp { get; set; } 
         public string ranking { get; set; } 
         public int score { get; set; } 
         public DateTime time { get; set; } 

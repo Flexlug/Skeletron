@@ -30,8 +30,8 @@ namespace WAV_Osu_NetApi_Test
 
 
             User users = null;
-            api.TryGetUser(6885792, ref users);
-            api.GetUserRecentScores(6885792, true, 10);
+            api.GetBeatmap(2201460);
+            api.GetUserRecentScores(6885792, true, 3, 10);
             Console.WriteLine(users);
 
             #region Get best scores

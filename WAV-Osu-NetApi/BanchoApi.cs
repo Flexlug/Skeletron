@@ -140,12 +140,31 @@ namespace WAV_Osu_NetApi
         /// <param name="user">User's id</param>
         /// <param name="include_fails">Also show failed scores</param>
         /// <param name="limit">Scores count per one querry</param>
-        /// <returns></returns>
-        public List<Score> GetUserRecentScores(int user, bool include_fails, int limit)
+        /// <param name="mode">Mode: 0: osu, 1: taiko, 2: ctb, 3: mania</param>
+        public List<Score> GetUserRecentScores(int user, bool include_fails, int mode, int limit)
         {
+            string playmode = "osu";
+
+            switch(mode)
+            {
+                case 0:
+                    playmode = "osu";
+                    break;
+                case 1:
+                    playmode = "taiko";
+                    break;
+                case 2:
+                    playmode = "fruits";
+                    break;
+                case 3:
+                    playmode = "mania";
+                    break;
+            }
+
             IRestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{user}/scores/recent")
                 .AddHeader(@"Authorization", $@"Bearer {Token}")
-                .AddParameter("include_fails", include_fails)
+                .AddParameter("include_fails", include_fails ? 1 : 0)
+                .AddParameter("mode", playmode)
                 .AddParameter("limit", limit);
 
             IRestResponse resp = client.Execute(req);
@@ -187,6 +206,23 @@ namespace WAV_Osu_NetApi
             IRestResponse resp = client.Execute(req);
 
             Beatmapset bm = JsonConvert.DeserializeObject<Beatmapset>(resp.Content);
+
+            return bm;
+        }
+
+        /// <summary>
+        /// Get beatmap by it's id
+        /// </summary>
+        /// <param name="beatmapId">Beatmap id</param>
+        /// <returns></returns>
+        public Beatmap GetBeatmap(int beatmapId)
+        {
+            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmaps/{beatmapId}")
+                .AddHeader(@"Authorization", $@"Bearer {Token}");
+
+            IRestResponse resp = client.Execute(req);
+
+            Beatmap bm = JsonConvert.DeserializeObject<Beatmap>(resp.Content);
 
             return bm;
         }

@@ -9,6 +9,7 @@ using WAV_Osu_NetApi.Bancho.Models.Enums;
 using WAV_Osu_NetApi.Gatari.Models.Enums;
 using WAV_Osu_NetApi.Gatari.Models;
 using WAV_Osu_NetApi.Bancho.Models;
+using NLog;
 
 namespace WAV_Bot_DSharp.Converters
 {
@@ -17,10 +18,14 @@ namespace WAV_Bot_DSharp.Converters
         private DiscordClient client { get; set; }
         private OsuEmoji osuEmoji { get; set; }
 
-        public OsuUtils(DiscordClient client, OsuEmoji emoji)
+        private ILogger logger { get; set; }
+
+        public OsuUtils(DiscordClient client, OsuEmoji emoji, ILogger logger)
         {
             this.client = client;
             this.osuEmoji = emoji;
+
+            this.logger = logger;
         }
 
         /// <summary>
@@ -152,6 +157,7 @@ namespace WAV_Bot_DSharp.Converters
             embedMessage.AppendLine($"[{score.beatmap.song_name}](https://osu.gatari.pw/s/{score.beatmap.beatmapset_id}#osu/{score.beatmap.beatmap_id})\n▸ **Difficulty**: {score.beatmap.difficulty:##0.00}★ ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {ModsToString(score.mods)}");
             embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy:##0.00}%** ▸ **{score.pp}** {osuEmoji.PPEmoji()} ▸ **{score.max_combo}x/{score.beatmap.fc}x**");
 
+
             // mania
             if (score.play_mode == 3)
             {
@@ -197,8 +203,8 @@ namespace WAV_Bot_DSharp.Converters
 
 
             StringBuilder embedMessage = new StringBuilder();
-            embedMessage.AppendLine($"[{score.beatmapset.artist} - {score.beatmapset.title} [{score.beatmap.version}]](https://osu.ppy.sh/beatmapsets/{score.beatmapset.id}#osu/{score.beatmap.id})\n▸ **Difficulty**: {score.beatmap.difficulty_rating:##0.00}★ ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {string.Join(" ", score.mods)}");
-            embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy * 100:##0.00}%** ▸ **{score.pp}** {osuEmoji.PPEmoji()} ▸ **{score.max_combo}x/{score.beatmap}x**");
+            embedMessage.AppendLine($"[{score.beatmapset.artist} - {score.beatmapset.title} [{score.beatmap.version}]](https://osu.ppy.sh/beatmapsets/{score.beatmapset.id}#osu/{score.beatmap.id})\n▸ **Difficulty**: {score.beatmap.difficulty_rating:##0.00}★ ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {((score.mods is null || score.mods.Count == 0) ? "NM" : string.Join(" ", score.mods))}");
+            embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy * 100:##0.00}%** ▸ ** {(score.pp is null ? "-" : score.pp.ToString())} ** {osuEmoji.PPEmoji()} ▸ **{score.max_combo}x/{score.beatmap.max_combo}x**");
 
             // mania
             if (score.mode_int == 3)    
@@ -231,6 +237,43 @@ namespace WAV_Bot_DSharp.Converters
             embed.WithFooter($"Played at: {score.created_at}");
 
             return embed.Build();
+        }
+
+        /// <summary>
+        /// Check, if beatmap is closed on setted percetange
+        /// </summary>
+        /// <param name="score">Bancho score</param>
+        /// <param name="percentage">Required percentage</param>
+        /// <returns></returns>
+        public bool CheckFailedScoreProgress(Score score, double percentage)
+        {
+            int total_hits = score.statistics.count_50 + score.statistics.count_100 + score.statistics.count_300 + score.statistics.count_miss;
+            int expected_hits = score.beatmap.count_circles + score.beatmap.count_sliders + score.beatmap.count_spinners;
+
+            double progress = total_hits / expected_hits;
+
+            logger.Debug($"Failed progress: {progress}");
+
+            return progress > percentage;
+        }
+
+        /// <summary>
+        /// Check, if beatmap is closed on setted percetange
+        /// </summary>
+        /// <param name="score">Gatari score</param>
+        /// <param name="bm">Beatmap</param>
+        /// <param name="percentage">Required percentage</param>
+        /// <returns></returns>
+        public bool CheckFailedScoreProgress(GScore score, Beatmap bm, double percentage)
+        {
+            int total_hits = score.count_50 + score.count_100 + score.count_300 + score.count_miss;
+            int expected_hits = bm.count_circles + bm.count_sliders + bm.count_spinners;
+
+            double progress = total_hits / expected_hits;
+
+            logger.Debug($"Failed progress: {progress}");
+
+            return total_hits / expected_hits > percentage;
         }
 
     }
