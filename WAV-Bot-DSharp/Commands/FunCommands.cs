@@ -18,6 +18,13 @@ namespace WAV_Bot_DSharp.Commands
             ModuleName = "Fun commands";
 
             this.client = client;
+            this.client.MessageCreated += Client_DetectSayHi;
+        }
+
+        private async Task Client_DetectSayHi(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
+        {
+            if (e.Message.Content.Contains("привет скелетик") || e.Message.Content.Contains("скелетик привет"))
+                await e.Message.RespondAsync(":skull:");
         }
 
         /// <summary>

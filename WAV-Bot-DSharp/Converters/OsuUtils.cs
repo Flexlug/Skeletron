@@ -198,7 +198,7 @@ namespace WAV_Bot_DSharp.Converters
 
             StringBuilder embedMessage = new StringBuilder();
             embedMessage.AppendLine($"[{score.beatmapset.artist} - {score.beatmapset.title} [{score.beatmap.version}]](https://osu.ppy.sh/beatmapsets/{score.beatmapset.id}#osu/{score.beatmap.id})\n▸ **Difficulty**: {score.beatmap.difficulty_rating:##0.00}★ ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {string.Join(" ", score.mods)}");
-            embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy:##0.00}%** ▸ **{score.pp}** {osuEmoji.PPEmoji()} ▸ **{score.max_combo}x/{score.max_combo}x**");
+            embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy * 100:##0.00}%** ▸ **{score.pp}** {osuEmoji.PPEmoji()} ▸ **{score.max_combo}x/{score.beatmap}x**");
 
             // mania
             if (score.mode_int == 3)    
