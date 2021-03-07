@@ -40,7 +40,10 @@ namespace WAV_Osu_Recognizer_Test
 
                 Beatmapset bm = bms?.First();
 
-                Console.WriteLine($"{bm.artist} - {bm.title}\n{bm.creator}");
+                if (bm is null)
+                    Console.WriteLine("No beatmap found");
+                else
+                    Console.WriteLine($"{bm.artist} - {bm.title}\n{bm.creator}");
             }
         }
     }

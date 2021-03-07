@@ -105,6 +105,12 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             available_scores.AddRange(available_mania_scores);
 
+map            if (available_scores is null || available_scores.Count == 0)
+            {
+                logger.Debug($"No recent scores");
+                return;
+            }
+
             DateTime? latest_score = user.GatariRecentLastAt;
 
             DateTime latest_score_avaliable_time = available_scores.Select(x => x.time)
@@ -138,11 +144,13 @@ namespace WAV_Bot_DSharp.Services.Entities
 
                     bool shouldPost = true,
                          trackingFailed = false;
+                    double percentage = 0;
 
                     if (score.ranking.Equals("F"))
                     {
                         trackingFailed = true;
-                        if (!utils.CheckFailedScoreProgress(score, bb, 0.8) && !score.mods.HasFlag(WAV_Osu_NetApi.Bancho.Models.Enums.Mods.NoFail))
+                        percentage = utils.FailedScoreProgress(score, bb);
+                        if (percentage < 0.90 || score.mods.HasFlag(WAV_Osu_NetApi.Bancho.Models.Enums.Mods.NoFail) || mapLen < TimeSpan.FromMinutes(3))
                         {
                             shouldPost = false;
                         }
@@ -156,7 +164,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                         string msgContent = null;
 
                         if (trackingFailed)
-                            msgContent = $"Press {emoji.RankingEmoji("F")}";
+                            msgContent = $"Press {emoji.RankingEmoji("F")} Completed {percentage * 100:##0.00}%";
 
                         await client.SendMessageAsync(gatariRecentChannel,
                             embed: embed,
@@ -195,7 +203,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             if (available_scores is null || available_scores.Count == 0)
             {
-                logger.Info($"No recent scores");
+                logger.Debug($"No recent scores");
                 return;
             }
 
@@ -233,11 +241,14 @@ namespace WAV_Bot_DSharp.Services.Entities
 
                     bool shouldPost = true,
                          trackingFailed = false;
+                    double percentage = 0;
 
                     if (score.rank.Equals("F"))
                     {
                         trackingFailed = true;
-                        if (!utils.CheckFailedScoreProgress(score, 0.8) && !score.mods.Contains("NM"))
+                        percentage = utils.FailedScoreProgress(score);
+
+                        if (percentage < 0.90 || score.mods.Contains("NF") || mapLen <= TimeSpan.FromSeconds(170))
                         {
                             shouldPost = false;
                         }
@@ -249,7 +260,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                         string msgContent = null;
 
                         if (trackingFailed)
-                            msgContent = $"Press {emoji.RankingEmoji("F")}";
+                            msgContent = $"Press {emoji.RankingEmoji("F")} Completed {percentage * 100:##0.00}%";
 
                         await client.SendMessageAsync(banchoRecentChannel,
                             embed: embed,

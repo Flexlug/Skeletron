@@ -245,16 +245,16 @@ namespace WAV_Bot_DSharp.Converters
         /// <param name="score">Bancho score</param>
         /// <param name="percentage">Required percentage</param>
         /// <returns></returns>
-        public bool CheckFailedScoreProgress(Score score, double percentage)
+        public double FailedScoreProgress(Score score)
         {
             int total_hits = score.statistics.count_50 + score.statistics.count_100 + score.statistics.count_300 + score.statistics.count_miss;
             int expected_hits = score.beatmap.count_circles + score.beatmap.count_sliders + score.beatmap.count_spinners;
 
-            double progress = total_hits / expected_hits;
+            double progress = (double)total_hits / expected_hits;
 
             logger.Debug($"Failed progress: {progress}");
 
-            return progress > percentage;
+            return progress;
         }
 
         /// <summary>
@@ -264,16 +264,16 @@ namespace WAV_Bot_DSharp.Converters
         /// <param name="bm">Beatmap</param>
         /// <param name="percentage">Required percentage</param>
         /// <returns></returns>
-        public bool CheckFailedScoreProgress(GScore score, Beatmap bm, double percentage)
+        public double FailedScoreProgress(GScore score, Beatmap bm)
         {
             int total_hits = score.count_50 + score.count_100 + score.count_300 + score.count_miss;
             int expected_hits = bm.count_circles + bm.count_sliders + bm.count_spinners;
 
-            double progress = total_hits / expected_hits;
+            double progress = (double)total_hits / expected_hits;
 
             logger.Debug($"Failed progress: {progress}");
 
-            return total_hits / expected_hits > percentage;
+            return progress;
         }
 
     }

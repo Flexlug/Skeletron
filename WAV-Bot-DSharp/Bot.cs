@@ -42,7 +42,7 @@ namespace WAV_Bot_DSharp
             {
                 Token = Settings.Token,
                 TokenType = TokenType.Bot,
-                MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Information
+                MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Warning
             });
 
             // Activating Interactivity module for the DiscordClient

@@ -23,7 +23,8 @@ namespace WAV_Bot_DSharp.Commands
 
         private async Task Client_DetectSayHi(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
-            if (e.Message.Content.Contains("привет скелетик") || e.Message.Content.Contains("скелетик привет"))
+            string msg = e.Message.Content.ToLower();
+            if (msg.Contains("привет скелетик") || msg.Contains("скелетик привет") || msg.Contains("привет виталий") || msg.Contains("вставай припадочный") || msg.Contains("привет виталя"))
                 await e.Message.RespondAsync(":skull:");
         }
 

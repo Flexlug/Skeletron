@@ -21,6 +21,7 @@ namespace WAV_Osu_Recognizer
         {
             ocr = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default);
             ocr.SetVariable("tessedit_char_whitelist", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-[]!.?\'\"()~:_");
+            ocr.SetVariable("classify_enable_learning", false);
         }
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace WAV_Osu_Recognizer
                 for (int x = 0; x < Bmp.Width; x++)
                 {
                     c = Bmp.GetPixel(x, y);
-                    rgb = Math.Round(.299 * c.R + .587 * c.G + .114 * c.B) < 50 ? 1 : 255;
+                    rgb = Math.Round(.299 * c.R + .587 * c.G + .114 * c.B) < 120 ? 1 : 255;
                     Bmp.SetPixel(x, y, System.DrawingCore.Color.FromArgb(rgb, rgb, rgb));
                 }
         }
