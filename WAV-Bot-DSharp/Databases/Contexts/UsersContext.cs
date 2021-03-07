@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 using WAV_Bot_DSharp.Services.Structures;
 
-namespace WAV_Bot_DSharp.Services.Entities
+namespace WAV_Bot_DSharp.Databases.Contexts
 {
     public class UsersContext : DbContext
     {

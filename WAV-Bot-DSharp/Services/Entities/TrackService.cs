@@ -104,8 +104,8 @@ namespace WAV_Bot_DSharp.Services.Entities
             List<GScore> available_mania_scores = gapi.GetUserRecentScores((int)user.GatariId, 3, 3, true);
 
             available_scores.AddRange(available_mania_scores);
-
-map            if (available_scores is null || available_scores.Count == 0)
+            
+            if (available_scores is null || available_scores.Count == 0)
             {
                 logger.Debug($"No recent scores");
                 return;

@@ -20,6 +20,7 @@ using WAV_Bot_DSharp.Services.Interfaces;
 using DSharpPlus.Interactivity.Extensions;
 using WAV_Osu_NetApi;
 using WAV_Bot_DSharp.Converters;
+using WAV_Bot_DSharp.Databases.Contexts;
 
 namespace WAV_Bot_DSharp
 {
@@ -68,7 +69,7 @@ namespace WAV_Bot_DSharp
         {
             Logger.Debug("Configuring services");
             Services = new ServiceCollection()
-                .AddDbContext<UsersContext>()
+                //.AddDbContext<UsersContext>()
                 .AddDbContext<TrackedUserContext>()
                 .AddSingleton(Settings)
                 .AddSingleton<ILogger>(Logger)
