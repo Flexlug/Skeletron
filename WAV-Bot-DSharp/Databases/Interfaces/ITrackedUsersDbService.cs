@@ -28,7 +28,7 @@ namespace WAV_Bot_DSharp.Databases.Interfaces
         /// </summary>
         /// <param name="u">Gatari user</param>
         /// <returns></returns>
-        public Task<bool> RemoveGagariTrackRecentAsync(GUser u);
+        public Task<bool> RemoveGatariTrackRecentAsync(GUser u);
 
         /// <summary>
         /// Get next gatari user

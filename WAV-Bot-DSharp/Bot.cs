@@ -21,6 +21,8 @@ using DSharpPlus.Interactivity.Extensions;
 using WAV_Osu_NetApi;
 using WAV_Bot_DSharp.Converters;
 using WAV_Bot_DSharp.Databases.Contexts;
+using WAV_Bot_DSharp.Databases.Interfaces;
+using WAV_Bot_DSharp.Databases.Entities;
 
 namespace WAV_Bot_DSharp
 {
@@ -79,6 +81,7 @@ namespace WAV_Bot_DSharp
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
                 .AddSingleton<IRecognizerService, RecognizerService>()
+                .AddSingleton<ITrackedUsersDbService, TrackedUsersDbService>()
                 //.AddSingleton<IActivityService, ActivityService>()
                 .AddSingleton<ITrackService, TrackService>()
                 .BuildServiceProvider();
