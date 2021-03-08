@@ -272,7 +272,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             }
         }
 
-        #region Async implementation
+        #region Async abuse
 
         public Task<TrackedUser> NextBanchoUserAsync() => queue.QueueTask(() => NextBanchoUser());
         public Task<TrackedUser> NextGatariUserAsync() => queue.QueueTask(() => NextGatariUser());
