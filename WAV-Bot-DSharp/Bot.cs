@@ -139,10 +139,11 @@ namespace WAV_Bot_DSharp
             }
         }
 
-        private Task OnReady(DiscordClient client, ReadyEventArgs e)
+        private async Task OnReady(DiscordClient client, ReadyEventArgs e)
         {
+            await Discord.UpdateStatusAsync(new DSharpPlus.Entities.DiscordActivity("тебе в душу", DSharpPlus.Entities.ActivityType.Watching), DSharpPlus.Entities.UserStatus.Online);
+
             Log.Logger.Information("The bot is online");
-            return Task.CompletedTask;
         }
 
         ///// <summary>
