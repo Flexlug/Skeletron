@@ -47,6 +47,7 @@ namespace WAV_Bot_DSharp.Services.Entities
         GatariApi gapi = new GatariApi();
         BanchoApi bapi = null;
 
+
         private const int TIMER_INTERVAL = 10000;
 
         public TrackService(DiscordClient client, ILogger<TrackService> logger, ITrackedUsersDbService trackedUsers, OsuUtils utils, OsuEmoji emoji, BanchoApi bapi)
