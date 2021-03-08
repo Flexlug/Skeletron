@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using NLog;
 
 namespace WAV_Bot_DSharp.Commands
 {

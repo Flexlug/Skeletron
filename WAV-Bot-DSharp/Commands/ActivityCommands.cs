@@ -9,7 +9,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
-using NLog;
+using Microsoft.Extensions.Logging;
 
 using WAV_Bot_DSharp.Services;
 using WAV_Bot_DSharp.Services.Entities;
@@ -26,9 +26,9 @@ namespace WAV_Bot_DSharp.Commands
     {
         IReadOnlyDictionary<ulong, DiscordMember> serverUsers;
         IActivityService activity;
-        ILogger logger;
+        ILogger<ActivityCommands> logger;
 
-        public ActivityCommands(IActivityService activityService, ILogger logger)
+        public ActivityCommands(IActivityService activityService, ILogger<ActivityCommands> logger)
         {
             this.activity = activityService;
             this.logger = logger;;
@@ -63,7 +63,7 @@ namespace WAV_Bot_DSharp.Commands
                     }
                     catch(Exception e) 
                     {
-                        logger.Warn($"Can't find user {user.Uid}");
+                        logger.LogWarning($"Can't find user {user.Uid}");
                     }
 
                     embed.AddField($"{(member == null ? user.Uid.ToString() : member.DisplayName)}", $"{user.LastActivity.ToShortDateString()} {user.LastActivity.ToLongTimeString()} ({(int)(DateTime.Now - user.LastActivity).TotalDays} days AFK)");

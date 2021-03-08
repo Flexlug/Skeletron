@@ -1,14 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NLog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
 using WAV_Bot_DSharp.Databases.Interfaces;
 using WAV_Bot_DSharp.Services.Entities;
 using WAV_Bot_DSharp.Services.Structures;
 using WAV_Bot_DSharp.Threading;
+
 using WAV_Osu_NetApi.Gatari.Models;
 
 namespace WAV_Bot_DSharp.Databases.Entities
@@ -21,9 +24,9 @@ namespace WAV_Bot_DSharp.Databases.Entities
         private BackgroundQueue queue;
         private TrackedUserContext trackedUsersDb;
 
-        private ILogger logger;
+        private ILogger<TrackedUsersDbService> logger;
 
-        public TrackedUsersDbService(TrackedUserContext trackedUsers, ILogger logger)
+        public TrackedUsersDbService(TrackedUserContext trackedUsers, ILogger<TrackedUsersDbService> logger)
         {
             this.trackedUsersDb = trackedUsers;
             this.logger = logger;
@@ -70,7 +73,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             }
             catch (Exception e)
             {
-                logger.Error($"Error on AddTrackRecent {e.Message}\n{e.StackTrace}");
+                logger.LogError($"Error on AddTrackRecent {e.Message}\n{e.StackTrace}");
             }
         }
         private bool RemoveGatariTrackRecent(GUser u)
@@ -95,7 +98,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             }
             catch (Exception e)
             {
-                logger.Error($"Error on RemoveTrackRecent {e.Message}\n{e.StackTrace}");
+                logger.LogError($"Error on RemoveTrackRecent {e.Message}\n{e.StackTrace}");
                 return false;
             }
         }
@@ -122,7 +125,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             }
             catch (Exception e)
             {
-                logger.Error($"Error on RemoveTrackRecent {e.Message}\n{e.StackTrace}");
+                logger.LogError($"Error on RemoveTrackRecent {e.Message}\n{e.StackTrace}");
                 return false;
             }
         }
@@ -166,7 +169,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             }
             catch (Exception e)
             {
-                logger.Error($"Error on AddTrackRecent {e.Message}\n{e.StackTrace}");
+                logger.LogError($"Error on AddTrackRecent {e.Message}\n{e.StackTrace}");
             }
         }
 
@@ -195,7 +198,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             }
             catch (Exception e)
             {
-                logger.Error($"Error on NextBanchoUser {e.Message}\n{e.StackTrace}");
+                logger.LogError($"Error on NextBanchoUser {e.Message}\n{e.StackTrace}");
                 return null;
             }
         }
@@ -225,7 +228,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             }
             catch (Exception e)
             {
-                logger.Error($"Error on NextGatariUser {e.Message}\n{e.StackTrace}");
+                logger.LogError($"Error on NextGatariUser {e.Message}\n{e.StackTrace}");
                 return null;
             }
         }
@@ -247,7 +250,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             }
             catch (Exception e)
             {
-                logger.Error($"Error on UpdateBanchoRecentTime {e.Message}\n{e.StackTrace}");
+                logger.LogError($"Error on UpdateBanchoRecentTime {e.Message}\n{e.StackTrace}");
             }
         }
 
@@ -268,7 +271,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             }
             catch (Exception e)
             {
-                logger.Error($"Error on UpdateGatariRecentTime {e.Message}\n{e.StackTrace}");
+                logger.LogError($"Error on UpdateGatariRecentTime {e.Message}\n{e.StackTrace}");
             }
         }
 

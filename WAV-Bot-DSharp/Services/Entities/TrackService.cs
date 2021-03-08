@@ -19,8 +19,8 @@ using WAV_Bot_DSharp.Services.Interfaces;
 using WAV_Bot_DSharp.Services.Structures;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
-using NLog;
 using WAV_Bot_DSharp.Converters;
 using WAV_Bot_DSharp.Databases.Interfaces;
 
@@ -31,7 +31,7 @@ namespace WAV_Bot_DSharp.Services.Entities
     /// </summary>
     public class TrackService : ITrackService
     {
-        private ILogger logger;
+        private ILogger<TrackService> logger;
 
         ITrackedUsersDbService trackedUsers;
 
@@ -49,7 +49,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private const int TIMER_INTERVAL = 10000;
 
-        public TrackService(DiscordClient client, ILogger logger, ITrackedUsersDbService trackedUsers, OsuUtils utils, OsuEmoji emoji, BanchoApi bapi)
+        public TrackService(DiscordClient client, ILogger<TrackService> logger, ITrackedUsersDbService trackedUsers, OsuUtils utils, OsuEmoji emoji, BanchoApi bapi)
         {
             timer = new Timer(TIMER_INTERVAL);
             timer.Elapsed += Check;
@@ -64,9 +64,9 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             gatariRecentChannel = client.GetChannelAsync(800124240908648469).Result;
             banchoRecentChannel = client.GetChannelAsync(815949279566888961).Result;
-            logger.Info($"Gatari tracker channel: {gatariRecentChannel.Name}");
-            logger.Info($"Bancho tracker channel: {banchoRecentChannel.Name}");
-            logger.Info($"Timer interval: {TIMER_INTERVAL} ms");
+            logger.LogInformation($"Gatari tracker channel: {gatariRecentChannel.Name}");
+            logger.LogInformation($"Bancho tracker channel: {banchoRecentChannel.Name}");
+            logger.LogInformation($"Timer interval: {TIMER_INTERVAL} ms");
         }
 
         private void Check(object sender, ElapsedEventArgs e)
@@ -83,17 +83,17 @@ namespace WAV_Bot_DSharp.Services.Entities
             if (user is null)
                 return;
 
-            logger.Debug("Gatari");
-            logger.Debug(user.GatariId);
+            logger.LogDebug("Gatari");
+            logger.LogDebug(user.GatariId.ToString());
 
             GUser guser = null;
             if (!gapi.TryGetUser((int)user.GatariId, ref guser))
             {
-                logger.Warn($"Couldn't find user {user.GatariId} on Gatari, but the record exists in database!");
+                logger.LogWarning($"Couldn't find user {user.GatariId} on Gatari, but the record exists in database!");
                 return;
             }
 
-            logger.Debug(guser.username);
+            logger.LogDebug(guser.username);
 
             List<GScore> new_scores = new List<GScore>();
             List<GScore> available_scores = gapi.GetUserRecentScores((int)user.GatariId, 0, 3, true);
@@ -103,7 +103,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             
             if (available_scores is null || available_scores.Count == 0)
             {
-                logger.Debug($"No recent scores");
+                logger.LogDebug($"No recent scores");
                 return;
             }
 
@@ -113,7 +113,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                                                .OrderByDescending(x => x)
                                                .First() + TimeSpan.FromSeconds(10);
 
-            logger.Debug($"{latest_score_avaliable_time} : {latest_score}");
+            logger.LogDebug($"{latest_score_avaliable_time} : {latest_score}");
 
             if (latest_score is null)
             {
@@ -177,17 +177,17 @@ namespace WAV_Bot_DSharp.Services.Entities
             if (user is null)
                 return;
 
-            logger.Debug("Bancho");
-            logger.Debug(user.BanchoId);
+            logger.LogDebug("Bancho");
+            logger.LogDebug(user.BanchoId.ToString());
 
             User buser = null;
             if (!bapi.TryGetUser((int)user.BanchoId, ref buser))
             {
-                logger.Warn($"Couldn't find user {user.BanchoId} on Gatari, but the record exists in database!");
+                logger.LogWarning($"Couldn't find user {user.BanchoId} on Gatari, but the record exists in database!");
                 return;
             }
 
-            logger.Debug(buser.username);
+            logger.LogDebug(buser.username);
 
             List<Score> new_scores = new List<Score>();
             List<Score> available_scores = bapi.GetUserRecentScores((int)user.BanchoId, true, 0, 3);
@@ -197,7 +197,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             if (available_scores is null || available_scores.Count == 0)
             {
-                logger.Debug($"No recent scores");
+                logger.LogDebug($"No recent scores");
                 return;
             }
 
@@ -207,7 +207,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                                                .OrderByDescending(x => x)
                                                .First() + TimeSpan.FromSeconds(10);
 
-            logger.Debug($"{latest_score_avaliable_time} : {latest_score}");
+            logger.LogDebug($"{latest_score_avaliable_time} : {latest_score}");
 
             if (latest_score is null)
             {

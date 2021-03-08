@@ -5,7 +5,8 @@ using System.Collections.Generic;
 
 using WAV_Bot_DSharp.Threading;
 using WAV_Bot_DSharp.Services.Structures;
-using NLog;
+
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -15,9 +16,9 @@ namespace WAV_Bot_DSharp.Services.Entities
         private BackgroundQueue queue;
         private Timer timer;
 
-        private ILogger logger;
+        private ILogger<ShedulerService> logger;
 
-        public ShedulerService(ILogger logger)
+        public ShedulerService(ILogger<ShedulerService> logger)
         {
             sheduledTasks = new List<SheduledTask>();
             queue = new BackgroundQueue();
@@ -27,12 +28,12 @@ namespace WAV_Bot_DSharp.Services.Entities
             timer = new Timer(1000);
             timer.Elapsed += Timer_Elapsed;
 
-            logger.Info("ShedulerService started");
+            logger.LogInformation("ShedulerService started");
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            logger.Debug("ShedulerService timer elapsed");
+            logger.LogDebug("ShedulerService timer elapsed");
 
             foreach (var task in sheduledTasks)
                 if (task.Ready())
@@ -45,7 +46,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         public void StartSheduler()
         {
-            logger.Debug("ShedulerService timer started");
+            logger.LogDebug("ShedulerService timer started");
             timer.Start();
         }
 

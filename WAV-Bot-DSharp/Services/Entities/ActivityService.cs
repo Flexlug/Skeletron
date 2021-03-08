@@ -6,8 +6,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using NLog;
-
 using DSharpPlus;
 using DSharpPlus.Entities;
 
@@ -17,6 +15,7 @@ using WAV_Bot_DSharp.Services.Interfaces;
 using WAV_Bot_DSharp.Databases.Contexts;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -45,9 +44,9 @@ namespace WAV_Bot_DSharp.Services.Entities
         //    }
         //}
 
-        ILogger logger;
+        ILogger<ActivityService> logger;
 
-        public ActivityService(UsersContext users, DiscordClient client, ILogger logger)
+        public ActivityService(UsersContext users, DiscordClient client, ILogger<ActivityService> logger)
         {
             this.client = client;
             this.usersDb = users;
@@ -64,7 +63,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             ConfigureEvents(client);
 
-            logger.Info("ActivityService loaded");
+            logger.LogInformation("ActivityService loaded");
         }
 
         /// <summary>
@@ -100,7 +99,7 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// <returns></returns>
         private async Task RequestUpdateUser(DiscordUser user, string reason)
         {
-            logger.Info($"UserUpdate: {user.Username}: {reason}");
+            logger.LogInformation($"UserUpdate: {user.Username}: {reason}");
             await ManualUpdateToPresentAsync(user.Id);
         }
 
@@ -137,7 +136,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
             catch (Exception e)
             {
-                logger.Error(e, "Error in AddUser method");
+                logger.LogError(e, "Error in AddUser method");
                 return false;
             }
         }
@@ -165,7 +164,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
             catch (Exception e)
             {
-                logger.Error(e, "Error in GetAFKUSers");
+                logger.LogError(e, "Error in GetAFKUSers");
                 return null;
             }
         }
@@ -210,7 +209,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
             catch (Exception e)
             {
-                logger.Error(e, "Error in UpdateCurrentUsers");
+                logger.LogError(e, "Error in UpdateCurrentUsers");
                 return 0;
             }
         }
@@ -231,7 +230,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                     foreach (UserInfo user in existingUsers)
                         if (!currentMembers.ContainsKey(user.Uid))
                         {
-                            logger.Info($"Going to delete {user.Uid}");
+                            logger.LogInformation($"Going to delete {user.Uid}");
                             absentUsers.Add(user);
                         }
 
@@ -249,7 +248,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
             catch (Exception e)
             {
-                logger.Error(e, "Error in ExcludeAbsentUsers");
+                logger.LogError(e, "Error in ExcludeAbsentUsers");
                 return 0;
             }
         }
@@ -273,7 +272,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
             catch (Exception e)
             {
-                logger.Error(e, "Error in ManualUpdateToPresent");
+                logger.LogError(e, "Error in ManualUpdateToPresent");
             }
         }
 
@@ -298,7 +297,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
             catch (Exception e)
             {
-                logger.Error(e, "Error in ManualUpdate");
+                logger.LogError(e, "Error in ManualUpdate");
             }
         }
 
@@ -325,7 +324,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
             catch (Exception e)
             {
-                logger.Error(e, "Error in ViewActivityInfo");
+                logger.LogError(e, "Error in ViewActivityInfo");
                 return null;
             }
         }
@@ -350,7 +349,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
             catch (Exception e)
             {
-                logger.Error(e, "Error in GetUser");
+                logger.LogError(e, "Error in GetUser");
                 return null;
             }
         }
@@ -377,7 +376,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             catch (Exception e)
             {
-                logger.Error(e, "Error in RemoveUser");
+                logger.LogError(e, "Error in RemoveUser");
             }
         }
 

@@ -9,7 +9,8 @@ using WAV_Osu_NetApi.Bancho.Models.Enums;
 using WAV_Osu_NetApi.Gatari.Models.Enums;
 using WAV_Osu_NetApi.Gatari.Models;
 using WAV_Osu_NetApi.Bancho.Models;
-using NLog;
+
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Converters
 {
@@ -20,7 +21,7 @@ namespace WAV_Bot_DSharp.Converters
 
         private ILogger logger { get; set; }
 
-        public OsuUtils(DiscordClient client, OsuEmoji emoji, ILogger logger)
+        public OsuUtils(DiscordClient client, OsuEmoji emoji, ILogger<OsuUtils> logger)
         {
             this.client = client;
             this.osuEmoji = emoji;
@@ -252,7 +253,7 @@ namespace WAV_Bot_DSharp.Converters
 
             double progress = (double)total_hits / expected_hits;
 
-            logger.Debug($"Failed progress: {progress}");
+            logger.LogDebug($"Failed progress: {progress}");
 
             return progress;
         }
@@ -271,7 +272,7 @@ namespace WAV_Bot_DSharp.Converters
 
             double progress = (double)total_hits / expected_hits;
 
-            logger.Debug($"Failed progress: {progress}");
+            logger.LogDebug($"Failed progress: {progress}");
 
             return progress;
         }

@@ -1,35 +1,35 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.EventArgs;
-using DSharpPlus.Interactivity;
 using DSharpPlus.VoiceNext;
+using DSharpPlus.EventArgs;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
+
+using WAV_Osu_NetApi;
 
 using WAV_Bot_DSharp.Commands;
 using WAV_Bot_DSharp.Services;
 using WAV_Bot_DSharp.Services.Entities;
 using WAV_Bot_DSharp.Configurations;
-
-using NLog;
-using System.Globalization;
-using WAV_Bot_DSharp.Services.Interfaces;
-using DSharpPlus.Interactivity.Extensions;
-using WAV_Osu_NetApi;
 using WAV_Bot_DSharp.Converters;
 using WAV_Bot_DSharp.Databases.Contexts;
 using WAV_Bot_DSharp.Databases.Interfaces;
 using WAV_Bot_DSharp.Databases.Entities;
+using WAV_Bot_DSharp.Services.Interfaces;
+
+using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp
 {
     public class Bot : IDisposable
     {
-        private readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
         private CommandsNextExtension CommandsNext { get; set; }
         private DiscordClient Discord { get; }
         private Settings Settings { get; }
@@ -37,15 +37,19 @@ namespace WAV_Bot_DSharp
         private bool IsDisposed { get; set; }
         private bool IsRunning { get; set; }
 
+        ILoggerFactory logFactory;
+
         public Bot(Settings settings)
         {
             Settings = settings;
+
+            logFactory = new LoggerFactory().AddSerilog();
 
             Discord = new DiscordClient(new DiscordConfiguration
             {
                 Token = Settings.Token,
                 TokenType = TokenType.Bot,
-                MinimumLogLevel = Microsoft.Extensions.Logging.LogLevel.Warning
+                LoggerFactory = logFactory
             });
 
             // Activating Interactivity module for the DiscordClient
@@ -69,12 +73,12 @@ namespace WAV_Bot_DSharp
 
         public void ConfigureServices()
         {
-            Logger.Debug("Configuring services");
+            Log.Logger.Debug("Configuring services");
             Services = new ServiceCollection()
                 //.AddDbContext<UsersContext>()
+                .AddLogging(conf => conf.AddSerilog(dispose: true))
                 .AddDbContext<TrackedUserContext>()
                 .AddSingleton(Settings)
-                .AddSingleton<ILogger>(Logger)
                 .AddSingleton(Discord)
                 .AddSingleton<OsuEmoji>()
                 .AddSingleton<OsuUtils>()
@@ -82,14 +86,14 @@ namespace WAV_Bot_DSharp
                 .AddSingleton(new GatariApi())
                 .AddSingleton<IRecognizerService, RecognizerService>()
                 .AddSingleton<ITrackedUsersDbService, TrackedUsersDbService>()
-                //.AddSingleton<IActivityService, ActivityService>()
+                .AddSingleton<IActivityService, ActivityService>()
                 .AddSingleton<ITrackService, TrackService>()
                 .BuildServiceProvider();
         }
 
         private void RegisterCommands()
         {
-            Logger.Debug("Registering commands");
+            Log.Logger.Debug("Registering commands");
             var commandsNextConfiguration = new CommandsNextConfiguration
             {
                 StringPrefixes = Settings.Prefixes,
@@ -114,7 +118,7 @@ namespace WAV_Bot_DSharp
 
         private void RegisterEvents()
         {
-            Logger.Debug("Registering events");
+            Log.Logger.Debug("Registering events");
             Discord.Ready += OnReady;
             //Discord.DebugLogger
             //Discord.Logger.Log += OnLogMessageReceived;
@@ -137,7 +141,7 @@ namespace WAV_Bot_DSharp
 
         private Task OnReady(DiscordClient client, ReadyEventArgs e)
         {
-            Logger.Info("The bot is online");
+            Log.Logger.Information("The bot is online");
             return Task.CompletedTask;
         }
 

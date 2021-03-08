@@ -7,8 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using NLog;
-
 using DSharpPlus;
 using DSharpPlus.Entities;
 
@@ -24,6 +22,8 @@ using WAV_Osu_NetApi.Gatari.Models;
 using WAV_Osu_NetApi.Gatari.Models.Enums;
 using WAV_Bot_DSharp.Converters;
 
+using Microsoft.Extensions.Logging;
+
 namespace WAV_Bot_DSharp.Services.Entities
 {
     /// <summary>
@@ -32,7 +32,7 @@ namespace WAV_Bot_DSharp.Services.Entities
     public class RecognizerService : IRecognizerService
     {
         private DiscordClient client;
-        private ILogger logger;
+        private ILogger<RecognizerService> logger;
 
         private WebClient webClient;
 
@@ -47,7 +47,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private BackgroundQueue queue;
 
-        public RecognizerService(DiscordClient client, Settings settings, ILogger logger, OsuEmoji emoji)
+        public RecognizerService(DiscordClient client, Settings settings, ILogger<RecognizerService> logger, OsuEmoji emoji)
         {
             this.client = client;
             this.logger = logger;
@@ -64,7 +64,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             queue = new BackgroundQueue();
 
-            logger.Debug("Osu service started");
+            logger.LogDebug("Osu service started");
             ConfigureFilesInterceptor(client);
         }
 
@@ -85,7 +85,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return;
             }
 
-            logger.Debug($"Detected attachments. Count: {attachments.Count}");
+            logger.LogDebug($"Detected attachments. Count: {attachments.Count}");
 
             foreach (DiscordAttachment attachment in attachments)
                 if (attachment.Width > 800 && attachment.Height > 600)
@@ -123,7 +123,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             if (ignoreList.ContainsKey(banchoBeatmap.id))
             {
-                logger.Info($"Beatmap is in ignore list {banchoBeatmap.id}");
+                logger.LogInformation($"Beatmap is in ignore list {banchoBeatmap.id}");
                 return;
             }
 
@@ -174,7 +174,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             string[] rawrecedText = recognizer.RecognizeTopText(image).Split('\n');
 
             foreach (string s in rawrecedText)
-                logger.Debug(s);
+                logger.LogDebug(s);
 
             // Searching for first non-empty string
             string recedText = string.Empty;
@@ -186,16 +186,16 @@ namespace WAV_Bot_DSharp.Services.Entities
                     break;
                 }
 
-            logger.Debug($"Recognized text: {recedText}");
+            logger.LogDebug($"Recognized text: {recedText}");
 
             // Cut artist
             int indexStart = recedText.IndexOf('-');
             if (indexStart != -1)
             {
-                logger.Debug("Cutting artist");
+                logger.LogDebug("Cutting artist");
                 recedText = recedText.Substring(indexStart).TrimStart(new char[] { ' ', '-' });
             }
-            logger.Debug($"Searching for: {recedText}");
+            logger.LogDebug($"Searching for: {recedText}");
             List<Beatmapset> bmsl = api.Search(recedText, WAV_Osu_NetApi.Bancho.QuerryParams.MapType.Any);
 
 
@@ -205,11 +205,11 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return null;
 
             string diffName = recedText.Substring(indexStart);
-            logger.Debug($"diffName: {diffName}");
+            logger.LogDebug($"diffName: {diffName}");
 
             if (bmsl == null || bmsl.Count == 0)
             {
-                logger.Debug($"Api search return null or empty List");
+                logger.LogDebug($"Api search return null or empty List");
                 return null;
             }
 
@@ -239,14 +239,14 @@ namespace WAV_Bot_DSharp.Services.Entities
             if (!string.IsNullOrEmpty(mapper))
             {
                 mapper = mapper?.Substring(10);
-                logger.Debug($"Got mapper: {mapper}. Comparing...");
+                logger.LogDebug($"Got mapper: {mapper}. Comparing...");
                 List<Tuple<Beatmapset, double>> bsm = bmsl.Select(x => Tuple.Create(x, WAV_Osu_Recognizer.StringComparer.Compare(x.creator, mapper)))
                                                            .OrderByDescending(x => x.Item2)
                                                            .ToList();
 
 
                 foreach (var b in bsm)
-                    logger.Debug($"{b.Item1.creator}: {b.Item2}");
+                    logger.LogDebug($"{b.Item1.creator}: {b.Item2}");
 
                 if (bsm == null || bsm.Count == 0)
                     bms = bmsl.FirstOrDefault();
@@ -261,21 +261,21 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             if (bms == null)
             {
-                logger.Debug($"No beatmapsets");
+                logger.LogDebug($"No beatmapsets");
                 return null; 
             }
             else
             {
-                logger.Debug($"Beatmapsets count: {bmsl.Count}");
+                logger.LogDebug($"Beatmapsets count: {bmsl.Count}");
             }
 
 
             List<Tuple<Beatmap, double>> bmds = bms.beatmaps.Select(x => Tuple.Create(x, WAV_Osu_Recognizer.StringComparer.Compare(x.version, diffName)))
                                                      .OrderByDescending(x => x.Item2)
                                                      .ToList();
-            logger.Debug("Comparing beatmap versions:");
+            logger.LogDebug("Comparing beatmap versions:");
             foreach (var k in bmds)
-                logger.Debug($"{k.Item1.version} {k.Item2}");
+                logger.LogDebug($"{k.Item1.version} {k.Item2}");
 
 
 
