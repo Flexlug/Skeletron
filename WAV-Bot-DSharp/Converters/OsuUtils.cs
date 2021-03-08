@@ -155,6 +155,7 @@ namespace WAV_Bot_DSharp.Converters
 
 
             StringBuilder embedMessage = new StringBuilder();
+            embedMessage.AppendLine($"▸ **Mapper**: {score.beatmap.creator}");
             embedMessage.AppendLine($"[{score.beatmap.song_name}](https://osu.gatari.pw/s/{score.beatmap.beatmapset_id}#osu/{score.beatmap.beatmap_id})\n▸ **Difficulty**: {score.beatmap.difficulty:##0.00}★ ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {ModsToString(score.mods)}");
             embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy:##0.00}%** ▸ **{$"{(double)score.pp:##0.00}"}** {osuEmoji.PPEmoji()} ▸ **{score.max_combo}x/{score.beatmap.fc}x**");
 
@@ -204,6 +205,7 @@ namespace WAV_Bot_DSharp.Converters
 
 
             StringBuilder embedMessage = new StringBuilder();
+            embedMessage.AppendLine($"▸ **Mapper**:  {score.beatmapset.creator}");
             embedMessage.AppendLine($"[{score.beatmapset.artist} - {score.beatmapset.title} [{score.beatmap.version}]](https://osu.ppy.sh/beatmapsets/{score.beatmapset.id}#osu/{score.beatmap.id})\n▸ **Difficulty**: {score.beatmap.difficulty_rating:##0.00}★ ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {((score.mods is null || score.mods.Count == 0) ? "NM" : string.Join(" ", score.mods))}");
             embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy * 100:##0.00}%** ▸ ** {(score.pp is null ? "-" : $"{(double)score.pp:##0.00}")} ** {osuEmoji.PPEmoji()} ▸ **{score.max_combo}x/{score.beatmap.max_combo}x**");
 
