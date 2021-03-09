@@ -84,9 +84,6 @@ namespace WAV_Bot_DSharp.Services.Entities
             if (user is null)
                 return;
 
-            logger.LogDebug("Gatari");
-            logger.LogDebug(user.GatariId.ToString());
-
             GUser guser = null;
             if (!gapi.TryGetUser((int)user.GatariId, ref guser))
             {
@@ -94,7 +91,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return;
             }
 
-            logger.LogDebug(guser.username);
+            logger.LogDebug($"Gatari {guser.username} {user.GatariId.ToString()}");
 
             List<GScore> new_scores = new List<GScore>();
             List<GScore> available_scores = gapi.GetUserRecentScores((int)user.GatariId, 0, 3, true);
@@ -114,7 +111,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                                                .OrderByDescending(x => x)
                                                .First() + TimeSpan.FromSeconds(10);
 
-            logger.LogDebug($"{latest_score_avaliable_time} : {latest_score}");
+            logger.LogDebug($"{guser.username} latest tracked: {latest_score_avaliable_time} latest known: {latest_score}");
 
             if (latest_score is null)
             {
@@ -178,9 +175,6 @@ namespace WAV_Bot_DSharp.Services.Entities
             if (user is null)
                 return;
 
-            logger.LogDebug("Bancho");
-            logger.LogDebug(user.BanchoId.ToString());
-
             User buser = null;
             if (!bapi.TryGetUser((int)user.BanchoId, ref buser))
             {
@@ -188,7 +182,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return;
             }
 
-            logger.LogDebug(buser.username);
+            logger.LogDebug($"Bancho {buser.username} {user.BanchoId.ToString()}");
 
             List<Score> new_scores = new List<Score>();
             List<Score> available_scores = bapi.GetUserRecentScores((int)user.BanchoId, true, 0, 3);
@@ -208,7 +202,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                                                .OrderByDescending(x => x)
                                                .First() + TimeSpan.FromSeconds(10);
 
-            logger.LogDebug($"{latest_score_avaliable_time} : {latest_score}");
+            logger.LogDebug($"{buser.username} latest tracked: {latest_score_avaliable_time} latest known: {latest_score}");
 
             if (latest_score is null)
             {
