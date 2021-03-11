@@ -259,6 +259,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
             else
             {
+                logger.LogInformation($"Couldn't get mapper");
                 bms = bmsl.FirstOrDefault();
             }
 
@@ -283,7 +284,10 @@ namespace WAV_Bot_DSharp.Services.Entities
 
 
 
-            return Tuple.Create(bms, bmds.First().Item1);
+            var result = Tuple.Create(bms, bmds.First().Item1);
+
+            logger.LogInformation($"Success. bms_id: {result.Item1.id}, bm_id: {result.Item2.id}");
+            return result;
         }
     }
 }
