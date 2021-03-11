@@ -90,6 +90,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             foreach (DiscordAttachment attachment in attachments)
                 if (attachment.Width > 800 && attachment.Height > 600)
                 {
+                    logger.LogInformation($"Beatmap detect attempt");
                     ThreadPool.QueueUserWorkItem(new WaitCallback(async delegate(object state) 
                     { 
                         await ExecuteMessageTrack(e.Message, attachment); 
@@ -203,7 +204,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             indexStart = recedText.IndexOf('[');
             if (indexStart == -1)
             {
-                logger.LogDebug($"Coulnd't get map difficulty");
+                logger.LogInformation($"Coulnd't get map difficulty");
                 return null;
             }
 
@@ -212,7 +213,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             if (bmsl == null || bmsl.Count == 0)
             {
-                logger.LogDebug($"Api search return null or empty List");
+                logger.LogInformation($"Api search return null or empty List");
                 return null;
             }
 
@@ -264,7 +265,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             if (bms == null)
             {
-                logger.LogDebug($"No beatmapsets");
+                logger.LogInformation($"No matching beatmapsets");
                 return null; 
             }
             else
