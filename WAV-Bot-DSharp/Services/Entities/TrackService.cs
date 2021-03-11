@@ -91,7 +91,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return;
             }
 
-            logger.LogDebug($"Gatari {guser.username} {user.GatariId.ToString()}");
+            logger.LogDebug($"Got gatari user {guser.username} id {user.GatariId.ToString()}");
 
             List<GScore> new_scores = new List<GScore>();
             List<GScore> available_scores = gapi.GetUserRecentScores((int)user.GatariId, 0, 3, true);
@@ -111,7 +111,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                                                .OrderByDescending(x => x)
                                                .First() + TimeSpan.FromSeconds(10);
 
-            logger.LogDebug($"{guser.username} latest tracked: {latest_score_avaliable_time} latest known: {latest_score}");
+            logger.LogDebug($"Gatari user {guser.username}: latest tracked: {latest_score_avaliable_time} latest known: {latest_score}");
 
             if (latest_score is null)
             {
@@ -131,6 +131,8 @@ namespace WAV_Bot_DSharp.Services.Entities
             {
                 foreach (var score in new_scores)
                 {
+                    logger.LogDebug($"Found new score for {guser.username}");
+
                     await trackedUsers.UpdateGatariRecentTimeAsync(user.Id, latest_score_avaliable_time);
                     TimeSpan mapLen = TimeSpan.FromSeconds(score.beatmap.hit_length);
 

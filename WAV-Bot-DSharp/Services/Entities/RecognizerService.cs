@@ -202,7 +202,10 @@ namespace WAV_Bot_DSharp.Services.Entities
             // Get map diff
             indexStart = recedText.IndexOf('[');
             if (indexStart == -1)
+            {
+                logger.LogDebug($"Coulnd't get map difficulty");
                 return null;
+            }
 
             string diffName = recedText.Substring(indexStart);
             logger.LogDebug($"diffName: {diffName}");
