@@ -1,0 +1,2175 @@
+{
+    "variables": [],
+    "info": {
+        "name": "osu!web API",
+        "_postman_id": "bb1afcfc-7f00-45c9-9006-99d5b6d7a4fb",
+        "description": "",
+        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.0.0\/collection.json"
+    },
+    "item": [
+        {
+            "name": "Beatmaps",
+            "description": "",
+            "item": [
+                {
+                    "name": "Lookup Beatmap",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/beatmaps\/lookup",
+                            "query": [
+                                {
+                                    "key": "checksum",
+                                    "value": "culpa",
+                                    "description": "A beatmap checksum.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "filename",
+                                    "value": "culpa",
+                                    "description": "A filename to lookup.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "id",
+                                    "value": "culpa",
+                                    "description": "A beatmap ID to lookup.",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Returns beatmap.\n\n---\n\n### Response format\n\nSee [Get Beatmap](#get-beatmap)",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get a User Beatmap score",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/beatmaps\/:beatmap\/scores\/users\/:user",
+                            "query": [
+                                {
+                                    "key": "mode",
+                                    "value": "culpa",
+                                    "description": "The [GameMode](#gamemode) to get scores for.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "mods",
+                                    "value": "culpa",
+                                    "description": "An array of matching Mods, or none \/\/ TODO.",
+                                    "disabled": false
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "id": "beatmap",
+                                    "key": "beatmap",
+                                    "value": "culpa",
+                                    "description": "Id of the [Beatmap](#beatmap)."
+                                },
+                                {
+                                    "id": "user",
+                                    "key": "user",
+                                    "value": "culpa",
+                                    "description": "Id of the [User](#user)."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Return a [User](#user)'s score on a Beatmap\n\n---\n\n### Response Format\n\nReturns [BeatmapUserScore](#beatmapuserscore)\n\nThe position returned depends on the requested mode and mods.",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get Beatmap scores",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/beatmaps\/:beatmap\/scores",
+                            "query": [
+                                {
+                                    "key": "mode",
+                                    "value": "culpa",
+                                    "description": "The [GameMode](#gamemode) to get scores for.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "mods",
+                                    "value": "culpa",
+                                    "description": "An array of matching Mods, or none \/\/ TODO.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "culpa",
+                                    "description": "Beatmap score ranking type \/\/ TODO.",
+                                    "disabled": false
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "id": "beatmap",
+                                    "key": "beatmap",
+                                    "value": "culpa",
+                                    "description": "Id of the [Beatmap](#beatmap)."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Returns the top scores for a beatmap\n\n---\n\n### Response Format\n\nReturns [BeatmapScores](#beatmapscores)",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get Beatmap",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/beatmaps\/:beatmap",
+                            "query": [],
+                            "variable": [
+                                {
+                                    "id": "beatmap",
+                                    "key": "beatmap",
+                                    "value": "culpa",
+                                    "description": "The ID of the beatmap."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Gets beatmap data for the specified beatmap ID.\n\n---\n\n### Response format\n\nReturns [Beatmap](#beatmap) object.\nFollowing attributes are included in the response object when applicable,\n\nAttribute                            | Notes\n-------------------------------------|------\nbeatmapset                           | Includes ratings property.\nfailtimes                            | |\nmax_combo                            | |",
+                        "response": []
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Chat",
+            "description": "",
+            "item": [
+                {
+                    "name": "Create New PM",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/chat\/new",
+                            "query": []
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"target_id\": 12,\n    \"message\": \"culpa\",\n    \"is_action\": false\n}"
+                        },
+                        "description": "This endpoint allows you to create a new PM channel.\n\n---\n\n### Response Format\n\nField            | Type\n---------------- | -----------------\nnew_channel_id   | `channel_id` of newly created [ChatChannel](#chatchannel)\npresence         | array of [ChatChannel](#chatchannel)\nmessage          | the sent [ChatMessage](#chatmessage)\n\n<aside class=\"notice\">\n  This endpoint will only allow the creation of PMs initially, group chat support will come later.\n<\/aside>",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get Updates",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/chat\/updates",
+                            "query": [
+                                {
+                                    "key": "since",
+                                    "value": "culpa",
+                                    "description": "The `message_id` of the last message to retrieve messages since",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "channel_id",
+                                    "value": "culpa",
+                                    "description": "If provided, will only return messages for the given channel",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "12",
+                                    "description": "number of messages to return (max of 50)",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "This endpoint returns new messages since the given `message_id` along with updated channel 'presence' data.\n\n---\n\n### Response Format\n\nField            | Type\n---------------- | -----------------\npresence         | array of [ChatChannel](#chatchannel)\nmessages         | array of [ChatMessage](#chatmessage)\n\n<aside class=\"notice\">\n  Note that this returns messages for all channels the user has joined.\n<\/aside>",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get Channel Messages",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/chat\/channels\/:channel\/messages",
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "12",
+                                    "description": "number of messages to return (max of 50)",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "since",
+                                    "value": "culpa",
+                                    "description": "messages after the specified message id will be returned",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "until",
+                                    "value": "culpa",
+                                    "description": "messages up to but not including the specified message id will be returned",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "This endpoint returns the chat messages for a specific channel.\n\n---\n\n### Response Format\n\nReturns an array of [ChatMessage](#chatmessage)",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Send Message to Channel",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/chat\/channels\/:channel\/messages",
+                            "query": [
+                                {
+                                    "key": "channel_id",
+                                    "value": "culpa",
+                                    "description": "The `channel_id` of the channel to send message to",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"message\": \"culpa\",\n    \"is_action\": false\n}"
+                        },
+                        "description": "This endpoint returns the chat messages for a specific channel.\n\n---\n\n### Response Format\n\nThe sent [ChatMessage](#chatmessage)\n\n<aside class=\"notice\">\n  When sending a message, the <code>last_read_id<\/code> for the <a href='#chatchannel'>ChatChannel<\/a> is also updated to mark the new message as read.\n<\/aside>",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Join Channel",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/chat\/channels\/:channel\/users\/:user",
+                            "query": []
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "This endpoint allows you to join a public channel.\n\n---\n\n### Response Format\n\nReturns the joined [ChatChannel](#chatchannel).\n\n<aside class=\"notice\">\n  This endpoint will only allow the joining of public channels initially.\n<\/aside>",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Leave Channel",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/chat\/channels\/:channel\/users\/:user",
+                            "query": []
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "This endpoint allows you to leave a public channel.\n\n---\n\n### Response Format\n\n_empty response_\n\n<aside class=\"notice\">\n  This endpoint will only allow the leaving of public channels initially.\n<\/aside>",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Mark Channel as Read",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/chat\/channels\/:channel\/mark-as-read\/:message",
+                            "query": [
+                                {
+                                    "key": "channel_id",
+                                    "value": "culpa",
+                                    "description": "The `channel_id` of the channel to mark as read",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "message_id",
+                                    "value": "culpa",
+                                    "description": "The `message_id` of the message to mark as read up to",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "This endpoint marks the channel as having being read up to the given `message_id`.\n\n---\n\n### Response Format\n\n_empty response_\n\n<aside class=\"notice\">\n  Note that the read marker cannot be moved backwards - i.e. if a channel has been marked as read up to <code>message_id = 12<\/code>, you cannot then set it backwards to <code>message_id = 10<\/code>. It will be rejected.\n<\/aside>",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get Channel List",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/chat\/channels",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "This endpoint returns a list of all joinable public channels.\n\n---\n\n### Response Format\n\nReturns an array of [ChatChannel](#chatchannel)",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Create Channel",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/chat\/channels",
+                            "query": []
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"type\": \"culpa\",\n    \"target_id\": 12\n}"
+                        },
+                        "description": "This endpoint creates a new channel if doesn't exist and joins it.\nCurrently only for rejoining existing PM channels which the user has left.\n\n---\n\n### Response Format\n\nReturns [ChatChannel](#chatchannel) with `recent_messages` attribute.\nNote that if there's no existing PM channel, most of the fields will be blank.\nIn that case, [send a message](#create-new-pm) instead to create the channel.",
+                        "response": []
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Comments",
+            "description": "",
+            "item": [
+                {
+                    "name": "Get Comments",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/comments",
+                            "query": [
+                                {
+                                    "key": "commentable_type",
+                                    "value": "culpa",
+                                    "description": "The type of resource to get comments for.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "commentable_id",
+                                    "value": "culpa",
+                                    "description": "The id of the resource to get comments for.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "cursor",
+                                    "value": "culpa",
+                                    "description": "Pagination option. See [CommentSort](#commentsort) for detail. The format follows [Cursor](#cursor) except it's not currently included in the response.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "parent_id",
+                                    "value": "culpa",
+                                    "description": "Limit to comments which are reply to the specified id. Specify 0 to get top level comments.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "culpa",
+                                    "description": "Sort option as defined in [CommentSort](#commentsort). Defaults to `new` for guests and user-specified default when authenticated.",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Returns a list comments and their replies up to 2 levels deep.\n\n---\n\n### Response Format\n\nReturns [CommentBundle](#commentbundle).\n\n`pinned_comments` is only included when `commentable_type` and `commentable_id` are specified.",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Post a new comment",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/comments",
+                            "query": [
+                                {
+                                    "key": "comment.commentable_id",
+                                    "value": "culpa",
+                                    "description": "Resource ID the comment thread is attached to",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "comment.commentable_type",
+                                    "value": "culpa",
+                                    "description": "Resource type the comment thread is attached to",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "comment.message",
+                                    "value": "culpa",
+                                    "description": "Text of the comment",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "comment.parent_id",
+                                    "value": "culpa",
+                                    "description": "The id of the comment to reply to, null if not a reply",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Posts a new comment to a comment thread.\n\n---\n\n### Response Format\n\nReturns [CommentBundle](#commentbundle)",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get a Comment",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/comments\/:comment",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Gets a comment and its replies up to 2 levels deep.\n\n---\n\n### Response Format\n\nReturns [CommentBundle](#commentbundle)",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Edit Comment",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/comments\/:comment",
+                            "query": [
+                                {
+                                    "key": "comment.message",
+                                    "value": "culpa",
+                                    "description": "New text of the comment",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Edit an existing comment.\n\n---\n\n### Response Format\n\nReturns [CommentBundle](#commentbundle)",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Delete Comment",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/comments\/:comment",
+                            "query": []
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Deletes the specified comment.\n\n---\n\n### Response Format\n\nReturns [CommentBundle](#commentbundle)",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Add Comment vote",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/comments\/:comment\/vote",
+                            "query": []
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Upvotes a comment.\n\n---\n\n### Response Format\n\nReturns [CommentBundle](#commentbundle)",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Remove Comment vote",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/comments\/:comment\/vote",
+                            "query": []
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Un-upvotes a comment.\n\n---\n\n### Response Format\n\nReturns [CommentBundle](#commentbundle)",
+                        "response": []
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Forum",
+            "description": "",
+            "item": [
+                {
+                    "name": "Get Topic and Posts",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/forums\/topics\/:topic",
+                            "query": [
+                                {
+                                    "key": "cursor",
+                                    "value": "",
+                                    "description": "[Cursor](#cursor) for pagination.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "",
+                                    "description": "Post sorting option. Valid values are `id_asc` (default) and `id_desc`.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "",
+                                    "description": "Maximum number of posts to be returned (20 default, 50 at most).",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "start",
+                                    "value": "",
+                                    "description": "First post id to be returned with `sort` set to `id_asc`. This parameter is ignored if `cursor` is specified.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "end",
+                                    "value": "",
+                                    "description": "First post id to be returned with `sort` set to `id_desc`. This parameter is ignored if `cursor` is specified.",
+                                    "disabled": true
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "id": "topic",
+                                    "key": "topic",
+                                    "value": "1",
+                                    "description": "Id of the topic."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Get topic and its posts.\n\n---\n\n### Response Format\n\nField  | Type                       | Notes\n------ | -------------------------- | -----\ncursor | [Cursor](#cursor)          | |\nsearch |                            | Parameters used for current request excluding cursor.\nposts  | [ForumPost](#forum-post)[] | Includes `body`.\ntopic  | [ForumTopic](#forum-topic) | |",
+                        "response": []
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Home",
+            "description": "",
+            "item": [
+                {
+                    "name": "Search",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/search",
+                            "query": [
+                                {
+                                    "key": "mode",
+                                    "value": "all",
+                                    "description": "Either `all`, `user`, or `wiki_page`. Default is `all`.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "query",
+                                    "value": "hello",
+                                    "description": "Search keyword.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Search result page. Ignored for mode `all`.",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Searches users and wiki pages.\n\n---\n\n### Response Format\n\nField     | Type                          | Description\n--------- | ----------------------------- | -----------\nuser      | SearchResult&lt;UserCompact>? | For `all` or `user` mode. Only first 100 results are accessible\nwiki_page | SearchResult&lt;WikiPage>?    | For `all` or `wiki_page` mode\n\n#### SearchResult&lt;T>\n\nField | Type   | Description\n----- | ------ | -----------\ndata  | T[]    | |\ntotal | number | |",
+                        "response": []
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Multiplayer",
+            "description": "Returns detail of highest score of specified user and the surrounding scores.\n\n---\n\n### Response Format\n\nReturns [MultiplayerScore](#multiplayerscore) object.",
+            "item": [
+                {
+                    "name": "Get User High Score",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/rooms\/:room\/playlist\/:playlist\/scores\/users\/:user",
+                            "query": [],
+                            "variable": [
+                                {
+                                    "id": "room",
+                                    "key": "room",
+                                    "value": "culpa",
+                                    "description": "Id of the room."
+                                },
+                                {
+                                    "id": "playlist",
+                                    "key": "playlist",
+                                    "value": "culpa",
+                                    "description": "Id of the playlist item."
+                                },
+                                {
+                                    "id": "user",
+                                    "key": "user",
+                                    "value": "culpa",
+                                    "description": "User id."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get Scores",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/rooms\/:room\/playlist\/:playlist\/scores",
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "culpa",
+                                    "description": "Number of scores to be returned.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "culpa",
+                                    "description": "[MultiplayerScoresSort](#multiplayerscoressort) parameter.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "cursor",
+                                    "value": "culpa",
+                                    "description": "[MultiplayerScoresCursor](#multiplayerscorescursor) parameter.",
+                                    "disabled": false
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "id": "room",
+                                    "key": "room",
+                                    "value": "culpa",
+                                    "description": "Id of the room."
+                                },
+                                {
+                                    "id": "playlist",
+                                    "key": "playlist",
+                                    "value": "culpa",
+                                    "description": "Id of the playlist item."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get a Score",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/rooms\/:room\/playlist\/:playlist\/scores\/:score",
+                            "query": [],
+                            "variable": [
+                                {
+                                    "id": "room",
+                                    "key": "room",
+                                    "value": "culpa",
+                                    "description": "Id of the room."
+                                },
+                                {
+                                    "id": "playlist",
+                                    "key": "playlist",
+                                    "value": "culpa",
+                                    "description": "Id of the playlist item."
+                                },
+                                {
+                                    "id": "score",
+                                    "key": "score",
+                                    "value": "culpa",
+                                    "description": "Id of the score."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Notification",
+            "description": "",
+            "item": [
+                {
+                    "name": "Get Notifications",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/notifications",
+                            "query": [
+                                {
+                                    "key": "max_id",
+                                    "value": "culpa",
+                                    "description": "Maximum `id` fetched. Can be used to load earlier notifications. Defaults to no limit (fetch latest notifications)",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "This endpoint returns a list of the user's unread notifications. Sorted descending by `id` with limit of 50.\n\n---\n\n### Response Format\n\nReturns an object containing [Notification](#notification) and other related attributes.\n\nField                 | Type\n--------------------- | ---------------------------------------------------\nhas_more              | boolean whether or not there are more notifications\nnotifications         | array of [Notification](#notification)\nunread_count          | total unread notifications\nnotification_endpoint | url to connect to websocket server",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Mark Notifications as Read",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/notifications\/mark-read",
+                            "query": []
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"ids\": \"[1, 2, 3]\"\n}"
+                        },
+                        "description": "This endpoint allows you to mark notifications read.\n\n---\n\n### Response Format\n\n_empty response_",
+                        "response": []
+                    }
+                }
+            ]
+        },
+        {
+            "name": "OAuth Tokens",
+            "description": "",
+            "item": [
+                {
+                    "name": "Revoke current token",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/oauth\/tokens\/current",
+                            "query": []
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Revokes currently authenticated token.",
+                        "response": []
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Ranking",
+            "description": "",
+            "item": [
+                {
+                    "name": "Get Ranking",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/rankings\/:mode\/:type",
+                            "query": [
+                                {
+                                    "key": "country",
+                                    "value": "JP",
+                                    "description": "Filter ranking by country code. Only available for `type` of `performance`.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "cursor",
+                                    "value": "",
+                                    "description": "[Cursor](#cursor).",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "filter",
+                                    "value": "all",
+                                    "description": "Either `all` (default) or `friends`.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "spotlight",
+                                    "value": "",
+                                    "description": "The id of the spotlight if `type` is `charts`. Ranking for latest spotlight will be returned if not specified.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "variant",
+                                    "value": "4k",
+                                    "description": "Filter ranking to specified mode variant. For `mode` of `mania`, it's either `4k` or `7k`. Only available for `type` of `performance`.",
+                                    "disabled": false
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "id": "mode",
+                                    "key": "mode",
+                                    "value": "mania",
+                                    "description": "[GameMode](#gamemode)."
+                                },
+                                {
+                                    "id": "type",
+                                    "key": "type",
+                                    "value": "performance",
+                                    "description": "[RankingType](#rankingtype)."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Gets the current ranking for the specified type and game mode.\n\n---\n\n### Response Format\n\nReturns [Rankings](#rankings)",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get Spotlights",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/spotlights",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Gets the list of spotlights.\n\n---\n\n### Response Format\n\nReturns [Spotlights](#spotlights)",
+                        "response": []
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Undocumented",
+            "description": "",
+            "item": [
+                {
+                    "name": "api\/v2\/beatmapsets\/events",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/beatmapsets\/events",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/beatmapsets\/{beatmapset}\/favourites",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/beatmapsets\/:beatmapset\/favourites",
+                            "query": []
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/chat\/presence",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/chat\/presence",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/changelog\/{stream}\/{build}",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/changelog\/:stream\/:build",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/changelog",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/changelog",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/changelog\/{changelog}",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/changelog\/:changelog",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/matches",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/matches",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/matches\/{match}",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/matches\/:match",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/rooms\/{mode?}",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/rooms\/:mode",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/rooms\/{room}\/users\/{user}",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/rooms\/:room\/users\/:user",
+                            "query": []
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/rooms\/{room}\/users\/{user}",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/rooms\/:room\/users\/:user",
+                            "query": []
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/rooms\/{room}\/leaderboard",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/rooms\/:room\/leaderboard",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/rooms\/{room}\/playlist\/{playlist}\/scores",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/rooms\/:room\/playlist\/:playlist\/scores",
+                            "query": []
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/rooms\/{room}\/playlist\/{playlist}\/scores\/{score}",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/rooms\/:room\/playlist\/:playlist\/scores\/:score",
+                            "query": []
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/reports",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/reports",
+                            "query": []
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/rooms",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/rooms",
+                            "query": []
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/rooms\/{room}",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/rooms\/:room",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/seasonal-backgrounds",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/seasonal-backgrounds",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/scores\/{mode}\/{score}\/download",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/scores\/:mode\/:score\/download",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/scores\/{mode}\/{score}",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/scores\/:mode\/:score",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/beatmapsets\/search\/{filters?}",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/beatmapsets\/search\/:filters",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/beatmapsets\/lookup",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/beatmapsets\/lookup",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/beatmapsets\/{beatmapset}\/download",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/beatmapsets\/:beatmapset\/download",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/beatmapsets\/{beatmapset}",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/beatmapsets\/:beatmapset",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/friends",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/friends",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/me\/download-quota-check",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/me\/download-quota-check",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/news",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/news",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "api\/v2\/news\/{news}",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/news\/:news",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "",
+                        "response": []
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Users",
+            "description": "",
+            "item": [
+                {
+                    "name": "Get Own Data",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/me\/:mode",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Similar to [Get User](#get-user) but with authenticated user (token owner) as user id.\n\n---\n\n### Response format\n\nSee [Get User](#get-user).",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get User Kudosu",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/users\/:user\/kudosu",
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "12",
+                                    "description": "Maximum number of results.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "offset",
+                                    "value": "1",
+                                    "description": "Result offset for pagination.",
+                                    "disabled": false
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "id": "user",
+                                    "key": "user",
+                                    "value": "1",
+                                    "description": "Id of the user."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Returns kudosu history.\n\n---\n\n### Response format\n\nArray of [KudosuHistory](#kudosuhistory).",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get User Scores",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/users\/:user\/scores\/:type",
+                            "query": [
+                                {
+                                    "key": "include_fails",
+                                    "value": "0",
+                                    "description": "Only for recent scores, include scores of failed plays. Set to 1 to include them. Defaults to 0.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "mode",
+                                    "value": "osu",
+                                    "description": "[GameMode](#gamemode) of the scores to be returned. Defaults to the specified `user`'s mode.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "12",
+                                    "description": "Maximum number of results.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "offset",
+                                    "value": "1",
+                                    "description": "Result offset for pagination.",
+                                    "disabled": false
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "id": "user",
+                                    "key": "user",
+                                    "value": "1",
+                                    "description": "Id of the user."
+                                },
+                                {
+                                    "id": "type",
+                                    "key": "type",
+                                    "value": "best",
+                                    "description": "Score type. Must be one of these: `best`, `firsts`, `recent`."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "This endpoint returns the scores of specified user.\n\n---\n\n### Response format\n\nArray of [Score](#score).\nFollowing attributes are included in the response object when applicable.\n\nAttribute  | Notes\n-----------|----------------------\nbeatmap    | |\nbeatmapset | |\nweight     | Only for type `best`.\nuser       | |",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get User Beatmaps",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/users\/:user\/beatmapsets\/:type",
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "12",
+                                    "description": "Maximum number of results.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "offset",
+                                    "value": "1",
+                                    "description": "Result offset for pagination.",
+                                    "disabled": false
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "id": "user",
+                                    "key": "user",
+                                    "value": "1",
+                                    "description": "Id of the user."
+                                },
+                                {
+                                    "id": "type",
+                                    "key": "type",
+                                    "value": "favourite",
+                                    "description": "Beatmap type."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Returns the beatmaps of specified user.\n\n| Type                |\n|---------------------|\n| favourite           |\n| graveyard           |\n| loved               |\n| most_played         |\n| ranked_and_approved |\n| unranked            |\n\n---\n\n### Response format\n\nArray of [Beatmapset](#beatmapset).",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get User Recent Activity",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/users\/:user\/recent_activity",
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "12",
+                                    "description": "Maximum number of results.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "offset",
+                                    "value": "1",
+                                    "description": "Result offset for pagination.",
+                                    "disabled": false
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "id": "user",
+                                    "key": "user",
+                                    "value": "1",
+                                    "description": "Id of the user."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Returns recent activity.\n\n---\n\n### Response format\n\nArray of [Event](#event).",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get User",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/users\/:user\/:mode",
+                            "query": [],
+                            "variable": [
+                                {
+                                    "id": "user",
+                                    "key": "user",
+                                    "value": "1",
+                                    "description": "Id of the user."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "This endpoint returns the detail of specified user.\n\n---\n\n### Response format\n\nReturns [User](#user) object.\nFollowing attributes are included in the response object when applicable.\n\nAttribute                            | Notes\n-------------------------------------|------\naccount_history                      | |\nactive_tournament_banner             | |\nbadges                               | |\nbeatmap_playcounts_count             | |\nfavourite_beatmapset_count           | |\nfollower_count                       | |\ngraveyard_beatmapset_count           | |\ngroups                               | |\nloved_beatmapset_count               | |\nmonthly_playcounts                   | |\npage                                 | |\nprevious_usernames                   | |\nrank_history                         | For specified mode.\nranked_and_approved_beatmapset_count | |\nreplays_watched_counts               | |\nscores_best_count                    | For specified mode.\nscores_first_count                   | For specified mode.\nscores_recent_count                  | For specified mode.\nstatistics                           | For specified mode. Inluces `rank` and `variants` attributes.\nsupport_level                        | |\nunranked_beatmapset_count            | |\nuser_achievements                    | |",
+                        "response": []
+                    }
+                },
+                {
+                    "name": "Get Users",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/users",
+                            "query": [
+                                {
+                                    "key": "ids[]",
+                                    "value": "1",
+                                    "description": "User id to be returned. Specify once for each user id requested. Up to 50 users can be requested at once.",
+                                    "disabled": false
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Returns list of users.\n\n---\n\n### Response format\n\nField | Type                          | Description\n----- | ----------------------------- | -----------\nusers | [UserCompact](#usercompact)[] | Includes: country, cover, groups, statistics_fruits, statistics_mania, statistics_osu, statistics_taiko.",
+                        "response": []
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Wiki",
+            "description": "",
+            "item": [
+                {
+                    "name": "Get Wiki Page",
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "osu.ppy.sh",
+                            "path": "api\/v2\/wiki\/:locale\/:path",
+                            "query": []
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "The wiki article or image data.\n\n---\n\n### Response Format\n\nReturns [WikiPage](#wikipage).",
+                        "response": []
+                    }
+                }
+            ]
+        }
+    ]
+}

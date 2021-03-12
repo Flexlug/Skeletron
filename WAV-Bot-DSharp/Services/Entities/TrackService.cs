@@ -180,11 +180,11 @@ namespace WAV_Bot_DSharp.Services.Entities
             User buser = null;
             if (!bapi.TryGetUser((int)user.BanchoId, ref buser))
             {
-                logger.LogWarning($"Couldn't find user {user.BanchoId} on Gatari, but the record exists in database!");
+                logger.LogWarning($"Couldn't find user {user.BanchoId} on Bancho, but the record exists in database!");
                 return;
             }
 
-            logger.LogDebug($"Bancho {buser.username} {user.BanchoId.ToString()}");
+            logger.LogDebug($"Got bancho user {buser.username} id {user.BanchoId}");
 
             List<Score> new_scores = new List<Score>();
             List<Score> available_scores = bapi.GetUserRecentScores((int)user.BanchoId, true, 0, 3);
@@ -204,7 +204,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                                                .OrderByDescending(x => x)
                                                .First() + TimeSpan.FromSeconds(10);
 
-            logger.LogDebug($"{buser.username} latest tracked: {latest_score_avaliable_time} latest known: {latest_score}");
+            logger.LogDebug($"Bancho user {buser.username}: latest tracked: {latest_score_avaliable_time} latest known: {latest_score}");
 
             if (latest_score is null)
             {
@@ -224,8 +224,10 @@ namespace WAV_Bot_DSharp.Services.Entities
             {
                 foreach (var score in new_scores)
                 {
+                    logger.LogDebug($"Found new score for {buser.username}");
+
                     await trackedUsers.UpdateBanchoRecentTimeAsync(user.Id, latest_score_avaliable_time);
-                    TimeSpan mapLen = TimeSpan.FromSeconds(score.beatmap.hit_length);
+                    TimeSpan mapLen = TimeSpan.FromSeconds(score.beatmap.total_length);
 
                     // For max_combo info
                     score.beatmap = bapi.GetBeatmap(score.beatmap.id);
