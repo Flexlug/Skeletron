@@ -30,8 +30,10 @@ namespace WAV_Osu_Recognizer
         /// <returns></returns>
         public string RecognizeTopText(Image image)
         {
-            Bitmap bmp = new Bitmap(image);
-            ToGrayScale(bmp);
+            Image bmp = new Bitmap(image);
+
+            ToGrayScale(bmp as Bitmap);
+            bmp = AddTopWhiteSpace(bmp);
 
             string fileName = $"temp/{DateTime.Now.Ticks}_BW.jpg";
             bmp.Save(fileName);
@@ -58,9 +60,21 @@ namespace WAV_Osu_Recognizer
                 for (int x = 0; x < Bmp.Width; x++)
                 {
                     c = Bmp.GetPixel(x, y);
-                    rgb = Math.Round(.299 * c.R + .587 * c.G + .114 * c.B) < 120 ? 1 : 255;
+                    rgb = Math.Round(.299 * c.R + .587 * c.G + .114 * c.B) < 120 ? 255 : 1;
                     Bmp.SetPixel(x, y, System.DrawingCore.Color.FromArgb(rgb, rgb, rgb));
                 }
+        }
+
+        public Image AddTopWhiteSpace(Image input)
+        {
+            Image newBtmp = new Bitmap(input.Width, input.Height + 10);
+            Graphics g = Graphics.FromImage(newBtmp);
+
+            g.FillRectangle(Brushes.White, System.DrawingCore.Rectangle.FromLTRB(1, 1, newBtmp.Width - 1, newBtmp.Height - 1));
+            g.DrawImageUnscaled(input, 1, 10);
+
+            g.Flush();
+            return newBtmp;
         }
 
         /// <summary>
