@@ -20,7 +20,7 @@ namespace WAV_Osu_Recognizer
         public Recognizer()
         {
             ocr = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default);
-            ocr.SetVariable("tessedit_char_whitelist", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-[]!.?\'\"()~:_");
+            //ocr.SetVariable("tessedit_char_whitelist", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-[]!.?\'\"()~:_");
             ocr.SetVariable("classify_enable_learning", false);
         }
 

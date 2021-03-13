@@ -14,11 +14,11 @@ namespace WAV_Bot_DSharp.Commands
     /// Предоставляет команды для osu!
     /// </summary>
     [Hidden]
-    public class OsuCommands : SkBaseCommandModule
+    public class RecognizerCommands : SkBaseCommandModule
     {
         IRecognizerService osu;
 
-        public OsuCommands(IRecognizerService osu)
+        public RecognizerCommands(IRecognizerService osu)
         {
             this.osu = osu;
         }
