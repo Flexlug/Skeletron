@@ -181,7 +181,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             string recedText = string.Empty;
 
             foreach (string s in rawrecedText)
-                if (!string.IsNullOrWhiteSpace(s) && s.Length > 4)
+                if (!string.IsNullOrWhiteSpace(s) && s.Length > 10)
                 {
                     recedText = s;
                     break;
