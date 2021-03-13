@@ -244,7 +244,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             {
                 mapper = mapper?.Substring(10);
                 logger.LogDebug($"Got mapper: {mapper}. Comparing...");
-                List<Tuple<Beatmapset, double>> bsm = bmsl.Select(x => Tuple.Create(x, WAV_Osu_Recognizer.StringComparer.Compare(x.creator, mapper)))
+                List<Tuple<Beatmapset, double>> bsm = bmsl.Select(x => Tuple.Create(x, WAV_Osu_Recognizer.RecStringComparer.Compare(x.creator, mapper)))
                                                            .OrderByDescending(x => x.Item2)
                                                            .ToList();
 
@@ -275,7 +275,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
 
 
-            List<Tuple<Beatmap, double>> bmds = bms.beatmaps.Select(x => Tuple.Create(x, WAV_Osu_Recognizer.StringComparer.Compare(x.version, diffName)))
+            List<Tuple<Beatmap, double>> bmds = bms.beatmaps.Select(x => Tuple.Create(x, WAV_Osu_Recognizer.RecStringComparer.Compare(x.version, diffName)))
                                                      .OrderByDescending(x => x.Item2)
                                                      .ToList();
             logger.LogDebug("Comparing beatmap versions:");
