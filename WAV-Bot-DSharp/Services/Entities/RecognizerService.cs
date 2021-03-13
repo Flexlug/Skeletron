@@ -177,11 +177,11 @@ namespace WAV_Bot_DSharp.Services.Entities
             foreach (string s in rawrecedText)
                 logger.LogDebug(s);
 
-            // Searching for first non-empty string
+            // Searching for first non-empty or almost string
             string recedText = string.Empty;
 
             foreach (string s in rawrecedText)
-                if (!string.IsNullOrWhiteSpace(s))
+                if (!string.IsNullOrWhiteSpace(s) && s.Length > 4)
                 {
                     recedText = s;
                     break;
