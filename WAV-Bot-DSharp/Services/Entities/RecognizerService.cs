@@ -191,11 +191,15 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             // Cut artist
             int indexStart = recedText.IndexOf('-');
+            if (indexStart == -1)
+                indexStart = recedText.IndexOf('–');
+
             if (indexStart != -1)
             {
                 logger.LogDebug("Cutting artist");
-                recedText = recedText.Substring(indexStart).TrimStart(new char[] { ' ', '-' });
+                recedText = recedText.Substring(indexStart).TrimStart(new char[] { ' ', '-', '–' });
             }
+
             logger.LogDebug($"Searching for: {recedText}");
             List<Beatmapset> bmsl = api.Search(recedText, WAV_Osu_NetApi.Bancho.QuerryParams.MapType.Any);
 
@@ -208,7 +212,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return null;
             }
 
-            string diffName = recedText.Substring(indexStart);
+            string diffName = recedText.Substring(indexStart).TrimStart('[').TrimEnd(']');
             logger.LogDebug($"diffName: {diffName}");
 
             if (bmsl == null || bmsl.Count == 0)
