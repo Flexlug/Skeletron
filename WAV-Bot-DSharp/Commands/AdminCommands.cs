@@ -10,7 +10,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
-
+using Microsoft.Extensions.Logging;
 using WAV_Bot_DSharp.Services;
 
 namespace WAV_Bot_DSharp.Commands
@@ -23,9 +23,15 @@ namespace WAV_Bot_DSharp.Commands
     {
         private DiscordEmoji[] _pollEmojiCache;
 
-        public AdminCommands()
+        private ILogger<AdminCommands> logger;
+
+        public AdminCommands(ILogger<AdminCommands> logger)
         {
             ModuleName = "Admin";
+
+            this.logger = logger;
+
+            logger.LogInformation("AdminCommands loaded");
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -11,9 +12,15 @@ namespace WAV_Bot_DSharp.Commands
     /// </summary>
     public sealed class UserCommands : SkBaseCommandModule
     {
-        public UserCommands() 
+        private ILogger<UserCommands> logger;
+
+        public UserCommands(ILogger<UserCommands> logger)
         {
             ModuleName = "Utils";
+
+            this.logger = logger;
+
+            logger.LogInformation("UserCommands loaded");
         }
 
         /// <summary>

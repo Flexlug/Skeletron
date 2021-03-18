@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -11,6 +12,15 @@ namespace WAV_Bot_DSharp.Commands
     [Hidden]
     public sealed class DemonstrationCommands : SkBaseCommandModule
     {
+        private ILogger<DemonstrationCommands> logger;
+
+        public DemonstrationCommands(ILogger<DemonstrationCommands> logger)
+        {
+            this.logger = logger;
+
+            logger.LogInformation("DemostrationCommands loaded");
+        }
+
         /// <summary>
         /// With this command you can send a message to any discord server (Guild) which the bot is a part of,
         /// as long the Bot is on the server and got enough permissions to send a message to the targeted channel.

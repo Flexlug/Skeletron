@@ -32,6 +32,8 @@ namespace WAV_Bot_DSharp.Commands
         {
             this.activity = activityService;
             this.logger = logger;;
+
+            logger.LogInformation("ActivityCommands loaded");
         }
 
         /// <summary>

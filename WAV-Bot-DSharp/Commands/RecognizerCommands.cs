@@ -7,6 +7,7 @@ using WAV_Bot_DSharp.Services;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using WAV_Bot_DSharp.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -16,11 +17,15 @@ namespace WAV_Bot_DSharp.Commands
     [Hidden]
     public class RecognizerCommands : SkBaseCommandModule
     {
-        IRecognizerService osu;
+        private IRecognizerService osu;
+        private ILogger<RecognizerCommands> logger;
 
-        public RecognizerCommands(IRecognizerService osu)
+        public RecognizerCommands(IRecognizerService osu, ILogger<RecognizerCommands> logger)
         {
             this.osu = osu;
+            this.logger = logger;
+
+            logger.LogInformation("RecognizerCommands loaded");
         }
 
         [Command("dummy"), Description("Send a message to a specified channel in a special guild")]

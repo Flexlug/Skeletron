@@ -2,6 +2,7 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,14 +12,18 @@ namespace WAV_Bot_DSharp.Commands
 {
     public sealed class FunCommands : SkBaseCommandModule
     {
-        DiscordClient client;
+        private DiscordClient client;
+        private ILogger<FunCommands> logger;
 
-        public FunCommands(DiscordClient client)
+        public FunCommands(DiscordClient client, ILogger<FunCommands> logger)
         {
             ModuleName = "Fun commands";
 
+            this.logger = logger;
             this.client = client;
             this.client.MessageCreated += Client_DetectSayHi;
+
+            logger.LogInformation("FunCommands loaded");
         }
 
         private async Task Client_DetectSayHi(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)

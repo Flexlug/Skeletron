@@ -14,6 +14,7 @@ using WAV_Bot_DSharp.Services.Interfaces;
 using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Gatari.Models;
 using WAV_Osu_NetApi.Bancho.Models;
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -27,14 +28,18 @@ namespace WAV_Bot_DSharp.Commands
         private ITrackService tracking;
         private GatariApi gapi;
         private BanchoApi bapi;
+        private ILogger<TrackCommands> logger;
 
-        public TrackCommands(ITrackService trackService, BanchoApi bapi, GatariApi gapi)
+        public TrackCommands(ITrackService trackService, BanchoApi bapi, GatariApi gapi, ILogger<TrackCommands> logger)
         {
             ModuleName = "Tracking";
 
             tracking = trackService;
+            this.logger = logger;
             this.gapi = gapi;
             this.bapi = bapi;
+
+            logger.LogInformation("TrackCommands loaded");
         }
 
         [Command("track-gatari-recent"), Description("Start tracking user's recent scores on gatari")]

@@ -64,7 +64,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             queue = new BackgroundQueue();
 
-            logger.LogDebug("Osu service started");
+            logger.LogInformation("Osu service started");
             ConfigureFilesInterceptor(client);
         }
 
@@ -88,16 +88,19 @@ namespace WAV_Bot_DSharp.Services.Entities
             logger.LogDebug($"Detected attachments. Count: {attachments.Count}");
 
             foreach (DiscordAttachment attachment in attachments)
-                if (attachment.Width > 800 && attachment.Height > 600)
-                {
-                    logger.LogInformation($"Beatmap detect attempt");
-                    ThreadPool.QueueUserWorkItem(new WaitCallback(async delegate(object state) 
-                    { 
-                        await ExecuteMessageTrack(e.Message, attachment); 
-                    }));
+            {
+                if (!(attachment.Width > 800 && attachment.Height > 600))
+                    continue;
 
-                    break;
-                }
+                if (!(attachment.FileName.StartsWith("screenshot") && attachment.FileName.EndsWith(".jpg")))
+                    continue;
+
+                logger.LogInformation($"Beatmap detect attempt");
+                ThreadPool.QueueUserWorkItem(new WaitCallback(async delegate (object state)
+                {
+                    await ExecuteMessageTrack(e.Message, attachment);
+                }));
+            }
         }
 
         /// <summary>

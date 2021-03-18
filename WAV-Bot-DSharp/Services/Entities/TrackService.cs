@@ -65,9 +65,12 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             gatariRecentChannel = client.GetChannelAsync(800124240908648469).Result;
             banchoRecentChannel = client.GetChannelAsync(815949279566888961).Result;
-            logger.LogInformation($"Gatari tracker channel: {gatariRecentChannel.Name}");
-            logger.LogInformation($"Bancho tracker channel: {banchoRecentChannel.Name}");
-            logger.LogInformation($"Timer interval: {TIMER_INTERVAL} ms");
+
+            logger.LogDebug($"Gatari tracker channel: {gatariRecentChannel.Name}");
+            logger.LogDebug($"Bancho tracker channel: {banchoRecentChannel.Name}");
+            logger.LogDebug($"Timer interval: {TIMER_INTERVAL} ms");
+
+            logger.LogInformation("TrackService started");
         }
 
         private void Check(object sender, ElapsedEventArgs e)
