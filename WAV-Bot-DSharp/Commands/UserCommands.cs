@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Commands
@@ -17,10 +19,40 @@ namespace WAV_Bot_DSharp.Commands
         public UserCommands(ILogger<UserCommands> logger)
         {
             ModuleName = "Utils";
-
+            
             this.logger = logger;
-
+            
             logger.LogInformation("UserCommands loaded");
+        }
+
+        //[Command("r"), Description("Resend message to specified channel")]
+        public async Task PingAsync(CommandContext commandContext,
+            [Description("Channel, where message has to be resent")] DiscordChannel targetChannel)
+        {
+            if (commandContext.Message.Reference is null)
+                await commandContext.RespondAsync("Resending message is not specified");
+
+            if (targetChannel is null)
+                await commandContext.RespondAsync("Target channel is not specified");
+
+            await Task.Delay(2000);
+
+            DiscordMessage msg = commandContext.Message.Reference.Message;
+
+            DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
+                .WithTitle($"From {msg.Channel.Name}")
+                .WithUrl(msg.JumpLink.AbsoluteUri)
+                .WithFooter($"Sent: {msg.Timestamp}")
+                .WithDescription(msg.Content);
+
+            if (!(msg.Author is null))
+                builder.WithAuthor(name: msg.Author.Username,
+                                   iconUrl: msg.Author.AvatarUrl);
+
+            await targetChannel.SendMessageAsync(embed: builder.Build());
+
+            if (msg.Embeds?.Count != 0)
+                await targetChannel.SendMessageAsync(embed: msg.Embeds.First());
         }
 
         /// <summary>

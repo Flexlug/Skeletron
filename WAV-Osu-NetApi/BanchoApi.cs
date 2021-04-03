@@ -169,6 +169,9 @@ namespace WAV_Osu_NetApi
 
             IRestResponse resp = client.Execute(req);
 
+            if (string.IsNullOrEmpty(resp.Content))
+                return null;
+
             List<Score> scores = JsonConvert.DeserializeObject<List<Score>>(resp.Content);
 
             return scores;
@@ -187,6 +190,9 @@ namespace WAV_Osu_NetApi
                 .AddParameter("limit", limit);
 
             IRestResponse resp = client.Execute(req);
+
+            if (string.IsNullOrEmpty(resp.Content))
+                return null;
 
             List<Score> scores = JsonConvert.DeserializeObject<List<Score>>(resp.Content);
 

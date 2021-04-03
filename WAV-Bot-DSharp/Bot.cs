@@ -85,9 +85,9 @@ namespace WAV_Bot_DSharp
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
                 .AddSingleton<IRecognizerService, RecognizerService>()
-                .AddSingleton<ITrackedUsersDbService, TrackedUsersDbService>()
-                .AddSingleton<IActivityService, ActivityService>()
-                .AddSingleton<ITrackService, TrackService>()
+                //.AddSingleton<ITrackedUsersDbService, TrackedUsersDbService>()
+                //.AddSingleton<IActivityService, ActivityService>()
+                //.AddSingleton<ITrackService, TrackService>()
                 .BuildServiceProvider();
         }
 
@@ -110,7 +110,7 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<FunCommands>();
             //CommandsNext.RegisterCommands<VoiceCommands>();
             //CommandsNext.RegisterCommands<ActivityCommands>();
-            CommandsNext.RegisterCommands<TrackCommands>();
+            //CommandsNext.RegisterCommands<TrackCommands>();
 
             // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;

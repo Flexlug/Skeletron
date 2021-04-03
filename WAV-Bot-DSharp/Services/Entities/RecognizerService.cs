@@ -122,7 +122,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             // Ignore beatmap for several minutes
             foreach (var kvp in ignoreList)
-                if (DateTime.Now - kvp.Value > TimeSpan.FromSeconds(20))
+                if (DateTime.Now - kvp.Value > TimeSpan.FromMinutes(10))
                     ignoreList.Remove(kvp.Key);
 
             if (ignoreList.ContainsKey(banchoBeatmap.id))
