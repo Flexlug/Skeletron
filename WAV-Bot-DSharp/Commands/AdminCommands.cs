@@ -183,7 +183,7 @@ namespace WAV_Bot_DSharp.Commands
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Reference.Message.Id);
 
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
-                .WithFooter($"Sent: {msg.Timestamp}")
+                .WithFooter($"Mod: {commandContext.Message.Author.Username} {msg.Timestamp}", iconUrl: commandContext.Message.Author.AvatarUrl)
                 .WithDescription(msg.Content);
 
             if (!(msg.Author is null))
