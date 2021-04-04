@@ -87,7 +87,7 @@ namespace WAV_Bot_DSharp
                 .AddSingleton<IRecognizerService, RecognizerService>()
                 .AddSingleton<ITrackedUsersDbService, TrackedUsersDbService>()
                 //.AddSingleton<IActivityService, ActivityService>()
-                //.AddSingleton<ITrackService, TrackService>()
+                .AddSingleton<ITrackService, TrackService>()
                 .BuildServiceProvider();
         }
 
@@ -110,7 +110,7 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<FunCommands>();
             //CommandsNext.RegisterCommands<VoiceCommands>();
             //CommandsNext.RegisterCommands<ActivityCommands>();
-            //CommandsNext.RegisterCommands<TrackCommands>();
+            CommandsNext.RegisterCommands<TrackCommands>();
 
             // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;

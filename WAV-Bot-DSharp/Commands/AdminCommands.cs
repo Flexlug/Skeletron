@@ -25,11 +25,15 @@ namespace WAV_Bot_DSharp.Commands
 
         private ILogger<AdminCommands> logger;
 
-        public AdminCommands(ILogger<AdminCommands> logger)
+        private DiscordChannel LogChannel;
+
+        public AdminCommands(ILogger<AdminCommands> logger, DiscordClient client)
         {
             ModuleName = "Admin";
 
             this.logger = logger;
+
+            LogChannel = client.GetChannelAsync(816396082153521183).Result;
 
             logger.LogInformation("AdminCommands loaded");
         }
@@ -115,6 +119,8 @@ namespace WAV_Bot_DSharp.Commands
                                                                            .WithTitle("**MUTED**")
                                                                            .WithDescription($"Reason: {(reason != string.Empty ? reason : "not stated")}")
                                                                            .Build());
+
+            await LogChannel.SendMessageAsync($"Muted: {discordMember}\nReason: {reason}\nMod: {commandContext.Message.Author}");
         }
 
         [Command("unmute"), Description("Unmute specified user")]
@@ -131,6 +137,8 @@ namespace WAV_Bot_DSharp.Commands
             {
                 await commandContext.RespondAsync($"User **{discordMember.DisplayName}** is not muted");
             }
+
+            await LogChannel.SendMessageAsync($"Unmuted: {discordMember}\nMod: {commandContext.Message.Author}");
         }
 
         [Command("kick"), Description("Kick specified user")]
@@ -143,6 +151,8 @@ namespace WAV_Bot_DSharp.Commands
                                                                            .WithTitle("**KICKED**")
                                                                            .WithDescription($"Reason: {(reason != string.Empty ? reason : "not stated")}")
                                                                            .Build());
+
+            await LogChannel.SendMessageAsync($"Kicked: {discordMember}\nReason: {reason}\nMod: {commandContext.Message.Author}");
         }
 
         [Command("ban"), Description("Ban specified user")]
@@ -154,11 +164,13 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync("Забанен по причине долбоёб.", embed: new DiscordEmbedBuilder().WithAuthor(discordMember.DisplayName, iconUrl: discordMember.AvatarUrl)
                                                                            .WithTitle("**BANNED**")
                                                                            .WithDescription($"Reason: {(reason != string.Empty ? reason : "not stated")}")
-                                                                           .Build());  
+                                                                           .Build());
+
+            await LogChannel.SendMessageAsync($"Banned: {discordMember}\nReason: {reason}\nMod: {commandContext.Message.Author}");
         }
 
         [Command("rd"), Description("Resend message to specified channel and delete it")]
-        public async Task PingAsync(CommandContext commandContext,
+        public async Task ResendAndDeleteAsync(CommandContext commandContext,
         [Description("Channel, where message has to be resent")] DiscordChannel targetChannel,
         [Description("Resend reason"), RemainingText] string reason)
         {
@@ -184,6 +196,7 @@ namespace WAV_Bot_DSharp.Commands
                 foreach (var embed in msg.Embeds)
                     await targetChannel.SendMessageAsync(embed: embed);
 
+            await LogChannel.SendMessageAsync($"Resended message\nFrom: {msg.Channel}\nTo: {targetChannel}\nReason: {reason}\nMod: {commandContext.Message.Author}");
             await msg.Channel.DeleteMessagesAsync(new[] { msg, commandContext.Message }, reason);
         }
     }
