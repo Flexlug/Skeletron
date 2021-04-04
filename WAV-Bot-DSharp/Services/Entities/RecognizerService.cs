@@ -80,12 +80,10 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             // Skip messages with no attachments
             if (attachments.Count == 0)
-            {
-                //logger.Debug("Client_OnMessageCreated skipped");
                 return;
-            }
 
-            if (!e.Message.Channel.Name.StartsWith("osu"))
+            // Skip messages not from osu channels
+            if (!e.Message.Channel.Name.Contains("-osu"))
                 return;
 
             logger.LogDebug($"Detected attachments. Count: {attachments.Count}");
