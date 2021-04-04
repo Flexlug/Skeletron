@@ -156,5 +156,35 @@ namespace WAV_Bot_DSharp.Commands
                                                                            .WithDescription($"Reason: {(reason != string.Empty ? reason : "not stated")}")
                                                                            .Build());  
         }
+
+        [Command("rd"), Description("Resend message to specified channel and delete it")]
+        public async Task PingAsync(CommandContext commandContext,
+        [Description("Channel, where message has to be resent")] DiscordChannel targetChannel,
+        [Description("Resend reason"), RemainingText] string reason)
+        {
+            if (commandContext.Message.Reference is null)
+                await commandContext.RespondAsync("Resending message is not specified");
+
+            if (targetChannel is null)
+                await commandContext.RespondAsync("Target channel is not specified");
+
+            DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Reference.Message.Id);
+
+            DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
+                .WithFooter($"Sent: {msg.Timestamp}")
+                .WithDescription(msg.Content);
+
+            if (!(msg.Author is null))
+                builder.WithAuthor(name: $"From {msg.Channel.Name} by {msg.Author.Username}",
+                                   iconUrl: msg.Author.AvatarUrl);
+
+            await targetChannel.SendMessageAsync(content: $"{msg.Author.Mention}\nПеренаправлено по причине: {reason}", embed: builder.Build());
+
+            if (msg.Embeds?.Count != 0)
+                foreach (var embed in msg.Embeds)
+                    await targetChannel.SendMessageAsync(embed: embed);
+
+            await msg.Channel.DeleteMessagesAsync(new[] { msg, commandContext.Message }, reason);
+        }
     }
 }
