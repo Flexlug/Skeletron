@@ -85,6 +85,9 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return;
             }
 
+            if (!e.Message.Channel.Name.StartsWith("osu"))
+                return;
+
             logger.LogDebug($"Detected attachments. Count: {attachments.Count}");
 
             foreach (DiscordAttachment attachment in attachments)
