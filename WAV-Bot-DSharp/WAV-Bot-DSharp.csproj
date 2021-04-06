@@ -6,10 +6,11 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>WAV_Bot_DSharp</RootNamespace>
     <Platforms>AnyCPU;x86;x64</Platforms>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <Deterministic>false</Deterministic>
     <AssemblyVersion>1.0.*</AssemblyVersion>
     <FileVersion>1.0.*</FileVersion>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

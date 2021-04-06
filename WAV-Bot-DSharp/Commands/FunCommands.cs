@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -42,6 +43,14 @@ namespace WAV_Bot_DSharp.Commands
         public async Task PingAsync(CommandContext commandContext)
         {
             await commandContext.RespondAsync($"{DiscordEmoji.FromName(client, ":skull:")}");
+        }
+
+        [Command("google"), Description("Let me do that job for you")]
+        public async Task Lmgtfy(CommandContext commandContext,
+            [Description("Search querry"), RemainingText] string querry)
+        {
+            string searchQuerry = @$"https://letmegooglethat.com/?q={HttpUtility.UrlEncode(querry)}";
+            await commandContext.RespondAsync(searchQuerry);
         }
     }
 }
