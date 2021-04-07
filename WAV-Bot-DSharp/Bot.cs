@@ -108,6 +108,7 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<DemonstrationCommands>();
             CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
+            CommandsNext.RegisterCommands<OsuCommands>();
             //CommandsNext.RegisterCommands<VoiceCommands>();
             //CommandsNext.RegisterCommands<ActivityCommands>();
             CommandsNext.RegisterCommands<TrackCommands>();
