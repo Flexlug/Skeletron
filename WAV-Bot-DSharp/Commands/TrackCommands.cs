@@ -110,7 +110,7 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            //await commandContext.RespondAsync($"Stop tracking {(guser is null ? "" : $"[{guser.abbr}]")} {guser.username}.");
+            await commandContext.RespondAsync($"Stop tracking {guser.username}.");
         }
     }
 }
