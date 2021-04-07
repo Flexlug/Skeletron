@@ -11,6 +11,7 @@ using System.Web;
 
 namespace WAV_Bot_DSharp.Commands
 {
+    [RequireGuild]
     public sealed class FunCommands : SkBaseCommandModule
     {
         private DiscordClient client;

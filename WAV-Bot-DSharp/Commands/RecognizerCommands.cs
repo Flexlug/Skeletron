@@ -14,7 +14,7 @@ namespace WAV_Bot_DSharp.Commands
     /// <summary>
     /// Предоставляет команды для osu!
     /// </summary>
-    [Hidden]
+    [Hidden, RequireGuild]
     public class RecognizerCommands : SkBaseCommandModule
     {
         private IRecognizerService osu;

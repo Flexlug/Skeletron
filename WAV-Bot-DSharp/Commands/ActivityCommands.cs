@@ -21,7 +21,7 @@ namespace WAV_Bot_DSharp.Commands
     /// <summary>
     /// Команды для отслеживания активности пользователей WAV севрера
     /// </summary>
-    [RequirePermissions(Permissions.Administrator)]
+    [RequirePermissions(Permissions.Administrator), RequireGuild]
     public class ActivityCommands : BaseCommandModule
     {
         IReadOnlyDictionary<ulong, DiscordMember> serverUsers;

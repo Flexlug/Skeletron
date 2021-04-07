@@ -12,6 +12,7 @@ namespace WAV_Bot_DSharp.Commands
     /// <summary>
     /// Commands that can be used by @everyone. 
     /// </summary>
+    [RequireGuild]
     public sealed class UserCommands : SkBaseCommandModule
     {
         private ILogger<UserCommands> logger;

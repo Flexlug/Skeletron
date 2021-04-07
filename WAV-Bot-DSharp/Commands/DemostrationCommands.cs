@@ -9,7 +9,7 @@ namespace WAV_Bot_DSharp.Commands
     /// Class with demonstration of possibilities.
     /// Disclaimer: The code shouldn't be used exactly this way as it is, it's just there to give you some ideas.
     /// </summary>
-    [Hidden]
+    [Hidden, RequireGuild]
     public sealed class DemonstrationCommands : SkBaseCommandModule
     {
         private ILogger<DemonstrationCommands> logger;
