@@ -220,6 +220,10 @@ namespace WAV_Bot_DSharp.Commands
                 foreach (var embed in msg.Embeds)
                     await targetChannel.SendMessageAsync(embed: embed);
 
+            if (msg.Attachments?.Count != 0)
+                foreach (var att in msg.Attachments)
+                    await targetChannel.SendMessageAsync(att.Url);
+
             await LogChannel.SendMessageAsync(
                 embed: new DiscordEmbedBuilder().WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
                                     .AddField("**Action**:", "resend message", true)
