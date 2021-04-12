@@ -42,6 +42,7 @@ namespace WAV_Bot_DSharp
         public Bot(Settings settings)
         {
             Settings = settings;
+            Settings.KOSTYL = settings;
 
             logFactory = new LoggerFactory().AddSerilog();
 
@@ -75,7 +76,6 @@ namespace WAV_Bot_DSharp
         {
             Log.Logger.Debug("Configuring services");
             Services = new ServiceCollection()
-                //.AddDbContext<UsersContext>()
                 .AddLogging(conf => conf.AddSerilog(dispose: true))
                 .AddDbContext<TrackedUserContext>()
                 .AddSingleton(Settings)
@@ -86,7 +86,6 @@ namespace WAV_Bot_DSharp
                 .AddSingleton(new GatariApi())
                 .AddSingleton<IRecognizerService, RecognizerService>()
                 .AddSingleton<ITrackedUsersDbService, TrackedUsersDbService>()
-                //.AddSingleton<IActivityService, ActivityService>()
                 .AddSingleton<ITrackService, TrackService>()
                 .BuildServiceProvider();
         }
@@ -109,8 +108,6 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
-            //CommandsNext.RegisterCommands<VoiceCommands>();
-            //CommandsNext.RegisterCommands<ActivityCommands>();
             CommandsNext.RegisterCommands<TrackCommands>();
 
             // Registering OnCommandError method for the CommandErrored event

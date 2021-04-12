@@ -6,7 +6,11 @@ namespace WAV_Bot_DSharp.Configurations
 {
     public class Settings
     {
+        public static Settings KOSTYL;
+
         public static readonly IList<string> DefaultPrefixes = new List<string>();
+
+        public IList<ulong> IgnoreDMList { get; set; }
 
         // Discord credential
         public string Token { get; set; }

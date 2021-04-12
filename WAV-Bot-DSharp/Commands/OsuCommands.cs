@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WAV_Bot_DSharp.Configurations;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -32,6 +33,12 @@ namespace WAV_Bot_DSharp.Commands
         public async Task SubmitScore(CommandContext commandContext)
         {
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Id);
+
+            if (Settings.KOSTYL.IgnoreDMList.Contains(msg.Author.Id))
+            {
+                await commandContext.RespondAsync("Извините, но вы были внесены в черный список бота.");
+                return;
+            }
 
             if (msg.Attachments.Count == 0)
             {

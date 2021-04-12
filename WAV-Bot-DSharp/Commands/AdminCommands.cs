@@ -11,6 +11,7 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.Logging;
+using WAV_Bot_DSharp.Configurations;
 using WAV_Bot_DSharp.Services;
 
 namespace WAV_Bot_DSharp.Commands
@@ -105,6 +106,51 @@ namespace WAV_Bot_DSharp.Commands
             [Description("Message to send"), RemainingText] string message)
         {
             await targetChannel.SendMessageAsync(message);
+        }
+
+        [Command("dm-ignore"), Description("Add specified user to DM ignore list")]
+        public async Task AddDMIgnore(CommandContext commandContext,
+            [Description("Target member")] DiscordMember targetMember)
+        {
+            if (Settings.KOSTYL.IgnoreDMList.Contains(targetMember.Id))
+            {
+                await commandContext.RespondAsync("This person is already there");
+                return;
+            }
+            else
+            {
+                Settings.KOSTYL.IgnoreDMList.Add(targetMember.Id);
+            }
+            SettingsLoader loader = new SettingsLoader();
+            loader.SaveToFile(Settings.KOSTYL);
+
+            await commandContext.RespondAsync($"Added {targetMember} to blacklist.");
+        }
+
+        [Command("dm-ignore-list"), Description("Return dm ignore list")]
+        public async Task DMIgnoreList(CommandContext commandContext)
+        {
+            await commandContext.RespondAsync($"Blacklisted persons: \n{string.Join('\n', Settings.KOSTYL.IgnoreDMList.Select(x => x.ToString()))}\nend;");
+        }
+
+        [Command("dm-pardon"), Description("Remove specified user from DM ignore list")]
+        public async Task AddDMPardon(CommandContext commandContext,
+            [Description("Target member")] DiscordMember targetMember)
+        {
+            if (Settings.KOSTYL.IgnoreDMList.Contains(targetMember.Id))
+            {
+                Settings.KOSTYL.IgnoreDMList.Remove(targetMember.Id);
+            }
+            else
+            {
+                await commandContext.RespondAsync("No such person in ignore list");
+                return;
+            }
+
+            SettingsLoader loader = new SettingsLoader();
+            loader.SaveToFile(Settings.KOSTYL);
+
+            await commandContext.RespondAsync($"Removed {targetMember} from blacklist.");
         }
 
         [Command("mute"), Description("Mute specified user")]
