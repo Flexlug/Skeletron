@@ -21,8 +21,36 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         public override BaseHelpFormatter WithCommand(Command command)
         {
-            _embed.WithTitle("Command help");
-             _embed.AddField(command.Name, command.Description);            
+            _embed.WithTitle("Command description");
+
+            CommandOverload commandOverload = command.Overloads.First();
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine($"`sk!{command.Name} {string.Join(' ', commandOverload.Arguments.Select(x => $"[{ x.Name}]").ToList())}`\n{command.Description}");
+            sb.AppendLine();
+
+            if (command.Aliases?.Count != 0)
+            {
+                sb.AppendLine("**Aliases:**");
+                foreach (string alias in command.Aliases)
+                    sb.AppendLine(alias);
+
+                sb.AppendLine();
+            }
+
+            sb.AppendLine("**Arguments:**");
+            foreach (var c in command.Overloads.First().Arguments)
+                sb.AppendLine($"`{c.Name}`: {c.Description}");
+            sb.AppendLine();
+
+            if (command.ExecutionChecks?.Count != 0)
+            {
+                sb.AppendLine("**Execution checks:**");
+                sb.AppendLine(string.Join(' ', command.ExecutionChecks.Select(x => x.ToString().Split('.').Last())));
+            }
+
+            _embed.WithDescription(sb.ToString());            
 
             return this;
         }
