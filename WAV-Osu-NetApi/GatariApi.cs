@@ -34,10 +34,11 @@ namespace WAV_Osu_NetApi
             return g_resp.scores;
         }
 
-        public List<GScore> GetUserBestScores(int user_id, int limit)
+        public List<GScore> GetUserBestScores(int user_id, int limit, int mode = 0)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"user/scores/best")
                 .AddParameter("id", user_id)
+                .AddParameter("mode", mode)
                 .AddParameter("p", 1)
                 .AddParameter("l", limit);
 
