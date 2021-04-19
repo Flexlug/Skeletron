@@ -22,7 +22,7 @@ namespace WAV_Bot_DSharp.Extensions
         {
             if (commandContext == null)
                 throw new InvalidOperationException("CommandContext can't be null");
-            return await (commandContext.Member != null ? commandContext.Member.SendMessageAsync(content, isTTS, embed) : commandContext.RespondAsync(content, isTTS, embed));
+            return await (commandContext.Member != null ? commandContext.Member.SendMessageAsync(content, embed) : commandContext.RespondAsync(content, embed));
         }
     }
 }

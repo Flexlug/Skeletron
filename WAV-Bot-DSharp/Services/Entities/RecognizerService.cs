@@ -75,18 +75,21 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private async Task Client_OnMessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
-            //logger.Debug("Client_OnMessageCreated invoked");
             IReadOnlyCollection<DiscordAttachment> attachments = e.Message.Attachments;
 
             // Skip messages with no attachments
             if (attachments.Count == 0)
                 return;
 
+            logger.LogDebug($"Detected attachments. Count: {attachments.Count}");
+
             // Skip messages not from osu channels
             if (!e.Message.Channel.Name.Contains("-osu"))
+            {
+                logger.LogDebug($"Not osu channel");
                 return;
+            }
 
-            logger.LogDebug($"Detected attachments. Count: {attachments.Count}");
 
             foreach (DiscordAttachment attachment in attachments)
             {
