@@ -14,6 +14,9 @@ using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Converters
 {
+    /// <summary>
+    /// Class with Osu utils
+    /// </summary>
     public class OsuUtils
     {
         private DiscordClient client { get; set; }
