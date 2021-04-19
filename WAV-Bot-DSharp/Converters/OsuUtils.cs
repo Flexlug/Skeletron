@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 namespace WAV_Bot_DSharp.Converters
 {
     /// <summary>
-    /// Class with Osu utils
+    /// Class with Osu utilssss
     /// </summary>
     public class OsuUtils
     {
