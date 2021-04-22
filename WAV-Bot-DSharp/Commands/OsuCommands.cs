@@ -28,6 +28,9 @@ namespace WAV_Bot_DSharp.Commands
         private DiscordChannel wavScoresChannel;
         private WebClient webClient;
 
+        private readonly ulong WAV_UID = 708860200341471264;
+        DiscordGuild guild;
+
         public OsuCommands(ILogger<OsuCommands> logger, DiscordClient client)
         {
             ModuleName = "Osu commands";
@@ -36,6 +39,7 @@ namespace WAV_Bot_DSharp.Commands
             this.wavScoresChannel = client.GetChannelAsync(829466881353711647).Result;
             this.webClient = new WebClient();
 
+            this.guild = client.GetGuildAsync(WAV_UID).Result;
 
             logger.LogInformation("OsuCommands loaded");
         }
@@ -86,10 +90,31 @@ namespace WAV_Bot_DSharp.Commands
                 logger.LogCritical(e, "Exception while parsing score");
             }
 
+            DiscordMember member = await guild.GetMemberAsync(msg.Author.Id);
+            string category = member.Roles.Select(x => x.Name)
+                                          .Where((x) =>
+                                          {
+                                              foreach (var xx in (new string[] { "beginner", "alpha", "beta", "gamma", "delta", "epsilon" }))
+                                              {
+                                                  if (x.Contains(xx))
+                                                  {
+                                                      Console.WriteLine($"{x} contain {xx}");
+                                                      return true;
+                                                  }
+                                                  else
+                                                  {
+                                                      Console.WriteLine($"{x} not contain {xx}");
+                                                  }
+                                              }
+                                              return false;
+                                          })
+                                          .FirstOrDefault();
+
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Discord nickname: `{msg.Author.Username}`");
             sb.AppendLine($"Osu nickname: `{replay.PlayerName}`");
             sb.AppendLine($"Score: `{replay.ReplayScore}`");
+            sb.AppendLine($"Category: `{category ?? string.Empty}`");
             sb.AppendLine($"Mods: `{replay.Mods}`");
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder().WithAuthor(msg.Author.Username, iconUrl: msg.Author.AvatarUrl)
