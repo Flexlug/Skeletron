@@ -96,8 +96,8 @@ namespace WAV_Bot_DSharp.Services.Entities
                 if (!(attachment.Width > 800 && attachment.Height > 600))
                     continue;
 
-                if (!(attachment.FileName.StartsWith("screenshot") && attachment.FileName.EndsWith(".jpg")))
-                    continue;
+                //if (!(attachment.FileName.StartsWith("screenshot") && attachment.FileName.EndsWith(".jpg")))
+                    //continue;
 
                 logger.LogInformation($"Beatmap detect attempt");
                 ThreadPool.QueueUserWorkItem(new WaitCallback(async delegate (object state)
