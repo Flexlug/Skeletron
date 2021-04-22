@@ -5,7 +5,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
-using NAudio.Wave;
 
 namespace WAV_Bot_DSharp.Commands
 {

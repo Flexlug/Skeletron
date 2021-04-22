@@ -2,14 +2,22 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
+using OsuParsers.Replays;
+using OsuParsers.Decoders;
+
 using Microsoft.Extensions.Logging;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+
 using WAV_Bot_DSharp.Configurations;
+using System.IO;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -18,6 +26,7 @@ namespace WAV_Bot_DSharp.Commands
         private ILogger<OsuCommands> logger;
 
         private DiscordChannel wavScoresChannel;
+        private WebClient webClient;
 
         public OsuCommands(ILogger<OsuCommands> logger, DiscordClient client)
         {
@@ -25,6 +34,8 @@ namespace WAV_Bot_DSharp.Commands
 
             this.logger = logger;
             this.wavScoresChannel = client.GetChannelAsync(829466881353711647).Result;
+            this.webClient = new WebClient();
+
 
             logger.LogInformation("OsuCommands loaded");
         }
@@ -60,11 +71,33 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
+            Replay replay = null;
+
+            try
+            {
+                string fileName = $"{DateTime.Now.Ticks}-{attachment.FileName}";
+                webClient.DownloadFile(attachment.Url, $"downloads/{fileName}");
+
+                replay = ReplayDecoder.Decode($"downloads/{fileName}");
+            }
+
+            catch (Exception e)
+            {
+                logger.LogCritical(e, "Exception while parsing score");
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"Discord nickname: `{msg.Author.Username}`");
+            sb.AppendLine($"Osu nickname: `{replay.PlayerName}`");
+            sb.AppendLine($"Score: `{replay.ReplayScore}`");
+            sb.AppendLine($"Mods: `{replay.Mods}`");
+
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder().WithAuthor(msg.Author.Username, iconUrl: msg.Author.AvatarUrl)
                                                                  .WithTitle($"Added replay {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}")
                                                                  .WithUrl(attachment.Url)
+                                                                 .WithDescription(sb.ToString())
                                                                  .AddField("OSR Link:", attachment.Url)
-                                                                 .AddField("File name:", attachment.FileName)
+                                                                 .AddField("File name:", $"`{attachment.FileName}`")
                                                                  .WithTimestamp(DateTime.Now);
 
             await wavScoresChannel.SendMessageAsync(embed: embed);

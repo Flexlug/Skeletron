@@ -30,6 +30,7 @@
     <AssemblyVersion Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</AssemblyVersion>
     <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
     <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -56,8 +57,7 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
-    <PackageReference Include="NAudio" Version="2.0.0" />    
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />    
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.5">
       <PrivateAssets>all</PrivateAssets>

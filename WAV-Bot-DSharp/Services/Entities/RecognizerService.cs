@@ -35,16 +35,13 @@ namespace WAV_Bot_DSharp.Services.Entities
         private ILogger<RecognizerService> logger;
 
         private WebClient webClient;
-
         private Recognizer recognizer;
 
         private BanchoApi api;
         private GatariApi gapi;
 
         private Dictionary<int, DateTime> ignoreList;
-
         private OsuEmoji emoji;
-
         private BackgroundQueue queue;
 
         public RecognizerService(DiscordClient client, Settings settings, ILogger<RecognizerService> logger, OsuEmoji emoji)
