@@ -17,7 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using WAV_Bot_DSharp.Configurations;
-using System.IO;
+using WAV_Bot_DSharp.Converters;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -27,11 +27,12 @@ namespace WAV_Bot_DSharp.Commands
 
         private DiscordChannel wavScoresChannel;
         private WebClient webClient;
+        private OsuUtils utils;
 
         private readonly ulong WAV_UID = 708860200341471264;
         DiscordGuild guild;
 
-        public OsuCommands(ILogger<OsuCommands> logger, DiscordClient client)
+        public OsuCommands(ILogger<OsuCommands> logger, DiscordClient client, OsuUtils utils)
         {
             ModuleName = "Osu commands";
 
@@ -40,6 +41,7 @@ namespace WAV_Bot_DSharp.Commands
             this.webClient = new WebClient();
 
             this.guild = client.GetGuildAsync(WAV_UID).Result;
+            this.utils = utils;
 
             logger.LogInformation("OsuCommands loaded");
         }
@@ -48,6 +50,8 @@ namespace WAV_Bot_DSharp.Commands
         public async Task SubmitScore(CommandContext commandContext)
         {
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Id);
+
+            logger.LogInformation($"DM {msg.Author}: {msg.Content} : {msg.Attachments.Count}");
 
             if (Settings.KOSTYL.IgnoreDMList.Contains(msg.Author.Id))
             {
@@ -95,17 +99,8 @@ namespace WAV_Bot_DSharp.Commands
                                           .Where((x) =>
                                           {
                                               foreach (var xx in (new string[] { "beginner", "alpha", "beta", "gamma", "delta", "epsilon" }))
-                                              {
                                                   if (x.Contains(xx))
-                                                  {
-                                                      Console.WriteLine($"{x} contain {xx}");
                                                       return true;
-                                                  }
-                                                  else
-                                                  {
-                                                      Console.WriteLine($"{x} not contain {xx}");
-                                                  }
-                                              }
                                               return false;
                                           })
                                           .FirstOrDefault();
@@ -114,8 +109,8 @@ namespace WAV_Bot_DSharp.Commands
             sb.AppendLine($"Discord nickname: `{msg.Author.Username}`");
             sb.AppendLine($"Osu nickname: `{replay.PlayerName}`");
             sb.AppendLine($"Score: `{replay.ReplayScore}`");
-            sb.AppendLine($"Category: `{category ?? string.Empty}`");
-            sb.AppendLine($"Mods: `{replay.Mods}`");
+            sb.AppendLine($"Category: `{category ?? "No category"}`");
+            sb.AppendLine($"Mods: `{utils.ModsToString((WAV_Osu_NetApi.Bancho.Models.Enums.Mods)replay.Mods)}`");
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder().WithAuthor(msg.Author.Username, iconUrl: msg.Author.AvatarUrl)
                                                                  .WithTitle($"Added replay {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}")
