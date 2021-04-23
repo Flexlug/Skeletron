@@ -62,7 +62,7 @@ namespace WAV_Bot_DSharp.Commands
 
         private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
-            if (e.Message.Content.Contains("osu.ppy.sh/beatmapsets/") && e.Channel.Name.Contains("-osu"))
+            if (e.Message.Content.Contains("osu.ppy.sh/beatmapsets/") && (e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("map-offer")))
             {
                 string[] ids = e.Message.Content.Split('#');
 
