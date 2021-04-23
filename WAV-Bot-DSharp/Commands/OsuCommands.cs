@@ -1,7 +1,7 @@
 ﻿using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 
 using OsuParsers.Replays;
 using OsuParsers.Decoders;
@@ -9,15 +9,19 @@ using OsuParsers.Decoders;
 using Microsoft.Extensions.Logging;
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using WAV_Bot_DSharp.Configurations;
 using WAV_Bot_DSharp.Converters;
+
+using WAV_Osu_NetApi;
+using WAV_Osu_NetApi.Bancho.Models;
+using WAV_Osu_NetApi.Gatari.Models;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -26,13 +30,18 @@ namespace WAV_Bot_DSharp.Commands
         private ILogger<OsuCommands> logger;
 
         private DiscordChannel wavScoresChannel;
+        private DiscordGuild guild;
+
         private WebClient webClient;
         private OsuUtils utils;
+        private OsuEmoji emoji;
+
+        private BanchoApi api;
+        private GatariApi gapi;
 
         private readonly ulong WAV_UID = 708860200341471264;
-        DiscordGuild guild;
 
-        public OsuCommands(ILogger<OsuCommands> logger, DiscordClient client, OsuUtils utils)
+        public OsuCommands(ILogger<OsuCommands> logger, DiscordClient client, OsuUtils utils, BanchoApi api, GatariApi gapi, OsuEmoji emoji)
         {
             ModuleName = "Osu commands";
 
@@ -42,8 +51,65 @@ namespace WAV_Bot_DSharp.Commands
 
             this.guild = client.GetGuildAsync(WAV_UID).Result;
             this.utils = utils;
+            this.api = api;
+            this.gapi = gapi;
+            this.emoji = emoji;
 
             logger.LogInformation("OsuCommands loaded");
+
+            client.MessageCreated += Client_MessageCreated;
+        }
+
+        private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
+        {
+            if (e.Message.Content.Contains("osu.ppy.sh/beatmapsets/") && e.Channel.Name.Contains("-osu"))
+            {
+                string[] ids = e.Message.Content.Split('#');
+
+                if (ids is null || ids.Length != 2)
+                    return;
+
+                int bms_id;
+                if (!int.TryParse(ids[0].Split('/').Last(), out bms_id))
+                    return;
+
+                int bm_id;
+                if (!int.TryParse(ids[1].Split('/').Last(), out bm_id))
+                    return;
+
+                Beatmap bm = api.GetBeatmap(bm_id);
+                Beatmapset bms = api.GetBeatmapset(bms_id);
+
+                // Contruct message
+                DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
+
+                TimeSpan mapLen = TimeSpan.FromSeconds(bm.total_length);
+
+                DiscordEmoji banchoRankEmoji = emoji.RankStatusEmoji(bm.ranked);
+                DiscordEmoji diffEmoji = emoji.DiffEmoji(bm.difficulty_rating);
+
+                // Check gatari
+                GBeatmap gBeatmap = gapi.TryRetrieveBeatmap(bm.id);
+
+                StringBuilder embedMsg = new StringBuilder();
+                embedMsg.AppendLine($"{diffEmoji}  **__[{bm.version}]__**\n▸**Difficulty**: {bm.difficulty_rating}★\n▸**CS**: {bm.cs} ▸**HP**: {bm.drain} ▸**AR**: {bm.ar}\n\nBancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{bms.id}#osu/{bm.id})\nLast updated: {bm.last_updated}");
+                if (!(gBeatmap is null))
+                {
+                    DiscordEmoji gatariRankEmoji = emoji.RankStatusEmoji(gBeatmap.ranked);
+                    embedMsg.AppendLine($"\nGatari: {gatariRankEmoji} : [link](https://osu.gatari.pw/s/{gBeatmap.beatmapset_id}#osu/{gBeatmap.beatmap_id})\nLast updated: {(gBeatmap.ranking_data != 0 ? new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(gBeatmap.ranking_data).ToString() : "")}");
+                }
+
+                // Construct embed
+                embedBuilder.WithTitle($"{banchoRankEmoji}  {bms.artist} – {bms.title} by {bms.creator}");
+                embedBuilder.WithUrl(bm.url);
+                embedBuilder.AddField($"Length: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)}, BPM: {bm.bpm}",
+                                      embedMsg.ToString(),
+                                      true);
+                embedBuilder.WithThumbnail(bms.covers.List2x);
+                embedBuilder.WithFooter(bms.tags);
+
+                await e.Message.RespondAsync(embed: embedBuilder.Build());
+            }
         }
 
         [Command("submit"), RequireDirectMessage]
