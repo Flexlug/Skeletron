@@ -172,9 +172,9 @@ namespace WAV_Bot_DSharp.Commands
                                           .FirstOrDefault();
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"Discord nickname: `{msg.Author.Username}`");
             sb.AppendLine($"Osu nickname: `{replay.PlayerName}`");
-            sb.AppendLine($"Score: `{replay.ReplayScore}`");
+            sb.AppendLine($"Discord nickname: `{msg.Author.Username}`");
+            sb.AppendLine($"Score: `{replay.ReplayScore:N0}`"); // Format: 123456789 -> 123 456 789
             sb.AppendLine($"Category: `{category ?? "No category"}`");
             sb.AppendLine($"Mods: `{utils.ModsToString((WAV_Osu_NetApi.Bancho.Models.Enums.Mods)replay.Mods)}`");
 
