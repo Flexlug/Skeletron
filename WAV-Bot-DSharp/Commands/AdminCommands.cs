@@ -19,7 +19,7 @@ namespace WAV_Bot_DSharp.Commands
     /// <summary>
     /// Commands that can only be used by Server Administrators. The Administrator permission is required (or to be the server owner).
     /// </summary>
-    [RequirePermissions(Permissions.BanMembers | Permissions.KickMembers | Permissions.ManageRoles), RequireGuild]
+    [RequireGuild]
     public sealed class AdminCommands : SkBaseCommandModule
     {
         private DiscordEmoji[] _pollEmojiCache;
@@ -46,7 +46,7 @@ namespace WAV_Bot_DSharp.Commands
         /// <param name="duration">Amount of time how long the poll should last.</param>
         /// <param name="question">Polls question</param>
         /// <returns></returns>
-        [Command("emojipoll"), Description("Start a simple emoji poll for a simple yes/no question"), Cooldown(2, 30, CooldownBucketType.Guild)]
+        [Command("emojipoll"), RequirePermissions(Permissions.Administrator), Description("Start a simple emoji poll for a simple yes/no question"), Cooldown(2, 30, CooldownBucketType.Guild)]
         public async Task EmojiPollAsync(CommandContext commandContext, 
             [Description("How long should the poll last. (e.g. 1m = 1 minute)")] TimeSpan duration, 
             [Description("Poll question"), RemainingText] string question)
@@ -100,7 +100,7 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        [Command("sendtochannel"), Description("Send a message to a special channel")]
+        [Command("sendtochannel"), RequirePermissions(Permissions.Administrator), Description("Send a message to a special channel")]
         public async Task SendToChannelAsync(CommandContext commandContext,
             [Description("Target discord channel")] DiscordChannel targetChannel,
             [Description("Message to send"), RemainingText] string message)
@@ -108,7 +108,7 @@ namespace WAV_Bot_DSharp.Commands
             await targetChannel.SendMessageAsync(message);
         }
 
-        [Command("dm-ignore"), Description("Add specified user to DM ignore list")]
+        [Command("dm-ignore"), RequirePermissions(Permissions.Administrator), Description("Add specified user to DM ignore list")]
         public async Task AddDMIgnore(CommandContext commandContext,
             [Description("Target member")] DiscordMember targetMember)
         {
@@ -127,13 +127,13 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync($"Added {targetMember} to blacklist.");
         }
 
-        [Command("dm-ignore-list"), Description("Return dm ignore list")]
+        [Command("dm-ignore-list"), RequirePermissions(Permissions.Administrator), Description("Return dm ignore list")]
         public async Task DMIgnoreList(CommandContext commandContext)
         {
             await commandContext.RespondAsync($"Blacklisted persons: \n{string.Join('\n', Settings.KOSTYL.IgnoreDMList.Select(x => x.ToString()))}\nend;");
         }
 
-        [Command("dm-pardon"), Description("Remove specified user from DM ignore list")]
+        [Command("dm-pardon"), RequirePermissions(Permissions.Administrator), Description("Remove specified user from DM ignore list")]
         public async Task AddDMPardon(CommandContext commandContext,
             [Description("Target member")] DiscordMember targetMember)
         {
@@ -153,7 +153,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync($"Removed {targetMember} from blacklist.");
         }
 
-        [Command("mute"), Description("Mute specified user")]
+        [Command("mute"), RequirePermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Mute specified user")]
         public async Task MuteUser(CommandContext commandContext,
             [Description("User which should be muted")] DiscordMember discordMember,
             [Description("Reason"), RemainingText] string reason)
@@ -176,7 +176,7 @@ namespace WAV_Bot_DSharp.Commands
                                                 .Build());
         }
 
-        [Command("unmute"), Description("Unmute specified user")]
+        [Command("unmute"), RequirePermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Unmute specified user")]
         public async Task UnmuteUser(CommandContext commandContext,
             [Description("User to unmute")] DiscordMember discordMember)
         {
@@ -199,7 +199,7 @@ namespace WAV_Bot_DSharp.Commands
                                                 .Build());
         }
 
-        [Command("kick"), Description("Kick specified user")]
+        [Command("kick"), RequirePermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Kick specified user")]
         public async Task KickUser(CommandContext commandContext,
             [Description("User to kick")] DiscordMember discordMember,
             [Description("Reason"), RemainingText] string reason = "")
@@ -219,7 +219,7 @@ namespace WAV_Bot_DSharp.Commands
                                                 .Build());
         }
 
-        [Command("ban"), Description("Ban specified user")]
+        [Command("ban"), RequirePermissions(Permissions.Administrator | Permissions.BanMembers), Description("Ban specified user")]
         public async Task BanUser(CommandContext commandContext,
             [Description("User to ban")] DiscordMember discordMember,
             [Description("Reason"), RemainingText] string reason = "")
@@ -234,12 +234,12 @@ namespace WAV_Bot_DSharp.Commands
                 embed: new DiscordEmbedBuilder().WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
                                                 .AddField("**Action**:", "ban", true)
                                                 .AddField("**Target**:", discordMember.ToString(), true)
-                                                .AddField("**Reason**:", (reason != string.Empty ? reason : "not stated"), true)
+                                                .AddField("**Reason**:", (string.IsNullOrEmpty(reason) ? "not stated" : reason), true)
                                                 .WithFooter()
                                                 .Build());
         }
 
-        [Command("rd"), Description("Resend message to specified channel and delete it")]
+        [Command("rd"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Resend message to specified channel and delete it")]
         public async Task ResendAndDeleteAsync(CommandContext commandContext,
         [Description("Channel, where message has to be resent")] DiscordChannel targetChannel,
         [Description("Resend reason"), RemainingText] string reason)
@@ -260,7 +260,7 @@ namespace WAV_Bot_DSharp.Commands
                 builder.WithAuthor(name: $"From {msg.Channel.Name} by {msg.Author.Username}",
                                    iconUrl: msg.Author.AvatarUrl);
 
-            await targetChannel.SendMessageAsync(content: $"{msg.Author.Mention}\nПеренаправлено по причине: {reason}", embed: builder.Build());
+            await targetChannel.SendMessageAsync(content: $"{msg.Author.Mention}\nПеренаправлено по причине: {(string.IsNullOrEmpty(reason) ? reason : "not stated")}", embed: builder.Build());
 
             if (msg.Embeds?.Count != 0)
                 foreach (var embed in msg.Embeds)
@@ -275,7 +275,7 @@ namespace WAV_Bot_DSharp.Commands
                                     .AddField("**Action**:", "resend message", true)
                                     .AddField("**From**:", msg.Channel.Name, true)
                                     .AddField("**To**:", targetChannel.Name, true)
-                                    .AddField("**Reason**:", (reason != string.Empty ? reason : "not stated"), true)
+                                    .AddField("**Reason**:", (string.IsNullOrEmpty(reason) ? "not stated" : reason), true)
                                     .WithFooter()
                                     .Build());
             await msg.Channel.DeleteMessagesAsync(new[] { msg, commandContext.Message }, reason);
