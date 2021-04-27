@@ -33,7 +33,6 @@ namespace WAV_Bot_DSharp.Services.Entities
     {
         private DiscordClient client;
         private ILogger<RecognizerService> logger;
-
         private WebClient webClient;
         private Recognizer recognizer;
 
@@ -42,12 +41,14 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private Dictionary<int, DateTime> ignoreList;
         private OsuEmoji emoji;
+        private OsuUtils utils;
         private BackgroundQueue queue;
 
-        public RecognizerService(DiscordClient client, Settings settings, ILogger<RecognizerService> logger, OsuEmoji emoji)
+        public RecognizerService(DiscordClient client, Settings settings, ILogger<RecognizerService> logger, OsuEmoji emoji, OsuUtils utils)
         {
             this.client = client;
             this.logger = logger;
+            this.utils = utils;
 
             this.emoji = emoji;
 
@@ -144,25 +145,10 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             // Check gatari
             GBeatmap gBeatmap = gapi.TryGetBeatmap(banchoBeatmap.id);
-            
-            StringBuilder embedMsg = new StringBuilder();
-            embedMsg.AppendLine($"{diffEmoji}  **__[{banchoBeatmap.version}]__**\n▸**Difficulty**: {banchoBeatmap.difficulty_rating}★\n▸**CS**: {banchoBeatmap.cs} ▸**HP**: {banchoBeatmap.drain} ▸**AR**: {banchoBeatmap.ar}\n\nBancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{banchoBeatmapset.id}#osu/{banchoBeatmap.id})\nLast updated: {banchoBeatmap.last_updated}");
-            if (!(gBeatmap is null))
-            {
-                DiscordEmoji gatariRankEmoji = emoji.RankStatusEmoji(gBeatmap.ranked);
-                embedMsg.AppendLine($"\nGatari: {gatariRankEmoji} : [link](https://osu.gatari.pw/s/{gBeatmap.beatmapset_id}#osu/{gBeatmap.beatmap_id})\nLast updated: {(gBeatmap.ranking_data != 0 ? new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(gBeatmap.ranking_data).ToString() : "")}");
-            }
 
-            // Construct embed
-            embedBuilder.WithTitle($"{banchoRankEmoji}  {banchoBeatmapset.artist} – {banchoBeatmapset.title} by {banchoBeatmapset.creator}");
-            embedBuilder.WithUrl(banchoBeatmap.url);
-            embedBuilder.AddField($"Length: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)}, BPM: {banchoBeatmap.bpm}",
-                                  embedMsg.ToString(),
-                                  true);
-            embedBuilder.WithThumbnail(banchoBeatmapset.covers.List2x);
-            embedBuilder.WithFooter(banchoBeatmapset.tags);
+            DiscordEmbed embed = utils.BeatmapToEmbed(banchoBeatmap, banchoBeatmapset, gBeatmap);
 
-            await message.RespondAsync(embed: embedBuilder.Build());
+            await message.RespondAsync(embed: embed);
         }
 
         /// <summary>
