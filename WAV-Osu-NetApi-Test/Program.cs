@@ -21,90 +21,92 @@ namespace WAV_Osu_NetApi_Test
             using (StreamReader sr = new StreamReader("credentials.json"))
                 settings = JsonConvert.DeserializeObject<Settings>(sr.ReadToEnd());
 
+            BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
+            Console.WriteLine(api.ReloadToken());
 
 
-            while (true)
-            {
-                Console.Write("Напишите название сервера, с которого нужно получать скоры (bancho, gatari) -> ");
-                string input = Console.ReadLine();
+            //while (true)
+            //{
+            //    Console.Write("Напишите название сервера, с которого нужно получать скоры (bancho, gatari) -> ");
+            //    string input = Console.ReadLine();
 
-                switch (input)
-                {
-                    case "bancho":
-                        BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
-                        Console.WriteLine(api.ReloadToken());
+            //    switch (input)
+            //    {
+            //        case "bancho":
+            //            BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
+            //            Console.WriteLine(api.ReloadToken());
 
-                        while (true)
-                        {
-                            Console.Write("Введите ID пользователя -> ");
-                            int user = 0;
+            //            while (true)
+            //            {
+            //                Console.Write("Введите ID пользователя -> ");
+            //                int user = 0;
 
-                            if (int.TryParse(Console.ReadLine(), out user))
-                            {
-                                var scores = api.GetUserBestScores(user, 5);
-                                double avg_pp = 0;
+            //                if (int.TryParse(Console.ReadLine(), out user))
+            //                {
+            //                    var scores = api.GetUserBestScores(user, 5);
+            //                    double avg_pp = 0;
 
-                                Console.WriteLine();
+            //                    Console.WriteLine();
 
-                                if (scores is null)
-                                {
-                                    Console.WriteLine("Не удалось получить скоры. Проверьте ID");
-                                    continue;
-                                }
+            //                    if (scores is null)
+            //                    {
+            //                        Console.WriteLine("Не удалось получить скоры. Проверьте ID");
+            //                        continue;
+            //                    }
 
-                                foreach (var score in scores)
-                                {
-                                    Console.WriteLine($"{score.pp} pp : {score.beatmapset.artist} - {score.beatmapset.title}");
-                                    avg_pp += score.pp ?? 0;
-                                }
+            //                    foreach (var score in scores)
+            //                    {
+            //                        Console.WriteLine($"{score.pp} pp : {score.beatmapset.artist} - {score.beatmapset.title}");
+            //                        avg_pp += score.pp ?? 0;
+            //                    }
 
-                                Console.WriteLine(new string('=', 20));
-                                Console.WriteLine($"{avg_pp / 5} pp\n");
-                            }
-                        }
-                        break;
-                    case "gatari":
-                        GatariApi gapi = new GatariApi();
+            //                    Console.WriteLine(new string('=', 20));
+            //                    Console.WriteLine($"{avg_pp / 5} pp\n");
+            //                }
+            //            }
+            //            break;
+            //        case "gatari":
+            //            GatariApi gapi = new GatariApi();
 
-                        while (true)
-                        {
-                            Console.Write("Введите ID пользователя -> ");
-                            int user = 0;
+            //            while (true)
+            //            {
+            //                Console.Write("Введите ID пользователя -> ");
+            //                int user = 0;
 
-                            if (int.TryParse(Console.ReadLine(), out user))
-                            {
-                                var scores = gapi.GetUserBestScores(user, 5);
-                                double avg_pp = 0;
+            //                if (int.TryParse(Console.ReadLine(), out user))
+            //                {
+            //                    var scores = gapi.GetUserBestScores(user, 5);
+            //                    double avg_pp = 0;
 
-                                Console.WriteLine();
+            //                    Console.WriteLine();
 
-                                if (scores is null)
-                                {
-                                    Console.WriteLine("Не удалось получить скоры. Проверьте ID");
-                                    continue;
-                                }
+            //                    if (scores is null)
+            //                    {
+            //                        Console.WriteLine("Не удалось получить скоры. Проверьте ID");
+            //                        continue;
+            //                    }
 
-                                foreach (var score in scores)
-                                {
-                                    Console.WriteLine($"{score.pp} pp : {score.beatmap.song_name}");
-                                    avg_pp += score.pp ?? 0;
-                                }
+            //                    foreach (var score in scores)
+            //                    {
+            //                        Console.WriteLine($"{score.pp} pp : {score.beatmap.song_name}");
+            //                        avg_pp += score.pp ?? 0;
+            //                    }
 
-                                Console.WriteLine(new string('=', 20));
-                                Console.WriteLine($"{avg_pp / 5} pp\n");
-                            }
-                        }
-                        break;
+            //                    Console.WriteLine(new string('=', 20));
+            //                    Console.WriteLine($"{avg_pp / 5} pp\n");
+            //                }
+            //            }
+            //            break;
 
-                    default:
-                        Console.WriteLine("Не удалось распознать сервер");
-                        break;
-                }
+            //        default:
+            //            Console.WriteLine("Не удалось распознать сервер");
+            //            break;
+            //    }
 
-            }
+            //}
 
             //User users = null;
-            //api.GetBeatmap(2201460);
+            var bm = api.GetBeatmap(2201460);
             //api.GetUserRecentScores(6885792, true, 3, 10);
             //Console.WriteLine(users);
 

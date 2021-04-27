@@ -113,9 +113,9 @@ namespace WAV_Bot_DSharp.Converters
 
             DiscordEmoji banchoRankEmoji = osuEmoji.RankStatusEmoji(bm.ranked);
             DiscordEmoji diffEmoji = osuEmoji.DiffEmoji(bm.difficulty_rating);
-
+            
             StringBuilder embedMsg = new StringBuilder();
-            embedMsg.AppendLine($"{diffEmoji}  **__[{bm.version}]__**\n▸**Difficulty**: {bm.difficulty_rating}★\n▸**CS**: {bm.cs} ▸**HP**: {bm.drain} ▸**AR**: {bm.ar}\n\nBancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{bms.id}#osu/{bm.id})\nLast updated: {bm.last_updated}");
+            embedMsg.AppendLine($"{diffEmoji}  **__[{bm.version}]__**\n▸**Difficulty**: {bm.difficulty_rating}★\n▸**CS**: {bm.cs} ▸**HP**: {bm.drain} ▸**AR**: {bm.ar} ▸**OD**: {bm.accuracy}\n\nBancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{bms.id}#osu/{bm.id})\nLast updated: {bm.last_updated}");
             if (!(gBeatmap is null))
             {
                 DiscordEmoji gatariRankEmoji = osuEmoji.RankStatusEmoji(gBeatmap.ranked);
