@@ -143,7 +143,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             DiscordEmoji diffEmoji = emoji.DiffEmoji(banchoBeatmap.difficulty_rating);
 
             // Check gatari
-            GBeatmap gBeatmap = gapi.TryRetrieveBeatmap(banchoBeatmap.id);
+            GBeatmap gBeatmap = gapi.TryGetBeatmap(banchoBeatmap.id);
             
             StringBuilder embedMsg = new StringBuilder();
             embedMsg.AppendLine($"{diffEmoji}  **__[{banchoBeatmap.version}]__**\n▸**Difficulty**: {banchoBeatmap.difficulty_rating}★\n▸**CS**: {banchoBeatmap.cs} ▸**HP**: {banchoBeatmap.drain} ▸**AR**: {banchoBeatmap.ar}\n\nBancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{banchoBeatmapset.id}#osu/{banchoBeatmap.id})\nLast updated: {banchoBeatmap.last_updated}");

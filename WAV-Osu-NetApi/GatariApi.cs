@@ -49,7 +49,7 @@ namespace WAV_Osu_NetApi
             return g_resp.scores;
         }
 
-        public GBeatmap TryRetrieveBeatmap(int id)
+        public GBeatmap TryGetBeatmap(int id)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"beatmaps/get")
                 .AddParameter("bb", id);
