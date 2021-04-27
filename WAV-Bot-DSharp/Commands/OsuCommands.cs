@@ -62,9 +62,12 @@ namespace WAV_Bot_DSharp.Commands
 
         private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
+            if (!(e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("map-offer") || e.Channel.Name.Contains("bot-debug")))
+                return;
+
             Tuple<int, int> BMSandBMid = utils.GetIdsFromBanchoUrl(e.Message.Content);
 
-            if (!(BMSandBMid is null) && (e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("map-offer")))
+            if (!(BMSandBMid is null))
             {
                 int bms_id = BMSandBMid.Item1,
                     bm_id = BMSandBMid.Item2;
@@ -84,13 +87,16 @@ namespace WAV_Bot_DSharp.Commands
 
             int? BMid = utils.GetIdFromGatariUrl(e.Message.Content);
 
-            if (!(BMid is null) && (e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("map-offer")))
+            if (!(BMid is null))
             {
-                int bm_id = (int)BMid;
+                int bms_id = (int)BMid;
 
-                GBeatmap gbm = gapi.TryGetBeatmap(bm_id);
+                Beatmapset bms = api.GetBeatmapset(bms_id);
+
+                int bm_id = bms.beatmaps.First().id;
+
                 Beatmap bm = api.GetBeatmap(bm_id);
-                Beatmapset bms = api.GetBeatmapset(gbm.beatmapset_id);
+                GBeatmap gbm = gapi.TryGetBeatmap(bm_id);
 
                 if (!(bm is null || bms is null))
                 {
