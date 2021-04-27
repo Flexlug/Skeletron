@@ -62,20 +62,12 @@ namespace WAV_Bot_DSharp.Commands
 
         private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
-            if (e.Message.Content.Contains("osu.ppy.sh/beatmapsets/") && (e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("map-offer")))
+            Tuple<int, int> BMSandBMid = utils.GetIdsFromBanchoString(e.Message.Content);
+
+            if (!(BMSandBMid is null) && (e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("map-offer")))
             {
-                string[] ids = e.Message.Content.Split('#');
-
-                if (ids is null || ids.Length != 2)
-                    return;
-
-                int bms_id;
-                if (!int.TryParse(ids[0].Split('/').Last(), out bms_id))
-                    return;
-
-                int bm_id;
-                if (!int.TryParse(ids[1].Split('/').Last(), out bm_id))
-                    return;
+                int bms_id = BMSandBMid.Item1,
+                    bm_id = BMSandBMid.Item2;
 
                 Beatmap bm = api.GetBeatmap(bm_id);
                 Beatmapset bms = api.GetBeatmapset(bms_id);
