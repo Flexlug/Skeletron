@@ -106,7 +106,7 @@ namespace WAV_Osu_NetApi_Test
             //}
 
             //User users = null;
-            var bm = api.GetBeatmap(2201460);
+            //var bm = api.GetBeatmap(2201460);
             //api.GetUserRecentScores(6885792, true, 3, 10);
             //Console.WriteLine(users);
 
@@ -211,9 +211,9 @@ namespace WAV_Osu_NetApi_Test
 
             #region Bancho TryGetUsr
 
-            User validUser, invalidUser;
+            User validUser = null, invalidUser;
 
-            //api.TryGetUser(9604150, out validUser);
+            api.TryGetUser(9604150, ref validUser);
             //api.TryGetUser(687687654, out invalidUser);
 
             //Console.WriteLine(validUser);

@@ -51,7 +51,7 @@ namespace WAV_Bot_DSharp.Commands
         [Command("hi"), Description("Greet the bot")]
         public async Task PingAsync(CommandContext commandContext)
         {
-            await e.Message.RespondAsync("https://cdn.discordapp.com/attachments/776568856167972904/836541954779119616/4a5b505b4026b6fe30376b0b79d3e108fa755e07r1-540-540_hq.gif");
+            await commandContext.Message.RespondAsync("https://cdn.discordapp.com/attachments/776568856167972904/836541954779119616/4a5b505b4026b6fe30376b0b79d3e108fa755e07r1-540-540_hq.gif");
         }
 
         [Command("google"), Description("Let me do that job for you")]
