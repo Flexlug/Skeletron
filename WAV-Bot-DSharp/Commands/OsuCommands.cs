@@ -84,7 +84,7 @@ namespace WAV_Bot_DSharp.Commands
 
             int? BMid = utils.GetIdFromGatariUrl(e.Message.Content);
 
-            if (!(BMid is null))
+            if (!(BMid is null) && (e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("map-offer")))
             {
                 int bm_id = (int)BMid;
 
