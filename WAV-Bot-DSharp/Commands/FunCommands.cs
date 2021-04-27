@@ -31,6 +31,13 @@ namespace WAV_Bot_DSharp.Commands
         private async Task Client_DetectSayHi(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
             string msg = e.Message.Content.ToLower();
+
+            if (msg.Contains("привет") && msg.Contains("скелетик"))
+            {
+                await e.Message.RespondAsync("https://discord.com/channels/708860200341471264/776568856167972904/836541957962072084");
+                return;
+            }
+
             //if ((msg.Contains("привет") && msg.Contains("скелетик")) || msg.Contains("привет виталий") || msg.Contains("вставай припадочный") || msg.Contains("привет виталя"))
             if (msg.Contains("привет") && (msg.Contains("скелетик") || msg.Contains("виталий") || msg.Contains("припадочный") || msg.Contains("виталя"))
                 || msg.Contains("вставай припадочный"))
