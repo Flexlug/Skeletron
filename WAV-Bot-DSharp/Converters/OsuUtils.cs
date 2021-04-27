@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 using DSharpPlus;
@@ -19,17 +20,36 @@ namespace WAV_Bot_DSharp.Converters
     /// </summary>
     public class OsuUtils
     {
-        private DiscordClient client { get; set; }
         private OsuEmoji osuEmoji { get; set; }
+        private Regex banchoUrl { get; set; }
 
         private ILogger logger { get; set; }
 
-        public OsuUtils(DiscordClient client, OsuEmoji emoji, ILogger<OsuUtils> logger)
+        public OsuUtils(OsuEmoji emoji, ILogger<OsuUtils> logger)
         {
-            this.client = client;
             this.osuEmoji = emoji;
+            this.banchoUrl = new Regex(@"http[s]?:\/\/osu.ppy.sh\/beatmapsets\/([0-9]*)#osu\/([0-9]*)");
 
             this.logger = logger;
+        }
+
+        /// <summary>
+        /// Get beatmapset and beatmap id from bancho url
+        /// </summary>
+        /// <returns>Tuple, where first element is beatmapset id and second element - beatmap id</returns>
+        public Tuple<int, int> GetIdsFromBanchoString(string msg)
+        {
+            Match match = banchoUrl.Match(msg);
+
+            if (match is null || match.Groups.Count != 2)
+                return null;
+
+            int bmsid, bmid;
+
+            if (int.TryParse(match.Groups[0].Value, out bmsid) && int.TryParse(match.Groups[1].Value, out bmid))
+                return Tuple.Create(bmsid, bmid);
+
+            return null;
         }
 
         /// <summary>
