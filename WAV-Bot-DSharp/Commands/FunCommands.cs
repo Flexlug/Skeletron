@@ -38,7 +38,6 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            //if ((msg.Contains("привет") && msg.Contains("скелетик")) || msg.Contains("привет виталий") || msg.Contains("вставай припадочный") || msg.Contains("привет виталя"))
             if (msg.Contains("привет") && (msg.Contains("виталий") || msg.Contains("припадочный") || msg.Contains("виталя"))
                 || msg.Contains("вставай припадочный"))
                 await e.Message.RespondAsync(":skull:");
