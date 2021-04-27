@@ -53,6 +53,42 @@ namespace WAV_Bot_DSharp.Converters
         }
 
         /// <summary>
+        /// Build embed from beatmap and beatmapset information
+        /// </summary>
+        /// <param name="bm">Beatmap object</param>
+        /// <param name="bms">Beatmapset object</param>
+        /// <param name="gBeatmap">Beatmap object from gatari (if exists)</param>
+        /// <returns></returns>
+        public DiscordEmbed BeatmapToEmbed(Beatmap bm, Beatmapset bms, GBeatmap gBeatmap = null)
+        {
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
+
+            TimeSpan mapLen = TimeSpan.FromSeconds(bm.total_length);
+
+            DiscordEmoji banchoRankEmoji = osuEmoji.RankStatusEmoji(bm.ranked);
+            DiscordEmoji diffEmoji = osuEmoji.DiffEmoji(bm.difficulty_rating);
+
+            StringBuilder embedMsg = new StringBuilder();
+            embedMsg.AppendLine($"{diffEmoji}  **__[{bm.version}]__**\n▸**Difficulty**: {bm.difficulty_rating}★\n▸**CS**: {bm.cs} ▸**HP**: {bm.drain} ▸**AR**: {bm.ar}\n\nBancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{bms.id}#osu/{bm.id})\nLast updated: {bm.last_updated}");
+            if (!(gBeatmap is null))
+            {
+                DiscordEmoji gatariRankEmoji = osuEmoji.RankStatusEmoji(gBeatmap.ranked);
+                embedMsg.AppendLine($"\nGatari: {gatariRankEmoji} : [link](https://osu.gatari.pw/s/{gBeatmap.beatmapset_id}#osu/{gBeatmap.beatmap_id})\nLast updated: {(gBeatmap.ranking_data != 0 ? new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(gBeatmap.ranking_data).ToString() : "")}");
+            }
+
+            // Construct embed
+            embedBuilder.WithTitle($"{banchoRankEmoji}  {bms.artist} – {bms.title} by {bms.creator}");
+            embedBuilder.WithUrl(bm.url);
+            embedBuilder.AddField($"Length: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)}, BPM: {bm.bpm}",
+                                  embedMsg.ToString(),
+                                  true);
+            embedBuilder.WithThumbnail(bms.covers.List2x);
+            embedBuilder.WithFooter(bms.tags);
+
+            return embedBuilder.Build();
+        }
+
+        /// <summary>
         /// Translate osu mods to string
         /// </summary>
         /// <param name="mods">Osu mods</param>
