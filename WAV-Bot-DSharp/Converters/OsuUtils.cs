@@ -134,6 +134,41 @@ namespace WAV_Bot_DSharp.Converters
             return embedBuilder.Build();
         }
 
+        public DiscordEmbed UserToEmbed(User user, List<Score> scores)
+        {
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine($"**Server:** bancho");
+            sb.AppendLine($"**Rank:** `#{user.statistics.global_rank}` ({user.country_code} `#{user.statistics.country_rank}`)");
+            sb.AppendLine($"**Level:** `{user.statistics.level.currect}` + `{user.statistics.level.progress}%`");
+            sb.AppendLine($"**PP:** `{user.statistics.pp} PP` **Acc**: `{user.statistics.hit_accuracy}%`");
+            sb.AppendLine($"**Playcount:** `{user.statistics.play_count}` (`{user.statistics.play_time}` hrs)");
+            sb.AppendLine($"**Ranks**: {osuEmoji.RankingEmoji("XH")}`{user.statistics.grade_counts.ssh}` {osuEmoji.RankingEmoji("X")}`{user.statistics.grade_counts.ss}` {osuEmoji.RankingEmoji("SH")}`{user.statistics.grade_counts.sh}` {osuEmoji.RankingEmoji("S")}`{user.statistics.grade_counts.s}` {osuEmoji.RankingEmoji("A")}`{user.statistics.grade_counts.a}`");
+            sb.AppendLine($"Playstyle: {string.Join(", ", user.playstyle)})");
+            sb.AppendLine();
+            sb.AppendLine("Top 5 scores:");
+
+            double avg_pp = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                Score s = scores[i];
+                sb.AppendLine($"{i}: {s.beatmapset.title} [{s.beatmap.version}] **{string.Join(' ', s.mods)}** - {s.beatmap.difficulty_rating}");
+                sb.AppendLine($"▸ {osuEmoji.RankingEmoji(s.rank)} ▸ `{s.pp:2} PP` ▸ [{s.statistics.count_300}/{s.statistics.count_100}/{s.statistics.count_50}]\n");
+
+                avg_pp += s.pp ?? 0;
+            }
+
+            sb.AppendLine($"Avg: `{avg_pp / 5} PP`");
+
+            embedBuilder.WithTitle(user.username)
+                        .WithThumbnail(user.avatar_url)
+                        .WithDescription(sb.ToString());
+
+            return embedBuilder.Build(); ;
+        }
+
         /// <summary>
         /// Translate osu mods to string
         /// </summary>
