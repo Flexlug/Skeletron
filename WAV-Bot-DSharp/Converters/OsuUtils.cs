@@ -41,7 +41,7 @@ namespace WAV_Bot_DSharp.Converters
         /// </summary>
         /// <param name="msg">Message, which contains url</param>
         /// <returns>Tuple, where first element is beatmapset id and second element - beatmap id</returns>
-        public Tuple<int, int> GetIdsFromBanchoString(string msg)
+        public Tuple<int, int> GetIdsFromBanchoUrl(string msg)
         {
             Match match = banchoMapUrl.Match(msg);
 
@@ -61,7 +61,7 @@ namespace WAV_Bot_DSharp.Converters
         /// </summary>
         /// <param name="msg">Message which contains url</param>
         /// <returns>Id of beatmap</returns>
-        public int? GetIdFromGatariString(string msg)
+        public int? GetIdFromGatariUrl(string msg)
         {
             Match match = gatariMapUrl.Match(msg);
             

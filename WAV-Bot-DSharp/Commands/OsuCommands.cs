@@ -62,7 +62,7 @@ namespace WAV_Bot_DSharp.Commands
 
         private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
-            Tuple<int, int> BMSandBMid = utils.GetIdsFromBanchoString(e.Message.Content);
+            Tuple<int, int> BMSandBMid = utils.GetIdsFromBanchoUrl(e.Message.Content);
 
             if (!(BMSandBMid is null) && (e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("map-offer")))
             {
@@ -82,7 +82,7 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            int? BMid = utils.GetIdFromGatariString(e.Message.Content);
+            int? BMid = utils.GetIdFromGatariUrl(e.Message.Content);
 
             if (!(BMid is null))
             {
