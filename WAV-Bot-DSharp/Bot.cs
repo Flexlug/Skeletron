@@ -37,6 +37,8 @@ namespace WAV_Bot_DSharp
         private bool IsDisposed { get; set; }
         private bool IsRunning { get; set; }
 
+        private ILogger<Bot> logger { get; set; }
+
         ILoggerFactory logFactory;
 
         public Bot(Settings settings)
@@ -45,6 +47,7 @@ namespace WAV_Bot_DSharp
             Settings.KOSTYL = settings;
 
             logFactory = new LoggerFactory().AddSerilog();
+            logger = logFactory.CreateLogger<Bot>();
 
             Discord = new DiscordClient(new DiscordConfiguration
             {
@@ -57,6 +60,8 @@ namespace WAV_Bot_DSharp
             Discord.UseInteractivity(new InteractivityConfiguration());
             // Activating VoiceNext module
             Discord.UseVoiceNext();
+
+            Discord.ClientErrored += Discord_ClientErrored;
 
             // For correct datetime recognizing
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru-RU");
@@ -177,6 +182,12 @@ namespace WAV_Bot_DSharp
             // Send command error message as response.
             e.Context.RespondAsync(e.Exception.Message);
             return Task.CompletedTask;
+        }
+
+        private Task Discord_ClientErrored(DiscordClient sender, ClientErrorEventArgs e)
+        {
+            logger.LogError(e, "Discord_ClientErrored");
+            return;
         }
 
         protected virtual void Dispose(bool disposing)
