@@ -77,6 +77,8 @@ namespace WAV_Bot_DSharp.Commands
 
                 await e.Message.RespondAsync(embed: embed);
             }
+
+
         }
 
         [Command("submit"), RequireDirectMessage]

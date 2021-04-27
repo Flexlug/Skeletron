@@ -21,14 +21,17 @@ namespace WAV_Bot_DSharp.Converters
     public class OsuUtils
     {
         private OsuEmoji osuEmoji { get; set; }
-        private Regex banchoUrl { get; set; }
+
+        private Regex banchoMapUrl { get; set; }
+        private Regex gatariMapUrl { get; set; }
 
         private ILogger logger { get; set; }
 
         public OsuUtils(OsuEmoji emoji, ILogger<OsuUtils> logger)
         {
             this.osuEmoji = emoji;
-            this.banchoUrl = new Regex(@"http[s]?:\/\/osu.ppy.sh\/beatmapsets\/([0-9]*)#osu\/([0-9]*)");
+            this.banchoMapUrl = new Regex(@"http[s]?:\/\/osu.ppy.sh\/beatmapsets\/([0-9]*)#osu\/([0-9]*)");
+            this.gatariMapUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/s\/([0-9]*)");
 
             this.logger = logger;
         }
@@ -36,10 +39,11 @@ namespace WAV_Bot_DSharp.Converters
         /// <summary>
         /// Get beatmapset and beatmap id from bancho url
         /// </summary>
+        /// <param name="msg">Message, which contains url</param>
         /// <returns>Tuple, where first element is beatmapset id and second element - beatmap id</returns>
         public Tuple<int, int> GetIdsFromBanchoString(string msg)
         {
-            Match match = banchoUrl.Match(msg);
+            Match match = banchoMapUrl.Match(msg);
 
             if (match is null || match.Groups.Count != 3)
                 return null;
@@ -48,6 +52,26 @@ namespace WAV_Bot_DSharp.Converters
 
             if (int.TryParse(match.Groups[1].Value, out bmsid) && int.TryParse(match.Groups[2].Value, out bmid))
                 return Tuple.Create(bmsid, bmid);
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get beatmap id from gatari url
+        /// </summary>
+        /// <param name="msg">Message which contains url</param>
+        /// <returns>Id of beatmap</returns>
+        public int? GetIdFromGatariString(string msg)
+        {
+            Match match = gatariMapUrl.Match(msg);
+            
+            if (match is null || match.Groups.Count != 2)
+                return null;
+
+            int bmid;
+
+            if (int.TryParse(match.Groups[1].Value, out bmid))
+                return bmid;
 
             return null;
         }
