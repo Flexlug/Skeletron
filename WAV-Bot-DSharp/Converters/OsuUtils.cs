@@ -166,7 +166,7 @@ namespace WAV_Bot_DSharp.Converters
             sb.AppendLine($"**Rank:** `#{user.statistics.global_rank}` ({user.country_code} `#{user.statistics.country_rank}`)");
             sb.AppendLine($"**Level:** `{user.statistics.level.current}` + `{user.statistics.level.progress}%`");
             sb.AppendLine($"**PP:** `{user.statistics.pp} PP` **Acc**: `{user.statistics.hit_accuracy}%`");
-            sb.AppendLine($"**Playcount:** `{user.statistics.play_count}` (`{user.statistics.play_time}` hrs)");
+            sb.AppendLine($"**Playcount:** `{user.statistics.play_count}` (`{(Math.Round((double)user.statistics.play_time / 3600))}` hrs)");
             sb.AppendLine($"**Ranks**: {osuEmoji.RankingEmoji("XH")}`{user.statistics.grade_counts.ssh}` {osuEmoji.RankingEmoji("X")}`{user.statistics.grade_counts.ss}` {osuEmoji.RankingEmoji("SH")}`{user.statistics.grade_counts.sh}` {osuEmoji.RankingEmoji("S")}`{user.statistics.grade_counts.s}` {osuEmoji.RankingEmoji("A")}`{user.statistics.grade_counts.a}`");
             sb.AppendLine($"**Playstyle:** {string.Join(", ", user.playstyle)}\n");
             sb.AppendLine("Top 5 scores:");
