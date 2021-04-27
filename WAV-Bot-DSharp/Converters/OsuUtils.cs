@@ -41,12 +41,12 @@ namespace WAV_Bot_DSharp.Converters
         {
             Match match = banchoUrl.Match(msg);
 
-            if (match is null || match.Groups.Count != 2)
+            if (match is null || match.Groups.Count != 3)
                 return null;
 
             int bmsid, bmid;
 
-            if (int.TryParse(match.Groups[0].Value, out bmsid) && int.TryParse(match.Groups[1].Value, out bmid))
+            if (int.TryParse(match.Groups[1].Value, out bmsid) && int.TryParse(match.Groups[2].Value, out bmid))
                 return Tuple.Create(bmsid, bmid);
 
             return null;
