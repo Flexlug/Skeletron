@@ -71,36 +71,11 @@ namespace WAV_Bot_DSharp.Commands
 
                 Beatmap bm = api.GetBeatmap(bm_id);
                 Beatmapset bms = api.GetBeatmapset(bms_id);
+                GBeatmap gbm = gapi.TryRetrieveBeatmap(bm_id);
 
-                // Contruct message
-                DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
+                DiscordEmbed embed = utils.BeatmapToEmbed(bm, bms, gbm);
 
-                TimeSpan mapLen = TimeSpan.FromSeconds(bm.total_length);
-
-                DiscordEmoji banchoRankEmoji = emoji.RankStatusEmoji(bm.ranked);
-                DiscordEmoji diffEmoji = emoji.DiffEmoji(bm.difficulty_rating);
-
-                // Check gatari
-                GBeatmap gBeatmap = gapi.TryRetrieveBeatmap(bm.id);
-
-                StringBuilder embedMsg = new StringBuilder();
-                embedMsg.AppendLine($"{diffEmoji}  **__[{bm.version}]__**\n▸**Difficulty**: {bm.difficulty_rating}★\n▸**CS**: {bm.cs} ▸**HP**: {bm.drain} ▸**AR**: {bm.ar}\n\nBancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{bms.id}#osu/{bm.id})\nLast updated: {bm.last_updated}");
-                if (!(gBeatmap is null))
-                {
-                    DiscordEmoji gatariRankEmoji = emoji.RankStatusEmoji(gBeatmap.ranked);
-                    embedMsg.AppendLine($"\nGatari: {gatariRankEmoji} : [link](https://osu.gatari.pw/s/{gBeatmap.beatmapset_id}#osu/{gBeatmap.beatmap_id})\nLast updated: {(gBeatmap.ranking_data != 0 ? new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(gBeatmap.ranking_data).ToString() : "")}");
-                }
-
-                // Construct embed
-                embedBuilder.WithTitle($"{banchoRankEmoji}  {bms.artist} – {bms.title} by {bms.creator}");
-                embedBuilder.WithUrl(bm.url);
-                embedBuilder.AddField($"Length: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)}, BPM: {bm.bpm}",
-                                      embedMsg.ToString(),
-                                      true);
-                embedBuilder.WithThumbnail(bms.covers.List2x);
-                embedBuilder.WithFooter(bms.tags);
-
-                await e.Message.RespondAsync(embed: embedBuilder.Build());
+                await e.Message.RespondAsync(embed: embed);
             }
         }
 
