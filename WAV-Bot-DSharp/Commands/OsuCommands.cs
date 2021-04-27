@@ -62,11 +62,14 @@ namespace WAV_Bot_DSharp.Commands
 
         private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
+            if (!e.Message.Content.Contains("http"))
+                return;
+
             if (!(e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("map-offer") || e.Channel.Name.Contains("bot-debug") || e.Channel.Name.Contains("dev-announce")))
                 return;
 
+            // Check, if it is map url from bancho
             Tuple<int, int> BMSandBMid = utils.GetBMandBMSIdFromBanchoUrl(e.Message.Content);
-
             if (!(BMSandBMid is null))
             {
                 int bms_id = BMSandBMid.Item1,
@@ -85,8 +88,8 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
+            // Check, if it is beatmapset url from gatari
             int? BMSid = utils.GetBMSIdFromGatariUrl(e.Message.Content);
-
             if (!(BMSid is null))
             {
                 int bms_id = (int)BMSid;
@@ -107,8 +110,8 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
+            // Check, if it is beatmap url from gatari
             int? BMid = utils.GetBMIdFromGatariUrl(e.Message.Content);
-
             if (!(BMid is null))
             {
                 int bm_id = (int)BMid;
@@ -126,8 +129,8 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
+            // Check, if it is user link from bancho
             int? userId = utils.GetUserIdFromBanchoUrl(e.Message.Content);
-
             if (!(userId is null))
             {
                 int user_id = (int)userId;
