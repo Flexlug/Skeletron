@@ -13,7 +13,7 @@ namespace WAV_Osu_NetApi.Bancho.Models
         public int score { get; set; }
         public int? max_combo { get; set; }
         public bool perfect { get; set; }
-        public Statistics statistics { get; set; }
+        public ScoreStatistics statistics { get; set; }
         public double? pp { get; set; }
         public string rank { get; set; }
         public DateTime created_at { get; set; }

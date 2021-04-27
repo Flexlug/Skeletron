@@ -20,6 +20,21 @@ namespace WAV_Osu_NetApi.Bancho.Models
 
         public int favourite_beatmapset_count { get; set; }
         public int follower_count { get; set; }
+        public int graveyard_beatmapset_count { get; set; }
+        public int loved_beatmapset_count { get; set; }
+        public List<UserMonthlyPlaycount> monthly_playcounts { get; set; }
+        public Page page { get; set; }
+        public List<string> previous_usernames { get; set; }
+        public int ranked_and_approved_beatmapset_count { get; set; }
+        public List<ReplaysWatchedCount> replays_watched_counts { get; set; }
+        public int scores_best_count { get; set; }
+        public int scores_first_count { get; set; }
+        public int scores_recent_count { get; set; }
+        public UserStatistics statistics { get; set; }
+        public int support_level { get; set; }
+        public int unranked_beatmapset_count { get; set; }
+        public List<UserAchievement> user_achievements { get; set; }
+        public UserRankHistory rank_history { get; set; }
 
         public Country country { get; set; }
         public Cover cover { get; set; }

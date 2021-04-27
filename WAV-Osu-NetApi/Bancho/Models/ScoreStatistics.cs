@@ -1,6 +1,6 @@
 namespace WAV_Osu_NetApi.Bancho.Models
 {
-    public class Statistics
+    public class ScoreStatistics
     {
         public int count_50 { get; set; }
         public int count_100 { get; set; }
