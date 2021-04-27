@@ -23,6 +23,7 @@ namespace WAV_Bot_DSharp.Converters
         private OsuEmoji osuEmoji { get; set; }
 
         private Regex banchoBMandBMSUrl { get; set; }
+        private Regex banchoUserId { get; set; }
         private Regex gatariBMSUrl { get; set; }
         private Regex gatariBMUrl { get; set; }
 
@@ -34,6 +35,7 @@ namespace WAV_Bot_DSharp.Converters
             this.banchoBMandBMSUrl = new Regex(@"http[s]?:\/\/osu.ppy.sh\/beatmapsets\/([0-9]*)#osu\/([0-9]*)");
             this.gatariBMSUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/s\/([0-9]*)");
             this.gatariBMUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/b\/([0-9]*)");
+            this.banchoUserId = new Regex(@"http[s]?:\/\/osu.ppy.sh\/users\/([0-9]*)");
 
             this.logger = logger;
         }
@@ -94,6 +96,26 @@ namespace WAV_Bot_DSharp.Converters
 
             if (int.TryParse(match.Groups[1].Value, out bm_id))
                 return bm_id;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get user id from bancho url
+        /// </summary>
+        /// <param name="msg">Message, which contains bancho url</param>
+        /// <returns>User id</returns>
+        public int? GetUserIdFromBanchoUrl(string msg)
+        {
+            Match match = gatariBMUrl.Match(msg);
+
+            if (match is null || match.Groups.Count != 2)
+                return null;
+
+            int user_id;
+
+            if (int.TryParse(match.Groups[1].Value, out user_id))
+                return user_id;
 
             return null;
         }
