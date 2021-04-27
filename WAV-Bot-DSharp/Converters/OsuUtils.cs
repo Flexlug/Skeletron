@@ -186,7 +186,7 @@ namespace WAV_Bot_DSharp.Converters
                 avg_pp += s.pp ?? 0;
             }
 
-            sb.AppendLine($"\nAvg: `{avg_pp / 5} PP`");
+            sb.AppendLine($"\nAvg: `{Math.Round(avg_pp / 5, 2)} PP`");
 
             embedBuilder.WithTitle(user.username)
                         .WithThumbnail(user.avatar_url)
