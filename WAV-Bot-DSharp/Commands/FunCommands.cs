@@ -34,12 +34,12 @@ namespace WAV_Bot_DSharp.Commands
 
             if (msg.Contains("привет") && msg.Contains("скелетик"))
             {
-                await e.Message.RespondAsync("https://discord.com/channels/708860200341471264/776568856167972904/836541957962072084");
+                await e.Message.RespondAsync("https://cdn.discordapp.com/attachments/776568856167972904/836541954779119616/4a5b505b4026b6fe30376b0b79d3e108fa755e07r1-540-540_hq.gif");
                 return;
             }
 
             //if ((msg.Contains("привет") && msg.Contains("скелетик")) || msg.Contains("привет виталий") || msg.Contains("вставай припадочный") || msg.Contains("привет виталя"))
-            if (msg.Contains("привет") && (msg.Contains("скелетик") || msg.Contains("виталий") || msg.Contains("припадочный") || msg.Contains("виталя"))
+            if (msg.Contains("привет") && (msg.Contains("виталий") || msg.Contains("припадочный") || msg.Contains("виталя"))
                 || msg.Contains("вставай припадочный"))
                 await e.Message.RespondAsync(":skull:");
         }
