@@ -22,16 +22,16 @@ namespace WAV_Bot_DSharp.Converters
     {
         private OsuEmoji osuEmoji { get; set; }
 
-        private Regex banchoMapUrl { get; set; }
-        private Regex gatariMapUrl { get; set; }
+        private Regex banchoBMandBMSUrl { get; set; }
+        private Regex gatariBMSUrl { get; set; }
 
         private ILogger logger { get; set; }
 
         public OsuUtils(OsuEmoji emoji, ILogger<OsuUtils> logger)
         {
             this.osuEmoji = emoji;
-            this.banchoMapUrl = new Regex(@"http[s]?:\/\/osu.ppy.sh\/beatmapsets\/([0-9]*)#osu\/([0-9]*)");
-            this.gatariMapUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/s\/([0-9]*)");
+            this.banchoBMandBMSUrl = new Regex(@"http[s]?:\/\/osu.ppy.sh\/beatmapsets\/([0-9]*)#osu\/([0-9]*)");
+            this.gatariBMSUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/s\/([0-9]*)");
 
             this.logger = logger;
         }
@@ -43,7 +43,7 @@ namespace WAV_Bot_DSharp.Converters
         /// <returns>Tuple, where first element is beatmapset id and second element - beatmap id</returns>
         public Tuple<int, int> GetIdsFromBanchoUrl(string msg)
         {
-            Match match = banchoMapUrl.Match(msg);
+            Match match = banchoBMandBMSUrl.Match(msg);
 
             if (match is null || match.Groups.Count != 3)
                 return null;
@@ -57,13 +57,13 @@ namespace WAV_Bot_DSharp.Converters
         }
 
         /// <summary>
-        /// Get beatmap id from gatari url
+        /// Get beatmapset id from gatari url
         /// </summary>
         /// <param name="msg">Message which contains url</param>
-        /// <returns>Id of beatmap</returns>
+        /// <returns>Id of beatmapset</returns>
         public int? GetIdFromGatariUrl(string msg)
         {
-            Match match = gatariMapUrl.Match(msg);
+            Match match = gatariBMSUrl.Match(msg);
             
             if (match is null || match.Groups.Count != 2)
                 return null;
