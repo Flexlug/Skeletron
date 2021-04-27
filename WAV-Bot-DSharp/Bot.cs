@@ -84,9 +84,9 @@ namespace WAV_Bot_DSharp
                 .AddSingleton<OsuUtils>()
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
-                .AddSingleton<IRecognizerService, RecognizerService>()
-                .AddSingleton<ITrackedUsersDbService, TrackedUsersDbService>()
-                .AddSingleton<ITrackService, TrackService>()
+                //.AddSingleton<IRecognizerService, RecognizerService>()
+                //.AddSingleton<ITrackedUsersDbService, TrackedUsersDbService>()
+                //.AddSingleton<ITrackService, TrackService>()
                 .BuildServiceProvider();
         }
 
@@ -102,13 +102,13 @@ namespace WAV_Bot_DSharp
             CommandsNext.SetHelpFormatter<CustomHelpFormatter>();
 
             // Registering command classes
-            CommandsNext.RegisterCommands<UserCommands>();
-            CommandsNext.RegisterCommands<AdminCommands>();
-            CommandsNext.RegisterCommands<DemonstrationCommands>();
-            CommandsNext.RegisterCommands<RecognizerCommands>();
-            CommandsNext.RegisterCommands<FunCommands>();
+            //CommandsNext.RegisterCommands<UserCommands>();
+            //CommandsNext.RegisterCommands<AdminCommands>();
+            //CommandsNext.RegisterCommands<DemonstrationCommands>();
+            //CommandsNext.RegisterCommands<RecognizerCommands>();
+            //CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
-            CommandsNext.RegisterCommands<TrackCommands>();
+            //CommandsNext.RegisterCommands<TrackCommands>();
 
             // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;

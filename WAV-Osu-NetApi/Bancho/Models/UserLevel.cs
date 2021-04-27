@@ -6,7 +6,7 @@ namespace WAV_Osu_NetApi.Bancho.Models
 {
     public class UserLevel
     {
-        public int currect { get; set; }
+        public int current { get; set; }
         public int progress { get; set; }
     }
 }
