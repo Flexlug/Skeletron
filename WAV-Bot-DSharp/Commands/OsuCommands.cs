@@ -73,12 +73,33 @@ namespace WAV_Bot_DSharp.Commands
                 Beatmapset bms = api.GetBeatmapset(bms_id);
                 GBeatmap gbm = gapi.TryRetrieveBeatmap(bm_id);
 
-                DiscordEmbed embed = utils.BeatmapToEmbed(bm, bms, gbm);
+                if (!(bm is null || bms is null))
+                {
+                    DiscordEmbed embed = utils.BeatmapToEmbed(bm, bms, gbm);
+                    await e.Message.RespondAsync(embed: embed);
+                }
 
-                await e.Message.RespondAsync(embed: embed);
+                return;
             }
 
+            int? BMid = utils.GetIdFromGatariString(e.Message.Content);
 
+            if (!(BMid is null))
+            {
+                int bm_id = (int)BMid;
+
+                GBeatmap gbm = gapi.TryRetrieveBeatmap(bm_id);
+                Beatmap bm = api.GetBeatmap(bm_id);
+                Beatmapset bms = api.GetBeatmapset(gbm.beatmapset_id);
+
+                if (!(bm is null || bms is null))
+                {
+                    DiscordEmbed embed = utils.BeatmapToEmbed(bm, bms, gbm);
+                    await e.Message.RespondAsync(embed: embed);
+                }
+
+                return;
+            }
         }
 
         [Command("submit"), RequireDirectMessage]
