@@ -77,7 +77,6 @@ namespace WAV_Bot_DSharp
             Log.Logger.Debug("Configuring services");
             Services = new ServiceCollection()
                 .AddLogging(conf => conf.AddSerilog(dispose: true))
-                .AddLogging(conf => conf.AddSerilog(dispose: true))
                 .AddDbContext<TrackedUserContext>()
                 .AddSingleton(Settings)
                 .AddSingleton(Discord)
