@@ -125,6 +125,27 @@ namespace WAV_Bot_DSharp.Commands
 
                 return;
             }
+
+            int? userId = utils.GetUserIdFromBanchoUrl(e.Message.Content);
+
+            if (!(userId is null))
+            {
+                int user_id = (int)userId;
+
+                User user = null;
+                if (!api.TryGetUser(user_id, ref user))
+                    return;
+
+                List<Score> scores = api.GetUserBestScores(user_id, 5);
+
+                if (!(scores is null) && scores.Count == 5)
+                {
+                    DiscordEmbed embed = utils.UserToEmbed(user, scores);
+                    await e.Message.RespondAsync(embed: embed);
+                }
+
+                return;
+            }
         }
 
         [Command("submit"), RequireDirectMessage]
