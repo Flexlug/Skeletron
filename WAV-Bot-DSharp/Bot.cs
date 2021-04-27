@@ -186,8 +186,8 @@ namespace WAV_Bot_DSharp
 
         private Task Discord_ClientErrored(DiscordClient sender, ClientErrorEventArgs e)
         {
-            logger.LogError(e, "Discord_ClientErrored");
-            return;
+            logger.LogError(e.Exception, "Discord_ClientErrored");
+            return Task.CompletedTask; ;
         }
 
         protected virtual void Dispose(bool disposing)
