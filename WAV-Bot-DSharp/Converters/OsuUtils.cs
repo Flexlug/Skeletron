@@ -24,6 +24,7 @@ namespace WAV_Bot_DSharp.Converters
 
         private Regex banchoBMandBMSUrl { get; set; }
         private Regex gatariBMSUrl { get; set; }
+        private Regex gatariBMUrl { get; set; }
 
         private ILogger logger { get; set; }
 
@@ -32,6 +33,7 @@ namespace WAV_Bot_DSharp.Converters
             this.osuEmoji = emoji;
             this.banchoBMandBMSUrl = new Regex(@"http[s]?:\/\/osu.ppy.sh\/beatmapsets\/([0-9]*)#osu\/([0-9]*)");
             this.gatariBMSUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/s\/([0-9]*)");
+            this.gatariBMUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/b\/([0-9]*)");
 
             this.logger = logger;
         }
@@ -41,17 +43,17 @@ namespace WAV_Bot_DSharp.Converters
         /// </summary>
         /// <param name="msg">Message, which contains url</param>
         /// <returns>Tuple, where first element is beatmapset id and second element - beatmap id</returns>
-        public Tuple<int, int> GetIdsFromBanchoUrl(string msg)
+        public Tuple<int, int> GetBMandBMSIdFromBanchoUrl(string msg)
         {
             Match match = banchoBMandBMSUrl.Match(msg);
 
             if (match is null || match.Groups.Count != 3)
                 return null;
 
-            int bmsid, bmid;
+            int bms_id, bm_id;
 
-            if (int.TryParse(match.Groups[1].Value, out bmsid) && int.TryParse(match.Groups[2].Value, out bmid))
-                return Tuple.Create(bmsid, bmid);
+            if (int.TryParse(match.Groups[1].Value, out bms_id) && int.TryParse(match.Groups[2].Value, out bm_id))
+                return Tuple.Create(bms_id, bm_id);
 
             return null;
         }
@@ -61,17 +63,37 @@ namespace WAV_Bot_DSharp.Converters
         /// </summary>
         /// <param name="msg">Message which contains url</param>
         /// <returns>Id of beatmapset</returns>
-        public int? GetIdFromGatariUrl(string msg)
+        public int? GetBMSIdFromGatariUrl(string msg)
         {
             Match match = gatariBMSUrl.Match(msg);
             
             if (match is null || match.Groups.Count != 2)
                 return null;
 
-            int bmid;
+            int bms_id;
 
-            if (int.TryParse(match.Groups[1].Value, out bmid))
-                return bmid;
+            if (int.TryParse(match.Groups[1].Value, out bms_id))
+                return bms_id;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get beatmapset and beatmap id from gatari url
+        /// </summary>
+        /// <param name="msg">Message, which contains url</param>
+        /// <returns>Tuple, where first element is beatmapset id and second element - beatmap id</returns>
+        public int? GetBMIdFromGatariUrl(string msg)
+        {
+            Match match = gatariBMUrl.Match(msg);
+
+            if (match is null || match.Groups.Count != 2)
+                return null;
+
+            int bm_id;
+
+            if (int.TryParse(match.Groups[1].Value, out bm_id))
+                return bm_id;
 
             return null;
         }
