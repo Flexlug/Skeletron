@@ -152,7 +152,8 @@ namespace WAV_Bot_DSharp.Commands
 
         [Command("osu"), Description("Get osu profile information"), RequireGuild]
         public async Task OsuProfile(CommandContext commandContext,
-            [Description("Osu nickname"), RemainingText] string nickname)
+            [Description("Osu nickname"), RemainingText] string nickname,
+            params string[] args)
         {
             if (!commandContext.Channel.Name.Contains("-bot"))
             {
@@ -164,6 +165,33 @@ namespace WAV_Bot_DSharp.Commands
             {
                 await commandContext .RespondAsync("Вы ввели пустую строку.");
                 return;
+            }
+
+            if (args.Contains("-gatari"))
+            {
+                GUser guser = null;
+                if (!gapi.TryGetUser(nickname, ref guser))
+                {
+                    await commandContext.RespondAsync($"Не удалось получить информацию о пользователе `{nickname}`.");
+                    return;
+                }
+
+                List<GScore> gscores = gapi.GetUserBestScores(guser.id, 5);
+                if (gscores is null || gscores.Count == 0)
+                {
+                    await commandContext.RespondAsync($"Не удалось получить информацию о лучших скорах пользователя `{nickname}`.");
+                    return;
+                }
+
+                GStatistics gstats = gapi.GetUserStats(guser.id);
+                if (gstats is null)
+                {
+                    await commandContext.RespondAsync($"Не удалось получить статистику пользователя `{nickname}`.");
+                    return;
+                }
+
+                DiscordEmbed gembed = utils.UserToEmbed(guser, stats, gscores);
+                await commandContext.RespondAsync(embed: gembed);
             }
 
             User user = null;
