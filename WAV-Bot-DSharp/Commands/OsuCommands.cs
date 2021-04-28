@@ -64,7 +64,11 @@ namespace WAV_Bot_DSharp.Commands
             if (!e.Message.Content.Contains("http"))
                 return;
 
-            if (!(e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("map-offer") || e.Channel.Name.Contains("bot-debug") || e.Channel.Name.Contains("dev-announce")))
+            if (!(e.Channel.Name.Contains("-osu") || 
+                  e.Channel.Name.Contains("map-offer") || 
+                  e.Channel.Name.Contains("bot-debug") || 
+                  e.Channel.Name.Contains("dev-announce") ||
+                  e.Channel.Name.Contains("www-register")))
                 return;
 
             // Check, if it is map url from bancho
