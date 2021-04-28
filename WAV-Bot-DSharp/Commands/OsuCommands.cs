@@ -178,7 +178,7 @@ namespace WAV_Bot_DSharp.Commands
             [Description("Osu nickname")] string nickname,
             params string[] args)
         {
-            if (!commandContext.Channel.Name.Contains("-bot"))
+            if (!commandContext.Channel.Name.Contains("-bot") || !commandContext.Channel.Name.Contains("dev-announce"))
             {
                 await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
                 return;

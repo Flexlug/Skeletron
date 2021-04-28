@@ -46,7 +46,7 @@ namespace WAV_Bot_DSharp.Commands
         /// <param name="duration">Amount of time how long the poll should last.</param>
         /// <param name="question">Polls question</param>
         /// <returns></returns>
-        [Command("emojipoll"), RequirePermissions(Permissions.Administrator), Description("Start a simple emoji poll for a simple yes/no question"), Cooldown(2, 30, CooldownBucketType.Guild)]
+        [Command("emojipoll"), RequireUserPermissions(Permissions.Administrator), Description("Start a simple emoji poll for a simple yes/no question"), Cooldown(2, 30, CooldownBucketType.Guild)]
         public async Task EmojiPollAsync(CommandContext commandContext, 
             [Description("How long should the poll last. (e.g. 1m = 1 minute)")] TimeSpan duration, 
             [Description("Poll question"), RemainingText] string question)
@@ -100,7 +100,7 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        [Command("sendtochannel"), RequirePermissions(Permissions.Administrator), Description("Send a message to a special channel")]
+        [Command("sendtochannel"), RequireUserPermissions(Permissions.Administrator), Description("Send a message to a special channel")]
         public async Task SendToChannelAsync(CommandContext commandContext,
             [Description("Target discord channel")] DiscordChannel targetChannel,
             [Description("Message to send"), RemainingText] string message)
@@ -108,7 +108,7 @@ namespace WAV_Bot_DSharp.Commands
             await targetChannel.SendMessageAsync(message);
         }
 
-        [Command("dm-ignore"), RequirePermissions(Permissions.Administrator), Description("Add specified user to DM ignore list")]
+        [Command("dm-ignore"), RequireUserPermissions(Permissions.Administrator), Description("Add specified user to DM ignore list")]
         public async Task AddDMIgnore(CommandContext commandContext,
             [Description("Target member")] DiscordMember targetMember)
         {
@@ -127,7 +127,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync($"Added {targetMember} to blacklist.");
         }
 
-        [Command("dm-ignore-list"), RequirePermissions(Permissions.Administrator), Description("Return dm ignore list")]
+        [Command("dm-ignore-list"), RequireUserPermissions(Permissions.Administrator), Description("Return dm ignore list")]
         public async Task DMIgnoreList(CommandContext commandContext)
         {
             await commandContext.RespondAsync($"Blacklisted persons: \n{string.Join('\n', Settings.KOSTYL.IgnoreDMList.Select(x => x.ToString()))}\nend;");
@@ -153,7 +153,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync($"Removed {targetMember} from blacklist.");
         }
 
-        [Command("mute"), RequirePermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Mute specified user")]
+        [Command("mute"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Mute specified user")]
         public async Task MuteUser(CommandContext commandContext,
             [Description("User which should be muted")] DiscordMember discordMember,
             [Description("Reason"), RemainingText] string reason)
@@ -176,7 +176,7 @@ namespace WAV_Bot_DSharp.Commands
                                                 .Build());
         }
 
-        [Command("unmute"), RequirePermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Unmute specified user")]
+        [Command("unmute"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Unmute specified user")]
         public async Task UnmuteUser(CommandContext commandContext,
             [Description("User to unmute")] DiscordMember discordMember)
         {
@@ -199,7 +199,7 @@ namespace WAV_Bot_DSharp.Commands
                                                 .Build());
         }
 
-        [Command("kick"), RequirePermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Kick specified user")]
+        [Command("kick"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Kick specified user")]
         public async Task KickUser(CommandContext commandContext,
             [Description("User to kick")] DiscordMember discordMember,
             [Description("Reason"), RemainingText] string reason = "")
@@ -219,7 +219,7 @@ namespace WAV_Bot_DSharp.Commands
                                                 .Build());
         }
 
-        [Command("ban"), RequirePermissions(Permissions.Administrator | Permissions.BanMembers), Description("Ban specified user")]
+        [Command("ban"), RequireUserPermissions(Permissions.Administrator | Permissions.BanMembers), Description("Ban specified user")]
         public async Task BanUser(CommandContext commandContext,
             [Description("User to ban")] DiscordMember discordMember,
             [Description("Reason"), RemainingText] string reason = "")

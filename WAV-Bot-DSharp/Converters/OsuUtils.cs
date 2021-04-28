@@ -24,7 +24,7 @@ namespace WAV_Bot_DSharp.Converters
 
         private Regex banchoBMandBMSUrl { get; set; }
         private Regex banchoUserId { get; set; }
-        private Refex gatariUserId { get; set; }
+        private Regex gatariUserId { get; set; }
         private Regex gatariBMSUrl { get; set; }
         private Regex gatariBMUrl { get; set; }
 
@@ -37,7 +37,7 @@ namespace WAV_Bot_DSharp.Converters
             this.gatariBMSUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/s\/([0-9]*)");
             this.gatariBMUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/b\/([0-9]*)");
             this.banchoUserId = new Regex(@"http[s]?:\/\/osu.ppy.sh\/users\/([0-9]*)");
-            this.banchoUserId = new Regex(@"http[s]?:\/\/osu.gatari.pw\/u\/([0-9]*)");
+            this.gatariUserId = new Regex(@"http[s]?:\/\/osu.gatari.pw\/u\/([0-9]*)");
 
             this.logger = logger;
         }
@@ -229,7 +229,7 @@ namespace WAV_Bot_DSharp.Converters
             sb.AppendLine($"**Level:** `{stats.level}` + `{stats.level_progress}%`");
             sb.AppendLine($"**PP:** `{stats.pp} PP` **Acc**: `{Math.Round(stats.avg_accuracy, 2)}%`");
             sb.AppendLine($"**Playcount:** `{stats.playcount}` (`{(Math.Round((double)stats.playtime / 3600))}` hrs)");
-            sb.AppendLine($"**Ranks**: {osuEmoji.RankingEmoji("XH")}`{stats.xh_count}` {osuEmoji.RankingEmoji("X")}`{stats.x_count}` {osuEmoji.RankingEmoji("SH")}`{stats.sh_count}` {osuEmoji.RankingEmoji("S")}`{stats.s_count}` {osuEmoji.RankingEmoji("A")}`{stats.a_count}`");
+            sb.AppendLine($"**Ranks**: {osuEmoji.RankingEmoji("XH")}`{stats.xh_count}` {osuEmoji.RankingEmoji("X")}`{stats.x_count}` {osuEmoji.RankingEmoji("SH")}`{stats.sh_count}` {osuEmoji.RankingEmoji("S")}`{stats.s_count}` {osuEmoji.RankingEmoji("A")}`{stats.a_count}`\n");
             //sb.AppendLine($"**Playstyle:** {user.play string.Join(", ", user.playstyle)}\n");
             sb.AppendLine("Top 5 scores:");
 
