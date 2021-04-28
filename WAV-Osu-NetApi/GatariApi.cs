@@ -129,7 +129,7 @@ namespace WAV_Osu_NetApi
 
         public GStatistics GetUserStats(int user, int mode = 0)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"user/scores/recent")
+            IRestRequest req = new RestRequest(UrlBase + $@"user/stats")
                 .AddParameter("u", user)
                 .AddParameter("mode", mode);
 
@@ -152,7 +152,7 @@ namespace WAV_Osu_NetApi
 
         public GStatistics GetUserStats(string user, int mode = 0)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"user/scores/recent")
+            IRestRequest req = new RestRequest(UrlBase + $@"user/stats")
                 .AddParameter("u", user)
                 .AddParameter("mode", mode);
 
