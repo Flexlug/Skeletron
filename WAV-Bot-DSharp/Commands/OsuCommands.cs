@@ -154,7 +154,7 @@ namespace WAV_Bot_DSharp.Commands
         public async Task OsuProfile(CommandContext commandContext,
             [Description("Osu nickname"), RemainingText] string nickname)
         {
-            if (!commandContext.Channel.Name.Contains("-osu-bot"))
+            if (!commandContext.Channel.Name.Contains("-bot"))
             {
                 await commandContext.RespondAsync("Использование данной команды запрещено в данном текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
                 return;
