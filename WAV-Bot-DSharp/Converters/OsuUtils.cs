@@ -196,19 +196,19 @@ namespace WAV_Bot_DSharp.Converters
             return embedBuilder.Build(); ;
         }
 
-        public DiscordEmbed UserToEmbed(GUser user, List<GScore> scores = null)
+        public DiscordEmbed UserToEmbed(GUser user, GStatistics stats, List<GScore> scores = null)
         {
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
 
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine($"**Server:** bancho");
-            sb.AppendLine($"**Rank:** `#-` ({user.country_code} `#{user.statistics.country_rank}`)");
-            sb.AppendLine($"**Level:** `{user.statistics.level.current}` + `{user.statistics.level.progress}%`");
-            sb.AppendLine($"**PP:** `{user.statistics.pp} PP` **Acc**: `{user.statistics.hit_accuracy}%`");
-            sb.AppendLine($"**Playcount:** `{user.statistics.play_count}` (`{(Math.Round((double)user.statistics.play_time / 3600))}` hrs)");
-            sb.AppendLine($"**Ranks**: {osuEmoji.RankingEmoji("XH")}`{user.statistics.grade_counts.ssh}` {osuEmoji.RankingEmoji("X")}`{user.statistics.grade_counts.ss}` {osuEmoji.RankingEmoji("SH")}`{user.statistics.grade_counts.sh}` {osuEmoji.RankingEmoji("S")}`{user.statistics.grade_counts.s}` {osuEmoji.RankingEmoji("A")}`{user.statistics.grade_counts.a}`");
-            sb.AppendLine($"**Playstyle:** {string.Join(", ", user.playstyle)}\n");
+            sb.AppendLine($"**Server:** gatari");
+            sb.AppendLine($"**Rank:** `{stats.rank}` ({user.country} `#{stats.country_rank}`)");
+            sb.AppendLine($"**Level:** `{stats.level}` + `{stats.level_progress}%`");
+            sb.AppendLine($"**PP:** `{stats.pp} PP` **Acc**: `{Math.Round(stats.avg_accuracy, 2)}%`");
+            sb.AppendLine($"**Playcount:** `{stats.playcount}` (`{(Math.Round((double)stats.playtime / 3600))}` hrs)");
+            sb.AppendLine($"**Ranks**: {osuEmoji.RankingEmoji("XH")}`{stats.xh_count}` {osuEmoji.RankingEmoji("X")}`{stats.x_count}` {osuEmoji.RankingEmoji("SH")}`{stats.sh_count}` {osuEmoji.RankingEmoji("S")}`{stats.s_count}` {osuEmoji.RankingEmoji("A")}`{stats.a_count}`");
+            //sb.AppendLine($"**Playstyle:** {user.play string.Join(", ", user.playstyle)}\n");
             sb.AppendLine("Top 5 scores:");
 
             if (scores != null && scores?.Count != 0)
@@ -216,21 +216,21 @@ namespace WAV_Bot_DSharp.Converters
                 double avg_pp = 0;
                 for (int i = 0; i < scores.Count; i++)
                 {
-                    Score s = scores[i];
+                    GScore s = scores[i];
 
                     string mods = string.Join(' ', s.mods);
                     if (string.IsNullOrEmpty(mods))
                         mods = "NM";
 
-                    sb.AppendLine($"{i + 1}: __{s.beatmapset.title} [{s.beatmap.version}]__ **{mods}** - {s.beatmap.difficulty_rating}★");
-                    sb.AppendLine($"▸ {osuEmoji.RankingEmoji(s.rank)} ▸ `{s.pp} PP` ▸ **[{s.statistics.count_300}/{s.statistics.count_100}/{s.statistics.count_50}]**");
+                    sb.AppendLine($"{i + 1}: __{s.beatmap.song_name}__ **{mods}** - {s.beatmap.difficulty}★");
+                    sb.AppendLine($"▸ {osuEmoji.RankingEmoji(s.ranking)} ▸ `{s.pp} PP` ▸ **[{s.count_300}/{s.count_100}/{s.count_50}]**");
 
                     avg_pp += s.pp ?? 0;
                 }
                 sb.AppendLine($"\nAvg: `{Math.Round(avg_pp / 5, 2)} PP`");
             }
             embedBuilder.WithTitle(user.username)
-                        .WithThumbnail(user.avatar_url)
+                        .WithThumbnail($"https://a.gatari.pw/{user.id}?{rnd.Next(1000, 9999)}")
                         .WithDescription(sb.ToString());
 
             return embedBuilder.Build(); ;
