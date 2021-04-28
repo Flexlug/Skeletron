@@ -148,6 +148,29 @@ namespace WAV_Bot_DSharp.Commands
 
                 return;
             }
+
+            // Check, if it is user link from bancho
+            int? guserId = utils.GetUserIdFromGatariUrl(e.Message.Content);
+            if (!(guserId is null))
+            {
+                int guser_id = (int)guserId;
+
+                GUser guser = null;
+                if (!gapi.TryGetUser(guser_id, ref guser))
+                    return;
+
+                List<GScore> gscores = gapi.GetUserBestScores(guser.id, 5);
+                if (gscores is null || gscores.Count == 0)
+                    return;
+
+                GStatistics gstats = gapi.GetUserStats(guser.username);
+                if (gstats is null)
+                    return;
+
+                DiscordEmbed gembed = utils.UserToEmbed(guser, gstats, gscores);
+                await e.Message.RespondAsync(embed: gembed);
+                return;
+            }
         }
 
         [Command("osu"), Description("Get osu profile information"), RequireGuild]
