@@ -24,6 +24,7 @@ namespace WAV_Osu_NetApi_Test
             BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
             Console.WriteLine(api.ReloadToken());
 
+            List<Score> scores = api.GetUserRecentScores(6885792, false, 0, 5);
 
             //while (true)
             //{
@@ -211,9 +212,9 @@ namespace WAV_Osu_NetApi_Test
 
             #region Bancho TryGetUsr
 
-            User validUser = null, invalidUser;
+            //User validUser = null, invalidUser;
 
-            api.TryGetUser(9604150, ref validUser);
+            //api.TryGetUser(9604150, ref validUser);
             //api.TryGetUser(687687654, out invalidUser);
 
             //Console.WriteLine(validUser);

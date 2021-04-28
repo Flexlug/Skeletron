@@ -12,7 +12,6 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -149,6 +148,36 @@ namespace WAV_Bot_DSharp.Commands
 
                 return;
             }
+        }
+
+        [Command("osu"), Description("Get osu profile information"), RequireGuild]
+        public async Task OsuProfile(CommandContext commandContext,
+            [Description("Osu nickname")] string nickname)
+        {
+            if (string.IsNullOrEmpty(nickname))
+            {
+                await commandContext .RespondAsync("Вы ввели пустую строку.");
+                return;
+            }
+
+            User user = null;
+            if (!api.TryGetUser(nickname, ref user))
+            {
+                await commandContext .RespondAsync($"Не удалось получить информацию о пользователе `{nickname}`.");
+                return;
+            }
+
+            List<Score> scores = api.GetUserBestScores(user.id, 5);
+
+            if (scores is null || scores.Count == 0)
+            {
+                await commandContext.RespondAsync($"Не удалось получить информацию о лучших скорах пользователя `{nickname}`.");
+                return;
+            }
+
+            DiscordEmbed embed = utils.UserToEmbed(user, scores);
+            await commandContext.RespondAsync(embed: embed);
+
         }
 
         [Command("submit"), RequireDirectMessage]
