@@ -152,8 +152,14 @@ namespace WAV_Bot_DSharp.Commands
 
         [Command("osu"), Description("Get osu profile information"), RequireGuild]
         public async Task OsuProfile(CommandContext commandContext,
-            [Description("Osu nickname")] string nickname)
+            [Description("Osu nickname"), RemainingText] string nickname)
         {
+            if (!commandContext.Channel.Name.Contains("-osu-bot"))
+            {
+                await commandContext.RespondAsync("Использование данной команды запрещено в данном текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
+                return;
+            }
+
             if (string.IsNullOrEmpty(nickname))
             {
                 await commandContext .RespondAsync("Вы ввели пустую строку.");
