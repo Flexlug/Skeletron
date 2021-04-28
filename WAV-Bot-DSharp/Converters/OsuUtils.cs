@@ -230,7 +230,7 @@ namespace WAV_Bot_DSharp.Converters
                 sb.AppendLine($"\nAvg: `{Math.Round(avg_pp / 5, 2)} PP`");
             }
             embedBuilder.WithTitle(user.username)
-                        .WithThumbnail($"https://a.gatari.pw/{user.id}?{rnd.Next(1000, 9999)}")
+                        .WithThumbnail($"https://a.gatari.pw/{user.id}?{new Random().Next(1000, 9999)}")
                         .WithDescription(sb.ToString());
 
             return embedBuilder.Build(); ;
