@@ -212,6 +212,7 @@ namespace WAV_Bot_DSharp.Converters
                 sb.AppendLine($"\nAvg: `{Math.Round(avg_pp / 5, 2)} PP`");
             }
             embedBuilder.WithTitle(user.username)
+                        .WithUrl($"https://osu.ppy.sh/users/{user.id}")
                         .WithThumbnail(user.avatar_url)
                         .WithDescription(sb.ToString());
 
@@ -252,6 +253,7 @@ namespace WAV_Bot_DSharp.Converters
                 sb.AppendLine($"\nAvg: `{Math.Round(avg_pp / 5, 2)} PP`");
             }
             embedBuilder.WithTitle(user.username)
+                        .WithUrl($"https://osu.gatari.pw/u/{user.id}")
                         .WithThumbnail($"https://a.gatari.pw/{user.id}?{new Random().Next(1000, 9999)}")
                         .WithDescription(sb.ToString());
 
