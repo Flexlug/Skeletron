@@ -156,7 +156,7 @@ namespace WAV_Bot_DSharp.Converters
             return embedBuilder.Build();
         }
 
-        public DiscordEmbed UserToEmbed(User user, List<Score> scores)
+        public DiscordEmbed UserToEmbed(User user, List<Score> scores = null)
         {
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
 
@@ -171,23 +171,24 @@ namespace WAV_Bot_DSharp.Converters
             sb.AppendLine($"**Playstyle:** {string.Join(", ", user.playstyle)}\n");
             sb.AppendLine("Top 5 scores:");
 
-            double avg_pp = 0;
-            for (int i = 0; i < 5; i++)
+            if (scores != null && scores?.Count != 0)
             {
-                Score s = scores[i];
+                double avg_pp = 0;
+                for (int i = 0; i < scores.Count; i++)
+                {
+                    Score s = scores[i];
 
-                string mods = string.Join(' ', s.mods);
-                if (string.IsNullOrEmpty(mods))
-                    mods = "NM";
+                    string mods = string.Join(' ', s.mods);
+                    if (string.IsNullOrEmpty(mods))
+                        mods = "NM";
 
-                sb.AppendLine($"{i + 1}: __{s.beatmapset.title} [{s.beatmap.version}]__ **{mods}** - {s.beatmap.difficulty_rating}★");
-                sb.AppendLine($"▸ {osuEmoji.RankingEmoji(s.rank)} ▸ `{s.pp} PP` ▸ **[{s.statistics.count_300}/{s.statistics.count_100}/{s.statistics.count_50}]**");
+                    sb.AppendLine($"{i + 1}: __{s.beatmapset.title} [{s.beatmap.version}]__ **{mods}** - {s.beatmap.difficulty_rating}★");
+                    sb.AppendLine($"▸ {osuEmoji.RankingEmoji(s.rank)} ▸ `{s.pp} PP` ▸ **[{s.statistics.count_300}/{s.statistics.count_100}/{s.statistics.count_50}]**");
 
-                avg_pp += s.pp ?? 0;
+                    avg_pp += s.pp ?? 0;
+                }
+                sb.AppendLine($"\nAvg: `{Math.Round(avg_pp / 5, 2)} PP`");
             }
-
-            sb.AppendLine($"\nAvg: `{Math.Round(avg_pp / 5, 2)} PP`");
-
             embedBuilder.WithTitle(user.username)
                         .WithThumbnail(user.avatar_url)
                         .WithDescription(sb.ToString());
