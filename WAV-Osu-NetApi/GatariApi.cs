@@ -149,5 +149,28 @@ namespace WAV_Osu_NetApi
 
             return stats;
         }
+
+        public GStatistics GetUserStats(string user, int mode = 0)
+        {
+            IRestRequest req = new RestRequest(UrlBase + $@"user/scores/recent")
+                .AddParameter("u", user)
+                .AddParameter("mode", mode);
+
+            IRestResponse resp = client.Execute(req);
+
+            GStatistics stats = null;
+
+            try
+            {
+                GUserStatsResponse g_resp = JsonConvert.DeserializeObject<GUserStatsResponse>(resp.Content);
+                stats = g_resp?.stats;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            return stats;
+        }
     }
 }
