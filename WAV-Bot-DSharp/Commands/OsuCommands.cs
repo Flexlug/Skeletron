@@ -156,7 +156,7 @@ namespace WAV_Bot_DSharp.Commands
         {
             if (!commandContext.Channel.Name.Contains("-bot"))
             {
-                await commandContext.RespondAsync("Использование данной команды запрещено в данном текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
+                await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
                 return;
             }
 
