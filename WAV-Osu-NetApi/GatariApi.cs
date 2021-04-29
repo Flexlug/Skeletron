@@ -12,6 +12,9 @@ using WAV_Osu_NetApi.Gatari.Models.Responses;
 
 namespace WAV_Osu_NetApi
 {
+    /// <summary>
+    /// Gatari server methods implementation
+    /// </summary>
     public class GatariApi
     {
         private readonly string UrlBase = @"https://api.gatari.pw/";
