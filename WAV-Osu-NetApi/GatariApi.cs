@@ -42,6 +42,13 @@ namespace WAV_Osu_NetApi
             return g_resp.scores;
         }
 
+        /// <summary>
+        /// Get user best scores
+        /// </summary>
+        /// <param name="user_id">User id</param>
+        /// <param name="limit">Scores count per one querry</param>
+        /// <param name="mode">Mode: 0: osu, 1: taiko, 2: ctb, 3: mania</param>
+        /// <returns></returns>
         public List<GScore> GetUserBestScores(int user_id, int limit, int mode = 0)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"user/scores/best")
