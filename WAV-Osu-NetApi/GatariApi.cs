@@ -18,6 +18,14 @@ namespace WAV_Osu_NetApi
 
         private RestClient client = new RestClient();
 
+        /// <summary>
+        /// Get user recent scores
+        /// </summary>
+        /// <param name="user_id">User id</param>
+        /// <param name="mode">Mode: 0: osu, 1: taiko, 2: ctb, 3: mania</param>
+        /// <param name="limit">Scores count per one querry</param>
+        /// <param name="include_fails">Include failed scores</param>
+        /// <returns>Collection of scores</returns>
         public List<GScore> GetUserRecentScores(int user_id, int mode, int limit, bool include_fails)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"user/scores/recent")
