@@ -64,6 +64,11 @@ namespace WAV_Osu_NetApi
             return g_resp.scores;
         }
 
+        /// <summary>
+        /// Trying to get bitmap by it's id
+        /// </summary>
+        /// <param name="id">Beatmap id</param>
+        /// <returns></returns>
         public GBeatmap TryGetBeatmap(int id)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"beatmaps/get")
@@ -86,7 +91,13 @@ namespace WAV_Osu_NetApi
 
             return g_resp?.data.FirstOrDefault();
         }
-
+        
+        /// <summary>
+        /// Trying to get user by nickname
+        /// </summary>
+        /// <param name="user">User's nickname</param>
+        /// <param name="guser">GUser reference, where recieved object will be stored</param>
+        /// <returns>If querry ended up successfuly</returns>
         public bool TryGetUser(string user, ref GUser guser)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"users/get")
@@ -114,6 +125,12 @@ namespace WAV_Osu_NetApi
             return true;
         }
 
+        /// <summary>
+        /// Trying to get user by nickname
+        /// </summary>
+        /// <param name="user">User's nickname</param>
+        /// <param name="guser">GUser reference, where recieved object will be stored</param>
+        /// <returns>If querry ended up successfuly</returns>
         public bool TryGetUser(int user, ref GUser guser)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"users/get")
@@ -142,6 +159,12 @@ namespace WAV_Osu_NetApi
             return true;
         }
 
+        /// <summary>
+        /// Get user statistics by id
+        /// </summary>
+        /// <param name="user">User's id</param>
+        /// <param name="mode">Mode: 0: osu, 1: taiko, 2: ctb, 3: mania</param>
+        /// <returns>Profile statistics</returns>
         public GStatistics GetUserStats(int user, int mode = 0)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"user/stats")
@@ -165,6 +188,12 @@ namespace WAV_Osu_NetApi
             return stats;
         }
 
+        /// <summary>
+        /// Get user statistics by nickname
+        /// </summary>
+        /// <param name="user">User's id</param>
+        /// <param name="mode">Mode: 0: osu, 1: taiko, 2: ctb, 3: mania</param>
+        /// <returns>Profile statistics</returns>
         public GStatistics GetUserStats(string user, int mode = 0)
         {
             IRestRequest req = new RestRequest(UrlBase + $@"user/stats")
