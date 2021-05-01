@@ -82,7 +82,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             logger.LogDebug($"Detected attachments. Count: {attachments.Count}");
 
             // Skip messages not from osu channels
-            if (!e.Message.Channel.Name.Contains("-osu"))
+            if (!(e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("bot-debug")))
             {
                 logger.LogDebug($"Not osu channel");
                 return;
@@ -91,7 +91,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             foreach (DiscordAttachment attachment in attachments)
             {
-                if (!(attachment.Width > 800 && attachment.Height > 600))
+                if (!(attachment.Width >= 750 && attachment.Height >= 550))
                     continue;
 
                 //if (!(attachment.FileName.StartsWith("screenshot") && attachment.FileName.EndsWith(".jpg")))
