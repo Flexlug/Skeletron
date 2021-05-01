@@ -38,9 +38,17 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            if (msg.Contains("привет") && (msg.Contains("виталий") || msg.Contains("припадочный") || msg.Contains("виталя"))
-                || msg.Contains("вставай припадочный"))
+            if (msg.Contains("вставай припадочный"))
+            {
+                await e.Message.RespondAsync("https://cdn.discordapp.com/attachments/776568856167972904/838014941884579880/JeRWf8iDd_4.png");
+                return;
+            }
+
+            if (msg.Contains("привет") && (msg.Contains("виталий") || msg.Contains("припадочный") || msg.Contains("виталя")))
+            {
                 await e.Message.RespondAsync(":skull:");
+                return;
+            }
         }
 
         /// <summary>

@@ -204,7 +204,7 @@ namespace WAV_Bot_DSharp.Converters
                     if (string.IsNullOrEmpty(mods))
                         mods = "NM";
 
-                    sb.AppendLine($"{i + 1}: __{s.beatmapset.title} [{s.beatmap.version}]__ **{mods}** - {s.beatmap.difficulty_rating}★");
+                    sb.AppendLine($"{i + 1}: __[{s.beatmapset.title} [{s.beatmap.version}]]({s.beatmap.url})__ **{mods}** - {s.beatmap.difficulty_rating}★");
                     sb.AppendLine($"▸ {osuEmoji.RankingEmoji(s.rank)} ▸ `{s.pp} PP` ▸ **[{s.statistics.count_300}/{s.statistics.count_100}/{s.statistics.count_50}]**");
 
                     avg_pp += s.pp ?? 0;
@@ -245,7 +245,7 @@ namespace WAV_Bot_DSharp.Converters
                     if (string.IsNullOrEmpty(mods))
                         mods = "NM";
 
-                    sb.AppendLine($"{i + 1}: __{s.beatmap.song_name}__ **{mods}** - {s.beatmap.difficulty}★");
+                    sb.AppendLine($"{i + 1}: __[{s.beatmap.song_name}](https://osu.gatari.pw/b/{s.beatmap.beatmap_id})__ **{mods}** - {s.beatmap.difficulty}★");
                     sb.AppendLine($"▸ {osuEmoji.RankingEmoji(s.ranking)} ▸ `{s.pp} PP` ▸ **[{s.count_300}/{s.count_100}/{s.count_50}]**");
 
                     avg_pp += s.pp ?? 0;
