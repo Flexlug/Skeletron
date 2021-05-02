@@ -23,9 +23,11 @@ namespace WAV_Bot_DSharp.SlashCommands
         private GatariApi gapi;
         private OsuUtils utils;
 
-        public OsuSCommands()
+        public OsuSCommands(BanchoApi api, GatariApi gapi, OsuUtils utils)
         {
-
+            this.api = api;
+            this.gapi = gapi;
+            this.utils = utils;
         }
 
         [SlashCommand("osu", "Получить информацию о профиле osu в режиме std")]
