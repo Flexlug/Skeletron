@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Reflection;
 using Newtonsoft.Json;
 
 namespace WAV_Bot_DSharp.Configurations
@@ -9,7 +11,7 @@ namespace WAV_Bot_DSharp.Configurations
     /// </summary>
     public sealed class SettingsLoader
     {
-        public const string DefaultConfigFile = "bot.cfg";
+        public string DefaultConfigFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "bot.cfg");
 
         /// <summary>
         /// Serializes Settings object to JSON and writes it to a file
