@@ -54,6 +54,7 @@
     <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0" />
     <PackageReference Include="DSharpPlus.Rest" Version="4.0.0" />
     <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0" />
+    <PackageReference Include="IDoEverything.DSharpPlus.SlashCommands" Version="1.1.1" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
