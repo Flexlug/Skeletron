@@ -8,6 +8,7 @@ using DSharpPlus;
 using DSharpPlus.VoiceNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 
@@ -31,6 +32,7 @@ namespace WAV_Bot_DSharp
     public class Bot : IDisposable
     {
         private CommandsNextExtension CommandsNext { get; set; }
+        private SlashCommandsExtension SlashCommands { get; set; }
         private DiscordClient Discord { get; }
         private Settings Settings { get; }
         private IServiceProvider Services { get; set; }
@@ -114,6 +116,12 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
             CommandsNext.RegisterCommands<TrackCommands>();
+
+            var slashCommandsConfiguration = new SlashCommandsConfiguration()
+            {
+                Services = Services
+            };
+            SlashCommands = Discord.UseSlashCommands(slashCommandsConfiguration);
 
             // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;
