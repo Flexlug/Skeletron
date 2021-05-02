@@ -15,6 +15,8 @@ namespace WAV_Bot_DSharp
         {
             var settingsService = new SettingsLoader();
 
+            Console.WriteLine($".NET Version: {System.Environment.Version}");
+
             Log.Logger = new LoggerConfiguration()
                 //.WriteTo.Console(new ExpressionTemplate ("{@t:HH:mm:ss} [{@l:u3}] [{Substring(SourceContext, LastIndexOf(SourceContext, '.') + 1)}] {@m}\n{@x}"),
                 //                 theme: AnsiConsoleTheme.Literate)
