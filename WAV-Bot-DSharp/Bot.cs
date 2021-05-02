@@ -26,11 +26,14 @@ using WAV_Bot_DSharp.Services.Interfaces;
 
 using Serilog;
 using Microsoft.Extensions.Logging;
+using WAV_Bot_DSharp.SlashCommands;
 
 namespace WAV_Bot_DSharp
 {
     public class Bot : IDisposable
     {
+        private readonly ulong WAV_UID = 708860200341471264;
+
         private CommandsNextExtension CommandsNext { get; set; }
         private SlashCommandsExtension SlashCommands { get; set; }
         private DiscordClient Discord { get; }
@@ -108,20 +111,23 @@ namespace WAV_Bot_DSharp
             CommandsNext = Discord.UseCommandsNext(commandsNextConfiguration);
             CommandsNext.SetHelpFormatter<CustomHelpFormatter>();
 
-            // Registering command classes
-            CommandsNext.RegisterCommands<UserCommands>();
+            //// Registering command classes
+            //CommandsNext.RegisterCommands<UserCommands>();
             CommandsNext.RegisterCommands<AdminCommands>();
-            CommandsNext.RegisterCommands<DemonstrationCommands>();
-            CommandsNext.RegisterCommands<RecognizerCommands>();
-            CommandsNext.RegisterCommands<FunCommands>();
-            CommandsNext.RegisterCommands<OsuCommands>();
-            CommandsNext.RegisterCommands<TrackCommands>();
+            //CommandsNext.RegisterCommands<DemonstrationCommands>();
+            //CommandsNext.RegisterCommands<RecognizerCommands>();
+            //CommandsNext.RegisterCommands<FunCommands>();
+            //CommandsNext.RegisterCommands<OsuCommands>();
+            //CommandsNext.RegisterCommands<TrackCommands>();
 
             var slashCommandsConfiguration = new SlashCommandsConfiguration()
-            {
+            { 
                 Services = Services
             };
             SlashCommands = Discord.UseSlashCommands(slashCommandsConfiguration);
+
+            // Register slash commands modules
+            SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
 
             // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;
