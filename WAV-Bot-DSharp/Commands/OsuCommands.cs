@@ -177,7 +177,7 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        /*
+        
         [Command("osu"), Description("Get osu profile information"), RequireGuild]
         public async Task OsuProfile(CommandContext commandContext,
             [Description("Osu nickname")] string nickname,
@@ -242,7 +242,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync(embed: embed);
 
         }
-        */
+        
 
         [Command("submit"), RequireDirectMessage]
         public async Task SubmitScore(CommandContext commandContext)
