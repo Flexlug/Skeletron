@@ -126,7 +126,7 @@ namespace WAV_Bot_DSharp
             };
             SlashCommands = Discord.UseSlashCommands(slashCommandsConfiguration);
 
-            //Register slash commands modules
+            // Register slash commands modules
             SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
 
             // Registering OnCommandError method for the CommandErrored event
