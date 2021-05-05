@@ -121,12 +121,12 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<TrackCommands>();
 
             var slashCommandsConfiguration = new SlashCommandsConfiguration()
-            { 
+            {
                 Services = Services
             };
             SlashCommands = Discord.UseSlashCommands(slashCommandsConfiguration);
 
-            // Register slash commands modules
+            //Register slash commands modules
             SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
 
             // Registering OnCommandError method for the CommandErrored event

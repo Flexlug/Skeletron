@@ -23,33 +23,43 @@ namespace WAV_Bot_DSharp.Services.Entities
         {
             _embed.WithTitle("Command description");
 
-            CommandOverload commandOverload = command.Overloads.First();
-
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine($"`sk!{command.Name} {string.Join(' ', commandOverload.Arguments.Select(x => $"[{ x.Name}]").ToList())}`\n{command.Description}");
-            sb.AppendLine();
+            bool countOverloads = false;
+            if (command.Overloads.Count > 1)
+                countOverloads = true;
 
-            if (command.Aliases?.Count != 0)
+            for (int i = 0; i < command.Overloads.Count; i++)
             {
-                sb.AppendLine("**Aliases:**");
-                foreach (string alias in command.Aliases)
-                    sb.AppendLine(alias);
+                CommandOverload commandOverload = command.Overloads[i];
 
+                if (countOverloads)
+                    sb.AppendLine($"**__Variant {i + 1}__**");
+
+                sb.AppendLine($"```\nsk!{command.Name} {string.Join(' ', commandOverload.Arguments.Select(x => $"[{ x.Name}]").ToList())}```{command.Description}");
                 sb.AppendLine();
+
+                if (command.Aliases?.Count != 0)
+                {
+                    sb.AppendLine("**Aliases:**");
+                    foreach (string alias in command.Aliases)
+                        sb.AppendLine(alias);
+
+                    sb.AppendLine();
+                }
+
+                sb.AppendLine("**Arguments:**");
+                foreach (var c in commandOverload.Arguments)
+                    sb.AppendLine($"`{c.Name}`: {c.Description}");
+                sb.AppendLine();
+
+                //if (command.ExecutionChecks?.Count != 0)
+                //{
+                //    sb.AppendLine("**Execution checks:**");
+                //    sb.AppendLine(string.Join(' ', command.ExecutionChecks.Select(x => x.ToString().Split('.').Last())));
+                //}
+                //sb.AppendLine();
             }
-
-            sb.AppendLine("**Arguments:**");
-            foreach (var c in command.Overloads.First().Arguments)
-                sb.AppendLine($"`{c.Name}`: {c.Description}");
-            sb.AppendLine();
-
-            if (command.ExecutionChecks?.Count != 0)
-            {
-                sb.AppendLine("**Execution checks:**");
-                sb.AppendLine(string.Join(' ', command.ExecutionChecks.Select(x => x.ToString().Split('.').Last())));
-            }
-
             _embed.WithDescription(sb.ToString());            
 
             return this;
