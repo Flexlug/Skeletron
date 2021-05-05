@@ -288,7 +288,7 @@ namespace WAV_Bot_DSharp.Commands
                         .WithFooter()
                         .Build());
 
-            await LogChannel.SendMessageAsync(content: $"Удалено по причине по причине: {reason}", embed: builder.Build());
+            await LogChannel.SendMessageAsync(content: msg.Content);
 
             if (msg.Embeds?.Count != 0)
                 foreach (var embed in msg.Embeds)
