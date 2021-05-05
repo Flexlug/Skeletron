@@ -112,13 +112,13 @@ namespace WAV_Bot_DSharp
             CommandsNext.SetHelpFormatter<CustomHelpFormatter>();
 
             // Registering command classes
-            CommandsNext.RegisterCommands<UserCommands>();
+            //CommandsNext.RegisterCommands<UserCommands>();
             CommandsNext.RegisterCommands<AdminCommands>();
-            CommandsNext.RegisterCommands<DemonstrationCommands>();
-            CommandsNext.RegisterCommands<RecognizerCommands>();
-            CommandsNext.RegisterCommands<FunCommands>();
-            CommandsNext.RegisterCommands<OsuCommands>();
-            CommandsNext.RegisterCommands<TrackCommands>();
+            //CommandsNext.RegisterCommands<DemonstrationCommands>();
+            //CommandsNext.RegisterCommands<RecognizerCommands>();
+            //CommandsNext.RegisterCommands<FunCommands>();
+            //CommandsNext.RegisterCommands<OsuCommands>();
+            //CommandsNext.RegisterCommands<TrackCommands>();
 
             var slashCommandsConfiguration = new SlashCommandsConfiguration()
             { 

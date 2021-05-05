@@ -28,6 +28,8 @@ namespace WAV_Bot_DSharp.Commands
 
         private DiscordChannel LogChannel;
 
+        private DiscordGuild wavGuild;
+
         public AdminCommands(ILogger<AdminCommands> logger, DiscordClient client)
         {
             ModuleName = "Admin";
@@ -35,6 +37,7 @@ namespace WAV_Bot_DSharp.Commands
             this.logger = logger;
 
             LogChannel = client.GetChannelAsync(816396082153521183).Result;
+            wavGuild = client.GetGuildAsync(708860200341471264).Result;
 
             logger.LogInformation("AdminCommands loaded");
         }
@@ -239,6 +242,51 @@ namespace WAV_Bot_DSharp.Commands
                                                 .Build());
         }
 
+        [Command("d"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Delete message and notify about this in DM")]
+        public async Task DeleteMessageAndNotify(CommandContext commandContext,
+        [Description("Deleteing message")] DiscordMessage msg,
+        [Description("Deleting reason"), RemainingText] string reason)
+        {
+            if (msg is null)
+                await commandContext.RespondAsync("Deleting message is not specified");
+
+            if (string.IsNullOrEmpty(reason))
+                reason = "not stated";
+
+            DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
+                .WithFooter($"Mod: {commandContext.Message.Author.Username} {msg.Timestamp}", iconUrl: commandContext.Message.Author.AvatarUrl)
+                .WithDescription(msg.Content);
+            
+
+            if (!(msg.Author is null))
+                builder.WithAuthor(name: $"From {msg.Channel.Name} by {msg.Author.Username}",
+                                   iconUrl: msg.Author.AvatarUrl);
+
+            DiscordMember user = await wavGuild.GetMemberAsync(msg.Author.Id);
+            if (!user.IsBot)
+            {
+                DiscordDmChannel targetChannel = await user.CreateDmChannelAsync();
+                await targetChannel.SendMessageAsync(content: $"Удалено по причине по причине: {reason}", embed: builder.Build());
+
+                if (msg.Embeds?.Count != 0)
+                    foreach (var embed in msg.Embeds)
+                        await targetChannel.SendMessageAsync(embed: embed);
+
+                if (msg.Attachments?.Count != 0)
+                    foreach (var att in msg.Attachments)
+                        await targetChannel.SendMessageAsync(att.Url);
+            }
+
+            await LogChannel.SendMessageAsync(
+                embed: new DiscordEmbedBuilder().WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
+                        .AddField("**Action**:", "delete message", true)
+                        .AddField("**From**:", msg.Channel.Name, true)
+                        .AddField("**Reason**:", reason, true)
+                        .WithFooter()
+                        .Build());
+            await msg.Channel.DeleteMessageAsync(msg, reason);
+        }
+
         [Command("rd"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Resend message to specified channel and delete it")]
         public async Task ResendAndDeleteAsync(CommandContext commandContext,
         [Description("Channel, where message has to be resent")] DiscordChannel targetChannel,
@@ -250,6 +298,9 @@ namespace WAV_Bot_DSharp.Commands
             if (targetChannel is null)
                 await commandContext.RespondAsync("Target channel is not specified");
 
+            if (string.IsNullOrEmpty(reason))
+                reason = "not stated";
+
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Reference.Message.Id);
 
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
@@ -260,7 +311,7 @@ namespace WAV_Bot_DSharp.Commands
                 builder.WithAuthor(name: $"From {msg.Channel.Name} by {msg.Author.Username}",
                                    iconUrl: msg.Author.AvatarUrl);
 
-            await targetChannel.SendMessageAsync(content: $"{msg.Author.Mention}\nПеренаправлено по причине: {(string.IsNullOrEmpty(reason) ? reason : "not stated")}", embed: builder.Build());
+            await targetChannel.SendMessageAsync(content: $"{msg.Author.Mention}\nПеренаправлено по причине: {reason}", embed: builder.Build());
 
             if (msg.Embeds?.Count != 0)
                 foreach (var embed in msg.Embeds)
@@ -275,7 +326,7 @@ namespace WAV_Bot_DSharp.Commands
                                     .AddField("**Action**:", "resend message", true)
                                     .AddField("**From**:", msg.Channel.Name, true)
                                     .AddField("**To**:", targetChannel.Name, true)
-                                    .AddField("**Reason**:", (string.IsNullOrEmpty(reason) ? "not stated" : reason), true)
+                                    .AddField("**Reason**:", reason, true)
                                     .WithFooter()
                                     .Build());
             await msg.Channel.DeleteMessagesAsync(new[] { msg, commandContext.Message }, reason);
