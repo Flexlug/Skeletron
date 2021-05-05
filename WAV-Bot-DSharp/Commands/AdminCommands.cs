@@ -248,7 +248,10 @@ namespace WAV_Bot_DSharp.Commands
         [Description("Deleting reason"), RemainingText] string reason)
         {
             if (msg is null)
+            {
                 await commandContext.RespondAsync("Deleting message is not specified");
+                return;
+            }
 
             if (string.IsNullOrEmpty(reason))
                 reason = "not stated";
@@ -284,6 +287,17 @@ namespace WAV_Bot_DSharp.Commands
                         .AddField("**Reason**:", reason, true)
                         .WithFooter()
                         .Build());
+
+            await LogChannel.SendMessageAsync(content: $"Удалено по причине по причине: {reason}", embed: builder.Build());
+
+            if (msg.Embeds?.Count != 0)
+                foreach (var embed in msg.Embeds)
+                    await LogChannel.SendMessageAsync(embed: embed);
+
+            if (msg.Attachments?.Count != 0)
+                foreach (var att in msg.Attachments)
+                    await LogChannel.SendMessageAsync(att.Url);
+
             await msg.Channel.DeleteMessageAsync(msg, reason);
         }
 
@@ -292,7 +306,10 @@ namespace WAV_Bot_DSharp.Commands
         [Description("Deleting reason"), RemainingText] string reason)
         {
             if (commandContext.Message.Reference is null)
+            {
                 await commandContext.RespondAsync("Resending message is not specified");
+                return;
+            }
 
             if (string.IsNullOrEmpty(reason))
                 reason = "not stated";
@@ -301,7 +318,7 @@ namespace WAV_Bot_DSharp.Commands
 
             await DeleteMessageByLinkAndNotify(commandContext, msg, reason);
 
-            await commandContext.Message.Channel.DeleteAsync();
+            await commandContext.Message.Channel.DeleteMessageAsync(commandContext.Message);
         }
 
         [Command("rd"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Resend message to specified channel and delete it")]
@@ -310,10 +327,16 @@ namespace WAV_Bot_DSharp.Commands
         [Description("Resend reason"), RemainingText] string reason)
         {
             if (commandContext.Message.Reference is null)
+            {
                 await commandContext.RespondAsync("Resending message is not specified");
+                return;
+            }
 
             if (targetChannel is null)
+            {
                 await commandContext.RespondAsync("Target channel is not specified");
+                return;
+            }
 
             if (string.IsNullOrEmpty(reason))
                 reason = "not stated";
