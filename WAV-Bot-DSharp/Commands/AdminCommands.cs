@@ -283,12 +283,13 @@ namespace WAV_Bot_DSharp.Commands
             await LogChannel.SendMessageAsync(
                 embed: new DiscordEmbedBuilder().WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
                         .AddField("**Action**:", "delete message", true)
+                        .AddField("**Violator**:", msg.Author.Mention, true)
                         .AddField("**From**:", msg.Channel.Name, true)
                         .AddField("**Reason**:", reason, true)
                         .WithFooter()
                         .Build());
 
-            await LogChannel.SendMessageAsync(content: msg.Content);
+            await LogChannel.SendMessageAsync(content: $"Deleted message: \n{new string('=', 20)}\n{msg.Content}");
 
             if (msg.Embeds?.Count != 0)
                 foreach (var embed in msg.Embeds)
@@ -364,6 +365,7 @@ namespace WAV_Bot_DSharp.Commands
             await LogChannel.SendMessageAsync(
                 embed: new DiscordEmbedBuilder().WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
                                     .AddField("**Action**:", "resend message", true)
+                                    .AddField("**Violator**:", msg.Author.Mention, true)
                                     .AddField("**From**:", msg.Channel.Name, true)
                                     .AddField("**To**:", targetChannel.Name, true)
                                     .AddField("**Reason**:", reason, true)
