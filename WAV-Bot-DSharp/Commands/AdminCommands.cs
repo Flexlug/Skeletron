@@ -243,7 +243,7 @@ namespace WAV_Bot_DSharp.Commands
         }
 
         [Command("d"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Delete message and notify about this in DM")]
-        public async Task DeleteMessageAndNotify(CommandContext commandContext,
+        public async Task DeleteMessageByLinkAndNotify(CommandContext commandContext,
         [Description("Deleteing message")] DiscordMessage msg,
         [Description("Deleting reason"), RemainingText] string reason)
         {
@@ -285,6 +285,23 @@ namespace WAV_Bot_DSharp.Commands
                         .WithFooter()
                         .Build());
             await msg.Channel.DeleteMessageAsync(msg, reason);
+        }
+
+        [Command("d"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Delete message and notify about this in DM")]
+        public async Task DeleteMessageAndNotify(CommandContext commandContext,
+        [Description("Deleting reason"), RemainingText] string reason)
+        {
+            if (commandContext.Message.Reference is null)
+                await commandContext.RespondAsync("Resending message is not specified");
+
+            if (string.IsNullOrEmpty(reason))
+                reason = "not stated";
+
+            DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Reference.Message.Id);
+
+            await DeleteMessageByLinkAndNotify(commandContext, msg, reason);
+
+            await commandContext.Message.Channel.DeleteAsync();
         }
 
         [Command("rd"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Resend message to specified channel and delete it")]
