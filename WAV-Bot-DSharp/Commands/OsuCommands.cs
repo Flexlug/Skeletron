@@ -38,6 +38,14 @@ namespace WAV_Bot_DSharp.Commands
         private BanchoApi api;
         private GatariApi gapi;
 
+        private DiscordRole beginnerRole;
+        private DiscordRole alphaRole;
+        private DiscordRole betaRole;
+        private DiscordRole gammaRole;
+        private DiscordRole deltaRole;
+        private DiscordRole epsilonRole;
+
+
         private readonly ulong WAV_UID = 708860200341471264;
 
         public OsuCommands(ILogger<OsuCommands> logger, DiscordClient client, OsuUtils utils, BanchoApi api, GatariApi gapi, OsuEmoji emoji)
@@ -53,6 +61,13 @@ namespace WAV_Bot_DSharp.Commands
             this.api = api;
             this.gapi = gapi;
             this.emoji = emoji;
+
+            this.beginnerRole = guild.GetRole(831262333208756255);
+            this.alphaRole = guild.GetRole(831262447502360686);
+            this.betaRole = guild.GetRole(831262485910781953);
+            this.gammaRole = guild.GetRole(831262538317430844);
+            this.deltaRole = guild.GetRole(831262333208756255);
+            this.epsilonRole = guild.GetRole(831262333208756255);
 
             logger.LogInformation("OsuCommands loaded");
 
