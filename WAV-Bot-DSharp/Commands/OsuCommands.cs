@@ -307,6 +307,16 @@ namespace WAV_Bot_DSharp.Commands
                 logger.LogCritical(e, "Exception while parsing score");
             }
 
+            if ((int)replay.Mods != 0)
+            {
+                const int b = (int)(OsuParsers.Enums.Mods.NoFail | OsuParsers.Enums.Mods.Perfect | OsuParsers.Enums.Mods.SuddenDeath);
+                if (((int)replay.Mods | b) != b)
+                {
+                    await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен с запрещенными на W.w.W модами. \nРазрешенные на W.w.W моды - `NF`, `SD`, `PF`\nСкор система: V1");
+                    return;
+                }
+            }
+
             DiscordMember member = await guild.GetMemberAsync(msg.Author.Id);
             string category = member.Roles.Select(x => x.Name)
                                           .Where((x) =>

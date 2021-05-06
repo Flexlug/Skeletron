@@ -60,7 +60,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 //}
                 //sb.AppendLine();
             }
-            _embed.WithDescription(sb.ToString());            
+            _embed.WithDescription(sb.ToString());
 
             return this;
         }
