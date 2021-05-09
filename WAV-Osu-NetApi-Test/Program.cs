@@ -17,6 +17,7 @@ namespace WAV_Osu_NetApi_Test
     {
         static void Main(string[] args)
         {
+
             Settings settings;
             using (StreamReader sr = new StreamReader("credentials.json"))
                 settings = JsonConvert.DeserializeObject<Settings>(sr.ReadToEnd());

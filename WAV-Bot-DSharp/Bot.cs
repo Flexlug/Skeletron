@@ -87,7 +87,6 @@ namespace WAV_Bot_DSharp
             Log.Logger.Debug("Configuring services");
             Services = new ServiceCollection()
                 .AddLogging(conf => conf.AddSerilog(dispose: true))
-                .AddDbContext<TrackedUserContext>()
                 .AddSingleton(Settings)
                 .AddSingleton(Discord)
                 .AddSingleton<OsuEmoji>()
@@ -95,8 +94,6 @@ namespace WAV_Bot_DSharp
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
                 .AddSingleton<IRecognizerService, RecognizerService>()
-                .AddSingleton<ITrackedUsersDbService, TrackedUsersDbService>()
-                .AddSingleton<ITrackService, TrackService>()
                 .BuildServiceProvider();
         }
 
@@ -118,7 +115,6 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
-            CommandsNext.RegisterCommands<TrackCommands>();
 
             var slashCommandsConfiguration = new SlashCommandsConfiguration()
             {
