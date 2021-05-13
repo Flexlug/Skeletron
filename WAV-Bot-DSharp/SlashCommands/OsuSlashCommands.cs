@@ -47,14 +47,16 @@ namespace WAV_Bot_DSharp.SlashCommands
             if (!(ctx.Channel.Name.Contains("-bot") || ctx.Channel.Name.Contains("dev-announce")))
             {
                 await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, 
-                                              new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!."));
+                                              new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")
+                                                                                     .AsEphemeral(true));
                 return;
             }
 
             if (string.IsNullOrEmpty(nickname))
             {
                 await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
-                                              new DiscordInteractionResponseBuilder().WithContent("Вы ввели пустой никнейм.."));
+                                              new DiscordInteractionResponseBuilder().WithContent("Вы ввели пустой никнейм..")
+                                                                                     .AsEphemeral(true));
                 return;
             }
 
@@ -64,7 +66,8 @@ namespace WAV_Bot_DSharp.SlashCommands
                 if (!gapi.TryGetUser(nickname, ref guser))
                 {
                     await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
-                                              new DiscordInteractionResponseBuilder().WithContent($"Не удалось получить информацию о пользователе `{nickname}`."));;
+                                              new DiscordInteractionResponseBuilder().WithContent($"Не удалось получить информацию о пользователе `{nickname}`.")
+                                                                                     .AsEphemeral(true));;
                     return;
                 }
 
@@ -72,7 +75,8 @@ namespace WAV_Bot_DSharp.SlashCommands
                 if (gscores is null || gscores.Count == 0)
                 {
                     await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
-                                              new DiscordInteractionResponseBuilder().WithContent($"Не удалось получить информацию о лучших скорах пользователя `{nickname}`."));
+                                              new DiscordInteractionResponseBuilder().WithContent($"Не удалось получить информацию о лучших скорах пользователя `{nickname}`.")
+                                                                                     .AsEphemeral(true));
                     return;
                 }
 
@@ -80,7 +84,8 @@ namespace WAV_Bot_DSharp.SlashCommands
                 if (gstats is null)
                 {
                     await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
-                                              new DiscordInteractionResponseBuilder().WithContent($"Не удалось получить статистику пользователя `{nickname}`."));
+                                              new DiscordInteractionResponseBuilder().WithContent($"Не удалось получить статистику пользователя `{nickname}`.")
+                                                                                     .AsEphemeral(true));
                     return;
                 }
 
@@ -96,7 +101,8 @@ namespace WAV_Bot_DSharp.SlashCommands
                 if (!api.TryGetUser(nickname, ref user))
                 {
                     await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
-                                                  new DiscordInteractionResponseBuilder().WithContent($"Не удалось получить информацию о пользователе `{nickname}`."));
+                                                  new DiscordInteractionResponseBuilder().WithContent($"Не удалось получить информацию о пользователе `{nickname}`.")
+                                                                                         .AsEphemeral(true));
                     return;
                 }
 
@@ -105,7 +111,8 @@ namespace WAV_Bot_DSharp.SlashCommands
                 if (scores is null || scores.Count == 0)
                 {
                     await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
-                                                  new DiscordInteractionResponseBuilder().WithContent($"Не удалось получить информацию о лучших скорах пользователя `{nickname}`."));
+                                                  new DiscordInteractionResponseBuilder().WithContent($"Не удалось получить информацию о лучших скорах пользователя `{nickname}`.")
+                                                                                         .AsEphemeral(true));
                     return;
                 }
 
@@ -115,7 +122,8 @@ namespace WAV_Bot_DSharp.SlashCommands
             }
 
             await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
-                                                  new DiscordInteractionResponseBuilder().WithContent("Введенный сервер не поддерживается или не существует."));
+                                                  new DiscordInteractionResponseBuilder().WithContent("Введенный сервер не поддерживается или не существует.")
+                                                                                         .AsEphemeral(true));
         }
     }
 }
