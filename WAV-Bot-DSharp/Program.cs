@@ -1,8 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 
 using Serilog;
-using Serilog.Sinks.SystemConsole.Themes;
 using Serilog.Templates;
 
 using WAV_Bot_DSharp.Configurations;
@@ -15,7 +15,6 @@ namespace WAV_Bot_DSharp
         {
             var settingsService = new SettingsLoader();
 
-            Console.WriteLine($".NET Version: {System.Environment.Version}");
 
             Log.Logger = new LoggerConfiguration()
                 //.WriteTo.Console(new ExpressionTemplate ("{@t:HH:mm:ss} [{@l:u3}] [{Substring(SourceContext, LastIndexOf(SourceContext, '.') + 1)}] {@m}\n{@x}"),
@@ -27,7 +26,8 @@ namespace WAV_Bot_DSharp
                 .Enrich.FromLogContext()
                 .CreateLogger();
 
-            Log.Logger.Information($"WAV-Bot-DSharp: {Assembly.GetEntryAssembly().GetName().Version}");
+            Log.Logger.Information($".NET Version: {System.Environment.Version}");
+            Log.Logger.Information($"WAV-Bot-DSharp: {Assembly.GetEntryAssembly().GetName().Version} (builded {File.GetCreationTime(Assembly.GetCallingAssembly().Location)})");
 
             using (var bot = new Bot(settingsService.LoadFromFile()))
             {
