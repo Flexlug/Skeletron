@@ -328,14 +328,13 @@ namespace WAV_Bot_DSharp.Commands
 
             DiscordMember member = await guild.GetMemberAsync(msg.Author.Id);
             string category = member.Roles.Select(x => x.Name)
-                                          .Where((x) =>
+                                          .FirstOrDefault((x) =>
                                           {
                                               foreach (var xx in (new string[] { "beginner", "alpha", "beta", "gamma", "delta", "epsilon" }))
                                                   if (x.Contains(xx))
                                                       return true;
                                               return false;
-                                          })
-                                          .FirstOrDefault();
+                                          });
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Osu nickname: `{replay.PlayerName}`");
