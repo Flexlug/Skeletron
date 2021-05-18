@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.CommandsNext.Attributes;
 
 using Microsoft.Extensions.Logging;
 using WAV_Bot_DSharp.Converters;
