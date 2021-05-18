@@ -7,6 +7,8 @@ using WAV_Bot_DSharp.Threading;
 using WAV_Bot_DSharp.Services.Structures;
 
 using Microsoft.Extensions.Logging;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -29,12 +31,12 @@ namespace WAV_Bot_DSharp.Services.Entities
             timer.Elapsed += Timer_Elapsed;
 
             logger.LogInformation("ShedulerService started");
+
+            StartSheduler();
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            logger.LogDebug("ShedulerService timer elapsed");
-
             foreach (var task in sheduledTasks)
                 if (task.Ready())
                 {
@@ -50,6 +52,30 @@ namespace WAV_Bot_DSharp.Services.Entities
             timer.Start();
         }
 
+        /// <summary>
+        /// Добавить задачу
+        /// </summary>
+        /// <param name="task">Планируемая задача</param>
         public void AddTask(SheduledTask task) => sheduledTasks.Add(task);
+
+        /// <summary>
+        /// Запланировать удаление файла (будет удален через 30 секунд)
+        /// </summary>
+        /// <param name="path"></param>
+        public void AddFileDeleteTask(string path)
+        {
+            logger.LogInformation($"File deletion sheduled. Path: {path}");
+            sheduledTasks.Add(new SheduledTask(() => 
+            {
+                try
+                {
+                    File.Delete(path); 
+                }
+                catch(Exception e) 
+                {
+                    logger.LogInformation($"File deletion error. Path: {path}");
+                }
+            }, TimeSpan.FromSeconds(5)));
+        }
     }
 }
