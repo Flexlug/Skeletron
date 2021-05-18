@@ -21,6 +21,7 @@ using WAV_Bot_DSharp.Converters;
 using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Bancho.Models;
 using WAV_Osu_NetApi.Gatari.Models;
+using WAV_Bot_DSharp.Services.Entities;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -38,6 +39,8 @@ namespace WAV_Bot_DSharp.Commands
         private BanchoApi api;
         private GatariApi gapi;
 
+        private ShedulerService sheduler;
+
         private DiscordRole beginnerRole;
         private DiscordRole alphaRole;
         private DiscordRole betaRole;
@@ -48,7 +51,12 @@ namespace WAV_Bot_DSharp.Commands
 
         private readonly ulong WAV_UID = 708860200341471264;
 
-        public OsuCommands(ILogger<OsuCommands> logger, DiscordClient client, OsuUtils utils, BanchoApi api, GatariApi gapi, OsuEmoji emoji)
+        public OsuCommands(ILogger<OsuCommands> logger, 
+                           DiscordClient client, 
+                           OsuUtils utils, 
+                           BanchoApi api, 
+                           GatariApi gapi, 
+                           OsuEmoji emoji)
         {
             ModuleName = "Osu commands";
 
@@ -300,6 +308,7 @@ namespace WAV_Bot_DSharp.Commands
                 webClient.DownloadFile(attachment.Url, $"downloads/{fileName}");
 
                 replay = ReplayDecoder.Decode($"downloads/{fileName}");
+                sheduler.AddFileDeleteTask(fileName);
             }
 
             catch (Exception e)
