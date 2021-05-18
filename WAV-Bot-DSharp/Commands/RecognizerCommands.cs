@@ -28,7 +28,7 @@ namespace WAV_Bot_DSharp.Commands
             logger.LogInformation("RecognizerCommands loaded");
         }
 
-        [Command("dummy"), Description("Send a message to a specified channel in a special guild")]
+        [Command("dummy"), Description("Send a message to a specified channel in a special guild"), Hidden]
         public async Task DummyCommand(CommandContext commandContext)
         {
             await commandContext.RespondAsync("As dummy as me");
