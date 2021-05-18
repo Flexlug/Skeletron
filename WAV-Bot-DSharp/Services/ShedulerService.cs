@@ -4,7 +4,7 @@ using System.Timers;
 using System.Collections.Generic;
 
 using WAV_Bot_DSharp.Threading;
-using WAV_Bot_DSharp.Services.Structures;
+using WAV_Bot_DSharp.Services.Models;
 
 using Microsoft.Extensions.Logging;
 using System.IO;

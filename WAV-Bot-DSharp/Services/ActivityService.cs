@@ -10,7 +10,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 
 using WAV_Bot_DSharp.Threading;
-using WAV_Bot_DSharp.Services.Structures;
+using WAV_Bot_DSharp.Services.Models;
 using WAV_Bot_DSharp.Services.Interfaces;
 using WAV_Bot_DSharp.Databases.Contexts;
 
@@ -114,11 +114,11 @@ namespace WAV_Bot_DSharp.Services.Entities
             {
                 using (var transaction = usersDb.Database.BeginTransaction())
                 {
-                    UserInfo userInfo = usersDb.Users.FirstOrDefault(x => x.Uid == user);
+                    WAVMember userInfo = usersDb.Users.FirstOrDefault(x => x.Uid == user);
 
                     if (userInfo == null)
                     {
-                        usersDb.Add(new UserInfo()
+                        usersDb.Add(new WAVMember()
                         {
                             LastActivity = DateTime.Now,
                             Uid = user
@@ -146,13 +146,13 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// </summary>
         /// <param name="page">Номер страницы</param>
         /// <returns>Список AFK пользователей</returns>
-        public List<UserInfo> GetAFKUsers(int page)
+        public List<WAVMember> GetAFKUsers(int page)
         {
             try
             {
                 using (var transaction = usersDb.Database.BeginTransaction())
                 {
-                    List<UserInfo> users = usersDb.Users.ToList();
+                    List<WAVMember> users = usersDb.Users.ToList();
 
                     users = users.Where(x => DateTime.Now - x.LastActivity > MAX_AFK_TIME)
                                  .OrderBy(x => x.LastActivity)
@@ -179,15 +179,15 @@ namespace WAV_Bot_DSharp.Services.Entities
             {
                 using (var transaction = usersDb.Database.BeginTransaction())
                 {
-                    List<UserInfo> newUsers = new List<UserInfo>();
+                    List<WAVMember> newUsers = new List<WAVMember>();
                     foreach (DiscordUser user in allUsers.Values)
                     {
-                        UserInfo us = usersDb.Users.FirstOrDefault(x => x.Uid == user.Id);
+                        WAVMember us = usersDb.Users.FirstOrDefault(x => x.Uid == user.Id);
 
                         // проверяем, есть ли юзер в бд
                         if (us == null ? true : false)
                         {
-                            newUsers.Add(new UserInfo()
+                            newUsers.Add(new WAVMember()
                             {
                                 LastActivity = DateTime.Now,
                                 Uid = user.Id
@@ -224,10 +224,10 @@ namespace WAV_Bot_DSharp.Services.Entities
             {
                 using (var transaction = usersDb.Database.BeginTransaction())
                 {
-                    List<UserInfo> absentUsers = new List<UserInfo>();
-                    List<UserInfo> existingUsers = usersDb.Users.ToList();
+                    List<WAVMember> absentUsers = new List<WAVMember>();
+                    List<WAVMember> existingUsers = usersDb.Users.ToList();
 
-                    foreach (UserInfo user in existingUsers)
+                    foreach (WAVMember user in existingUsers)
                         if (!currentMembers.ContainsKey(user.Uid))
                         {
                             logger.LogInformation($"Going to delete {user.Uid}");
@@ -263,7 +263,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             {
                 using (var transaction = usersDb.Database.BeginTransaction())
                 {
-                    UserInfo userInfo = usersDb.Users.First(x => x.Uid == user);
+                    WAVMember userInfo = usersDb.Users.First(x => x.Uid == user);
                     userInfo.LastActivity = DateTime.Now;
                     usersDb.SaveChanges();
 
@@ -288,7 +288,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             {
                 using (var transaction = usersDb.Database.BeginTransaction())
                 {
-                    UserInfo userInfo = usersDb.Users.First(x => x.Uid == user);
+                    WAVMember userInfo = usersDb.Users.First(x => x.Uid == user);
                     userInfo.LastActivity = dateTime;
 
                     usersDb.SaveChanges();
@@ -306,13 +306,13 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// </summary>
         /// <param name="page">Номер страницы</param>
         /// <returns>Страницу с информацией о пользователях</returns>
-        public List<UserInfo> ViewActivityInfo(int page)
+        public List<WAVMember> ViewActivityInfo(int page)
         {
             try
             {
                 using (var transaction = usersDb.Database.BeginTransaction())
                 {
-                    List<UserInfo> users = usersDb.Users.OrderBy(x => x.LastActivity)
+                    List<WAVMember> users = usersDb.Users.OrderBy(x => x.LastActivity)
                                           .Skip((page - 1) * PAGE_SIZE)
                                           .Take(PAGE_SIZE)
                                           .AsNoTracking()
@@ -334,13 +334,13 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// </summary>
         /// <param name="user">Uid пользователя</param>
         /// <returns>Дату последней активности пользователя</returns>
-        public UserInfo GetUser(ulong user)
+        public WAVMember GetUser(ulong user)
         {
             try
             {
                 using (var transaction = usersDb.Database.BeginTransaction())
                 {
-                    UserInfo userInfo = usersDb.Users.AsNoTracking()
+                    WAVMember userInfo = usersDb.Users.AsNoTracking()
                                                      .First(x => x.Uid == user);
 
                     transaction.Commit();
@@ -364,7 +364,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             {
                 using (var transaction = usersDb.Database.BeginTransaction())
                 {
-                    UserInfo info = usersDb.Users.First(x => x.Uid == user);
+                    WAVMember info = usersDb.Users.First(x => x.Uid == user);
                     usersDb.Remove(info);
 
                     objectsCount--;
@@ -388,11 +388,11 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         public Task<int> UpdateCurrentUsersAsync(IReadOnlyDictionary<ulong, DiscordMember> allUsers) => queue.QueueTask(() => UpdateCurrentUsers(allUsers));
         public Task<int> ExcludeAbsentUsersAsync(IReadOnlyDictionary<ulong, DiscordMember> allUsers) => queue.QueueTask(() => ExcludeAbsentUsers(allUsers));
-        public Task<List<UserInfo>> ViewActivityInfoAsync(int page) => queue.QueueTask(() => ViewActivityInfo(page));
-        public Task<List<UserInfo>> GetAFKUsersAsync(int page) => queue.QueueTask(() => GetAFKUsers(page));
+        public Task<List<WAVMember>> ViewActivityInfoAsync(int page) => queue.QueueTask(() => ViewActivityInfo(page));
+        public Task<List<WAVMember>> GetAFKUsersAsync(int page) => queue.QueueTask(() => GetAFKUsers(page));
         public Task RemoveUserAsync(ulong user) => queue.QueueTask(() => RemoveUser(user));
         public Task<bool> AddUserAsync(ulong user) => queue.QueueTask(() => AddUser(user));
-        public Task<UserInfo> GetUserAsync(ulong user) => queue.QueueTask(() => GetUser(user));
+        public Task<WAVMember> GetUserAsync(ulong user) => queue.QueueTask(() => GetUser(user));
         public Task ManualUpdateToPresentAsync(ulong user) => queue.QueueTask(() => ManualUpdateToPresent(user));
         public Task ManualUpdateAsync(ulong user, DateTime dateTime) => queue.QueueTask(() => ManualUpdate(user, dateTime));
     }

@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 using WAV_Bot_DSharp.Services;
 using WAV_Bot_DSharp.Services.Entities;
 using WAV_Bot_DSharp.Services.Interfaces;
-using WAV_Bot_DSharp.Services.Structures;
+using WAV_Bot_DSharp.Services.Models;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -50,13 +50,13 @@ namespace WAV_Bot_DSharp.Commands
 
             if (page <= totalPages && page > 0)
             { 
-                List<UserInfo> users = await activity.ViewActivityInfoAsync(page);
+                List<WAVMember> users = await activity.ViewActivityInfoAsync(page);
 
                 DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
                     .WithFooter($"Pages: {page} of {totalPages}")
                     .WithTitle("Users list");
 
-                foreach(UserInfo user in users)
+                foreach(WAVMember user in users)
                 {
                     DiscordMember member = null;
                     try
@@ -149,7 +149,7 @@ namespace WAV_Bot_DSharp.Commands
         public async Task WhoIsNext(CommandContext commandContext,
             [Description("Number of page")] int page)
         {
-            List<UserInfo> users = await activity.GetAFKUsersAsync(page);
+            List<WAVMember> users = await activity.GetAFKUsersAsync(page);
 
             if (users.Count == 0)
             {
@@ -163,7 +163,7 @@ namespace WAV_Bot_DSharp.Commands
                 .WithFooter($"Pages: {page} of {totalPages}")
                 .WithTitle("Users list");
 
-            foreach (UserInfo user in users)
+            foreach (WAVMember user in users)
             {
                 DiscordMember member = await commandContext.Guild.GetMemberAsync(user.Uid);
                 embed.AddField($"{(member.DisplayName == string.Empty ? user.Uid.ToString() : member.DisplayName)}", $"{user.LastActivity.ToShortDateString()} {user.LastActivity.ToLongTimeString()} ({(int)(DateTime.Now - user.LastActivity).TotalDays} days AFK)");

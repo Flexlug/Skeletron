@@ -9,14 +9,14 @@ using Microsoft.Extensions.Logging;
 
 using WAV_Bot_DSharp.Databases.Interfaces;
 using WAV_Bot_DSharp.Services.Entities;
-using WAV_Bot_DSharp.Services.Structures;
+using WAV_Bot_DSharp.Services.Models;
 using WAV_Bot_DSharp.Threading;
 
 using WAV_Osu_NetApi.Gatari.Models;
 
 namespace WAV_Bot_DSharp.Databases.Entities
 {
-    public class TrackedUsersDbService : ITrackedUsersDbService
+    public class TrackedUsersDBService : ITrackedUsersDBService
     {
         private int gatariUserIterator = 0;
         private int banchoUserIterator = 0;
@@ -24,9 +24,9 @@ namespace WAV_Bot_DSharp.Databases.Entities
         private BackgroundQueue queue;
         private TrackedUserContext trackedUsersDb;
 
-        private ILogger<TrackedUsersDbService> logger;
+        private ILogger<TrackedUsersDBService> logger;
 
-        public TrackedUsersDbService(TrackedUserContext trackedUsers, ILogger<TrackedUsersDbService> logger)
+        public TrackedUsersDBService(TrackedUserContext trackedUsers, ILogger<TrackedUsersDBService> logger)
         {
             this.trackedUsersDb = trackedUsers;
             this.logger = logger;
@@ -41,11 +41,11 @@ namespace WAV_Bot_DSharp.Databases.Entities
             {
                 using (var transaction = trackedUsersDb.Database.BeginTransaction())
                 {
-                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.GatariId == u.id);
+                    WAVMember user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.GatariId == u.id);
 
                     if (user is null)
                     {
-                        user = new TrackedUser()
+                        user = new WAVMember()
                         {
                             BanchoId = null,
                             BanchoTrackRecent = false,
@@ -82,7 +82,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             {
                 using (var transaction = trackedUsersDb.Database.BeginTransaction())
                 {
-                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.GatariId == u.id);
+                    WAVMember user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.GatariId == u.id);
 
                     if (user is null)
                         return false;
@@ -109,7 +109,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             {
                 using (var transaction = trackedUsersDb.Database.BeginTransaction())
                 {
-                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.GatariId == u);
+                    WAVMember user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.GatariId == u);
 
                     if (user is null)
                         return false;
@@ -136,11 +136,11 @@ namespace WAV_Bot_DSharp.Databases.Entities
             {
                 using (var transaction = trackedUsersDb.Database.BeginTransaction())
                 {
-                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.BanchoId == u);
+                    WAVMember user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.BanchoId == u);
 
                     if (user is null)
                     {
-                        user = new TrackedUser()
+                        user = new WAVMember()
                         {
                             BanchoId = u,
                             BanchoTrackRecent = true,
@@ -173,13 +173,13 @@ namespace WAV_Bot_DSharp.Databases.Entities
             }
         }
 
-        private TrackedUser NextBanchoUser()
+        private WAVMember NextBanchoUser()
         {
             try
             {
                 using (var transaction = trackedUsersDb.Database.BeginTransaction())
                 {
-                    List<TrackedUser> users = trackedUsersDb.TrackedUsers.Select(x => x)
+                    List<WAVMember> users = trackedUsersDb.TrackedUsers.Select(x => x)
                                                                   .Where(x => x.BanchoId != null && x.BanchoTrackRecent)
                                                                   .AsNoTracking()
                                                                   .ToList();
@@ -203,13 +203,13 @@ namespace WAV_Bot_DSharp.Databases.Entities
             }
         }
 
-        private TrackedUser NextGatariUser()
+        private WAVMember NextGatariUser()
         {
             try
             {
                 using (var transaction = trackedUsersDb.Database.BeginTransaction())
                 {
-                    List<TrackedUser> users = trackedUsersDb.TrackedUsers.Select(x => x)
+                    List<WAVMember> users = trackedUsersDb.TrackedUsers.Select(x => x)
                                                                   .Where(x => x.GatariId != null && x.GatariTrackRecent)
                                                                   .AsNoTracking()
                                                                   .ToList();
@@ -239,7 +239,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             {
                 using (var transaction = trackedUsersDb.Database.BeginTransaction())
                 {
-                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.Id == id);
+                    WAVMember user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.Id == id);
 
                     user.BanchoRecentLastAt = dateTime;
 
@@ -260,7 +260,7 @@ namespace WAV_Bot_DSharp.Databases.Entities
             {
                 using (var transaction = trackedUsersDb.Database.BeginTransaction())
                 {
-                    TrackedUser user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.Id == id);
+                    WAVMember user = trackedUsersDb.TrackedUsers.FirstOrDefault(x => x.Id == id);
 
                     user.GatariRecentLastAt = dateTime;
 
@@ -277,8 +277,8 @@ namespace WAV_Bot_DSharp.Databases.Entities
 
         #region Async abuse
 
-        public Task<TrackedUser> NextBanchoUserAsync() => queue.QueueTask(() => NextBanchoUser());
-        public Task<TrackedUser> NextGatariUserAsync() => queue.QueueTask(() => NextGatariUser());
+        public Task<WAVMember> NextBanchoUserAsync() => queue.QueueTask(() => NextBanchoUser());
+        public Task<WAVMember> NextGatariUserAsync() => queue.QueueTask(() => NextGatariUser());
         public Task UpdateBanchoRecentTimeAsync(ulong id, DateTime? dateTime) => queue.QueueTask(() => UpdateBanchoRecentTime(id, dateTime));
         public Task UpdateGatariRecentTimeAsync(ulong id, DateTime? dateTime) => queue.QueueTask(() => UpdateGatariRecentTime(id, dateTime));
         public Task AddGatariTrackRecentAsync(GUser u) => queue.QueueTask(() => AddGatariTrackRecent(u));

@@ -16,7 +16,7 @@ using WAV_Osu_NetApi.Bancho.Models;
 
 using WAV_Bot_DSharp.Threading;
 using WAV_Bot_DSharp.Services.Interfaces;
-using WAV_Bot_DSharp.Services.Structures;
+using WAV_Bot_DSharp.Services.Models;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -33,7 +33,7 @@ namespace WAV_Bot_DSharp.Services.Entities
     {
         private ILogger<TrackService> logger;
 
-        ITrackedUsersDbService trackedUsers;
+        ITrackedUsersDBService trackedUsers;
 
         private Timer timer;
         private OsuUtils utils;
@@ -50,7 +50,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private const int TIMER_INTERVAL = 10000;
 
-        public TrackService(DiscordClient client, ILogger<TrackService> logger, ITrackedUsersDbService trackedUsers, OsuUtils utils, OsuEmoji emoji, BanchoApi bapi)
+        public TrackService(DiscordClient client, ILogger<TrackService> logger, ITrackedUsersDBService trackedUsers, OsuUtils utils, OsuEmoji emoji, BanchoApi bapi)
         {
             timer = new Timer(TIMER_INTERVAL);
             timer.Elapsed += Check;
@@ -82,7 +82,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private async void CheckRecentGatari()
         {
-            TrackedUser user = await trackedUsers.NextGatariUserAsync();
+            WAVMember user = await trackedUsers.NextGatariUserAsync();
 
             if (user is null)
                 return;
@@ -175,7 +175,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private async void CheckRecentBancho()
         {
-            TrackedUser user = await trackedUsers.NextBanchoUserAsync();
+            WAVMember user = await trackedUsers.NextBanchoUserAsync();
 
             if (user is null)
                 return;

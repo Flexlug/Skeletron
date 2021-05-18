@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WAV_Bot_DSharp.Services.Structures
+namespace WAV_Bot_DSharp.Services.Models
 {
     /// <summary>
     /// Запланированная задача, которая должна выполняться раз в определенный промежуток времени

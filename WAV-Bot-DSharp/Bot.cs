@@ -15,13 +15,9 @@ using DSharpPlus.Interactivity.Extensions;
 using WAV_Osu_NetApi;
 
 using WAV_Bot_DSharp.Commands;
-using WAV_Bot_DSharp.Services;
 using WAV_Bot_DSharp.Services.Entities;
 using WAV_Bot_DSharp.Configurations;
 using WAV_Bot_DSharp.Converters;
-using WAV_Bot_DSharp.Databases.Contexts;
-using WAV_Bot_DSharp.Databases.Interfaces;
-using WAV_Bot_DSharp.Databases.Entities;
 using WAV_Bot_DSharp.Services.Interfaces;
 
 using Serilog;

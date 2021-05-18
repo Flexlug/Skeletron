@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using WAV_Bot_DSharp.Services.Structures;
+using WAV_Bot_DSharp.Services.Models;
 using WAV_Osu_NetApi.Gatari.Models;
 
-namespace WAV_Bot_DSharp.Databases.Interfaces
+namespace WAV_Bot_DSharp.Services.Interfaces
 {
-    public interface ITrackedUsersDbService
+    public interface ITrackedUsersDBService
     {
         /// <summary>
         /// Update time for latest score for gatari user
@@ -34,7 +34,7 @@ namespace WAV_Bot_DSharp.Databases.Interfaces
         /// Get next gatari user
         /// </summary>
         /// <returns></returns>
-        public Task<TrackedUser> NextGatariUserAsync();
+        public Task<WAVMember> NextGatariUserAsync();
 
         /// <summary>
         /// Update time for latest score for gatari user
@@ -61,6 +61,6 @@ namespace WAV_Bot_DSharp.Databases.Interfaces
         /// Get next bacho user
         /// </summary>
         /// <returns></returns>
-        public Task<TrackedUser> NextBanchoUserAsync();
+        public Task<WAVMember> NextBanchoUserAsync();
     }
 }
