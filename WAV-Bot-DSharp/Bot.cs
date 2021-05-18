@@ -93,6 +93,7 @@ namespace WAV_Bot_DSharp
                 .AddSingleton<OsuUtils>()
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
+                .AddSingleton<ShedulerService>()
                 .AddSingleton<IRecognizerService, RecognizerService>()
                 .BuildServiceProvider();
         }
@@ -120,6 +121,7 @@ namespace WAV_Bot_DSharp
             {
                 Services = Services
             };
+
             SlashCommands = Discord.UseSlashCommands(slashCommandsConfiguration);
 
             // Register slash commands modules
@@ -133,10 +135,8 @@ namespace WAV_Bot_DSharp
         {
             Log.Logger.Debug("Registering events");
             Discord.Ready += OnReady;
-            //Discord.DebugLogger
-            //Discord.Logger.Log += OnLogMessageReceived;
-
         }
+
         public async Task RunAsync()
         {
             if (IsRunning)
@@ -158,34 +158,6 @@ namespace WAV_Bot_DSharp
 
             Log.Logger.Information("The bot is online");
         }
-
-        ///// <summary>
-        ///// Logs DSharpPlus internal errors with NLog
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e">DebugLogMessageEventArgs object</param>
-        //private void OnLogMessageReceived(object sender, DebugLogMessageEventArgs e)
-        //{
-        //    var message = $"{e.Application}: {e.Message}";
-        //    switch (e.Level)
-        //    {
-        //        case LogLevel.Debug:
-        //            Logger.Debug(e.Exception, message);
-        //            break;
-        //        case LogLevel.Info:
-        //            Logger.Info(e.Exception, message);
-        //            break;
-        //        case LogLevel.Warning:
-        //            Logger.Warn(e.Exception, message);
-        //            break;
-        //        case LogLevel.Error:
-        //            Logger.Error(e.Exception, message);
-        //            break;
-        //        case LogLevel.Critical:
-        //            Logger.Fatal(e.Exception, message);
-        //            break;
-        //    }
-        //}
 
         private Task OnCommandError(object sender, CommandErrorEventArgs e)
         {
