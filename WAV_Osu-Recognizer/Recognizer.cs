@@ -44,6 +44,10 @@ namespace WAV_Osu_Recognizer
             string mapName = pageName.GetText();
             pageName.Dispose();
 
+            bmp.Dispose();
+            if (File.Exists(fileName))
+                File.Delete(fileName);
+
             return mapName;
         }
 
