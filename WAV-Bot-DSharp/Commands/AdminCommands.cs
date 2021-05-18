@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -359,8 +361,17 @@ namespace WAV_Bot_DSharp.Commands
                     await targetChannel.SendMessageAsync(embed: embed);
 
             if (msg.Attachments?.Count != 0)
+            {
+                WebClient webClient = new WebClient();
                 foreach (var att in msg.Attachments)
-                    await targetChannel.SendMessageAsync(att.Url);
+                {
+                    string fileName = $"{DateTime.Now.Ticks}-{att.FileName}";
+                    webClient.DownloadFile(new Uri(att.Url), $"downloads/{fileName}");
+
+                    using (FileStream fs = new FileStream($"downloads/{fileName}", FileMode.Open))
+                        await targetChannel.SendMessageAsync(new DiscordMessageBuilder().WithFile(fs));                
+                }
+            }
 
             await LogChannel.SendMessageAsync(
                 embed: new DiscordEmbedBuilder().WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
