@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace WAV_Bot_DSharp.Services.Structures
 {
@@ -30,6 +31,7 @@ namespace WAV_Bot_DSharp.Services.Structures
         /// <param name="repeat">Будет ли команда выполняться циклично</param>
         public SheduledTask(Action action, TimeSpan interval, bool repeat = false)
         {
+            this.Action = action;
             this.Interval = interval;
             this.Repeat = repeat;
 

@@ -42,13 +42,20 @@ namespace WAV_Bot_DSharp.Services.Entities
         private Dictionary<int, DateTime> ignoreList;
         private OsuEmoji emoji;
         private OsuUtils utils;
+        private ShedulerService sheduler;
         private BackgroundQueue queue;
 
-        public RecognizerService(DiscordClient client, Settings settings, ILogger<RecognizerService> logger, OsuEmoji emoji, OsuUtils utils)
+        public RecognizerService(DiscordClient client, 
+                                 Settings settings, 
+                                 ILogger<RecognizerService> logger, 
+                                 OsuEmoji emoji, 
+                                 OsuUtils utils,
+                                 ShedulerService sheduler)
         {
             this.client = client;
             this.logger = logger;
             this.utils = utils;
+            this.sheduler = sheduler;
 
             this.emoji = emoji;
 
@@ -157,12 +164,15 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// <param name="attachment">Картинка</param>
         private Tuple<Beatmapset, Beatmap> DownloadAndRecognizeImage(DiscordAttachment attachment)
         {
-            string fileName = $"{DateTime.Now.Ticks}-{attachment.FileName}";
-            webClient.DownloadFile(attachment.Url, $"downloads/{fileName}");
+            string webFileName = $"{DateTime.Now.Ticks}-{attachment.FileName}";
+            webClient.DownloadFile(attachment.Url, $"downloads/{webFileName}");
 
-            Image image = Image.FromFile($"downloads/{fileName}");
+            string fileName = $"downloads/{webFileName}";
+            Image image = Image.FromFile(fileName);
 
             string[] rawrecedText = recognizer.RecognizeTopText(image).Split('\n');
+
+            sheduler.AddFileDeleteTask(fileName);
 
             foreach (string s in rawrecedText)
                 logger.LogDebug(s);
@@ -212,25 +222,13 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
 
             string mapper = string.Empty;
-            //foreach(string s in rawrecedText)
-            //{
-            //    string sLow = s.ToLower();
-                
-            //    if (sLow.Contains("beatmap") || sLow.Contains("mapped")) 
-            //    {
-            //        logger.Debug("found mapper");
-            //        mapper = s;
-            //        break;
-            //    }
-            //    logger.Debug($"Skipping {sLow}");
-            //}
+            
             mapper = rawrecedText.Select(x => x)
-                                 .Where(x =>
+                                 .FirstOrDefault(x =>
                                  {
                                      x = x.ToLowerInvariant();
                                      return x.Contains("mapped") || x.Contains("beatmap");
-                                 })
-                                 .FirstOrDefault();
+                                 });
 
 
             Beatmapset bms = null;
