@@ -12,17 +12,28 @@ namespace WAV_Bot_DSharp.Services.Structures
         private TimeSpan Interval { get; set; }
         private DateTime LastInvokeTime { get; set; }
 
+        /// <summary>
+        /// Будет ли выполняться задача циклично
+        /// </summary>
         public bool Repeat { get; set; }
 
         /// <summary>
         /// Задача, которая должна выполниться
         /// </summary>
-        public Action Action;
+        public Action Action { get; set; }
 
-        public SheduledTask(TimeSpan interval, bool repeat)
+        /// <summary>
+        /// Создать новую задачу, которая будет выполнениа через interval времени.
+        /// </summary>
+        /// <param name="action">Выполняемая задача</param>
+        /// <param name="interval">Интервал времени, через который будет выполнена команда</param>
+        /// <param name="repeat">Будет ли команда выполняться циклично</param>
+        public SheduledTask(Action action, TimeSpan interval, bool repeat = false)
         {
             this.Interval = interval;
             this.Repeat = repeat;
+
+            LastInvokeTime = DateTime.Now;
         }
 
         /// <summary>
