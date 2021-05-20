@@ -9,7 +9,7 @@ namespace WAV_Bot_DSharp.Services.Models
     /// <summary>
     /// Информация о участнике WAV на конкретном osu сервере
     /// </summary>
-    public class WAVMemberServerInfo
+    public class WAVMemberOsuServerInfo
     {
         /// <summary>
         /// Название osu сервера

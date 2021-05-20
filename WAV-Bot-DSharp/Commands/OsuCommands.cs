@@ -22,6 +22,8 @@ using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Bancho.Models;
 using WAV_Osu_NetApi.Gatari.Models;
 using WAV_Bot_DSharp.Services.Entities;
+using WAV_Bot_DSharp.Services;
+using WAV_Bot_DSharp.Services.Models;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -36,46 +38,35 @@ namespace WAV_Bot_DSharp.Commands
         private OsuUtils utils;
         private OsuEmoji emoji;
 
+        private WAVMembersProvider wavMembers;
+
         private BanchoApi api;
         private GatariApi gapi;
 
         private ShedulerService sheduler;
 
-        private DiscordRole beginnerRole;
-        private DiscordRole alphaRole;
-        private DiscordRole betaRole;
-        private DiscordRole gammaRole;
-        private DiscordRole deltaRole;
-        private DiscordRole epsilonRole;
-
-
         private readonly ulong WAV_UID = 708860200341471264;
 
-        public OsuCommands(ILogger<OsuCommands> logger, 
-                           DiscordClient client, 
-                           OsuUtils utils, 
-                           BanchoApi api, 
-                           GatariApi gapi, 
-                           OsuEmoji emoji)
+        public OsuCommands(ILogger<OsuCommands> logger,
+                           DiscordClient client,
+                           OsuUtils utils,
+                           BanchoApi api,
+                           GatariApi gapi,
+                           OsuEmoji emoji,
+                           WAVMembersProvider wavMembers)
         {
             ModuleName = "Osu commands";
 
             this.logger = logger;
             this.wavScoresChannel = client.GetChannelAsync(829466881353711647).Result;
             this.webClient = new WebClient();
+            this.wavMembers = wavMembers;
 
             this.guild = client.GetGuildAsync(WAV_UID).Result;
             this.utils = utils;
             this.api = api;
             this.gapi = gapi;
             this.emoji = emoji;
-
-            this.beginnerRole = guild.GetRole(831262333208756255);
-            this.alphaRole = guild.GetRole(831262447502360686);
-            this.betaRole = guild.GetRole(831262485910781953);
-            this.gammaRole = guild.GetRole(831262538317430844);
-            this.deltaRole = guild.GetRole(831262333208756255);
-            this.epsilonRole = guild.GetRole(831262333208756255);
 
             logger.LogInformation("OsuCommands loaded");
 
@@ -87,9 +78,9 @@ namespace WAV_Bot_DSharp.Commands
             if (!e.Message.Content.Contains("http"))
                 return;
 
-            if (!(e.Channel.Name.Contains("-osu") || 
-                  e.Channel.Name.Contains("map-offer") || 
-                  e.Channel.Name.Contains("bot-debug") || 
+            if (!(e.Channel.Name.Contains("-osu") ||
+                  e.Channel.Name.Contains("map-offer") ||
+                  e.Channel.Name.Contains("bot-debug") ||
                   e.Channel.Name.Contains("dev-announce") ||
                   e.Channel.Name.Contains("www-register")))
                 return;
@@ -200,8 +191,8 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        
-        [Command("osu"), Description("Get osu profile information"), RequireGuild]
+
+        [Command("osu"), Description("Получить информацию об osu! профиле"), RequireGuild]
         public async Task OsuProfile(CommandContext commandContext,
             [Description("Osu nickname")] string nickname,
             params string[] args)
@@ -214,7 +205,7 @@ namespace WAV_Bot_DSharp.Commands
 
             if (string.IsNullOrEmpty(nickname))
             {
-                await commandContext .RespondAsync("Вы ввели пустую строку.");
+                await commandContext.RespondAsync("Вы ввели пустую строку.");
                 return;
             }
 
@@ -249,7 +240,7 @@ namespace WAV_Bot_DSharp.Commands
             User user = null;
             if (!api.TryGetUser(nickname, ref user))
             {
-                await commandContext .RespondAsync($"Не удалось получить информацию о пользователе `{nickname}`.");
+                await commandContext.RespondAsync($"Не удалось получить информацию о пользователе `{nickname}`.");
                 return;
             }
 
@@ -265,7 +256,74 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync(embed: embed);
 
         }
-        
+
+        public async Task OsuSet(CommandContext commandContext,
+            [Description("Никнейм osu! профиля")] string nickname,
+            [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
+        {
+            WAVMember member = wavMembers.GetWAVMember(commandContext.Member.Id);
+            if (member is null)
+            {
+                member = new WAVMember()
+                {
+                    Uid = commandContext.Member.Id,
+                    ActivityPoints = 0,
+                    CompitionInfo = null,
+                    LastActivity = DateTime.Now,
+                    OsuServers = new List<WAVMemberOsuServerInfo>()
+                };
+
+                wavMembers.AddWAVMember(member);
+            }
+
+            int osu_id = 0;
+            string serverName = string.Empty, 
+                   osu_nickname = string.Empty;
+
+            string choosedServer = args.FirstOrDefault() ?? "-bancho";
+
+            switch (choosedServer)
+            {
+                case "-gatari":
+                    GUser guser = null;
+                    if (!gapi.TryGetUser(nickname, ref guser))
+                    {
+                        await commandContext.RespondAsync("Не удалось найти такого пользователя на Gatari.");
+                        return;
+                    }
+                    osu_nickname = guser.username;
+                    serverName = "gatari";
+                    osu_id = guser.id;
+                    break;
+
+                case "-bancho":
+                    User user = null;
+                    if (api.TryGetUser(nickname, ref user))
+                    {
+                        await commandContext.RespondAsync("Не удалось найти такого пользователя на Bancho.");
+                        return;
+                    }
+                    osu_nickname = user.username;
+                    serverName = "bancho";
+                    osu_id = user.id;
+                    break;
+
+                default:
+                    await commandContext.RespondAsync($"Сервер `{choosedServer}` не поддерживается.");
+                    break;
+            }
+
+            try
+            {
+                wavMembers.AddWAVMemberServer(commandContext.Member.Id, serverName, osu_id);
+                await commandContext .RespondAsync($"Вы успешно добавили информацию о своём профиле `{osu_nickname}` на сервере `{serverName}");
+            }
+            catch (NullReferenceException)
+            {
+                logger.LogError("User not found in OsuSet command");
+                await commandContext.RespondAsync("Вас не удалось найти в базе данных участников WAV.");
+            }
+        }
 
         [Command("submit"), RequireDirectMessage]
         public async Task SubmitScore(CommandContext commandContext)
@@ -355,4 +413,5 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync("Ваш скор был отправлен на рассмотрение. Спасибо за участие!");
         }
     }
+
 }

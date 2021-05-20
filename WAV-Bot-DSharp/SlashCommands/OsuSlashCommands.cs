@@ -38,7 +38,6 @@ namespace WAV_Bot_DSharp.SlashCommands
             logger.LogInformation("OsuSlashCommands loaded");
         }
 
-
         [SlashCommand("osu", "Получить информацию о профиле osu в режиме std")]
         public async Task OsuProfile(InteractionContext ctx,
             [Option("nickname", "Никнейм юзера")] string nickname,

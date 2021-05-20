@@ -18,7 +18,12 @@ namespace WAV_Bot_DSharp.Services.Models
         /// <summary>
         /// Список серверов, на которых зарегистрирован участник
         /// </summary>
-        public List<WAVMemberServerInfo> OsuServers { get; set; }
+        public List<WAVMemberOsuServerInfo> OsuServers { get; set; }
+
+        /// <summary>
+        /// Информация об участии в конкурсах
+        /// </summary>
+        public WAVMemberCompitInfo CompitionInfo { get; set; }
 
         /// <summary>
         /// Дата последней активности
