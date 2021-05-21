@@ -374,7 +374,7 @@ namespace WAV_Bot_DSharp.Converters
         /// <param name="user">Gatari user</param>
         /// <param name="mapLen">Map's length</param>
         /// <returns></returns>
-        public DiscordEmbed GatariScoreToEmbed(GScore score, GUser user, TimeSpan mapLen)
+        public DiscordEmbed GatariScoreToEmbed(GScore score, GUser user)
         {
             DiscordEmoji rankEmoji = osuEmoji.RankingEmoji(score.ranking);
             Random rnd = new Random();
@@ -384,6 +384,7 @@ namespace WAV_Bot_DSharp.Converters
             embed.WithAuthor(user.username, $"https://osu.gatari.pw/u/{user.id}", $"https://a.gatari.pw/{user.id}?{rnd.Next(1000, 9999)}")
                  .WithThumbnail($"https://b.ppy.sh/thumb/{score.beatmap.beatmapset_id}.jpg");
 
+            TimeSpan mapLen = TimeSpan.FromSeconds(score.beatmap.hit_length);
 
             StringBuilder embedMessage = new StringBuilder();
             embedMessage.AppendLine($"[{osuEmoji.RankStatusEmoji(score.beatmap.ranked)} {score.beatmap.song_name} by {score.beatmap.creator}](https://osu.gatari.pw/s/{score.beatmap.beatmapset_id}#osu/{score.beatmap.beatmap_id})");
@@ -424,12 +425,14 @@ namespace WAV_Bot_DSharp.Converters
             return embed.Build();
         }
 
-        public DiscordEmbed BanchoScoreToEmbed(Score score, User user, TimeSpan mapLen)
+        public DiscordEmbed BanchoScoreToEmbed(Score score, User user)
         {
             DiscordEmoji rankEmoji = osuEmoji.RankingEmoji(score.rank);
             Random rnd = new Random();
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
+
+            TimeSpan mapLen = TimeSpan.FromSeconds(score.beatmap.hit_length);
 
             embed.WithAuthor(user.username, $"https://osu.ppy.sh/users/{user.id}", $"https://a.ppy.sh/{user.id}?{rnd.Next(1000, 9999)}")
                  .WithThumbnail($"https://b.ppy.sh/thumb/{score.beatmap.beatmapset_id}.jpg");

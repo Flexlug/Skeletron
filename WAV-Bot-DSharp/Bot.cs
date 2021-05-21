@@ -44,9 +44,6 @@ namespace WAV_Bot_DSharp
 
         public Bot(Settings settings)
         {
-            Settings = settings;
-            Settings.KOSTYL = settings;
-
             logFactory = new LoggerFactory().AddSerilog();
             logger = logFactory.CreateLogger<Bot>();
 

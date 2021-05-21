@@ -9,7 +9,7 @@ namespace WAV_Bot_DSharp.Services.Models
     /// <summary>
     /// Информация о участнике WAV на конкретном osu сервере
     /// </summary>
-    public class WAVMemberOsuServerInfo
+    public class WAVMemberOsuProfileInfo
     {
         /// <summary>
         /// Название osu сервера
@@ -19,22 +19,22 @@ namespace WAV_Bot_DSharp.Services.Models
         /// <summary>
         /// ID пользователя
         /// </summary>
-        public long? Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Состояние отслеживания недавних скоров
         /// </summary>
-        public bool TrackRecent { get; set; }
+        public bool TrackRecent { get; set; } = false;
+
+        /// <summary>
+        /// Состояние отслеживания лучших скоров
+        /// </summary>
+        public bool TrackBest { get; set; } = false;
 
         /// <summary>
         /// Время, когда был зафиксирован последний скор (среди недавних)
         /// </summary>
         public DateTime? RecentLast { get; set; }
-
-        /// <summary>
-        /// Состояние отслеживания лучших скоров
-        /// </summary>
-        public bool TrackBest { get; set; }
 
         /// <summary>
         /// Время, когда был зафиксирован последний лучший скор (среди топ-50)

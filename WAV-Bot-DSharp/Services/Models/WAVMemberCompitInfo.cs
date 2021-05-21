@@ -8,6 +8,9 @@ namespace WAV_Bot_DSharp.Services.Models
 {
     public class WAVMemberCompitInfo
     {
-        public string ScoreUrl { get; set; }
+        public bool ProvidedScore { get; set; } = false;
+        public bool NonGrata { get; set; } = false;
+        
+        public string WWWCategory { get; set; }
     }
 }

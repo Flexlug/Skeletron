@@ -257,24 +257,85 @@ namespace WAV_Bot_DSharp.Commands
 
         }
 
+        [Command("rs"), Description("Получить последний скор"), RequireGuild]
+        public async Task LastRecent(CommandContext commandContext,
+            params string[] args)
+        {
+            ulong discordId = commandContext.Member.Id;
+
+            if (wavMembers.GetMember(discordId) is null)
+                wavMembers.CreateMember(discordId);
+
+            string choosedServer = args.FirstOrDefault() ?? "-bancho";
+
+            WAVMemberOsuProfileInfo userInfo = wavMembers.GetOsuProfileInfo(discordId, choosedServer);
+            if (userInfo is null)
+            {
+                await commandContext.RespondAsync($"Не удалось найти ваш osu! профиль сервера `{choosedServer}`. Добавьте свой профиль через команду `osuset`");
+                return;
+            }
+
+            switch (choosedServer)
+            {
+                case "-gatari":                    
+                    GScore gscore = gapi.GetUserRecentScores(userInfo.Id, 0, 1, true).First();
+
+                    GUser guser = null;
+                    if (!gapi.TryGetUser(userInfo.Id, ref guser))
+                    {
+                        await commandContext.RespondAsync("Не удалось найти такого пользователя на Gatari.");
+                        return;
+                    }
+
+                    DiscordEmbed gscoreEmbed = utils.GatariScoreToEmbed(gscore, guser);
+                    await commandContext.RespondAsync(embed: gscoreEmbed);
+
+                    break;
+
+                case "-bancho":
+                    Score score = api.GetUserRecentScores(userInfo.Id, true, 0, 1).First();
+
+                    User user = null;
+                    if (!api.TryGetUser(userInfo.Id, ref user))
+                    {
+                        await commandContext.RespondAsync("Не удалось найти такого пользователя на Gatari.");
+                        return;
+                    }
+
+                    DiscordEmbed scoreEmbed = utils.BanchoScoreToEmbed(score, user);
+                    await commandContext.RespondAsync(embed: scoreEmbed);
+                    break;
+
+                default:
+                    await commandContext.RespondAsync($"Сервер `{choosedServer}` не поддерживается.");
+                    break;
+            }
+        }
+
+        [Command("osuset-manual"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
+        public async Task OsuSet(CommandContext commandContext,
+            [Description("Пользователь WAV сервера")] DiscordMember member,
+            [Description("Никнейм osu! профиля")] string nickname,
+            [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
+        {
+            await SetOsuProfileFor(commandContext, member, nickname, args);
+        }
+
+        [Command("osuset"), Description("Добавить информацию о своём osu! профиле"), RequireGuild]
         public async Task OsuSet(CommandContext commandContext,
             [Description("Никнейм osu! профиля")] string nickname,
             [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
         {
-            WAVMember member = wavMembers.GetWAVMember(commandContext.Member.Id);
-            if (member is null)
-            {
-                member = new WAVMember()
-                {
-                    Uid = commandContext.Member.Id,
-                    ActivityPoints = 0,
-                    CompitionInfo = null,
-                    LastActivity = DateTime.Now,
-                    OsuServers = new List<WAVMemberOsuServerInfo>()
-                };
+            await SetOsuProfileFor(commandContext, commandContext.Member, nickname, args);
+        }
 
-                wavMembers.AddWAVMember(member);
-            }
+
+        public async Task SetOsuProfileFor(CommandContext commandContext, DiscordUser user, string nickname, params string[] args)
+        {
+            ulong discordId = user.Id;
+
+            if (wavMembers.GetMember(discordId) is null)
+                wavMembers.CreateMember(discordId);
 
             int osu_id = 0;
             string serverName = string.Empty, 
@@ -297,15 +358,15 @@ namespace WAV_Bot_DSharp.Commands
                     break;
 
                 case "-bancho":
-                    User user = null;
-                    if (api.TryGetUser(nickname, ref user))
+                    User buser = null;
+                    if (api.TryGetUser(nickname, ref buser))
                     {
                         await commandContext.RespondAsync("Не удалось найти такого пользователя на Bancho.");
                         return;
                     }
-                    osu_nickname = user.username;
+                    osu_nickname = buser.username;
                     serverName = "bancho";
-                    osu_id = user.id;
+                    osu_id = buser.id;
                     break;
 
                 default:
@@ -315,7 +376,7 @@ namespace WAV_Bot_DSharp.Commands
 
             try
             {
-                wavMembers.AddWAVMemberServer(commandContext.Member.Id, serverName, osu_id);
+                wavMembers.AddOsuServerInfo(discordId, serverName, osu_id);
                 await commandContext .RespondAsync($"Вы успешно добавили информацию о своём профиле `{osu_nickname}` на сервере `{serverName}");
             }
             catch (NullReferenceException)
@@ -329,12 +390,19 @@ namespace WAV_Bot_DSharp.Commands
         public async Task SubmitScore(CommandContext commandContext)
         {
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Id);
-
             logger.LogInformation($"DM {msg.Author}: {msg.Content} : {msg.Attachments.Count}");
 
-            if (Settings.KOSTYL.IgnoreDMList.Contains(msg.Author.Id))
+            WAVMemberCompitInfo compitInfo = wavMembers.GetCompitInfo(commandContext.Member.Id);
+
+            if (compitInfo.NonGrata)
             {
-                await commandContext.RespondAsync("Извините, но вы были внесены в черный список бота.");
+                await commandContext.RespondAsync("Извините, но вы не можете принять участие в данном конкурсе, т.к. внесены в черный список.");
+                return;
+            }
+
+            if (compitInfo.ProvidedScore)
+            {
+                await commandContext.RespondAsync("Вы уже отправили скор.");
                 return;
             }
 

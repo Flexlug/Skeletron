@@ -20,9 +20,9 @@ namespace WAV_Raven_Test
                 Uid = 708860200341471264,
                 ActivityPoints = 4,
                 LastActivity = DateTime.Now,
-                OsuServers = new List<WAVMemberOsuServerInfo>()
+                OsuServers = new List<WAVMemberOsuProfileInfo>()
                 {
-                    new WAVMemberOsuServerInfo()
+                    new WAVMemberOsuProfileInfo()
                     {
                         BestLast = DateTime.Now,
                         Id = 4,

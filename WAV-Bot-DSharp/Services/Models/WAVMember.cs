@@ -18,7 +18,7 @@ namespace WAV_Bot_DSharp.Services.Models
         /// <summary>
         /// Список серверов, на которых зарегистрирован участник
         /// </summary>
-        public List<WAVMemberOsuServerInfo> OsuServers { get; set; }
+        public List<WAVMemberOsuProfileInfo> OsuServers { get; set; }
 
         /// <summary>
         /// Информация об участии в конкурсах
@@ -33,6 +33,6 @@ namespace WAV_Bot_DSharp.Services.Models
         /// <summary>
         /// Количество очков активности
         /// </summary>
-        public int ActivityPoints { get; set; }
+        public int ActivityPoints { get; set; } = 0;
     }
 }

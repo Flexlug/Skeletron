@@ -113,51 +113,6 @@ namespace WAV_Bot_DSharp.Commands
             await targetChannel.SendMessageAsync(message);
         }
 
-        [Command("dm-ignore"), RequireUserPermissions(Permissions.Administrator), Description("Add specified user to DM ignore list")]
-        public async Task AddDMIgnore(CommandContext commandContext,
-            [Description("Target member")] DiscordMember targetMember)
-        {
-            if (Settings.KOSTYL.IgnoreDMList.Contains(targetMember.Id))
-            {
-                await commandContext.RespondAsync("This person is already there");
-                return;
-            }
-            else
-            {
-                Settings.KOSTYL.IgnoreDMList.Add(targetMember.Id);
-            }
-            SettingsLoader loader = new SettingsLoader();
-            loader.SaveToFile(Settings.KOSTYL);
-
-            await commandContext.RespondAsync($"Added {targetMember} to blacklist.");
-        }
-
-        [Command("dm-ignore-list"), RequireUserPermissions(Permissions.Administrator), Description("Return dm ignore list")]
-        public async Task DMIgnoreList(CommandContext commandContext)
-        {
-            await commandContext.RespondAsync($"Blacklisted persons: \n{string.Join('\n', Settings.KOSTYL.IgnoreDMList.Select(x => x.ToString()))}\nend;");
-        }
-
-        [Command("dm-pardon"), RequirePermissions(Permissions.Administrator), Description("Remove specified user from DM ignore list")]
-        public async Task AddDMPardon(CommandContext commandContext,
-            [Description("Target member")] DiscordMember targetMember)
-        {
-            if (Settings.KOSTYL.IgnoreDMList.Contains(targetMember.Id))
-            {
-                Settings.KOSTYL.IgnoreDMList.Remove(targetMember.Id);
-            }
-            else
-            {
-                await commandContext.RespondAsync("No such person in ignore list");
-                return;
-            }
-
-            SettingsLoader loader = new SettingsLoader();
-            loader.SaveToFile(Settings.KOSTYL);
-
-            await commandContext.RespondAsync($"Removed {targetMember} from blacklist.");
-        }
-
         [Command("mute"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Mute specified user")]
         public async Task MuteUser(CommandContext commandContext,
             [Description("User which should be muted")] DiscordMember discordMember,
