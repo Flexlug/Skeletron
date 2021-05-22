@@ -396,28 +396,28 @@ namespace WAV_Bot_DSharp.Converters
             if (score.play_mode == 3)
             {
                 embedMessage.AppendLine($"▸ {score.score} [{score.count_300} {osuEmoji.Hit300Emoji()}, {score.count_katu} {osuEmoji.Hit200Emoji()}, {score.count_100} {osuEmoji.Hit100Emoji()}, {score.count_50} {osuEmoji.Hit50Emoji()}, {score.count_miss} {osuEmoji.MissEmoji()}]");
-                embed.AddField($"New recent score osu!mania", embedMessage.ToString());
+                embed.AddField($"Score in osu!mania", embedMessage.ToString());
             }
 
             // ctb
             if (score.play_mode == 2)
             {
                 embedMessage.AppendLine($"▸ {score.score} [{score.count_300} {osuEmoji.Hit300Emoji()}, {score.count_katu} {osuEmoji.Hit200Emoji()}, {score.count_100} {osuEmoji.Hit100Emoji()}, {score.count_50} {osuEmoji.Hit50Emoji()}, {score.count_miss} {osuEmoji.MissEmoji()}]");
-                embed.AddField($"New recent score osu!ctb", embedMessage.ToString());
+                embed.AddField($"Score in score osu!ctb", embedMessage.ToString());
             }
 
             // taiko
             if (score.play_mode == 1)
             {
                 embedMessage.AppendLine($"▸ {score.score} [{score.count_300} {osuEmoji.Hit300Emoji()}, {score.count_katu} {osuEmoji.Hit200Emoji()}, {score.count_100} {osuEmoji.Hit100Emoji()}, {score.count_50} {osuEmoji.Hit50Emoji()}, {score.count_miss} {osuEmoji.MissEmoji()}]");
-                embed.AddField($"New recent score osu!taiko", embedMessage.ToString());
+                embed.AddField($"Score in osu!taiko", embedMessage.ToString());
             }
 
             //std
             if (score.play_mode == 0)
             {
                 embedMessage.AppendLine($"▸ {score.score} [{score.count_300} {osuEmoji.Hit300Emoji()}, {score.count_100} {osuEmoji.Hit100Emoji()}, {score.count_50} {osuEmoji.Hit50Emoji()}, {score.count_miss} {osuEmoji.MissEmoji()}]");
-                embed.AddField($"New recent score osu!standard", embedMessage.ToString());
+                embed.AddField($"Score in osu!standard", embedMessage.ToString());
             }
 
             embed.WithFooter($"Played at: {score.time}");
@@ -447,28 +447,28 @@ namespace WAV_Bot_DSharp.Converters
             if (score.mode_int == 3)    
             {
                 embedMessage.AppendLine($"▸ {score.score} [{score.statistics.count_300} {osuEmoji.Hit300Emoji()}, {score.statistics.count_katu} {osuEmoji.Hit200Emoji()}, {score.statistics.count_100} {osuEmoji.Hit100Emoji()}, {score.statistics.count_50} {osuEmoji.Hit50Emoji()}, {score.statistics.count_miss} {osuEmoji.MissEmoji()}]");
-                embed.AddField($"New recent score osu!mania", embedMessage.ToString());
+                embed.AddField($"Score in osu!mania", embedMessage.ToString());
             }
 
             // ctb
             if (score.mode_int == 2)
             {
                 embedMessage.AppendLine($"▸ {score.score} [{score.statistics.count_300} {osuEmoji.Hit300Emoji()}, {score.statistics.count_katu} {osuEmoji.Hit200Emoji()}, {score.statistics.count_100} {osuEmoji.Hit100Emoji()}, {score.statistics.count_50} {osuEmoji.Hit50Emoji()}, {score.statistics.count_miss} {osuEmoji.MissEmoji()}]");
-                embed.AddField($"New recent score osu!ctb", embedMessage.ToString());
+                embed.AddField($"Score in osu!ctb", embedMessage.ToString());
             }
 
             // taiko
             if (score.mode_int == 1)
             {
                 embedMessage.AppendLine($"▸ {score.score} [{score.statistics.count_300} {osuEmoji.Hit300Emoji()}, {score.statistics.count_katu} {osuEmoji.Hit200Emoji()}, {score.statistics.count_100} {osuEmoji.Hit100Emoji()}, {score.statistics.count_50} {osuEmoji.Hit50Emoji()}, {score.statistics.count_miss} {osuEmoji.MissEmoji()}]");
-                embed.AddField($"New recent score osu!taiko", embedMessage.ToString());
+                embed.AddField($"Score in score osu!taiko", embedMessage.ToString());
             }
 
             //std
             if (score.mode_int == 0)
             {
                 embedMessage.AppendLine($"▸ {score.score} [{score.statistics.count_300} {osuEmoji.Hit300Emoji()}, {score.statistics.count_100} {osuEmoji.Hit100Emoji()}, {score.statistics.count_50} {osuEmoji.Hit50Emoji()}, {score.statistics.count_miss} {osuEmoji.MissEmoji()}]");
-                embed.AddField($"New recent score osu!standard", embedMessage.ToString());
+                embed.AddField($"Score in osu!standard", embedMessage.ToString());
             }
 
             embed.WithFooter($"Played at: {score.created_at}");

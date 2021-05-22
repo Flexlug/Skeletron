@@ -23,7 +23,7 @@ namespace WAV_Bot_DSharp.Services
                 // Define the cluster node URLs (required)
                 Urls = new[]
                 {
-                    "192.168.2.72:8080"
+                    "http://192.168.2.71:8080"
                 },
 
                 // Define a default database (optional)

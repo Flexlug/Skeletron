@@ -27,7 +27,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             this.logger = logger;
 
-            timer = new Timer(1000);
+            timer = new Timer(5000);
             timer.Elapsed += Timer_Elapsed;
 
             logger.LogInformation("ShedulerService started");

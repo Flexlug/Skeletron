@@ -261,14 +261,23 @@ namespace WAV_Bot_DSharp.Commands
         public async Task LastRecent(CommandContext commandContext,
             params string[] args)
         {
+            if (!(commandContext.Channel.Name.Contains("-bot") || commandContext.Channel.Name.Contains("dev-announce")))
+            {
+                await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
+                return;
+            }
+
             ulong discordId = commandContext.Member.Id;
 
             if (wavMembers.GetMember(discordId) is null)
-                wavMembers.CreateMember(discordId);
+            {
+                wavMembers.AddMember(discordId);
+                await commandContext.RespondAsync($"Не удалось найти ваш osu! профиль. Добавьте свой профиль через команду `osuset`");
+            }
 
             string choosedServer = args.FirstOrDefault() ?? "-bancho";
 
-            WAVMemberOsuProfileInfo userInfo = wavMembers.GetOsuProfileInfo(discordId, choosedServer);
+            WAVMemberOsuProfileInfo userInfo = wavMembers.GetOsuProfileInfo(discordId, choosedServer.Trim('-'));
             if (userInfo is null)
             {
                 await commandContext.RespondAsync($"Не удалось найти ваш osu! профиль сервера `{choosedServer}`. Добавьте свой профиль через команду `osuset`");
@@ -312,7 +321,7 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        [Command("osuset-manual"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
+        [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
         public async Task OsuSet(CommandContext commandContext,
             [Description("Пользователь WAV сервера")] DiscordMember member,
             [Description("Никнейм osu! профиля")] string nickname,
@@ -334,8 +343,22 @@ namespace WAV_Bot_DSharp.Commands
         {
             ulong discordId = user.Id;
 
+            WAVMember member = null;
+
             if (wavMembers.GetMember(discordId) is null)
-                wavMembers.CreateMember(discordId);
+                member = new WAVMember(discordId);
+
+            if (!(commandContext.Channel.Name.Contains("-bot") || commandContext.Channel.Name.Contains("dev-announce")))
+            {
+                await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(nickname))
+            {
+                await commandContext.RespondAsync("Вы ввели пустой никнейм.");
+                return;
+            }
 
             int osu_id = 0;
             string serverName = string.Empty, 
@@ -359,7 +382,7 @@ namespace WAV_Bot_DSharp.Commands
 
                 case "-bancho":
                     User buser = null;
-                    if (api.TryGetUser(nickname, ref buser))
+                    if (!api.TryGetUser(nickname, ref buser))
                     {
                         await commandContext.RespondAsync("Не удалось найти такого пользователя на Bancho.");
                         return;
@@ -376,8 +399,9 @@ namespace WAV_Bot_DSharp.Commands
 
             try
             {
+                member.OsuServers.Add();
                 wavMembers.AddOsuServerInfo(discordId, serverName, osu_id);
-                await commandContext .RespondAsync($"Вы успешно добавили информацию о своём профиле `{osu_nickname}` на сервере `{serverName}");
+                await commandContext .RespondAsync($"Вы успешно добавили информацию о своём профиле `{osu_nickname}` на сервере `{serverName}`");
             }
             catch (NullReferenceException)
             {

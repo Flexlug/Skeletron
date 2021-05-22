@@ -10,6 +10,15 @@ namespace WAV_Bot_DSharp.Services.Models
     /// </summary>
     public class WAVMember 
     { 
+        public WAVMember(ulong uid)
+        {
+            Uid = uid;
+            OsuServers = new List<WAVMemberOsuProfileInfo>();
+            CompitionInfo = new WAVMemberCompitInfo();
+            LastActivity = DateTime.Now;
+            ActivityPoints = 0;
+        }
+
         /// <summary>
         /// Uid пользователя
         /// </summary>
@@ -33,6 +42,6 @@ namespace WAV_Bot_DSharp.Services.Models
         /// <summary>
         /// Количество очков активности
         /// </summary>
-        public int ActivityPoints { get; set; } = 0;
+        public int ActivityPoints { get; set; }
     }
 }

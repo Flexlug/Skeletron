@@ -95,6 +95,8 @@ namespace WAV_Bot_DSharp.Services
                                           .FirstOrDefault(x => x.Uid == uid);
 
                 member.CompitionInfo.ProvidedScore = true;
+
+                session.SaveChanges();
             }
         }
 
@@ -119,16 +121,8 @@ namespace WAV_Bot_DSharp.Services
         /// Добавить участника в БД
         /// </summary>
         /// <param name="uid">Discord id участника, добавляемого в БД</param>
-        public void CreateMember(ulong uid)
+        public void AddMember(WAVMember member)
         {
-            WAVMember member = new WAVMember()
-            {
-                Uid = uid,
-                CompitionInfo = new WAVMemberCompitInfo(),
-                LastActivity = DateTime.Now,
-                OsuServers = new List<WAVMemberOsuProfileInfo>()
-            };
-
             using (IDocumentSession session = store.OpenSession())
             {
                 session.Store(member);
@@ -140,7 +134,8 @@ namespace WAV_Bot_DSharp.Services
         /// Добавить или обновить данные о сервере, на котором играет участник
         /// </summary>
         /// <param name="uid">Uid участника</param>
-        /// <param name=""></param>
+        /// <param name="server">Название сервера</param>
+        /// <param name="id">ID пользователя на сервере</param>
         public void AddOsuServerInfo(ulong uid, string server, int id)
         {
             using (IDocumentSession session = store.OpenSession())
@@ -159,14 +154,10 @@ namespace WAV_Bot_DSharp.Services
                 }
                 else
                 {
-                    member.OsuServers.Add(new WAVMemberOsuProfileInfo()
-                    {
-                        Server = server,
-                        Id = id,
-                        BestLast = DateTime.Now,
-                        RecentLast = DateTime.Now
-                    });
+                    member.OsuServers.Add(new WAVMemberOsuProfileInfo(id, server));
                 }
+
+                session.SaveChanges();
             }
         }
 
@@ -184,7 +175,7 @@ namespace WAV_Bot_DSharp.Services
                                           .Include(x => x.OsuServers)
                                           .FirstOrDefault(x => x.Uid == uid);
 
-                return member.OsuServers.FirstOrDefault(x => x.Server == server);
+                return member.OsuServers?.FirstOrDefault(x => x.Server == server);
             }
         }
     }

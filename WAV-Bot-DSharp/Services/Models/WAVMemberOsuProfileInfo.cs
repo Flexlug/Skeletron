@@ -11,6 +11,14 @@ namespace WAV_Bot_DSharp.Services.Models
     /// </summary>
     public class WAVMemberOsuProfileInfo
     {
+        public WAVMemberOsuProfileInfo(int id, string server)
+        {
+            Id = id;
+            Server = server;
+            RecentLast = DateTime.Now;
+            BestLast = DateTime.Now;
+        }
+
         /// <summary>
         /// Название osu сервера
         /// </summary>

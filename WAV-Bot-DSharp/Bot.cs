@@ -23,6 +23,7 @@ using WAV_Bot_DSharp.Services.Interfaces;
 using Serilog;
 using Microsoft.Extensions.Logging;
 using WAV_Bot_DSharp.SlashCommands;
+using WAV_Bot_DSharp.Services;
 
 namespace WAV_Bot_DSharp
 {
@@ -44,6 +45,8 @@ namespace WAV_Bot_DSharp
 
         public Bot(Settings settings)
         {
+            Settings = settings;
+
             logFactory = new LoggerFactory().AddSerilog();
             logger = logFactory.CreateLogger<Bot>();
 
@@ -88,6 +91,8 @@ namespace WAV_Bot_DSharp
                 .AddSingleton(new GatariApi())
                 .AddSingleton<ShedulerService>()
                 .AddSingleton<IRecognizerService, RecognizerService>()
+                .AddSingleton<DocumentStoreProvider>()
+                .AddSingleton<WAVMembersProvider>()
                 .BuildServiceProvider();
         }
 
