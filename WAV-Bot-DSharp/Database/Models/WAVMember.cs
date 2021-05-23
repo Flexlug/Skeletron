@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace WAV_Bot_DSharp.Services.Models
+namespace WAV_Bot_DSharp.Database.Models
 {
     /// <summary>
     /// Представляет собой структуру, в виде которой хранится информация о пользователях в БД

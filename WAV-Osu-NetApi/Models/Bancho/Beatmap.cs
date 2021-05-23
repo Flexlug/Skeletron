@@ -1,7 +1,6 @@
 using System;
-using WAV_Osu_NetApi.Bancho.Models.Enums;
 
-namespace WAV_Osu_NetApi.Bancho.Models
+namespace WAV_Osu_NetApi.Models.Bancho
 {
     public class Beatmap : BeatmapCompact
     { 

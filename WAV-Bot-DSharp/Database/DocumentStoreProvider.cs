@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Raven.Client.Documents;
 
-namespace WAV_Bot_DSharp.Services
+namespace WAV_Bot_DSharp.Database
 {
     public class DocumentStoreProvider
     {

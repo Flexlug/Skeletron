@@ -31,7 +31,7 @@ namespace WAV_Bot_DSharp.Utils
         public static IEnumerable<T> GetPage<T>(this IRavenQueryable<T> queryable, int page)
         {
             return queryable
-            .Skip((page - 1) * PAGE_SIZE)
+            .Skip(page * PAGE_SIZE)
                        .Take(PAGE_SIZE)
                        .ToArray();
         }

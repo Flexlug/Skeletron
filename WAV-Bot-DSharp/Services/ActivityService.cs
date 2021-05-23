@@ -15,6 +15,7 @@
 
 //using Microsoft.EntityFrameworkCore;
 //using Microsoft.Extensions.Logging;
+//using WAV_Bot_DSharp.Database.Models;
 
 //namespace WAV_Bot_DSharp.Services.Entities
 //{

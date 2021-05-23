@@ -7,22 +7,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using Microsoft.Extensions.Logging;
+
 using DSharpPlus;
 using DSharpPlus.Entities;
 
 using WAV_Bot_DSharp.Threading;
 using WAV_Bot_DSharp.Configurations;
 using WAV_Bot_DSharp.Services.Interfaces;
+using WAV_Bot_DSharp.Converters;
 
 using WAV_Osu_Recognizer;
 
 using WAV_Osu_NetApi;
-using WAV_Osu_NetApi.Bancho.Models;
-using WAV_Osu_NetApi.Gatari.Models;
-using WAV_Osu_NetApi.Gatari.Models.Enums;
-using WAV_Bot_DSharp.Converters;
-
-using Microsoft.Extensions.Logging;
+using WAV_Osu_NetApi.Models.Bancho;
+using WAV_Osu_NetApi.Models.Gatari;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -41,7 +40,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         private Dictionary<int, DateTime> ignoreList;
         private OsuEmoji emoji;
-        private OsuUtils utils;
+        private OsuEmbed utils;
         private ShedulerService sheduler;
         private BackgroundQueue queue;
 
@@ -49,7 +48,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                                  Settings settings, 
                                  ILogger<RecognizerService> logger, 
                                  OsuEmoji emoji, 
-                                 OsuUtils utils,
+                                 OsuEmbed utils,
                                  ShedulerService sheduler)
         {
             this.client = client;
@@ -201,7 +200,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
 
             logger.LogDebug($"Searching for: {recedText}");
-            List<Beatmapset> bmsl = api.Search(recedText, WAV_Osu_NetApi.Bancho.QuerryParams.MapType.Any);
+            List<Beatmapset> bmsl = api.Search(recedText, MapType.Any);
 
 
             // Get map diff

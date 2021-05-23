@@ -6,140 +6,23 @@ using System.Collections.Generic;
 using DSharpPlus;
 using DSharpPlus.Entities;
 
-using WAV_Osu_NetApi.Bancho.Models.Enums;
-using WAV_Osu_NetApi.Gatari.Models.Enums;
-using WAV_Osu_NetApi.Gatari.Models;
-using WAV_Osu_NetApi.Bancho.Models;
-
-using Microsoft.Extensions.Logging;
+using WAV_Osu_NetApi.Models.Bancho;
+using WAV_Osu_NetApi.Models.Gatari;
 
 namespace WAV_Bot_DSharp.Converters
 {
     /// <summary>
     /// Class with Osu utils
     /// </summary>
-    public class OsuUtils
+    public class OsuEmbed
     {
         private OsuEmoji osuEmoji { get; set; }
+        private OsuEnums osuEnums { get; set; }
 
-        private Regex banchoBMandBMSUrl { get; set; }
-        private Regex banchoUserId { get; set; }
-        private Regex gatariUserId { get; set; }
-        private Regex gatariBMSUrl { get; set; }
-        private Regex gatariBMUrl { get; set; }
-
-        private ILogger logger { get; set; }
-
-        public OsuUtils(OsuEmoji emoji, ILogger<OsuUtils> logger)
+        public OsuEmbed(OsuEmoji emoji, OsuEnums enums)
         {
             this.osuEmoji = emoji;
-            this.banchoBMandBMSUrl = new Regex(@"http[s]?:\/\/osu.ppy.sh\/beatmapsets\/([0-9]*)#osu\/([0-9]*)");
-            this.gatariBMSUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/s\/([0-9]*)");
-            this.gatariBMUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/b\/([0-9]*)");
-            this.banchoUserId = new Regex(@"http[s]?:\/\/osu.ppy.sh\/users\/([0-9]*)");
-            this.gatariUserId = new Regex(@"http[s]?:\/\/osu.gatari.pw\/u\/([0-9]*)");
-
-            this.logger = logger;
-        }
-
-        /// <summary>
-        /// Get beatmapset and beatmap id from bancho url
-        /// </summary>
-        /// <param name="msg">Message, which contains url</param>
-        /// <returns>Tuple, where first element is beatmapset id and second element - beatmap id</returns>
-        public Tuple<int, int> GetBMandBMSIdFromBanchoUrl(string msg)
-        {
-            Match match = banchoBMandBMSUrl.Match(msg);
-
-            if (match is null || match.Groups.Count != 3)
-                return null;
-
-            int bms_id, bm_id;
-
-            if (int.TryParse(match.Groups[1].Value, out bms_id) && int.TryParse(match.Groups[2].Value, out bm_id))
-                return Tuple.Create(bms_id, bm_id);
-
-            return null;
-        }
-
-        /// <summary>
-        /// Get beatmapset id from gatari url
-        /// </summary>
-        /// <param name="msg">Message which contains url</param>
-        /// <returns>Id of beatmapset</returns>
-        public int? GetBMSIdFromGatariUrl(string msg)
-        {
-            Match match = gatariBMSUrl.Match(msg);
-            
-            if (match is null || match.Groups.Count != 2)
-                return null;
-
-            int bms_id;
-
-            if (int.TryParse(match.Groups[1].Value, out bms_id))
-                return bms_id;
-
-            return null;
-        }
-
-        /// <summary>
-        /// Get beatmapset and beatmap id from gatari url
-        /// </summary>
-        /// <param name="msg">Message, which contains url</param>
-        /// <returns>Tuple, where first element is beatmapset id and second element - beatmap id</returns>
-        public int? GetBMIdFromGatariUrl(string msg)
-        {
-            Match match = gatariBMUrl.Match(msg);
-
-            if (match is null || match.Groups.Count != 2)
-                return null;
-
-            int bm_id;
-
-            if (int.TryParse(match.Groups[1].Value, out bm_id))
-                return bm_id;
-
-            return null;
-        }
-
-        /// <summary>
-        /// Get user id from bancho url
-        /// </summary>
-        /// <param name="msg">Message, which contains bancho url</param>
-        /// <returns>User id</returns>
-        public int? GetUserIdFromBanchoUrl(string msg)
-        {
-            Match match = banchoUserId.Match(msg);
-
-            if (match is null || match.Groups.Count != 2)
-                return null;
-
-            int user_id;
-
-            if (int.TryParse(match.Groups[1].Value, out user_id))
-                return user_id;
-
-            return null;
-        }
-
-        /// <summary>
-        /// Get user id from gatari url
-        /// </summary>
-        /// <param name="msg">Message, which contains gatari url</param>
-        /// <returns>User id</returns>
-        public int? GetUserIdFromGatariUrl(string msg)
-        {
-            Match match = gatariUserId.Match(msg);
-
-            if (match is null || match.Groups.Count != 2)
-                return null;
-
-            int user_id;
-
-            if (int.TryParse(match.Groups[1].Value, out user_id))
-                return user_id;
-
-            return null;
+            this.osuEnums = enums;
         }
 
         /// <summary>
@@ -178,6 +61,12 @@ namespace WAV_Bot_DSharp.Converters
             return embedBuilder.Build();
         }
 
+        /// <summary>
+        /// Получить Discord embed на основе bancho профиля
+        /// </summary>
+        /// <param name="user">Bancho профиль</param>
+        /// <param name="scores">Скоры</param>
+        /// <returns></returns>
         public DiscordEmbed UserToEmbed(User user, List<Score> scores = null)
         {
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
@@ -191,10 +80,11 @@ namespace WAV_Bot_DSharp.Converters
             sb.AppendLine($"**Playcount:** `{user.statistics.play_count}` (`{(Math.Round((double)user.statistics.play_time / 3600))}` hrs)");
             sb.AppendLine($"**Ranks**: {osuEmoji.RankingEmoji("XH")}`{user.statistics.grade_counts.ssh}` {osuEmoji.RankingEmoji("X")}`{user.statistics.grade_counts.ss}` {osuEmoji.RankingEmoji("SH")}`{user.statistics.grade_counts.sh}` {osuEmoji.RankingEmoji("S")}`{user.statistics.grade_counts.s}` {osuEmoji.RankingEmoji("A")}`{user.statistics.grade_counts.a}`");
             sb.AppendLine($"**Playstyle:** {string.Join(", ", user.playstyle)}\n");
-            sb.AppendLine("Top 5 scores:");
 
             if (scores != null && scores?.Count != 0)
             {
+                sb.AppendLine($"Top {scores.Count} scores:");
+
                 double avg_pp = 0;
                 for (int i = 0; i < scores.Count; i++)
                 {
@@ -209,7 +99,7 @@ namespace WAV_Bot_DSharp.Converters
 
                     avg_pp += s.pp ?? 0;
                 }
-                sb.AppendLine($"\nAvg: `{Math.Round(avg_pp / 5, 2)} PP`");
+                sb.AppendLine($"\nAvg: `{Math.Round(avg_pp / scores.Count, 2)} PP`");
             }
             embedBuilder.WithTitle(user.username)
                         .WithUrl($"https://osu.ppy.sh/users/{user.id}")
@@ -219,6 +109,12 @@ namespace WAV_Bot_DSharp.Converters
             return embedBuilder.Build(); ;
         }
 
+        /// <summary>
+        /// Получить Discord embed на основе gatari профиля
+        /// </summary>
+        /// <param name="user">Gatari профиль</param>
+        /// <param name="scores">Скоры</param>
+        /// <returns></returns>
         public DiscordEmbed UserToEmbed(GUser user, GStatistics stats, List<GScore> scores = null)
         {
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
@@ -260,112 +156,6 @@ namespace WAV_Bot_DSharp.Converters
             return embedBuilder.Build(); ;
         }
 
-        /// <summary>
-        /// Translate osu mods to string
-        /// </summary>
-        /// <param name="mods">Osu mods</param>
-        /// <returns></returns>
-        public string ModsToString(Mods mods)
-        {
-            StringBuilder sb = new StringBuilder(20);
-
-            if (mods is Mods.None)
-                return " NM";
-
-            if (mods.HasFlag(Mods.NoFail))
-                sb.Append(" NF");
-
-            if (mods.HasFlag(Mods.Easy))
-                sb.Append(" EZ");
-
-            if (mods.HasFlag(Mods.TouchDevice))
-                sb.Append(" TD");
-
-            if (mods.HasFlag(Mods.Hidden))
-                sb.Append(" HD");
-
-            if (mods.HasFlag(Mods.HardRock))
-                sb.Append(" HR");
-
-            if (mods.HasFlag(Mods.SuddenDeath))
-                sb.Append(" SD");
-
-            if (mods.HasFlag(Mods.DoubleTime))
-                sb.Append(" DT");
-
-            if (mods.HasFlag(Mods.Relax))
-                sb.Append(" RX");
-
-            if (mods.HasFlag(Mods.HalfTime))
-                sb.Append(" HT");
-
-            if (mods.HasFlag(Mods.Nightcore))
-                sb.Append(" NC");
-
-            if (mods.HasFlag(Mods.Flashlight))
-                sb.Append(" FL");
-
-            if (mods.HasFlag(Mods.Autoplay))
-                sb.Append(" Auto");
-
-            if (mods.HasFlag(Mods.Relax2))
-                sb.Append(" AP");
-
-            if (mods.HasFlag(Mods.Perfect))
-                sb.Append(" PF");
-
-            if (mods.HasFlag(Mods.Key1))
-                sb.Append(" K1");
-
-            if (mods.HasFlag(Mods.Key2))
-                sb.Append(" K2");
-
-            if (mods.HasFlag(Mods.Key3))
-                sb.Append(" K3");
-
-            if (mods.HasFlag(Mods.Key4))
-                sb.Append(" K4");
-
-            if (mods.HasFlag(Mods.Key5))
-                sb.Append(" K5");
-
-            if (mods.HasFlag(Mods.Key6))
-                sb.Append(" K6");
-
-            if (mods.HasFlag(Mods.Key7))
-                sb.Append(" K7");
-
-            if (mods.HasFlag(Mods.Key8))
-                sb.Append(" K8");
-
-            if (mods.HasFlag(Mods.Key9))
-                sb.Append(" K9");
-
-            if (mods.HasFlag(Mods.FadeIn))
-                sb.Append(" FI");
-
-            if (mods.HasFlag(Mods.Cinema))
-                sb.Append(" Cinema");
-
-            if (mods.HasFlag(Mods.Random))
-                sb.Append(" Random");
-
-            if (mods.HasFlag(Mods.Target))
-                sb.Append(" Target Practice");
-
-            if (mods.HasFlag(Mods.KeyCoop))
-                sb.Append(" KeyCoop");
-
-            if (mods.HasFlag(Mods.ScoreV2))
-                sb.Append(" ScoreV2");
-
-            if (mods.HasFlag(Mods.Mirror))
-                sb.Append(" Mirror");
-
-            return sb.ToString();
-        }
-
-
 
         /// <summary>
         /// Get embed from gatari score and user information
@@ -388,7 +178,7 @@ namespace WAV_Bot_DSharp.Converters
 
             StringBuilder embedMessage = new StringBuilder();
             embedMessage.AppendLine($"[{osuEmoji.RankStatusEmoji(score.beatmap.ranked)} {score.beatmap.song_name} by {score.beatmap.creator}](https://osu.gatari.pw/s/{score.beatmap.beatmapset_id}#osu/{score.beatmap.beatmap_id})");
-            embedMessage.AppendLine($"▸ **Difficulty**: {score.beatmap.difficulty:##0.00}★ ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {ModsToString(score.mods)}");
+            embedMessage.AppendLine($"▸ **Difficulty**: {score.beatmap.difficulty:##0.00}★ ▸ **Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)} ▸ **BPM**: {score.beatmap.bpm} ▸ **Mods**: {osuEnums.ModsToString(score.mods)}");
             embedMessage.AppendLine($"▸ {rankEmoji} ▸ **{score.accuracy:##0.00}%** ▸ **{$"{(double)score.pp:##0.00}"}** {osuEmoji.PPEmoji()} ▸ **{score.max_combo}x/{score.beatmap.fc}x**");
 
 
@@ -425,6 +215,12 @@ namespace WAV_Bot_DSharp.Converters
             return embed.Build();
         }
 
+        /// <summary>
+        /// Получить Discord embed на основе скора пользователя
+        /// </summary>
+        /// <param name="score">Скор с Bancho</param>
+        /// <param name="user">Пользователь, поставивший данный скор</param>
+        /// <returns></returns>
         public DiscordEmbed BanchoScoreToEmbed(Score score, User user)
         {
             DiscordEmoji rankEmoji = osuEmoji.RankingEmoji(score.rank);
@@ -477,10 +273,9 @@ namespace WAV_Bot_DSharp.Converters
         }
 
         /// <summary>
-        /// Check, if beatmap is closed on setted percetange
+        /// Проверяет, насколько далеко была пройдена карта
         /// </summary>
-        /// <param name="score">Bancho score</param>
-        /// <param name="percentage">Required percentage</param>
+        /// <param name="score">Скор с Bancho</param>
         /// <returns></returns>
         public double FailedScoreProgress(Score score)
         {
@@ -489,17 +284,14 @@ namespace WAV_Bot_DSharp.Converters
 
             double progress = (double)total_hits / expected_hits;
 
-            logger.LogDebug($"Failed progress: {progress}");
-
             return progress;
         }
 
         /// <summary>
-        /// Check, if beatmap is closed on setted percetange
+        /// Проверяет, насколько далеко была пройдена карта
         /// </summary>
-        /// <param name="score">Gatari score</param>
-        /// <param name="bm">Beatmap</param>
-        /// <param name="percentage">Required percentage</param>
+        /// <param name="score">Скор с Gatari</param>
+        /// <param name="bm">Карта, на которой был поставлен скор</param>
         /// <returns></returns>
         public double FailedScoreProgress(GScore score, Beatmap bm)
         {
@@ -507,8 +299,6 @@ namespace WAV_Bot_DSharp.Converters
             int expected_hits = bm.count_circles + bm.count_sliders + bm.count_spinners;
 
             double progress = (double)total_hits / expected_hits;
-
-            logger.LogDebug($"Failed progress: {progress}");
 
             return progress;
         }

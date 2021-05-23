@@ -7,8 +7,8 @@ using RestSharp;
 
 using Newtonsoft.Json;
 
-using WAV_Osu_NetApi.Gatari.Models;
-using WAV_Osu_NetApi.Gatari.Models.Responses;
+using WAV_Osu_NetApi.Models.Gatari;
+using WAV_Osu_NetApi.Models.Gatari.Responses;
 
 namespace WAV_Osu_NetApi
 {

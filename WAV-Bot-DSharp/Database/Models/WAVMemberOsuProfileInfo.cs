@@ -1,17 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
-namespace WAV_Bot_DSharp.Services.Models
+using WAV_Osu_NetApi.Models;
+
+namespace WAV_Bot_DSharp.Database.Models
 {
     /// <summary>
     /// Информация о участнике WAV на конкретном osu сервере
     /// </summary>
     public class WAVMemberOsuProfileInfo
     {
-        public WAVMemberOsuProfileInfo(int id, string server)
+        public WAVMemberOsuProfileInfo(int id, OsuServer server)
         {
             Id = id;
             Server = server;
@@ -22,7 +24,7 @@ namespace WAV_Bot_DSharp.Services.Models
         /// <summary>
         /// Название osu сервера
         /// </summary>
-        public string Server { get; set; }
+        public OsuServer Server { get; set; }
 
         /// <summary>
         /// ID пользователя

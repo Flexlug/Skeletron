@@ -15,15 +15,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using WAV_Bot_DSharp.Configurations;
 using WAV_Bot_DSharp.Converters;
+using WAV_Bot_DSharp.Configurations;
+using WAV_Bot_DSharp.Database;
+using WAV_Bot_DSharp.Services.Entities;
 
 using WAV_Osu_NetApi;
-using WAV_Osu_NetApi.Bancho.Models;
-using WAV_Osu_NetApi.Gatari.Models;
-using WAV_Bot_DSharp.Services.Entities;
-using WAV_Bot_DSharp.Services;
-using WAV_Bot_DSharp.Services.Models;
+using WAV_Bot_DSharp.Database.Models;
+using WAV_Bot_DSharp.Database.Interfaces;
+using WAV_Osu_NetApi.Models.Bancho;
+using WAV_Osu_NetApi.Models.Gatari;
+using WAV_Osu_NetApi.Models;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -35,10 +37,14 @@ namespace WAV_Bot_DSharp.Commands
         private DiscordGuild guild;
 
         private WebClient webClient;
-        private OsuUtils utils;
-        private OsuEmoji emoji;
 
-        private WAVMembersProvider wavMembers;
+        private OsuEmbed osuEmbeds;
+        private OsuEmoji osuEmoji;
+        private OsuRegex osuRegex;
+        private OsuEnums osuEnums;
+
+        private IWAVMembersProvider wavMembers;
+        private IWAVCompitProvider wavCompit;
 
         private BanchoApi api;
         private GatariApi gapi;
@@ -49,24 +55,33 @@ namespace WAV_Bot_DSharp.Commands
 
         public OsuCommands(ILogger<OsuCommands> logger,
                            DiscordClient client,
-                           OsuUtils utils,
+                           OsuEmbed osuEmbeds,
+                           OsuEmoji osuEmoji,
+                           OsuRegex osuRegex,
+                           OsuEnums osuEnums,
                            BanchoApi api,
                            GatariApi gapi,
-                           OsuEmoji emoji,
-                           WAVMembersProvider wavMembers)
+                           IWAVMembersProvider wavMembers,
+                           IWAVCompitProvider wavProvider)
         {
             ModuleName = "Osu commands";
 
             this.logger = logger;
             this.wavScoresChannel = client.GetChannelAsync(829466881353711647).Result;
             this.webClient = new WebClient();
+
             this.wavMembers = wavMembers;
+            this.wavCompit = wavProvider;
 
             this.guild = client.GetGuildAsync(WAV_UID).Result;
-            this.utils = utils;
+
+            this.osuEmbeds = osuEmbeds;
+            this.osuEmoji = osuEmoji;
+            this.osuRegex = osuRegex;
+            this.osuEnums = osuEnums;
+
             this.api = api;
             this.gapi = gapi;
-            this.emoji = emoji;
 
             logger.LogInformation("OsuCommands loaded");
 
@@ -86,7 +101,7 @@ namespace WAV_Bot_DSharp.Commands
                 return;
 
             // Check, if it is map url from bancho
-            Tuple<int, int> BMSandBMid = utils.GetBMandBMSIdFromBanchoUrl(e.Message.Content);
+            Tuple<int, int> BMSandBMid = osuRegex.GetBMandBMSIdFromBanchoUrl(e.Message.Content);
             if (!(BMSandBMid is null))
             {
                 int bms_id = BMSandBMid.Item1,
@@ -98,7 +113,7 @@ namespace WAV_Bot_DSharp.Commands
 
                 if (!(bm is null || bms is null))
                 {
-                    DiscordEmbed embed = utils.BeatmapToEmbed(bm, bms, gbm);
+                    DiscordEmbed embed = osuEmbeds.BeatmapToEmbed(bm, bms, gbm);
                     await e.Message.RespondAsync(embed: embed);
                 }
 
@@ -106,7 +121,7 @@ namespace WAV_Bot_DSharp.Commands
             }
 
             // Check, if it is beatmapset url from gatari
-            int? BMSid = utils.GetBMSIdFromGatariUrl(e.Message.Content);
+            int? BMSid = osuRegex.GetBMSIdFromGatariUrl(e.Message.Content);
             if (!(BMSid is null))
             {
                 int bms_id = (int)BMSid;
@@ -120,7 +135,7 @@ namespace WAV_Bot_DSharp.Commands
 
                 if (!(bm is null || bms is null))
                 {
-                    DiscordEmbed embed = utils.BeatmapToEmbed(bm, bms, gbm);
+                    DiscordEmbed embed = osuEmbeds.BeatmapToEmbed(bm, bms, gbm);
                     await e.Message.RespondAsync(embed: embed);
                 }
 
@@ -128,7 +143,7 @@ namespace WAV_Bot_DSharp.Commands
             }
 
             // Check, if it is beatmap url from gatari
-            int? BMid = utils.GetBMIdFromGatariUrl(e.Message.Content);
+            int? BMid = osuRegex.GetBMIdFromGatariUrl(e.Message.Content);
             if (!(BMid is null))
             {
                 int bm_id = (int)BMid;
@@ -139,7 +154,7 @@ namespace WAV_Bot_DSharp.Commands
 
                 if (!(bm is null || bms is null))
                 {
-                    DiscordEmbed embed = utils.BeatmapToEmbed(bm, bms, gbm);
+                    DiscordEmbed embed = osuEmbeds.BeatmapToEmbed(bm, bms, gbm);
                     await e.Message.RespondAsync(embed: embed);
                 }
 
@@ -147,7 +162,7 @@ namespace WAV_Bot_DSharp.Commands
             }
 
             // Check, if it is user link from bancho
-            int? userId = utils.GetUserIdFromBanchoUrl(e.Message.Content);
+            int? userId = osuRegex.GetUserIdFromBanchoUrl(e.Message.Content);
             if (!(userId is null))
             {
                 int user_id = (int)userId;
@@ -160,7 +175,7 @@ namespace WAV_Bot_DSharp.Commands
 
                 if (!(scores is null) && scores.Count == 5)
                 {
-                    DiscordEmbed embed = utils.UserToEmbed(user, scores);
+                    DiscordEmbed embed = osuEmbeds.UserToEmbed(user, scores);
                     await e.Message.RespondAsync(embed: embed);
                 }
 
@@ -168,7 +183,7 @@ namespace WAV_Bot_DSharp.Commands
             }
 
             // Check, if it is user link from bancho
-            int? guserId = utils.GetUserIdFromGatariUrl(e.Message.Content);
+            int? guserId = osuRegex.GetUserIdFromGatariUrl(e.Message.Content);
             if (!(guserId is null))
             {
                 int guser_id = (int)guserId;
@@ -185,7 +200,7 @@ namespace WAV_Bot_DSharp.Commands
                 if (gstats is null)
                     return;
 
-                DiscordEmbed gembed = utils.UserToEmbed(guser, gstats, gscores);
+                DiscordEmbed gembed = osuEmbeds.UserToEmbed(guser, gstats, gscores);
                 await e.Message.RespondAsync(embed: gembed);
                 return;
             }
@@ -232,7 +247,7 @@ namespace WAV_Bot_DSharp.Commands
                     return;
                 }
 
-                DiscordEmbed gembed = utils.UserToEmbed(guser, gstats, gscores);
+                DiscordEmbed gembed = osuEmbeds.UserToEmbed(guser, gstats, gscores);
                 await commandContext.RespondAsync(embed: gembed);
                 return;
             }
@@ -252,7 +267,7 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            DiscordEmbed embed = utils.UserToEmbed(user, scores);
+            DiscordEmbed embed = osuEmbeds.UserToEmbed(user, scores);
             await commandContext.RespondAsync(embed: embed);
 
         }
@@ -269,15 +284,16 @@ namespace WAV_Bot_DSharp.Commands
 
             ulong discordId = commandContext.Member.Id;
 
-            if (wavMembers.GetMember(discordId) is null)
+            OsuServer? mbChoosedServer = osuEnums.StringToOsuServer(args.FirstOrDefault().TrimStart('-') ?? "bancho");
+            if (mbChoosedServer is null)
             {
-                wavMembers.AddMember(discordId);
-                await commandContext.RespondAsync($"Не удалось найти ваш osu! профиль. Добавьте свой профиль через команду `osuset`");
+                await commandContext.RespondAsync($"Указанный сервер не поддерживается.");
+                return;
             }
 
-            string choosedServer = args.FirstOrDefault() ?? "-bancho";
+            OsuServer choosedServer = (OsuServer)mbChoosedServer;
 
-            WAVMemberOsuProfileInfo userInfo = wavMembers.GetOsuProfileInfo(discordId, choosedServer.Trim('-'));
+            WAVMemberOsuProfileInfo userInfo = wavMembers.GetOsuProfileInfo(discordId, choosedServer);
             if (userInfo is null)
             {
                 await commandContext.RespondAsync($"Не удалось найти ваш osu! профиль сервера `{choosedServer}`. Добавьте свой профиль через команду `osuset`");
@@ -286,7 +302,7 @@ namespace WAV_Bot_DSharp.Commands
 
             switch (choosedServer)
             {
-                case "-gatari":                    
+                case OsuServer.Gatari:
                     GScore gscore = gapi.GetUserRecentScores(userInfo.Id, 0, 1, true).First();
 
                     GUser guser = null;
@@ -296,12 +312,12 @@ namespace WAV_Bot_DSharp.Commands
                         return;
                     }
 
-                    DiscordEmbed gscoreEmbed = utils.GatariScoreToEmbed(gscore, guser);
+                    DiscordEmbed gscoreEmbed = osuEmbeds.GatariScoreToEmbed(gscore, guser);
                     await commandContext.RespondAsync(embed: gscoreEmbed);
 
-                    break;
+                    return;
 
-                case "-bancho":
+                case OsuServer.Bancho:
                     Score score = api.GetUserRecentScores(userInfo.Id, true, 0, 1).First();
 
                     User user = null;
@@ -311,14 +327,12 @@ namespace WAV_Bot_DSharp.Commands
                         return;
                     }
 
-                    DiscordEmbed scoreEmbed = utils.BanchoScoreToEmbed(score, user);
+                    DiscordEmbed scoreEmbed = osuEmbeds.BanchoScoreToEmbed(score, user);
                     await commandContext.RespondAsync(embed: scoreEmbed);
-                    break;
-
-                default:
-                    await commandContext.RespondAsync($"Сервер `{choosedServer}` не поддерживается.");
-                    break;
+                    return;
             }
+
+            await commandContext.RespondAsync($"Указанный сервер не поддерживается.");
         }
 
         [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
@@ -361,14 +375,20 @@ namespace WAV_Bot_DSharp.Commands
             }
 
             int osu_id = 0;
-            string serverName = string.Empty, 
-                   osu_nickname = string.Empty;
+            string osu_nickname = string.Empty;
 
-            string choosedServer = args.FirstOrDefault() ?? "-bancho";
+            OsuServer? mbChoosedServer = osuEnums.StringToOsuServer(args.FirstOrDefault().TrimStart('-') ?? "bancho");
+            if (mbChoosedServer is null)
+            {
+                await commandContext.RespondAsync($"Указанный сервер не поддерживается.");
+                return;
+            }
+
+            OsuServer choosedServer = (OsuServer)mbChoosedServer;
 
             switch (choosedServer)
             {
-                case "-gatari":
+                case OsuServer.Gatari:
                     GUser guser = null;
                     if (!gapi.TryGetUser(nickname, ref guser))
                     {
@@ -376,11 +396,10 @@ namespace WAV_Bot_DSharp.Commands
                         return;
                     }
                     osu_nickname = guser.username;
-                    serverName = "gatari";
                     osu_id = guser.id;
                     break;
 
-                case "-bancho":
+                case OsuServer.Bancho:
                     User buser = null;
                     if (!api.TryGetUser(nickname, ref buser))
                     {
@@ -388,7 +407,6 @@ namespace WAV_Bot_DSharp.Commands
                         return;
                     }
                     osu_nickname = buser.username;
-                    serverName = "bancho";
                     osu_id = buser.id;
                     break;
 
@@ -399,9 +417,8 @@ namespace WAV_Bot_DSharp.Commands
 
             try
             {
-                member.OsuServers.Add();
-                wavMembers.AddOsuServerInfo(discordId, serverName, osu_id);
-                await commandContext .RespondAsync($"Вы успешно добавили информацию о своём профиле `{osu_nickname}` на сервере `{serverName}`");
+                wavMembers.AddOsuServerInfo(discordId, choosedServer, osu_id);
+                await commandContext .RespondAsync($"Вы успешно добавили информацию о своём профиле `{osu_nickname}` на сервере `{osuEnums.OsuServerToString(choosedServer)}`");
             }
             catch (NullReferenceException)
             {
@@ -416,7 +433,7 @@ namespace WAV_Bot_DSharp.Commands
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Id);
             logger.LogInformation($"DM {msg.Author}: {msg.Content} : {msg.Attachments.Count}");
 
-            WAVMemberCompitInfo compitInfo = wavMembers.GetCompitInfo(commandContext.Member.Id);
+            WAVMemberCompitInfo compitInfo = wavCompit.GetParticipationInfo(commandContext.Member.Id);
 
             if (compitInfo.NonGrata)
             {
@@ -491,7 +508,7 @@ namespace WAV_Bot_DSharp.Commands
             sb.AppendLine($"Discord nickname: `{msg.Author.Username}`");
             sb.AppendLine($"Score: `{replay.ReplayScore:N0}`"); // Format: 123456789 -> 123 456 789
             sb.AppendLine($"Category: `{category ?? "No category"}`");
-            sb.AppendLine($"Mods: `{utils.ModsToString((WAV_Osu_NetApi.Bancho.Models.Enums.Mods)replay.Mods)}`");
+            sb.AppendLine($"Mods: `{osuEnums.ModsToString((Mods)replay.Mods)}`");
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder().WithAuthor(msg.Author.Username, iconUrl: msg.Author.AvatarUrl)
                                                                  .WithTitle($"Added replay {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}")

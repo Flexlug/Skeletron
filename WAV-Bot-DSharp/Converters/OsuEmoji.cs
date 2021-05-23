@@ -3,8 +3,8 @@ using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using WAV_Osu_NetApi.Bancho.Models.Enums;
-using WAV_Osu_NetApi.Gatari.Models.Enums;
+using WAV_Osu_NetApi.Models.Bancho;
+using WAV_Osu_NetApi.Models.Gatari.Enums;
 
 namespace WAV_Bot_DSharp.Converters
 {

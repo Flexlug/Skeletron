@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WAV_Bot_DSharp.Services.Models
+namespace WAV_Bot_DSharp.Database.Models
 {
     public class WAVMemberCompitInfo
     {
         public bool ProvidedScore { get; set; } = false;
         public bool NonGrata { get; set; } = false;
         
-        public string WWWCategory { get; set; }
+        public double AvgPP { get; set; }
     }
 }

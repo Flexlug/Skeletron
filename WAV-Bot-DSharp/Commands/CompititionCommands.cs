@@ -14,10 +14,10 @@ using DSharpPlus.CommandsNext.Attributes;
 using OsuParsers.Decoders;
 using OsuParsers.Replays;
 
-using WAV_Bot_DSharp.Services.Models;
-using WAV_Bot_DSharp.Services;
 using WAV_Bot_DSharp.Converters;
 using WAV_Bot_DSharp.Services.Entities;
+using WAV_Bot_DSharp.Database.Interfaces;
+using WAV_Bot_DSharp.Database.Models;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -25,7 +25,8 @@ namespace WAV_Bot_DSharp.Commands
     {
         private ILogger<CompititionCommands> logger;
 
-        private OsuUtils utils;
+        private OsuEmbed osuEmbeds;
+        private OsuEnums osuEnums;
 
         private WebClient webClient;
 
@@ -34,19 +35,25 @@ namespace WAV_Bot_DSharp.Commands
 
         private readonly ulong WAV_UID = 708860200341471264;
 
-        private WAVMembersProvider wavMembers;
+        private IWAVMembersProvider wavMembers;
+        private IWAVCompitProvider wavCompit;
         private ShedulerService sheduler;
 
         public CompititionCommands(ILogger<CompititionCommands> logger,
-                                   OsuUtils utils,
+                                   OsuEmbed osuEmbeds,
+                                   OsuEnums osuEnums,
                                    DiscordClient client,
                                    ShedulerService sheduler,
-                                   WAVMembersProvider wavMembers)
+                                   IWAVMembersProvider wavMembers,
+                                   IWAVCompitProvider wavCompit)
         {
-            this.utils = utils;
+            this.osuEmbeds = osuEmbeds;
+            this.osuEnums = osuEnums;
             this.logger = logger;
             this.sheduler = sheduler;
             this.wavMembers = wavMembers;
+            this.wavCompit = wavCompit;
+
             this.guild = client.GetGuildAsync(WAV_UID).Result;
             this.wavScoresChannel = client.GetChannelAsync(829466881353711647).Result;
 
@@ -59,7 +66,7 @@ namespace WAV_Bot_DSharp.Commands
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Id);
             logger.LogInformation($"DM {msg.Author}: {msg.Content} : {msg.Attachments.Count}");
 
-            WAVMemberCompitInfo compitInfo = wavMembers.GetCompitInfo(commandContext.Member.Id);
+            WAVMemberCompitInfo compitInfo = wavCompit.GetParticipationInfo(commandContext.Member.Id);
 
             if (compitInfo.NonGrata)
             {
@@ -134,7 +141,7 @@ namespace WAV_Bot_DSharp.Commands
             sb.AppendLine($"Discord nickname: `{msg.Author.Username}`");
             sb.AppendLine($"Score: `{replay.ReplayScore:N0}`"); // Format: 123456789 -> 123 456 789
             sb.AppendLine($"Category: `{category ?? "No category"}`");
-            sb.AppendLine($"Mods: `{utils.ModsToString((WAV_Osu_NetApi.Bancho.Models.Enums.Mods)replay.Mods)}`");
+            sb.AppendLine($"Mods: `{osuEnums.ModsToString((WAV_Osu_NetApi.Models.Bancho.Mods)replay.Mods)}`");
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder().WithAuthor(msg.Author.Username, iconUrl: msg.Author.AvatarUrl)
                                                                  .WithTitle($"Added replay {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}")

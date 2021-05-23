@@ -5,9 +5,8 @@ using Newtonsoft.Json;
 
 using RestSharp;
 
-using WAV_Osu_NetApi.Bancho.Models;
-using WAV_Osu_NetApi.Bancho.QuerryParams;
 using WAV_Osu_NetApi.Converters;
+using WAV_Osu_NetApi.Models.Bancho;
 
 namespace WAV_Osu_NetApi
 {

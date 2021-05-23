@@ -12,16 +12,13 @@ using WAV_Bot_DSharp.Services.Entities;
 using WAV_Bot_DSharp.Services.Interfaces;
 
 using WAV_Osu_NetApi;
-using WAV_Osu_NetApi.Gatari.Models;
-using WAV_Osu_NetApi.Bancho.Models;
+
 using Microsoft.Extensions.Logging;
+using WAV_Osu_NetApi.Models.Gatari;
+using WAV_Osu_NetApi.Models.Bancho;
 
 namespace WAV_Bot_DSharp.Commands
 {
-    /// <summary>
-    /// Class with demonstration of possibilities.
-    /// Disclaimer: The code shouldn't be used exactly this way as it is, it's just there to give you some ideas.
-    /// </summary>
     [RequireUserPermissions(DSharpPlus.Permissions.Administrator), RequireGuild]
     public class TrackCommands : SkBaseCommandModule
     {

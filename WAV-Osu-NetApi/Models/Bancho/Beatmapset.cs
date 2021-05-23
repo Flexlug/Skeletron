@@ -2,9 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 
-using WAV_Osu_NetApi.Bancho.Models.Enums;
-
-namespace WAV_Osu_NetApi.Bancho.Models
+namespace WAV_Osu_NetApi.Models.Bancho
 {
     public class Beatmapset : BeatmapsetCompact
     {

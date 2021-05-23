@@ -1,7 +1,8 @@
 using System;
-using WAV_Osu_NetApi.Bancho.Models.Enums;
 
-namespace WAV_Osu_NetApi.Gatari.Models
+using WAV_Osu_NetApi.Models.Bancho;
+
+namespace WAV_Osu_NetApi.Models.Gatari
 { 
     public class GScore
     {

@@ -11,12 +11,15 @@ using Raven.Client.Documents;
 using Raven.Client.Documents.Linq;
 using Raven.Client.Documents.Session;
 
-using WAV_Bot_DSharp.Services.Models;
 using WAV_Bot_DSharp.Utils;
+using WAV_Bot_DSharp.Database.Models;
+using WAV_Bot_DSharp.Database.Interfaces;
 
-namespace WAV_Bot_DSharp.Services
+using WAV_Osu_NetApi.Models;
+
+namespace WAV_Bot_DSharp.Database
 {
-    public class WAVMembersProvider
+    public class WAVMembersProvider : IWAVMembersProvider
     {
         private IDocumentStore store;
 
@@ -31,7 +34,6 @@ namespace WAV_Bot_DSharp.Services
         private DiscordClient client;
 
         private readonly ulong WAV_UID = 708860200341471264;
-
 
         public WAVMembersProvider(DiscordClient client)
         {
@@ -61,72 +63,13 @@ namespace WAV_Bot_DSharp.Services
                                           .Include(x => x.OsuServers)
                                           .FirstOrDefault(x => x.Uid == uid);
 
+                if (member is null)
+                {
+                    session.Store(new WAVMember(uid));
+                    session.SaveChanges();
+                }
+
                 return member;
-            }
-        }
-
-        /// <summary>
-        /// Получить информацию об участии данного пользователя в конкурсах WAV
-        /// </summary>
-        /// <param name="uid">Discord id</param>
-        /// <returns></returns>
-        public WAVMemberCompitInfo GetCompitInfo(ulong uid)
-        {
-            using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
-            {
-                WAVMember member = session.Query<WAVMember>()
-                                          .Include(x => x.OsuServers)
-                                          .FirstOrDefault(x => x.Uid == uid);
-
-                return member.CompitionInfo ?? throw new NullReferenceException($"Couldn't get CompitionInfo from user {uid}");
-            }
-        }
-
-        /// <summary>
-        /// Указать, что участник принял участие в конкурсе WAV
-        /// </summary>
-        /// <param name="uid">Discord id участника</param>
-        public void SetCompitInfo(ulong uid)
-        {
-            using (IDocumentSession session = store.OpenSession())
-            {
-                WAVMember member = session.Query<WAVMember>()
-                                          .Include(x => x.OsuServers)
-                                          .FirstOrDefault(x => x.Uid == uid);
-
-                member.CompitionInfo.ProvidedScore = true;
-
-                session.SaveChanges();
-            }
-        }
-
-        /// <summary>
-        /// Сбросить всю информацию об участии каждого человека в конкурсе
-        /// </summary>
-        public void ResetAllCompitInfop()
-        {
-            using (IDocumentSession session = store.OpenSession())
-            {
-                int pageCount = DocumentStorePagination.GetPageCount(session.Query<WAVMember>());
-
-                for (int page = 0; page < pageCount; page++)
-                    foreach (WAVMember member in DocumentStorePagination.GetPage(session.Query<WAVMember>(), page))
-                        member.CompitionInfo.ProvidedScore = false;
-
-                session.SaveChanges();
-            }
-        }
-
-        /// <summary>
-        /// Добавить участника в БД
-        /// </summary>
-        /// <param name="uid">Discord id участника, добавляемого в БД</param>
-        public void AddMember(WAVMember member)
-        {
-            using (IDocumentSession session = store.OpenSession())
-            {
-                session.Store(member);
-                session.SaveChanges();
             }
         }
 
@@ -136,7 +79,7 @@ namespace WAV_Bot_DSharp.Services
         /// <param name="uid">Uid участника</param>
         /// <param name="server">Название сервера</param>
         /// <param name="id">ID пользователя на сервере</param>
-        public void AddOsuServerInfo(ulong uid, string server, int id)
+        public void AddOsuServerInfo(ulong uid, OsuServer server, int id)
         {
             using (IDocumentSession session = store.OpenSession())
             {
@@ -167,7 +110,7 @@ namespace WAV_Bot_DSharp.Services
         /// <param name="uid">Discord id участника WAV</param>
         /// <param name="server">Название сервера</param>
         /// <returns></returns>
-        public WAVMemberOsuProfileInfo GetOsuProfileInfo(ulong uid, string server)
+        public WAVMemberOsuProfileInfo GetOsuProfileInfo(ulong uid, OsuServer server)
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {

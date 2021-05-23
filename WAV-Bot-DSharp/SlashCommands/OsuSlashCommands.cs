@@ -12,10 +12,8 @@ using Microsoft.Extensions.Logging;
 using WAV_Bot_DSharp.Converters;
 
 using WAV_Osu_NetApi;
-using WAV_Osu_NetApi.Bancho;
-using WAV_Osu_NetApi.Bancho.Models;
-using WAV_Osu_NetApi.Gatari;
-using WAV_Osu_NetApi.Gatari.Models;
+using WAV_Osu_NetApi.Models.Gatari;
+using WAV_Osu_NetApi.Models.Bancho;
 
 namespace WAV_Bot_DSharp.SlashCommands
 {
@@ -23,11 +21,11 @@ namespace WAV_Bot_DSharp.SlashCommands
     {
         private BanchoApi api;
         private GatariApi gapi;
-        private OsuUtils utils;
+        private OsuEmbed utils;
 
         private ILogger logger;
 
-        public OsuSlashCommands(BanchoApi api, GatariApi gapi, OsuUtils utils, ILogger<OsuSlashCommands> logger)
+        public OsuSlashCommands(BanchoApi api, GatariApi gapi, OsuEmbed utils, ILogger<OsuSlashCommands> logger)
         {
             this.api = api;
             this.gapi = gapi;
