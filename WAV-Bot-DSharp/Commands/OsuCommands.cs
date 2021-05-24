@@ -1,4 +1,11 @@
-﻿using DSharpPlus;
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -8,24 +15,15 @@ using OsuParsers.Decoders;
 
 using Microsoft.Extensions.Logging;
 
-using System;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
 using WAV_Bot_DSharp.Converters;
-using WAV_Bot_DSharp.Configurations;
-using WAV_Bot_DSharp.Database;
+using WAV_Bot_DSharp.Database.Models;
+using WAV_Bot_DSharp.Database.Interfaces;
 using WAV_Bot_DSharp.Services.Entities;
 
 using WAV_Osu_NetApi;
-using WAV_Bot_DSharp.Database.Models;
-using WAV_Bot_DSharp.Database.Interfaces;
+using WAV_Osu_NetApi.Models;
 using WAV_Osu_NetApi.Models.Bancho;
 using WAV_Osu_NetApi.Models.Gatari;
-using WAV_Osu_NetApi.Models;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -433,7 +431,7 @@ namespace WAV_Bot_DSharp.Commands
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Id);
             logger.LogInformation($"DM {msg.Author}: {msg.Content} : {msg.Attachments.Count}");
 
-            WAVMemberCompitInfo compitInfo = wavCompit.GetParticipationInfo(commandContext.Member.Id);
+            WAVMemberCompitProfile compitInfo = wavCompit.GetCompitProfile(commandContext.Member.Id);
 
             if (compitInfo.NonGrata)
             {

@@ -14,7 +14,7 @@ namespace WAV_Bot_DSharp.Database.Models
         {
             Uid = uid;
             OsuServers = new List<WAVMemberOsuProfileInfo>();
-            CompitionInfo = new WAVMemberCompitInfo();
+            CompitionInfo = null;
             LastActivity = DateTime.Now;
             ActivityPoints = 0;
         }
@@ -32,7 +32,7 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// Информация об участии в конкурсах
         /// </summary>
-        public WAVMemberCompitInfo CompitionInfo { get; set; }
+        public WAVMemberCompitProfile CompitionInfo { get; set; }
 
         /// <summary>
         /// Дата последней активности

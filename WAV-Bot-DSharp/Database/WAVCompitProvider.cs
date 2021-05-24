@@ -32,12 +32,7 @@ namespace WAV_Bot_DSharp.Database
             this.gapi = gapi;
         }
 
-        /// <summary>
-        /// Получить информацию об участии данного пользователя в конкурсах WAV
-        /// </summary>
-        /// <param name="uid">Discord id</param>
-        /// <returns></returns>
-        public WAVMemberCompitInfo GetParticipationInfo(ulong uid)
+        public WAVMemberCompitProfile GetCompitProfile(ulong uid)
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
@@ -45,71 +40,67 @@ namespace WAV_Bot_DSharp.Database
                                           .Include(x => x.OsuServers)
                                           .FirstOrDefault(x => x.Uid == uid);
 
-                return member.CompitionInfo ?? throw new NullReferenceException($"Couldn't get CompitionInfo from user {uid}");
+                return member.CompitionInfo;
             }
         }
 
-        /// <summary>
-        /// Указать, что участник принял участие в конкурсе WAV
-        /// </summary>
-        /// <param name="uid">Discord id участника</param>
-        public void SetMemberParticipated(ulong uid)
+        public List<CompitScore> GetUserScores(ulong id)
         {
-            using (IDocumentSession session = store.OpenSession())
+            using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
-                WAVMember member = session.Query<WAVMember>()
-                                          .Include(x => x.OsuServers)
-                                          .FirstOrDefault(x => x.Uid == uid);
+                List<CompitScore> scores = session.Query<CompitScore>()
+                                                 .Where(x => x.Player == id)
+                                                 .ToList();
 
-                member.CompitionInfo.ProvidedScore = true;
+                return scores;
+            }
+        }
+
+        public void ResetScores()
+        {
+            using (IDocumentSession session = store.OpenSession()
+            {
+                List<CompitScore> scores = session.Query<CompitScore>()
+                                                 .ToList();
+
+                foreach (var score in scores)
+                    session.Delete(score);
 
                 session.SaveChanges();
             }
         }
 
-
-        /// <summary>
-        /// Сбросить всю информацию об участии каждого человека в конкурсе
-        /// </summary>
-        public void ResetAllCompitInfo()
+        public void SubmitScore(CompitScore score)
         {
-            using (IDocumentSession session = store.OpenSession())
+            using (IDocumentSession session = store.OpenSession()
             {
-                int pageCount = DocumentStorePagination.GetPageCount(session.Query<WAVMember>());
-
-                for (int page = 0; page < pageCount; page++)
-                    foreach (WAVMember member in DocumentStorePagination.GetPage(session.Query<WAVMember>(), page))
-                        member.CompitionInfo.ProvidedScore = false;
-
+                session.Store(score);
                 session.SaveChanges();
             }
         }
 
-        /// <summary>
-        /// Зарегистрировать участника как участника конкурса. 
-        /// </summary>
-        /// <param name="server">Название сервера, для которого нужно пересчитать скоры</param>
-        public double RecountMember(ulong uid, OsuServer server)
+        public CompitInfo GetCompitionInfo()
         {
-            WAVMember member = null;
+            using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
+            {
+                return session.Query<CompitInfo>().FirstOrDefault();
+            }
+        }
 
+        public void SetCompitionInfo(CompitInfo info)
+        {
             using (IDocumentSession session = store.OpenSession())
             {
-                member = session.Query<WAVMember>()
-                                    .Include(x => x.OsuServers)
-                                    .Where(x => x.Uid == uid)
-                                    .FirstOrDefault();
+                CompitInfo oldInfo = session.Query<CompitInfo>().FirstOrDefault();
+
+                if (oldInfo is null)
+                    return;
+
+                session.Delete(oldInfo);
+                session.Store(info);
+
+                session.SaveChanges();
             }
-
-            if (member is null)
-                throw new NullReferenceException("Couldnt find such member in database.");
-
-            WAVMemberOsuProfileInfo osuProfile = member.OsuServers.FirstOrDefault(x => x.Server == server);
-
-            if (osuProfile is null)
-                return -1;
-
-            throw new NotImplementedException();
         }
     }
 }

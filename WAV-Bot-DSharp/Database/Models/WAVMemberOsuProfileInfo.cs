@@ -17,8 +17,6 @@ namespace WAV_Bot_DSharp.Database.Models
         {
             Id = id;
             Server = server;
-            RecentLast = DateTime.Now;
-            BestLast = DateTime.Now;
         }
 
         /// <summary>
@@ -32,23 +30,8 @@ namespace WAV_Bot_DSharp.Database.Models
         public int Id { get; set; }
 
         /// <summary>
-        /// Состояние отслеживания недавних скоров
+        /// Никнейм пользователя на сервере
         /// </summary>
-        public bool TrackRecent { get; set; } = false;
-
-        /// <summary>
-        /// Состояние отслеживания лучших скоров
-        /// </summary>
-        public bool TrackBest { get; set; } = false;
-
-        /// <summary>
-        /// Время, когда был зафиксирован последний скор (среди недавних)
-        /// </summary>
-        public DateTime? RecentLast { get; set; }
-
-        /// <summary>
-        /// Время, когда был зафиксирован последний лучший скор (среди топ-50)
-        /// </summary>
-        public DateTime? BestLast { get; set; }
+        public string Nickname { get; set; }
     }
 }

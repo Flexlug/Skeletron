@@ -66,17 +66,11 @@ namespace WAV_Bot_DSharp.Commands
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Id);
             logger.LogInformation($"DM {msg.Author}: {msg.Content} : {msg.Attachments.Count}");
 
-            WAVMemberCompitInfo compitInfo = wavCompit.GetParticipationInfo(commandContext.Member.Id);
+            WAVMemberCompitProfile compitInfo = wavCompit.GetCompitProfile(commandContext.Member.Id);
 
             if (compitInfo.NonGrata)
             {
                 await commandContext.RespondAsync("Извините, но вы не можете принять участие в данном конкурсе, т.к. внесены в черный список.");
-                return;
-            }
-
-            if (compitInfo.ProvidedScore)
-            {
-                await commandContext.RespondAsync("Вы уже отправили скор.");
                 return;
             }
 

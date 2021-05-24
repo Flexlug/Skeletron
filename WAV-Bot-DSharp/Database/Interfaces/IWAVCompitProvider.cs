@@ -17,23 +17,36 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         /// </summary>
         /// <param name="uid">Discord id</param>
         /// <returns></returns>
-        public WAVMemberCompitInfo GetParticipationInfo(ulong uid);
+        public WAVMemberCompitProfile GetCompitProfile(ulong uid);
 
         /// <summary>
-        /// Указать, что участник принял участие в конкурсе WAV
+        /// Добавить в БД информацию о скоре участника
         /// </summary>
-        /// <param name="uid">Discord id участника</param>
-        public void SetMemberParticipated(ulong uid);
+        /// <param name="score">Скор участника</param>
+        public void SubmitScore(CompitScore score);
 
         /// <summary>
-        /// Сбросить всю информацию об участии каждого человека в конкурсе
+        /// Получить все скоры конкретного пользователя
         /// </summary>
-        public void ResetAllCompitInfo();
+        /// <param name="id">Discord ID пользователя</param>
+        /// <returns></returns>
+        public List<CompitScore> GetUserScores(ulong id);
 
         /// <summary>
-        /// Зарегистрировать участника как участника конкурса. 
+        /// Удалить все скоры за прошедший конкурс
         /// </summary>
-        /// <param name="server">Название сервера, для которого нужно пересчитать скоры</param>
-        public double RecountMember(ulong member, OsuServer server);
+        public void ResetScores();
+
+        /// <summary>
+        /// Получить записанную в БД информацию о конкурсе
+        /// </summary>
+        /// <returns></returns>
+        public CompitInfo GetCompitionInfo();
+
+        /// <summary>
+        /// Перезаписать информацию о конкурсе
+        /// </summary>
+        /// <param name="info">Информация о конкурсе</param>
+        public void SetCompitionInfo(CompitInfo info);
     }
 }

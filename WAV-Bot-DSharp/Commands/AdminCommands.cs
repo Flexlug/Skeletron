@@ -15,6 +15,7 @@ using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.Logging;
 using WAV_Bot_DSharp.Configurations;
 using WAV_Bot_DSharp.Services;
+using WAV_Bot_DSharp.Services.Entities;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -28,15 +29,19 @@ namespace WAV_Bot_DSharp.Commands
 
         private ILogger<AdminCommands> logger;
 
-        private DiscordChannel LogChannel;
+        private ShedulerService sheduler;
 
+        private DiscordChannel LogChannel;
         private DiscordGuild wavGuild;
 
-        public AdminCommands(ILogger<AdminCommands> logger, DiscordClient client)
+        public AdminCommands(ILogger<AdminCommands> logger, 
+                            DiscordClient client,
+                            ShedulerService sheduler)
         {
             ModuleName = "Admin";
 
             this.logger = logger;
+            this.sheduler = sheduler;
 
             LogChannel = client.GetChannelAsync(816396082153521183).Result;
             wavGuild = client.GetGuildAsync(708860200341471264).Result;
@@ -338,6 +343,26 @@ namespace WAV_Bot_DSharp.Commands
                                     .WithFooter()
                                     .Build());
             await msg.Channel.DeleteMessagesAsync(new[] { msg, commandContext.Message }, reason);
+        }
+
+        [Command("get-sheduled-tasks-list"), RequirePermissions(Permissions.Administrator), Hidden]
+        public async Task GetListOFSheduledTasks(CommandContext context)
+        {
+            var sheduledTasks = sheduler.GetAllTasks();
+
+            if (sheduledTasks is null || sheduledTasks.Count == 0)
+            {
+                await context.RespondAsync("No sheduled tasks");
+                return;
+            }
+
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
+                .WithTitle("Запланированные задачи");
+
+            foreach (var task in sheduledTasks)
+                embedBuilder.AddField(task.Name, $"Interval: {task.Interval}, Repeat: {task.Repeat}");
+
+            await context.RespondAsync(embed: embedBuilder.Build());
         }
     }
 }
