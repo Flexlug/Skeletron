@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using WAV_Osu_NetApi.Models;
 using WAV_Osu_NetApi.Models.Bancho;
+using WAV_Bot_DSharp.Database.Models;
 
 namespace WAV_Bot_DSharp.Converters
 {
@@ -152,7 +153,71 @@ namespace WAV_Bot_DSharp.Converters
                     return "gatari";
 
                 default:
-                    throw new Exception("This can't be");
+                    throw new Exception("Error parsing OsuServer enum");
+            }
+        }
+
+        /// <summary>
+        /// Получить строковое представление конкурсной категории
+        /// </summary>
+        /// <param name="category">Категория</param>
+        /// <returns></returns>
+        public string CategoryToString(CompitCategories category)
+        {
+            switch (category)
+            {
+                case CompitCategories.Beginner:
+                    return "beginner";
+
+                case CompitCategories.Alpha:
+                    return "alpha";
+
+                case CompitCategories.Beta:
+                    return "beta";
+
+                case CompitCategories.Gamma:
+                    return "gamma";
+
+                case CompitCategories.Delta:
+                    return "delta";
+
+                case CompitCategories.Epsilon:
+                    return "epsilon";
+
+                default:
+                    throw new Exception("Error parsing CompitCategories enum");
+            }
+        }
+
+        /// <summary>
+        /// Перевести значение CompitCategory из строки
+        /// </summary>
+        /// <param name="category">Преобразуемая строка</param>
+        /// <returns></returns>
+        public CompitCategories? StringToCategory(string category)
+        {
+            switch(category)
+            {
+                case "beginner":
+                    return CompitCategories.Beginner;
+
+                case "alpha":
+                    return CompitCategories.Alpha;
+
+                case "beta":
+                    return CompitCategories.Beta;
+
+                case "gamma":
+                    return CompitCategories.Gamma;
+
+                case "delta":
+                    return CompitCategories.Delta;
+
+                case "epsilon":
+                    return CompitCategories.Epsilon;
+
+                default:
+                    return null;
             }
         }
     }

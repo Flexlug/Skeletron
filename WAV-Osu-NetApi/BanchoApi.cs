@@ -253,6 +253,24 @@ namespace WAV_Osu_NetApi
         }
 
         /// <summary>
+        /// Get beatmap by it's MD5 hash
+        /// </summary>
+        /// <param name="beatmapId">Beatmap hash</param>
+        /// <returns></returns>
+        public Beatmap GetBeatmap(string hash)
+        {
+            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmaps/lookup")
+                .AddHeader(@"Authorization", $@"Bearer {Token}")
+                .AddParameter("checksum", hash);
+
+            IRestResponse resp = client.Execute(req);
+
+            Beatmap bm = JsonConvert.DeserializeObject<Beatmap>(resp.Content);
+
+            return bm;
+        }
+
+        /// <summary>
         /// Tries to get user by his id
         /// </summary>
         /// <param name="userNickname">User's nickname</param>

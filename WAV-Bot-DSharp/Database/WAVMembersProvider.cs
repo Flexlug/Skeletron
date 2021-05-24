@@ -23,31 +23,9 @@ namespace WAV_Bot_DSharp.Database
     {
         private IDocumentStore store;
 
-        private DiscordRole beginnerRole;
-        private DiscordRole alphaRole;
-        private DiscordRole betaRole;
-        private DiscordRole gammaRole;
-        private DiscordRole deltaRole;
-        private DiscordRole epsilonRole;
-
-        private DiscordGuild guild;
-        private DiscordClient client;
-
-        private readonly ulong WAV_UID = 708860200341471264;
-
         public WAVMembersProvider(DiscordClient client)
         {
             this.store = DocumentStoreProvider.Store;
-
-            this.client = client;
-            this.guild = client.GetGuildAsync(WAV_UID).Result;
-
-            this.beginnerRole = guild.GetRole(831262333208756255);
-            this.alphaRole = guild.GetRole(831262447502360686);
-            this.betaRole = guild.GetRole(831262485910781953);
-            this.gammaRole = guild.GetRole(831262538317430844);
-            this.deltaRole = guild.GetRole(831262333208756255);
-            this.epsilonRole = guild.GetRole(831262333208756255);
         }
 
         /// <summary>
@@ -65,7 +43,8 @@ namespace WAV_Bot_DSharp.Database
 
                 if (member is null)
                 {
-                    session.Store(new WAVMember(uid));
+                    member = new WAVMember(uid);
+                    session.Store(member);
                     session.SaveChanges();
                 }
 

@@ -91,7 +91,7 @@ namespace WAV_Bot_DSharp
                 .AddSingleton<OsuEmbed>()
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
-                .AddSingleton<ShedulerService>()
+                .AddSingleton<IShedulerService, ShedulerService>()
                 .AddSingleton<IRecognizerService, RecognizerService>()
                 .AddSingleton<DocumentStoreProvider>()
                 .AddSingleton<IWAVMembersProvider, WAVMembersProvider>()

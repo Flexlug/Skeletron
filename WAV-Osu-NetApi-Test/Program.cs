@@ -8,8 +8,7 @@ using System.Threading;
 using WAV_Osu_NetApi;
 
 using Newtonsoft.Json;
-using WAV_Osu_NetApi.Bancho.Models;
-using WAV_Osu_NetApi.Gatari.Models;
+using WAV_Osu_NetApi.Models.Bancho;
 
 namespace WAV_Osu_NetApi_Test
 {

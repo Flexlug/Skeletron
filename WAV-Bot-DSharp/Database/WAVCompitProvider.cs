@@ -44,6 +44,20 @@ namespace WAV_Bot_DSharp.Database
             }
         }
 
+        public void AddCompitProfile(ulong uid, WAVMemberCompitProfile compitProfile)
+        {
+            using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
+            {
+                WAVMember member = session.Query<WAVMember>()
+                                          .Include(x => x.OsuServers)
+                                          .FirstOrDefault(x => x.Uid == uid);
+
+                member.CompitionInfo = compitProfile;
+
+                session.SaveChanges();
+            }
+        }
+
         public List<CompitScore> GetUserScores(ulong id)
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
@@ -58,7 +72,7 @@ namespace WAV_Bot_DSharp.Database
 
         public void ResetScores()
         {
-            using (IDocumentSession session = store.OpenSession()
+            using (IDocumentSession session = store.OpenSession())
             {
                 List<CompitScore> scores = session.Query<CompitScore>()
                                                  .ToList();
@@ -72,7 +86,7 @@ namespace WAV_Bot_DSharp.Database
 
         public void SubmitScore(CompitScore score)
         {
-            using (IDocumentSession session = store.OpenSession()
+            using (IDocumentSession session = store.OpenSession())
             {
                 session.Store(score);
                 session.SaveChanges();

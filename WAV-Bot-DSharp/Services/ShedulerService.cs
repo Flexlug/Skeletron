@@ -1,19 +1,20 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Timers;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using WAV_Bot_DSharp.Threading;
 using WAV_Bot_DSharp.Services.Models;
+using WAV_Bot_DSharp.Services.Interfaces;
 
 using Microsoft.Extensions.Logging;
-using System.IO;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
-    public class ShedulerService
+    public class ShedulerService : IShedulerService
     {
         private List<SheduledTask> sheduledTasks;
         private BackgroundQueue queue;
@@ -102,7 +103,6 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// <summary>
         /// Вернуть все запланированные задачи
         /// </summary>
-        /// <returns></returns>
         public List<SheduledTask> GetAllTasks() => sheduledTasks;
     }
 }

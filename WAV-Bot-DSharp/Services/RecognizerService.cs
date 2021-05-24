@@ -171,8 +171,6 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             string[] rawrecedText = recognizer.RecognizeTopText(image).Split('\n');
 
-            sheduler.AddFileDeleteTask(fileName);
-
             foreach (string s in rawrecedText)
                 logger.LogDebug(s);
 

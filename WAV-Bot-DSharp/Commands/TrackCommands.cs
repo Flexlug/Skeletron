@@ -29,7 +29,7 @@ namespace WAV_Bot_DSharp.Commands
 
         public TrackCommands(ITrackService trackService, BanchoApi bapi, GatariApi gapi, ILogger<TrackCommands> logger)
         {
-            ModuleName = "Tracking";
+            ModuleName = "Трекинг";
 
             tracking = trackService;
             this.logger = logger;

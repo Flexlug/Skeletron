@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.Logging;
+using WAV_Bot_DSharp.Converters;
+using WAV_Bot_DSharp.Database.Interfaces;
+using WAV_Bot_DSharp.Database.Models;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -16,25 +20,76 @@ namespace WAV_Bot_DSharp.Commands
     public sealed class UserCommands : SkBaseCommandModule
     {
         private ILogger<UserCommands> logger;
+        private IWAVMembersProvider wavMembers;
 
-        public UserCommands(ILogger<UserCommands> logger)
+        private OsuEnums osuEnums;
+
+        public UserCommands(ILogger<UserCommands> logger,
+                            IWAVMembersProvider wavMembers,
+                            OsuEnums osuEnums)
         {
-            ModuleName = "Utils";
+            ModuleName = "Разное";
             
             this.logger = logger;
+            this.wavMembers = wavMembers;
+
+            this.osuEnums = osuEnums;
             
             logger.LogInformation("UserCommands loaded");
         }
 
-        [Command("r"), Description("Resend message to specified channel")]
+        [Command("profile"), Description("Получить информацию о своём W.w.W профиле."), RequireGuild]
+        public async Task GetProfile(CommandContext command)
+        {
+            WAVMember member = wavMembers.GetMember(command.Member.Id);
+
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
+                .WithTitle($"Информация об участнике WAV")
+                .WithThumbnail(command.Member.AvatarUrl);
+
+            StringBuilder overallInfo = new StringBuilder();
+            overallInfo.AppendLine($"Никнейм: {command.Member.DisplayName}");
+
+            StringBuilder osuServersSb = new StringBuilder();
+            if (member.OsuServers.Count != 0)
+            {
+                foreach (var server in member.OsuServers)
+                    osuServersSb.AppendLine($"{osuEnums.OsuServerToString(server.Server)} : {server.Nickname}");
+            }
+            else 
+            {
+                osuServersSb.Append('-'); 
+            }
+
+            StringBuilder compitSb = new StringBuilder();
+            if (member.CompitionInfo is not null)
+            {
+                if (member.CompitionInfo.NonGrata)
+                    compitSb.AppendLine("__**Non-grata: Да**__\n");
+                compitSb.AppendLine("Зарегистрирован: Да");
+                compitSb.AppendLine($"Средний PP: {member.CompitionInfo.AvgPP}");
+                compitSb.AppendLine($"Категория: {osuEnums.CategoryToString(member.CompitionInfo.Category)}");
+                compitSb.AppendLine($"Уведомления: {member.CompitionInfo.Notifications}");
+            }
+            else
+            {
+                compitSb.Append('-');
+            }
+
+            embedBuilder.WithDescription(overallInfo.ToString())
+                        .AddField("Привязанные osu! профили:", osuServersSb.ToString())
+                        .AddField("W.m.W", compitSb.ToString());
+        }
+
+        [Command("r"), Description("Переслать сообщение в другой канал."), RequireGuild]
         public async Task PingAsync(CommandContext commandContext,
-            [Description("Channel, where message has to be resent")] DiscordChannel targetChannel)
+            [Description("Текстовый канал, куда необходимо перенаправить сообщение.")] DiscordChannel targetChannel)
         {
             if (commandContext.Message.Reference is null)
-                await commandContext.RespondAsync("Resending message is not specified");
+                await commandContext.RespondAsync("Вы не указали сообщение, которое необходимо переслать.");
 
             if (targetChannel is null)
-                await commandContext.RespondAsync("Target channel is not specified");
+                await commandContext.RespondAsync("Вы не указали канал, куда необходимо переслать сообщение.");
 
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Reference.Message.Id);
 
@@ -58,7 +113,7 @@ namespace WAV_Bot_DSharp.Commands
         /// </summary>
         /// <param name="commandContext">CommandContext from the message that has executed this command.</param>
         /// <returns></returns>
-        [Command("ping"), Description("Shows bot ping to discord api server")]
+        [Command("ping"), Description("Показывает пинг бота.")]
         public async Task PingAsync(CommandContext commandContext)
         {
             await commandContext.RespondAsync($"Bot latency to the discord api server: {commandContext.Client.Ping}");
@@ -70,9 +125,9 @@ namespace WAV_Bot_DSharp.Commands
         /// <param name="commandContext">CommandContext from the message that has executed this command.</param>
         /// <param name="timeSpan">Timespan to recognize</param>
         /// <returns></returns>
-        [Command("timespan"), Description("Try to recognize timespan")]
+        [Command("timespan"), Description("Предпринимает попытку конвертировать строку в тип данных TimeSpan.")]
         public async Task GetTimespan(CommandContext commandContext,
-            [Description("Timespan to recognize")] TimeSpan timeSpan)
+            [Description("Конвертируемая строка")] TimeSpan timeSpan)
         {
             await commandContext.RespondAsync(timeSpan.ToString());
         }
@@ -83,9 +138,9 @@ namespace WAV_Bot_DSharp.Commands
         /// <param name="commandContext">CommandContext from the message that has executed this command.</param>
         /// <param name="datetime">Datetime to recognize</param>
         /// <returns></returns>
-        [Command("datetime"), Description("Try to recognize datetime (american style)")]
+        [Command("datetime"), Description("Предпринимает поытку конвертировать строку в тип данных DateTime.")]
         public async Task GetDatetime(CommandContext commandContext, 
-            [Description("Datetime to recognize")] DateTime datetime)
+            [Description("Конвертируемая строка")] DateTime datetime)
         {
             await commandContext.RespondAsync($"{datetime.ToShortDateString()} {datetime.ToLongTimeString()}");
         }

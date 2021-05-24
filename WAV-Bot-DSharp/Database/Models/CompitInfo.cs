@@ -39,31 +39,31 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// ID карты для категории Beginner
         /// </summary>
-        public int? BeginnerMapId { get; set; }
+        public string BeginnerMapHash { get; set; }
 
         /// <summary>
         /// ID карты для категории Alpha
         /// </summary>
-        public int? AlphaMapId { get; set; }
+        public string AlphaMapHash { get; set; }
 
         /// <summary>
         /// ID карты для категории Beta
         /// </summary>
-        public int? BetaMapId { get; set; }
+        public string BetaMapHash { get; set; }
 
         /// <summary>
         /// ID карты для категории Gamma
         /// </summary>
-        public int? GammaMapId { get; set; }
+        public string GammaMapHash { get; set; }
 
         /// <summary>
         /// ID карты для категории Delta
         /// </summary>
-        public int? DeltaMapId { get; set; }
+        public string DeltaMapHash { get; set; }
 
         /// <summary>
         /// ID карты для категории Epsilon
         /// </summary>
-        public int? EpsilonMapId { get; set; }
+        public string EpsilonMapHash { get; set; }
     }
 }

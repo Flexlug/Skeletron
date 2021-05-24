@@ -20,6 +20,13 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         public WAVMemberCompitProfile GetCompitProfile(ulong uid);
 
         /// <summary>
+        /// Добавить информацию о профиле 
+        /// </summary>
+        /// <param name="uid">ID участника</param>
+        /// <param name="compitProfile">Конкурсный профиль участника</param>
+        public void AddCompitProfile(ulong uid, WAVMemberCompitProfile compitProfile);
+
+        /// <summary>
         /// Добавить в БД информацию о скоре участника
         /// </summary>
         /// <param name="score">Скор участника</param>
