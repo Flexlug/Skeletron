@@ -26,7 +26,7 @@ namespace WAV_Bot_DSharp.Services
     {
         private IWAVCompitProvider wavCompit;
         private IWAVMembersProvider wavMembers;
-        private ShedulerService sheduler;
+        private IShedulerService sheduler;
 
         private CompitInfo compititionInfo;
 
@@ -50,12 +50,11 @@ namespace WAV_Bot_DSharp.Services
 
         private ILogger<CompititionService> logger;
 
-        private readonly ulong WAV_UID = 708860200341471264;
-
         public CompititionService(IWAVCompitProvider wavCompit,
                                   IWAVMembersProvider wavMembers,
-                                  ShedulerService sheduler,
+                                  IShedulerService sheduler,
                                   DiscordClient client,
+                                  DiscordGuild guild,
                                   BanchoApi bapi,
                                   GatariApi gapi,
                                   ILogger<CompititionService> logger)
@@ -80,14 +79,14 @@ namespace WAV_Bot_DSharp.Services
 
             this.leaderboardUpdateTask = new LeaderboardUpdateSheduledTask(this);
 
-            this.guild = client.GetGuildAsync(WAV_UID).Result;
+            this.guild = guild;
 
-            this.beginnerRole = guild.GetRole(831262333208756255);
-            this.alphaRole = guild.GetRole(831262447502360686);
-            this.betaRole = guild.GetRole(831262485910781953);
-            this.gammaRole = guild.GetRole(831262538317430844);
-            this.deltaRole = guild.GetRole(831262333208756255);
-            this.epsilonRole = guild.GetRole(831262333208756255);
+            this.beginnerRole = guild.GetRole(830432931150692362);
+            this.alphaRole = guild.GetRole(816610025258352641);
+            this.betaRole = guild.GetRole(816609978240204821);
+            this.gammaRole = guild.GetRole(816609883763376188);
+            this.deltaRole = guild.GetRole(816609826301935627);
+            this.epsilonRole = guild.GetRole(816609630359912468);
 
             this.logger.LogInformation("CompititionService loaded");
 
@@ -266,7 +265,10 @@ namespace WAV_Bot_DSharp.Services
             };
 
             wavCompit.AddCompitProfile(member.Id, compitProfile);
-            await EnableNotifications(member);
+
+
+
+            await EnableNotifications(member, compitProfile);
         }
 
         /// <summary>
@@ -308,6 +310,34 @@ namespace WAV_Bot_DSharp.Services
             return avgPP;
         }
 
+        private async Task RemoveWrongNotificationRoles(DiscordMember member, CompitCategories category)
+        {
+            if (member.Roles.Contains(beginnerRole))
+                if (category != CompitCategories.Beginner)
+                    await member.RevokeRoleAsync(beginnerRole);
+
+            if (member.Roles.Contains(alphaRole))
+                if (category != CompitCategories.Alpha)
+                    await member.RevokeRoleAsync(alphaRole);
+
+            if (member.Roles.Contains(betaRole))
+                if (category != CompitCategories.Beta)
+                    await member.RevokeRoleAsync(betaRole);
+
+            if (member.Roles.Contains(gammaRole))
+                if (category != CompitCategories.Gamma)
+                    await member.RevokeRoleAsync(gammaRole);
+
+            if (member.Roles.Contains(deltaRole))
+                if (category != CompitCategories.Delta)
+                    await member.RevokeRoleAsync(deltaRole);
+
+            if (member.Roles.Contains(epsilonRole))
+                if (category != CompitCategories.Epsilon)
+                await member.RevokeRoleAsync(epsilonRole);
+
+        }
+
         /// <summary>
         /// Включить уведомления о конкурсе
         /// </summary>
@@ -320,7 +350,7 @@ namespace WAV_Bot_DSharp.Services
                 throw new NullReferenceException($"Couldn't get compitition profile for {member}");
             }
 
-            switch(compitProfile.Category)
+            switch (compitProfile.Category)
             {
                 case CompitCategories.Beginner:
                     await member.GrantRoleAsync(beginnerRole);
@@ -346,6 +376,8 @@ namespace WAV_Bot_DSharp.Services
                     await member.GrantRoleAsync(epsilonRole);
                     break;
             }
+
+            await RemoveWrongNotificationRoles(member, compitProfile.Category);
         }
 
         /// <summary>

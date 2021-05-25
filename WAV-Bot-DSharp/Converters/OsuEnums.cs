@@ -7,11 +7,20 @@ using System.Collections.Generic;
 using WAV_Osu_NetApi.Models;
 using WAV_Osu_NetApi.Models.Bancho;
 using WAV_Bot_DSharp.Database.Models;
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Converters
 {
     public class OsuEnums
     {
+        private ILogger<OsuEnums> logger;
+
+        public OsuEnums(ILogger<OsuEnums> logger)
+        {
+            this.logger = logger;
+            logger.LogInformation("OsuEnums loaded");
+        }
+
         /// <summary>
         /// Translate osu mods to string
         /// </summary>

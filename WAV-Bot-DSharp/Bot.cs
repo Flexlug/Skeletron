@@ -26,6 +26,7 @@ using WAV_Bot_DSharp.SlashCommands;
 using WAV_Bot_DSharp.Services;
 using WAV_Bot_DSharp.Database;
 using WAV_Bot_DSharp.Database.Interfaces;
+using DSharpPlus.Entities;
 
 namespace WAV_Bot_DSharp
 {
@@ -36,6 +37,7 @@ namespace WAV_Bot_DSharp
         private CommandsNextExtension CommandsNext { get; set; }
         private SlashCommandsExtension SlashCommands { get; set; }
         private DiscordClient Discord { get; }
+        private DiscordGuild Guild { get; }
         private Settings Settings { get; }
         private IServiceProvider Services { get; set; }
         private bool IsDisposed { get; set; }
@@ -56,7 +58,8 @@ namespace WAV_Bot_DSharp
             {
                 Token = Settings.Token,
                 TokenType = TokenType.Bot,
-                LoggerFactory = logFactory
+                LoggerFactory = logFactory,
+                Intents = DiscordIntents.All
             });
 
             // Activating Interactivity module for the DiscordClient
@@ -68,6 +71,8 @@ namespace WAV_Bot_DSharp
 
             // For correct datetime recognizing
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru-RU");
+
+            Guild = Discord.GetGuildAsync(WAV_UID).Result;
 
             ConfigureServices();
 
@@ -87,14 +92,19 @@ namespace WAV_Bot_DSharp
                 .AddLogging(conf => conf.AddSerilog(dispose: true))
                 .AddSingleton(Settings)
                 .AddSingleton(Discord)
+                .AddSingleton(Guild)
                 .AddSingleton<OsuEmoji>()
                 .AddSingleton<OsuEmbed>()
+                .AddSingleton<OsuEnums>()
+                .AddSingleton<OsuRegex>()
+                .AddSingleton<DocumentStoreProvider>()
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
                 .AddSingleton<IShedulerService, ShedulerService>()
                 .AddSingleton<IRecognizerService, RecognizerService>()
-                .AddSingleton<DocumentStoreProvider>()
                 .AddSingleton<IWAVMembersProvider, WAVMembersProvider>()
+                .AddSingleton<IWAVCompitProvider, WAVCompitProvider>()
+                .AddSingleton<ICompititionService, CompititionService>()
                 .BuildServiceProvider();
         }
 
@@ -116,6 +126,7 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
+            CommandsNext.RegisterCommands<CompititionCommands>();
 
             var slashCommandsConfiguration = new SlashCommandsConfiguration()
             {
@@ -155,6 +166,8 @@ namespace WAV_Bot_DSharp
         private async Task OnReady(DiscordClient client, ReadyEventArgs e)
         {
             await Discord.UpdateStatusAsync(new DSharpPlus.Entities.DiscordActivity("тебе в душу", DSharpPlus.Entities.ActivityType.Watching), DSharpPlus.Entities.UserStatus.Online);
+
+            await Guild.GetAllMembersAsync();
 
             Log.Logger.Information("The bot is online");
         }

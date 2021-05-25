@@ -1,5 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,9 +13,14 @@ namespace WAV_Bot_DSharp.Converters
     {
         private DiscordClient client;
 
-        public OsuEmoji(DiscordClient client)
+        private ILogger<OsuEmoji> logger;
+
+        public OsuEmoji(DiscordClient client, ILogger<OsuEmoji> logger)
         {
             this.client = client;
+
+            this.logger = logger;
+            logger.LogInformation("OsuEmoji loaded");
         }
 
         /// <summary>

@@ -16,6 +16,7 @@ using WAV_Bot_DSharp.Database.Models;
 using WAV_Bot_DSharp.Database.Interfaces;
 
 using WAV_Osu_NetApi.Models;
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Database
 {
@@ -23,9 +24,15 @@ namespace WAV_Bot_DSharp.Database
     {
         private IDocumentStore store;
 
-        public WAVMembersProvider(DiscordClient client)
+        private ILogger<WAVCompitProvider> logger;
+
+        public WAVMembersProvider(DiscordClient client,
+                                  ILogger<WAVCompitProvider> logger)
         {
             this.store = DocumentStoreProvider.Store;
+
+            this.logger = logger;
+            logger.LogInformation("WAVMembersProvider loaded");
         }
 
         /// <summary>
@@ -35,7 +42,7 @@ namespace WAV_Bot_DSharp.Database
         /// <returns></returns>
         public WAVMember GetMember(ulong uid)
         {
-            using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
+            using (IDocumentSession session = store.OpenSession())
             {
                 WAVMember member = session.Query<WAVMember>()
                                           .Include(x => x.OsuServers)
@@ -58,7 +65,7 @@ namespace WAV_Bot_DSharp.Database
         /// <param name="uid">Uid участника</param>
         /// <param name="server">Название сервера</param>
         /// <param name="id">ID пользователя на сервере</param>
-        public void AddOsuServerInfo(ulong uid, OsuServer server, int id)
+        public void AddOsuServerInfo(ulong uid, WAVMemberOsuProfileInfo profile)
         {
             using (IDocumentSession session = store.OpenSession())
             {
@@ -69,14 +76,15 @@ namespace WAV_Bot_DSharp.Database
                 if (member is null)
                     throw new NullReferenceException("No such object in DB");
 
-                WAVMemberOsuProfileInfo serverInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
+                WAVMemberOsuProfileInfo serverInfo = member.OsuServers.FirstOrDefault(x => x.Server == profile.Server);
                 if (serverInfo is not null)
                 {
-                    serverInfo.Id = id;
+                    serverInfo.Id = profile.Id;
+                    serverInfo.Nickname = profile.Nickname;
                 }
                 else
                 {
-                    member.OsuServers.Add(new WAVMemberOsuProfileInfo(id, server));
+                    member.OsuServers.Add(profile);
                 }
 
                 session.SaveChanges();

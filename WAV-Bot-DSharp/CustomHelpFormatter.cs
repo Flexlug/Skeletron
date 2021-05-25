@@ -85,11 +85,11 @@ namespace WAV_Bot_DSharp.Services.Entities
                 if (!comsDict.ContainsKey(skModule.ModuleName))
                     comsDict.Add(skModule.ModuleName, new List<string>());
 
-                comsDict[skModule.ModuleName].Add($"`{commands.Name}` : {commands.Description}");
+                comsDict[skModule.ModuleName].Add($"`{commands.Name}`");
             }
 
             foreach (var kvp in comsDict)
-                _embed.AddField(kvp.Key, string.Join('\n', kvp.Value));
+                _embed.AddField(kvp.Key, string.Join(' ', kvp.Value));
             _embed.WithTitle("Commands overview");
 
             return this;

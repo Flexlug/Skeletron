@@ -22,9 +22,8 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         /// Добавить или обновить данные о сервере, на котором играет участник
         /// </summary>
         /// <param name="uid">Uid участника</param>
-        /// <param name="server">Название сервера</param>
-        /// <param name="id">ID пользователя на сервере</param>
-        public void AddOsuServerInfo(ulong uid, OsuServer server, int id);
+        /// <param name="profile">Информация об osu! профиле.</param>
+        public void AddOsuServerInfo(ulong uid, WAVMemberOsuProfileInfo profile);
 
         /// <summary>
         /// Получить информацию об osu! профиле участника WAV

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -24,12 +25,17 @@ namespace WAV_Bot_DSharp.Commands
 
         private OsuEnums osuEnums;
 
+        private DiscordGuild guild;
+
         public UserCommands(ILogger<UserCommands> logger,
                             IWAVMembersProvider wavMembers,
-                            OsuEnums osuEnums)
+                            OsuEnums osuEnums,
+                            DiscordClient client,
+                            DiscordGuild guild)
         {
             ModuleName = "Разное";
-            
+
+            this.guild = guild;
             this.logger = logger;
             this.wavMembers = wavMembers;
 
@@ -39,22 +45,43 @@ namespace WAV_Bot_DSharp.Commands
         }
 
         [Command("profile"), Description("Получить информацию о своём W.w.W профиле."), RequireGuild]
-        public async Task GetProfile(CommandContext command)
+        public async Task GetProfile(CommandContext commandContext)
         {
-            WAVMember member = wavMembers.GetMember(command.Member.Id);
+            await GetProfile(commandContext, commandContext.Member);
+        }
+
+        [Command("profile-by-nickname"), Description("Получить информацию о своём W.w.W профиле."), RequireGuild]
+        public async Task GetProfile(CommandContext commandContext,
+            string username)
+        {
+            DiscordMember member = (await guild.GetAllMembersAsync()).FirstOrDefault(x => x.Username == username);
+            if (member is null)
+            {
+                await commandContext.RespondAsync("Не удалось найти такого пользователя.");
+                return;
+            }
+
+            await GetProfile(commandContext, member);
+        }
+
+        [Command("profile"), Description("Получить информацию о своём W.w.W профиле."), RequireGuild]
+        public async Task GetProfile(CommandContext commandContext,
+            DiscordMember dmember)
+        {
+            WAVMember member = wavMembers.GetMember(dmember.Id);
 
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
                 .WithTitle($"Информация об участнике WAV")
-                .WithThumbnail(command.Member.AvatarUrl);
+                .WithThumbnail(dmember.AvatarUrl);
 
             StringBuilder overallInfo = new StringBuilder();
-            overallInfo.AppendLine($"Никнейм: {command.Member.DisplayName}");
+            overallInfo.AppendLine($"__Никнейм__: {dmember.DisplayName}");
 
             StringBuilder osuServersSb = new StringBuilder();
             if (member.OsuServers.Count != 0)
             {
                 foreach (var server in member.OsuServers)
-                    osuServersSb.AppendLine($"{osuEnums.OsuServerToString(server.Server)} : {server.Nickname}");
+                    osuServersSb.AppendLine($"__{osuEnums.OsuServerToString(server.Server)}__: {server.Nickname}");
             }
             else 
             {
@@ -66,19 +93,22 @@ namespace WAV_Bot_DSharp.Commands
             {
                 if (member.CompitionInfo.NonGrata)
                     compitSb.AppendLine("__**Non-grata: Да**__\n");
-                compitSb.AppendLine("Зарегистрирован: Да");
-                compitSb.AppendLine($"Средний PP: {member.CompitionInfo.AvgPP}");
-                compitSb.AppendLine($"Категория: {osuEnums.CategoryToString(member.CompitionInfo.Category)}");
-                compitSb.AppendLine($"Уведомления: {member.CompitionInfo.Notifications}");
+                compitSb.AppendLine("__Зарегистрирован__: Да");
+                compitSb.AppendLine($"__Средний PP__: {Math.Round(member.CompitionInfo.AvgPP, 2)}");
+                compitSb.AppendLine($"__Сервер__: {osuEnums.OsuServerToString(member.CompitionInfo.Server)}");
+                compitSb.AppendLine($"__Категория__: {osuEnums.CategoryToString(member.CompitionInfo.Category)}");
+                compitSb.AppendLine($"__Уведомления__: {member.CompitionInfo.Notifications}");
             }
             else
             {
-                compitSb.Append('-');
+                compitSb.Append("__Зарегистрирован__: Нет");
             }
 
             embedBuilder.WithDescription(overallInfo.ToString())
                         .AddField("Привязанные osu! профили:", osuServersSb.ToString())
                         .AddField("W.m.W", compitSb.ToString());
+
+            await commandContext.RespondAsync(embed: embedBuilder.Build());
         }
 
         [Command("r"), Description("Переслать сообщение в другой канал."), RequireGuild]

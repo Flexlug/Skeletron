@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,13 +16,18 @@ namespace WAV_Bot_DSharp.Converters
         private Regex gatariBMSUrl { get; set; }
         private Regex gatariBMUrl { get; set; }
 
-        public OsuRegex()
+        private ILogger<OsuRegex> logger;
+
+        public OsuRegex(ILogger<OsuRegex> logger)
         {
             this.banchoBMandBMSUrl = new Regex(@"http[s]?:\/\/osu.ppy.sh\/beatmapsets\/([0-9]*)#osu\/([0-9]*)");
             this.gatariBMSUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/s\/([0-9]*)");
             this.gatariBMUrl = new Regex(@"http[s]?:\/\/osu.gatari.pw\/b\/([0-9]*)");
             this.banchoUserId = new Regex(@"http[s]?:\/\/osu.ppy.sh\/users\/([0-9]*)");
             this.gatariUserId = new Regex(@"http[s]?:\/\/osu.gatari.pw\/u\/([0-9]*)");
+
+            this.logger = logger;
+            logger.LogInformation("OsuRegex loaded");
         }
 
 

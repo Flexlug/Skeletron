@@ -8,6 +8,7 @@ using DSharpPlus.Entities;
 
 using WAV_Osu_NetApi.Models.Bancho;
 using WAV_Osu_NetApi.Models.Gatari;
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Converters
 {
@@ -19,10 +20,16 @@ namespace WAV_Bot_DSharp.Converters
         private OsuEmoji osuEmoji { get; set; }
         private OsuEnums osuEnums { get; set; }
 
-        public OsuEmbed(OsuEmoji emoji, OsuEnums enums)
+        private ILogger<OsuEmbed> logger;
+
+        public OsuEmbed(OsuEmoji emoji, OsuEnums enums, ILogger<OsuEmbed> logger)
         {
             this.osuEmoji = emoji;
             this.osuEnums = enums;
+
+            this.logger = logger;
+
+            logger.LogInformation("OsuEmbed loaded");
         }
 
         /// <summary>

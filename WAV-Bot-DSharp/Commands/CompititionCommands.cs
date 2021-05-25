@@ -37,8 +37,6 @@ namespace WAV_Bot_DSharp.Commands
         private DiscordChannel wavScoresChannel;
         private DiscordGuild guild;
 
-        private readonly ulong WAV_UID = 708860200341471264;
-
         private IWAVCompitProvider wavCompit;
         private IWAVMembersProvider wavMembers;
         private ICompititionService compititionService;
@@ -47,69 +45,49 @@ namespace WAV_Bot_DSharp.Commands
                                    OsuEmbed osuEmbeds,
                                    OsuEnums osuEnums,
                                    DiscordClient client,
+                                   DiscordGuild guild,
+                                   IWAVMembersProvider wavMembers,
                                    IWAVCompitProvider wavCompit,
                                    ICompititionService compititionService)
         {
             this.osuEmbeds = osuEmbeds;
             this.osuEnums = osuEnums;
             this.logger = logger;
+            this.guild = guild;
             this.wavCompit = wavCompit;
             this.wavMembers = wavMembers;
             this.compititionService = compititionService;
 
-            this.guild = client.GetGuildAsync(WAV_UID).Result;
             this.wavScoresChannel = client.GetChannelAsync(829466881353711647).Result;
+
+            this.ModuleName = "W.m.W команды";
 
             this.logger.LogInformation("CompititionCommands loaded");
         }
 
-        [Command("register-manual"), Description("Зарегистрировать другого участника в конкурсе"), RequirePermissions(Permissions.Administrator)]
+        [Command("register"), Description("Зарегистрироваться в конкурсе W.m.W и получить категорию. Зарегистрироваться можно только один раз. Средний PP будет время от времени пересчитываться.")]
+        public async Task Register(CommandContext commandContext,
+            [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
+        {
+            await RegisterUser(commandContext, commandContext.Member, strServer);
+        }
+
+        [Command("register-manual-by-nickname"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator)]
         public async Task RegisterUser(CommandContext commandContext,
             [Description("Регистрируемый участник")] string strMember,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
         {
-            DiscordMember dmember = guild.Members.FirstOrDefault(x => x.Value.Username == strMember).Value;
+            DiscordMember dmember = (await guild.GetAllMembersAsync()).FirstOrDefault(x => x.Username == strMember);
             if (dmember is null)
             {
                 await commandContext.RespondAsync("Не удалось найти такого пользователя.");
                 return;
             }
 
-            WAVMember member = wavMembers.GetMember(dmember.Id);
-
-            if (member.OsuServers.Count == 0)
-            {
-                await commandContext.RespondAsync("К Вашему профилю ещё нет привязаных osu! профилей. Привяжите свой профиль через `osuset`.");
-                return;
-            }
-
-            OsuServer? mbServer = osuEnums.StringToOsuServer(strServer);
-            if (mbServer is null)
-            {
-                await commandContext.RespondAsync($"Не удалось распознать название сервера {strServer}.");
-                return;
-            }
-
-            OsuServer server = (OsuServer)mbServer;
-            WAVMemberOsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
-            if (profileInfo is null)
-            {
-                await commandContext.RespondAsync($"К Вашему профилю не привязанного профиля сервера {osuEnums.OsuServerToString(server)}.");
-                return;
-            }
-
-            try
-            {
-                await compititionService.RegisterMember(commandContext.Member, profileInfo);
-                await commandContext.RespondAsync($"Регистрация прошла успешно.");
-            }
-            catch (Exception e)
-            {
-                await commandContext.RespondAsync(e.Message);
-            }
+            await RegisterUser(commandContext, dmember, strServer);
         }
 
-        [Command("register-manual"), Description("Зарегистрировать другого участника в конкурсе"), RequirePermissions(Permissions.Administrator)]
+        [Command("register-manual"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator)]
         public async Task RegisterUser(CommandContext commandContext,
             [Description("Регистрируемый участник")] DiscordMember dmember,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
@@ -139,53 +117,10 @@ namespace WAV_Bot_DSharp.Commands
 
             try
             {
-                await compititionService.RegisterMember(commandContext.Member, profileInfo);
+                await compititionService.RegisterMember(dmember, profileInfo);
                 await commandContext.RespondAsync($"Регистрация прошла успешно.");
             }
             catch (Exception e)
-            {
-                await commandContext.RespondAsync(e.Message);
-            }
-        }
-
-        [Command("register"), Description("Зарегистрироваться в конкурсе W.m.W и получить категорию. Зарегистрироваться можно только один раз. Средний PP будет время от времени пересчитываться.")]
-        public async Task Register(CommandContext commandContext,
-            [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
-        {
-            WAVMember member = wavMembers.GetMember(commandContext.Member.Id);
-            if (member.CompitionInfo is not null)
-            {
-                await commandContext.RespondAsync("Вы уже зарегистрированы. В случае ошибки обратитесь к администрации сервера.");
-                return;
-            }
-
-            if (member.OsuServers.Count == 0)
-            {
-                await commandContext.RespondAsync("К Вашему профилю ещё нет привязаных osu! профилей. Привяжите свой профиль через `osuset`.");
-                return;
-            }
-
-            OsuServer? mbServer = osuEnums.StringToOsuServer(strServer);
-            if (mbServer is null)
-            {
-                await commandContext.RespondAsync($"Не удалось распознать название сервера {strServer}.");
-                return;
-            }
-
-            OsuServer server = (OsuServer)mbServer;
-            WAVMemberOsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
-            if (profileInfo is null)
-            {
-                await commandContext.RespondAsync($"К Вашему профилю не привязанного профиля сервера {osuEnums.OsuServerToString(server)}.");
-                return;
-            }
-
-            try
-            {
-                await compititionService.RegisterMember(commandContext.Member, profileInfo);
-                await commandContext.RespondAsync($"Регистрация прошла успешно.");
-            }
-            catch(Exception e)
             {
                 await commandContext.RespondAsync(e.Message);
             }

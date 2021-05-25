@@ -31,7 +31,6 @@ namespace WAV_Bot_DSharp.Services.Entities
     public class RecognizerService : IRecognizerService
     {
         private DiscordClient client;
-        private ILogger<RecognizerService> logger;
         private WebClient webClient;
         private Recognizer recognizer;
 
@@ -41,15 +40,17 @@ namespace WAV_Bot_DSharp.Services.Entities
         private Dictionary<int, DateTime> ignoreList;
         private OsuEmoji emoji;
         private OsuEmbed utils;
-        private ShedulerService sheduler;
         private BackgroundQueue queue;
+
+        private ILogger<RecognizerService> logger;
+        private IShedulerService sheduler;
 
         public RecognizerService(DiscordClient client, 
                                  Settings settings, 
                                  ILogger<RecognizerService> logger, 
                                  OsuEmoji emoji, 
                                  OsuEmbed utils,
-                                 ShedulerService sheduler)
+                                 IShedulerService sheduler)
         {
             this.client = client;
             this.logger = logger;
@@ -68,7 +69,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             queue = new BackgroundQueue();
 
-            logger.LogInformation("Osu service started");
+            logger.LogInformation("RecognizerService loaded");
             ConfigureFilesInterceptor(client);
         }
 

@@ -49,10 +49,9 @@ namespace WAV_Bot_DSharp.Commands
 
         private ShedulerService sheduler;
 
-        private readonly ulong WAV_UID = 708860200341471264;
-
         public OsuCommands(ILogger<OsuCommands> logger,
-                           DiscordClient client,
+                           DiscordClient client, 
+                           DiscordGuild guild,
                            OsuEmbed osuEmbeds,
                            OsuEmoji osuEmoji,
                            OsuRegex osuRegex,
@@ -71,7 +70,7 @@ namespace WAV_Bot_DSharp.Commands
             this.wavMembers = wavMembers;
             this.wavCompit = wavProvider;
 
-            this.guild = client.GetGuildAsync(WAV_UID).Result;
+            this.guild = guild;
 
             this.osuEmbeds = osuEmbeds;
             this.osuEmoji = osuEmoji;
@@ -204,7 +203,6 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-
         [Command("osu"), Description("Получить информацию об osu! профиле"), RequireGuild]
         public async Task OsuProfile(CommandContext commandContext,
             [Description("osu! никнейм")] string nickname,
@@ -282,7 +280,7 @@ namespace WAV_Bot_DSharp.Commands
 
             ulong discordId = commandContext.Member.Id;
 
-            OsuServer? mbChoosedServer = osuEnums.StringToOsuServer(args.FirstOrDefault().TrimStart('-') ?? "bancho");
+            OsuServer? mbChoosedServer = osuEnums.StringToOsuServer(args.FirstOrDefault()?.TrimStart('-') ?? "bancho");
             if (mbChoosedServer is null)
             {
                 await commandContext.RespondAsync($"Указанный сервер не поддерживается.");
@@ -342,6 +340,39 @@ namespace WAV_Bot_DSharp.Commands
             await SetOsuProfileFor(commandContext, member, nickname, args);
         }
 
+
+        [Command("osuset-manual-by-nickname"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
+        public async Task OsuSet(CommandContext commandContext,
+            [Description("Пользователь WAV сервера")] string member,
+            [Description("Никнейм osu! профиля")] string nickname,
+            [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
+        {
+            DiscordMember dmember = (await guild.GetAllMembersAsync()).FirstOrDefault(x => x.Username == nickname);
+            if (dmember is null)
+            {
+                await commandContext.RespondAsync("Не удалось найти такого пользователя.");
+                return;
+            }
+
+            await SetOsuProfileFor(commandContext, dmember, nickname, args);
+        }
+
+        [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
+        public async Task OsuSet(CommandContext commandContext,
+            [Description("Пользователь WAV сервера")] ulong uid,
+            [Description("Никнейм osu! профиля")] string nickname,
+            [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
+        {
+            DiscordMember dmember = await guild.GetMemberAsync(uid);
+            if (dmember is null)
+            {
+                await commandContext.RespondAsync("Не удалось найти такого пользователя.");
+                return;
+            }
+
+            await SetOsuProfileFor(commandContext, dmember, nickname, args);
+        }
+
         [Command("osuset"), Description("Добавить информацию о своём osu! профиле"), RequireGuild]
         public async Task OsuSet(CommandContext commandContext,
             [Description("Никнейм osu! профиля")] string nickname,
@@ -351,14 +382,11 @@ namespace WAV_Bot_DSharp.Commands
         }
 
 
-        public async Task SetOsuProfileFor(CommandContext commandContext, DiscordUser user, string nickname, params string[] args)
+        public async Task SetOsuProfileFor(CommandContext commandContext, DiscordMember user, string nickname, params string[] args)
         {
             ulong discordId = user.Id;
 
-            WAVMember member = null;
-
-            if (wavMembers.GetMember(discordId) is null)
-                member = new WAVMember(discordId);
+            WAVMember member = wavMembers.GetMember(discordId);
 
             if (!(commandContext.Channel.Name.Contains("-bot") || commandContext.Channel.Name.Contains("dev-announce")))
             {
@@ -375,7 +403,7 @@ namespace WAV_Bot_DSharp.Commands
             int osu_id = 0;
             string osu_nickname = string.Empty;
 
-            OsuServer? mbChoosedServer = osuEnums.StringToOsuServer(args.FirstOrDefault().TrimStart('-') ?? "bancho");
+            OsuServer? mbChoosedServer = osuEnums.StringToOsuServer(args.FirstOrDefault()?.TrimStart('-') ?? "bancho");
             if (mbChoosedServer is null)
             {
                 await commandContext.RespondAsync($"Указанный сервер не поддерживается.");
@@ -415,8 +443,15 @@ namespace WAV_Bot_DSharp.Commands
 
             try
             {
-                wavMembers.AddOsuServerInfo(discordId, choosedServer, osu_id);
-                await commandContext .RespondAsync($"Вы успешно добавили информацию о профиле `{osu_nickname}` на сервере `{osuEnums.OsuServerToString(choosedServer)}` для `{user}`");
+                WAVMemberOsuProfileInfo profile = new WAVMemberOsuProfileInfo()
+                {
+                    Id = osu_id,
+                    Nickname = osu_nickname,
+                    Server = choosedServer
+                };
+
+                wavMembers.AddOsuServerInfo(discordId, profile);
+                await commandContext.RespondAsync($"Вы успешно добавили информацию о профиле `{osu_nickname}` на сервере `{osuEnums.OsuServerToString(choosedServer)}` для `{user.Username}`");
             }
             catch (NullReferenceException)
             {
