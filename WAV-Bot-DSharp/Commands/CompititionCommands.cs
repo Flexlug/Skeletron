@@ -270,15 +270,11 @@ namespace WAV_Bot_DSharp.Commands
                 }
             }
 
-            DiscordMember member = await guild.GetMemberAsync(msg.Author.Id);
-            string category = member.Roles.Select(x => x.Name)
-                                          .FirstOrDefault((x) =>
-                                          {
-                                              foreach (var xx in (new string[] { "beginner", "alpha", "beta", "gamma", "delta", "epsilon" }))
-                                                  if (x.Contains(xx))
-                                                      return true;
-                                              return false;
-                                          });
+            if (replay.ReplayTimestamp > compitInfo.Deadline || replay.ReplayTimestamp < compitInfo.StartDate)
+            {
+                await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен не во время конкурса.");
+                return;
+            }
 
             bool correctMap = false;
 
@@ -325,7 +321,7 @@ namespace WAV_Bot_DSharp.Commands
             sb.AppendLine($"Osu nickname: `{replay.PlayerName}`");
             sb.AppendLine($"Discord nickname: `{msg.Author.Username}`");
             sb.AppendLine($"Score: `{replay.ReplayScore:N0}`"); // Format: 123456789 -> 123 456 789
-            sb.AppendLine($"Category: `{category ?? "No category"}`");
+            sb.AppendLine($"Category: `{osuEnums.CategoryToString(compitProfile.Category) ?? "No category"}`");
             sb.AppendLine($"Mods: `{osuEnums.ModsToString((WAV_Osu_NetApi.Models.Bancho.Mods)replay.Mods)}`");
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder().WithAuthor(msg.Author.Username, iconUrl: msg.Author.AvatarUrl)

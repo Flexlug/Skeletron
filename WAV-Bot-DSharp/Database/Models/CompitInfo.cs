@@ -37,6 +37,11 @@ namespace WAV_Bot_DSharp.Database.Models
         public DateTime? Deadline { get; set; }
 
         /// <summary>
+        /// Дата начала конкурса
+        /// </summary>
+        public DateTime? StartDate { get; set; }
+
+        /// <summary>
         /// ID карты для категории Beginner
         /// </summary>
         public string BeginnerMapHash { get; set; }
