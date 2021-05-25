@@ -19,7 +19,7 @@ namespace WAV_Bot_DSharp.Commands
 
         public FunCommands(DiscordClient client, ILogger<FunCommands> logger)
         {
-            ModuleName = "Fun commands";
+            ModuleName = "Развлечения";
 
             this.logger = logger;
             this.client = client;

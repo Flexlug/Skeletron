@@ -15,16 +15,16 @@ using DSharpPlus.CommandsNext.Attributes;
 using OsuParsers.Decoders;
 using OsuParsers.Replays;
 
+using WAV_Osu_NetApi.Models;
 using WAV_Bot_DSharp.Converters;
 using WAV_Bot_DSharp.Services.Entities;
 using WAV_Bot_DSharp.Database.Interfaces;
 using WAV_Bot_DSharp.Database.Models;
 using WAV_Bot_DSharp.Services.Interfaces;
-using WAV_Osu_NetApi.Models;
 
 namespace WAV_Bot_DSharp.Commands
 {
-    [Group("wmw")]
+    [RequireGuild]
     public class CompititionCommands : SkBaseCommandModule
     {
         private ILogger<CompititionCommands> logger;
@@ -58,11 +58,88 @@ namespace WAV_Bot_DSharp.Commands
             this.wavMembers = wavMembers;
             this.compititionService = compititionService;
 
+            this.webClient = new WebClient();
+
             this.wavScoresChannel = client.GetChannelAsync(829466881353711647).Result;
 
             this.ModuleName = "W.m.W команды";
 
             this.logger.LogInformation("CompititionCommands loaded");
+        }
+
+        [Command("notify-manual"), Description("Включить или отключить пинги по всему, что связано с конкурсом"), RequireUserPermissions(Permissions.Administrator)]
+        public async Task ToggleNotifications(CommandContext commandContext,
+            DiscordMember discordMember,
+            bool toggle)
+        {
+            if (discordMember is null)
+            {
+                await commandContext.RespondAsync("Не удалось найти такого пользователя.");
+                return;
+            }
+
+            WAVMember member = wavMembers.GetMember(discordMember.Id);
+
+            if (member.CompitionInfo is null)
+            {
+                await commandContext.RespondAsync("Указаный пользователь не зарегистрирован.");
+                return;
+            }
+
+            if (toggle)
+            {
+                await compititionService.EnableNotifications(discordMember, member.CompitionInfo);
+                await commandContext.RespondAsync("Уведомления включены.");
+            }
+            else
+            {
+                await compititionService.DisableNotifications(discordMember);
+                await commandContext.RespondAsync("Уведомления выключены.");
+            }
+        }
+
+        [Command("notify"), Description("Включить или отключить пинги по всему, что связано с конкурсом")]
+        public async Task ToggleNotifications(CommandContext commandContext,
+            [Description("True или False")] bool toggle)
+        {
+            await ToggleNotifications(commandContext, commandContext.Member, toggle);
+        }
+
+        [Command("recount"), Description("Пересчитать среднее PP"), Cooldown(1, 300, CooldownBucketType.Global)]
+        public async Task Recount(CommandContext commandContext)
+        {
+            WAVMember member = wavMembers.GetMember(commandContext.Member.Id);
+
+            if (member.OsuServers.Count == 0)
+            {
+                await commandContext.RespondAsync("К Вашему профилю ещё нет привязаных osu! профилей. Привяжите свой профиль через `osuset`.");
+                return;
+            }
+
+            if (member.CompitionInfo is null)
+            {
+                await commandContext.RespondAsync("Вы не зарегистрированы.");
+                return;
+            }
+
+            OsuServer server = member.CompitionInfo.Server;
+
+            WAVMemberOsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
+            if (profileInfo is null)
+            {
+                await commandContext.RespondAsync($"К Вашему профилю нет привязанного профиля сервера {osuEnums.OsuServerToString(server)}.");
+                return;
+            }
+
+            try
+            {
+                await compititionService.RegisterMember(commandContext.Member, profileInfo);
+                await commandContext.RespondAsync($"Средний PP пересчитан.");
+            }
+            catch (Exception e)
+            {
+                await commandContext.RespondAsync(e.Message);
+            }
         }
 
         [Command("register"), Description("Зарегистрироваться в конкурсе W.m.W и получить категорию. Зарегистрироваться можно только один раз. Средний PP будет время от времени пересчитываться.")]

@@ -266,8 +266,6 @@ namespace WAV_Bot_DSharp.Services
 
             wavCompit.AddCompitProfile(member.Id, compitProfile);
 
-
-
             await EnableNotifications(member, compitProfile);
         }
 
