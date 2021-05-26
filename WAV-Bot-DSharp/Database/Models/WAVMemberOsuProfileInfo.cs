@@ -21,11 +21,11 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// ID пользователя
         /// </summary>
-        public int Id { get; set; }
+        public int OsuId { get; set; }
 
         /// <summary>
         /// Никнейм пользователя на сервере
         /// </summary>
-        public string Nickname { get; set; }
+        public string OsuNickname { get; set; }
     }
 }

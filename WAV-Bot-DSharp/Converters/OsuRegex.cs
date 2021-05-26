@@ -75,7 +75,7 @@ namespace WAV_Bot_DSharp.Converters
         /// Get beatmapset and beatmap id from gatari url
         /// </summary>
         /// <param name="msg">Message, which contains url</param>
-        /// <returns>Tuple, where first element is beatmapset id and second element - beatmap id</returns>
+        /// <returns>Beatmap id</returns>
         public int? GetBMIdFromGatariUrl(string msg)
         {
             Match match = gatariBMUrl.Match(msg);

@@ -24,7 +24,7 @@ using WAV_Bot_DSharp.Services.Interfaces;
 
 namespace WAV_Bot_DSharp.Commands
 {
-    [RequireGuild]
+    [Group("wmw")]
     public class CompititionCommands : SkBaseCommandModule
     {
         private ILogger<CompititionCommands> logger;
@@ -34,7 +34,6 @@ namespace WAV_Bot_DSharp.Commands
 
         private WebClient webClient;
 
-        private DiscordChannel wavScoresChannel;
         private DiscordGuild guild;
 
         private IWAVCompitProvider wavCompit;
@@ -60,14 +59,93 @@ namespace WAV_Bot_DSharp.Commands
 
             this.webClient = new WebClient();
 
-            this.wavScoresChannel = client.GetChannelAsync(829466881353711647).Result;
-
             this.ModuleName = "W.m.W команды";
 
             this.logger.LogInformation("CompititionCommands loaded");
         }
 
-        [Command("notify-manual"), Description("Включить или отключить пинги по всему, что связано с конкурсом"), RequireUserPermissions(Permissions.Administrator)]
+        [Command("start"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        public async Task StartCompit(CommandContext commandContext)
+        {
+            string checkResult = await compititionService.CompititionPreexecutionCheck();
+
+            if (checkResult == "done")
+            {
+                await compititionService.InitCompitition();
+                await commandContext.RespondAsync("Starting...");
+            }
+            else
+            {
+                await commandContext.RespondAsync($"`{checkResult}`");
+            }
+        }
+
+        [Command("stop"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        public async Task StopCompit(CommandContext commandContext)
+        {
+            await compititionService.StopCompition();
+            await commandContext.RespondAsync("Stopped");
+        }
+
+        [Command("update-leaderboard"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        public async Task UpdateLeaderboard(CommandContext commandContext)
+        {
+            await compititionService.UpdateLeaderboard();
+            await commandContext.RespondAsync("Leaderboard updated");
+        }
+
+        [Command("set-map"), Description("Задать карту для выбранной категории"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        public async Task SetMap(CommandContext commandContext,
+            [Description("Ссылка на карту (только bancho)")] string url,
+            [Description("Категория")] string category)
+        {
+            if (compititionService.GetCompitInfo().IsRunning)
+            {
+                await commandContext.RespondAsync("Нельзя редактировать маппул во время конкурса.");
+                return;
+            }
+
+            bool res = await compititionService.SetMap(url, category);
+            if (!res)
+                await commandContext.RespondAsync("Не удалось задать карту. Проверьте ссылку или имя категории.");
+            else
+                await commandContext.RespondAsync("Карта успешно задана.");
+        }
+
+        [Command("set-deadline"), Description("Задать дату окончания конкурса"), RequireGuild, Hidden]
+        public async Task SetDeadline(CommandContext commandContext,
+            [Description("Дата, когда конкурс должен закончиться")] DateTime deadline)
+        {
+            if (deadline < DateTime.Now)
+                await commandContext.RespondAsync($"Неправильная дата: {deadline}.");
+
+            await compititionService.SetDeadline(deadline);
+            await commandContext.RespondAsync($"Дата окончания конкурса: {deadline}.");
+        }
+
+        [Command("set-scores-channel"), Description("Задать канал для скоров"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        public async Task SetScoresChannel(CommandContext commandContext,
+            [Description("Текстовый канал")] DiscordChannel channel)
+        {
+            bool res = await compititionService.SetScoresChannel(channel.Id.ToString());
+            if (!res)
+                await commandContext.RespondAsync("Не удалось задать канал для скоров. Возможно канал недоступен для бота.");
+            else
+                await commandContext.RespondAsync("Канал для скоров успешно задан.");
+        }
+
+        [Command("set-leaderboard-channel"), Description("Задать канал для лидерборда"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        public async Task SetLeaderboardChannel(CommandContext commandContext,
+            [Description("Текстовый канал")] DiscordChannel channel)
+        {
+            bool res = await compititionService.SetLeaderboardChannel(channel.Id.ToString());
+            if (!res)
+                await commandContext.RespondAsync("Не удалось задать канал для лидерборда. Возможно канал недоступен для бота.");
+            else
+                await commandContext.RespondAsync("Канал для лидерборда успешно задан.");
+        }
+
+        [Command("notify-manual"), Description("Включить или отключить пинги по всему, что связано с конкурсом"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
         public async Task ToggleNotifications(CommandContext commandContext,
             DiscordMember discordMember,
             bool toggle)
@@ -78,9 +156,9 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            WAVMember member = wavMembers.GetMember(discordMember.Id);
+            WAVMember member = wavMembers.GetMember(discordMember.Id.ToString());
 
-            if (member.CompitionInfo is null)
+            if (member.CompitionProfile is null)
             {
                 await commandContext.RespondAsync("Указаный пользователь не зарегистрирован.");
                 return;
@@ -88,7 +166,7 @@ namespace WAV_Bot_DSharp.Commands
 
             if (toggle)
             {
-                await compititionService.EnableNotifications(discordMember, member.CompitionInfo);
+                await compititionService.EnableNotifications(discordMember, member.CompitionProfile);
                 await commandContext.RespondAsync("Уведомления включены.");
             }
             else
@@ -98,17 +176,17 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        [Command("notify"), Description("Включить или отключить пинги по всему, что связано с конкурсом")]
+        [Command("notify"), Description("Включить или отключить пинги по всему, что связано с конкурсом"), RequireGuild]
         public async Task ToggleNotifications(CommandContext commandContext,
             [Description("True или False")] bool toggle)
         {
             await ToggleNotifications(commandContext, commandContext.Member, toggle);
         }
 
-        [Command("recount"), Description("Пересчитать среднее PP"), Cooldown(1, 300, CooldownBucketType.Global)]
+        [Command("recount"), Description("Пересчитать среднее PP"), Cooldown(1, 300, CooldownBucketType.Global), RequireGuild]
         public async Task Recount(CommandContext commandContext)
         {
-            WAVMember member = wavMembers.GetMember(commandContext.Member.Id);
+            WAVMember member = wavMembers.GetMember(commandContext.Member.Id.ToString());
 
             if (member.OsuServers.Count == 0)
             {
@@ -116,13 +194,13 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            if (member.CompitionInfo is null)
+            if (member.CompitionProfile is null)
             {
                 await commandContext.RespondAsync("Вы не зарегистрированы.");
                 return;
             }
 
-            OsuServer server = member.CompitionInfo.Server;
+            OsuServer server = member.CompitionProfile.Server;
 
             WAVMemberOsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
             if (profileInfo is null)
@@ -142,14 +220,14 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        [Command("register"), Description("Зарегистрироваться в конкурсе W.m.W и получить категорию. Зарегистрироваться можно только один раз. Средний PP будет время от времени пересчитываться.")]
+        [Command("register"), Description("Зарегистрироваться в конкурсе W.m.W и получить категорию. Зарегистрироваться можно только один раз. Средний PP будет время от времени пересчитываться."), RequireGuild]
         public async Task Register(CommandContext commandContext,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
         {
             await RegisterUser(commandContext, commandContext.Member, strServer);
         }
 
-        [Command("register-manual-by-nickname"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator)]
+        [Command("register-manual-by-nickname"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
         public async Task RegisterUser(CommandContext commandContext,
             [Description("Регистрируемый участник")] string strMember,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
@@ -164,12 +242,12 @@ namespace WAV_Bot_DSharp.Commands
             await RegisterUser(commandContext, dmember, strServer);
         }
 
-        [Command("register-manual"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator)]
+        [Command("register-manual"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
         public async Task RegisterUser(CommandContext commandContext,
             [Description("Регистрируемый участник")] DiscordMember dmember,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
         {
-            WAVMember member = wavMembers.GetMember(dmember.Id);
+            WAVMember member = wavMembers.GetMember(dmember.Id.ToString());
 
             if (member.OsuServers.Count == 0)
             {
@@ -231,13 +309,19 @@ namespace WAV_Bot_DSharp.Commands
 
             CompitInfo compitInfo = compititionService.GetCompitInfo();
 
-            if (compitInfo.IsRunning)
+            if (!compitInfo.IsRunning)
             {
                 await commandContext.RespondAsync("На данный момент конкурс ещё не запущен. Следите за обновлениями.");
                 return;
             }
 
-            WAVMemberCompitProfile compitProfile = wavCompit.GetCompitProfile(commandContext.Member.Id);
+            WAVMember wavMember = wavMembers.GetMember(commandContext.User.Id.ToString());
+            WAVMemberCompitProfile compitProfile = wavCompit.GetCompitProfile(commandContext.User.Id.ToString());
+            if (compitProfile is null)
+            {
+                await commandContext.RespondAsync("Вы не зарегистрированы на конкурсе.");
+                return;
+            }
 
             if (compitProfile.NonGrata)
             {
@@ -270,7 +354,7 @@ namespace WAV_Bot_DSharp.Commands
                 }
             }
 
-            if (replay.ReplayTimestamp > compitInfo.Deadline || replay.ReplayTimestamp < compitInfo.StartDate)
+            if (replay.ReplayTimestamp + TimeSpan.FromHours(3) > compitInfo.Deadline || replay.ReplayTimestamp + TimeSpan.FromHours(3) < compitInfo.StartDate)
             {
                 await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен не во время конкурса.");
                 return;
@@ -281,39 +365,46 @@ namespace WAV_Bot_DSharp.Commands
             switch (compitProfile.Category)
             {
                 case CompitCategories.Beginner:
-                    if (replay.BeatmapMD5Hash == compitInfo.BeginnerMapHash)
+                    if (replay.BeatmapMD5Hash == compitInfo.BeginnerMap.checksum)
                         correctMap = true;
                     break;
 
                 case CompitCategories.Alpha:
-                    if (replay.BeatmapMD5Hash == compitInfo.AlphaMapHash)
+                    if (replay.BeatmapMD5Hash == compitInfo.AlphaMap.checksum)
                         correctMap = true;
                     break;
 
                 case CompitCategories.Beta:
-                    if (replay.BeatmapMD5Hash == compitInfo.BetaMapHash)
+                    if (replay.BeatmapMD5Hash == compitInfo.BetaMap.checksum)
                         correctMap = true;
                     break;
 
                 case CompitCategories.Gamma:
-                    if (replay.BeatmapMD5Hash == compitInfo.GammaMapHash)
+                    if (replay.BeatmapMD5Hash == compitInfo.GammaMap.checksum)
                         correctMap = true;
                     break;
 
                 case CompitCategories.Delta:
-                    if (replay.BeatmapMD5Hash == compitInfo.DeltaMapHash)
+                    if (replay.BeatmapMD5Hash == compitInfo.DeltaMap.checksum)
                         correctMap = true;
                     break;
 
                 case CompitCategories.Epsilon:
-                    if (replay.BeatmapMD5Hash == compitInfo.EpsilonMapHash)
+                    if (replay.BeatmapMD5Hash == compitInfo.EpsilonMap.checksum)
                         correctMap = true;
                     break;
             }
 
             if (!correctMap)
             {
-                await commandContext.RespondAsync($"Мы не можем принять данный скор по причине того, что он поставлен не на той карте, которая выдана вашей категории {osuEnums.CategoryToString(compitProfile.Category)}");
+                await commandContext.RespondAsync($"Мы не можем принять данный скор по причине того, что он поставлен не на той карте, которая выдана вашей категории {osuEnums.CategoryToString(wavMember.CompitionProfile.Category)}");
+                return;
+            }
+
+            string osuNickname = wavMember.OsuServers.FirstOrDefault(x => x.Server == compitProfile.Server).OsuNickname;
+            if (replay.PlayerName != osuNickname)
+            {
+                await commandContext.RespondAsync($"Ваш никнейм не совпадает с автором скора. Если вы меняли никнейм, вызовите `sk!wmw recount`");
                 return;
             }
 
@@ -321,7 +412,7 @@ namespace WAV_Bot_DSharp.Commands
             sb.AppendLine($"Osu nickname: `{replay.PlayerName}`");
             sb.AppendLine($"Discord nickname: `{msg.Author.Username}`");
             sb.AppendLine($"Score: `{replay.ReplayScore:N0}`"); // Format: 123456789 -> 123 456 789
-            sb.AppendLine($"Category: `{osuEnums.CategoryToString(compitProfile.Category) ?? "No category"}`");
+            sb.AppendLine($"Category: `{osuEnums.CategoryToString(wavMember.CompitionProfile.Category) ?? "No category"}`");
             sb.AppendLine($"Mods: `{osuEnums.ModsToString((WAV_Osu_NetApi.Models.Bancho.Mods)replay.Mods)}`");
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder().WithAuthor(msg.Author.Username, iconUrl: msg.Author.AvatarUrl)
@@ -332,13 +423,17 @@ namespace WAV_Bot_DSharp.Commands
                                                                  .AddField("File name:", $"`{attachment.FileName}`")
                                                                  .WithTimestamp(DateTime.Now);
 
+            DiscordChannel wavScoresChannel = guild.GetChannel(ulong.Parse(compitInfo.ScoresChannelUID));
             DiscordMessage scoreMessage = await wavScoresChannel.SendMessageAsync(new DiscordMessageBuilder()
                                                             .WithFile(new FileStream($"downloads/{fileName}", FileMode.Open))
                                                             .WithEmbed(embed));
 
-            wavCompit.SubmitScore(new CompitScore()
+
+            await compititionService.SubmitScore(new CompitScore()
             {
-                Player = commandContext.User.Id,
+                DiscordUID = commandContext.User.Id.ToString(),
+                Nickname = osuNickname,
+                Category = compitProfile.Category,
                 Score = replay.ReplayScore,
                 ScoreUrl = scoreMessage.Attachments.FirstOrDefault()?.Url
             });

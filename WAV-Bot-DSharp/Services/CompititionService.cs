@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 
+using WAV_Bot_DSharp.Converters;
 using WAV_Bot_DSharp.Database.Interfaces;
 using WAV_Bot_DSharp.Database.Models;
 using WAV_Bot_DSharp.Services.Entities;
@@ -14,11 +15,11 @@ using WAV_Bot_DSharp.Services.Interfaces;
 using WAV_Bot_DSharp.Services.Models;
 
 using WAV_Osu_NetApi;
-
-using Microsoft.Extensions.Logging;
 using WAV_Osu_NetApi.Models;
 using WAV_Osu_NetApi.Models.Bancho;
 using WAV_Osu_NetApi.Models.Gatari;
+
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Services
 {
@@ -30,6 +31,10 @@ namespace WAV_Bot_DSharp.Services
 
         private CompitInfo compititionInfo;
 
+        private OsuRegex osuRegex;
+        private OsuEnums osuEnums;
+        private OsuEmbed osuEmbed;
+
         private LeaderboardUpdateSheduledTask leaderboardUpdateTask;
 
         private DiscordGuild guild;
@@ -37,6 +42,7 @@ namespace WAV_Bot_DSharp.Services
 
         private DiscordChannel leaderboardChannel;
         private DiscordChannel scoresChannel;
+        private DiscordMessage leaderboardMessage;
 
         private BanchoApi bapi;
         private GatariApi gapi;
@@ -53,6 +59,9 @@ namespace WAV_Bot_DSharp.Services
         public CompititionService(IWAVCompitProvider wavCompit,
                                   IWAVMembersProvider wavMembers,
                                   IShedulerService sheduler,
+                                  OsuRegex osuRegex,
+                                  OsuEnums osuEnums,
+                                  OsuEmbed osuEmbed,
                                   DiscordClient client,
                                   DiscordGuild guild,
                                   BanchoApi bapi,
@@ -66,16 +75,14 @@ namespace WAV_Bot_DSharp.Services
             this.sheduler = sheduler;
             this.client = client;
 
+            this.osuRegex = osuRegex;
+            this.osuEnums = osuEnums;
+            this.osuEmbed = osuEmbed;
+
             this.bapi = bapi;
             this.gapi = gapi;
 
             this.compititionInfo = wavCompit.GetCompitionInfo();
-
-            if (compititionInfo.LeaderboardChannel is not null)
-                leaderboardChannel = client.GetChannelAsync((ulong)compititionInfo.LeaderboardChannel).Result;
-
-            if (compititionInfo.ScoresChannel is not null)
-                scoresChannel = client.GetChannelAsync((ulong)compititionInfo.ScoresChannel).Result;
 
             this.leaderboardUpdateTask = new LeaderboardUpdateSheduledTask(this);
 
@@ -103,9 +110,105 @@ namespace WAV_Bot_DSharp.Services
             }
         }
 
-        public void InitCompitition()
+        /// <summary>
+        /// Запустить конкурс. Создать лидерборд.
+        /// </summary>
+        public async Task InitCompitition()
         {
+            if (!string.IsNullOrEmpty(compititionInfo.LeaderboardMessageUID))
+            {
+                leaderboardMessage = await leaderboardChannel.GetMessageAsync(ulong.Parse(compititionInfo.LeaderboardMessageUID)) ??
+                                     await leaderboardChannel.SendMessageAsync(osuEmbed.ScoresToLeaderBoard(compititionInfo,
+                                                                                                            wavCompit.GetCategoryBestScores(CompitCategories.Beginner),
+                                                                                                            wavCompit.GetCategoryBestScores(CompitCategories.Alpha),
+                                                                                                            wavCompit.GetCategoryBestScores(CompitCategories.Beta),
+                                                                                                            wavCompit.GetCategoryBestScores(CompitCategories.Gamma),
+                                                                                                            wavCompit.GetCategoryBestScores(CompitCategories.Delta),
+                                                                                                            wavCompit.GetCategoryBestScores(CompitCategories.Epsilon)));
+            }
+            else
+            {
+                leaderboardMessage = await leaderboardChannel.SendMessageAsync(osuEmbed.ScoresToLeaderBoard(compititionInfo));
+                compititionInfo.StartDate = DateTime.Now;
+            }
 
+            compititionInfo.LeaderboardMessageUID = leaderboardMessage.Id.ToString();
+            compititionInfo.IsRunning = true;
+
+            UpdateCompitInfo();
+        }
+
+        public async Task StopCompition()
+        {
+            compititionInfo.IsRunning = false;
+
+            UpdateCompitInfo();
+        }
+
+        public async Task SubmitScore(CompitScore score)
+        {
+            wavCompit.SubmitScore(score);
+            await UpdateLeaderboard();
+        }
+
+        /// <summary>
+        /// Задать для категории карту
+        /// </summary>
+        /// <param name="mapUrl">Ссылка на карту (только bancho)</param>
+        /// <param name="category">Название категории</param>
+        public async Task<bool> SetMap(string mapUrl, string category)
+        {
+            Tuple<int, int> mapInfo = osuRegex.GetBMandBMSIdFromBanchoUrl(mapUrl);
+            if (mapInfo is null)
+                return false;
+
+            Beatmap beatmap = bapi.GetBeatmap(mapInfo.Item2);
+            if (beatmap is null)
+                return false;
+
+            CompitCategories? compitCategory = osuEnums.StringToCategory(category);
+            if (compitCategory is null)
+                return false;
+
+            switch (compitCategory)
+            {
+                case CompitCategories.Beginner:
+                    compititionInfo.BeginnerMap = beatmap;
+                    break;
+
+                case CompitCategories.Alpha:
+                    compititionInfo.AlphaMap = beatmap;
+                    break;
+
+                case CompitCategories.Beta:
+                    compititionInfo.BetaMap = beatmap;
+                    break;
+
+                case CompitCategories.Gamma:
+                    compititionInfo.GammaMap = beatmap;
+                    break;
+
+                case CompitCategories.Delta:
+                    compititionInfo.DeltaMap = beatmap;
+                    break;
+
+                case CompitCategories.Epsilon:
+                    compititionInfo.EpsilonMap = beatmap;
+                    break;
+
+                default:
+                    return false;
+            }
+
+            UpdateCompitInfo();
+
+            return true;
+        }
+
+        public async Task SetDeadline(DateTime deadline)
+        {
+            compititionInfo.Deadline = deadline;
+            UpdateCompitInfo();
         }
 
         /// <summary>
@@ -116,22 +219,22 @@ namespace WAV_Bot_DSharp.Services
         {
             StringBuilder sb = new StringBuilder();
 
-            if (compititionInfo.BeginnerMapHash is null)
+            if (compititionInfo.BeginnerMap is null)
                 sb.AppendLine("Не задана карта для категории Beginner");
 
-            if (string.IsNullOrEmpty(compititionInfo.AlphaMapHash))
+            if (compititionInfo.AlphaMap is null)
                 sb.AppendLine("Не задана карта для категории Alpha");
 
-            if (string.IsNullOrEmpty(compititionInfo.BetaMapHash))
+            if (compititionInfo.BetaMap is null)
                 sb.AppendLine("Не задана карта для категории Beta");
 
-            if (string.IsNullOrEmpty(compititionInfo.GammaMapHash))
+            if (compititionInfo.GammaMap is null)
                 sb.AppendLine("Не задана карта для категории Gamma");
 
-            if (string.IsNullOrEmpty(compititionInfo.DeltaMapHash))
+            if (compititionInfo.DeltaMap is null)
                 sb.AppendLine("Не задана карта для категории Delta");
 
-            if (string.IsNullOrEmpty(compititionInfo.EpsilonMapHash))
+            if (compititionInfo.EpsilonMap is null)
                 sb.AppendLine("Не задана карта для категории Epsilon");
 
 
@@ -145,27 +248,27 @@ namespace WAV_Bot_DSharp.Services
                     sb.AppendLine($"Некорректная дата окончания конкурса: {compititionInfo.Deadline}.");
             }
 
-            if (compititionInfo.LeaderboardChannel is null)
+            if (string.IsNullOrEmpty(compititionInfo.LeaderboardChannelUID))
             {
                 sb.AppendLine("Не задан канал для отображения лидерборда");
             }
             else
             {
-                leaderboardChannel = await client.GetChannelAsync((ulong)compititionInfo.LeaderboardChannel);
+                leaderboardChannel = await client.GetChannelAsync(ulong.Parse(compititionInfo.LeaderboardChannelUID));
                 if (leaderboardChannel is null)
-                    sb.AppendLine($"Не удалось получить доступ к каналу для лидерборда: {compititionInfo.LeaderboardChannel}");
+                    sb.AppendLine($"Не удалось получить доступ к каналу для лидерборда: {compititionInfo.LeaderboardChannelUID}");
             }
 
 
-            if (compititionInfo.ScoresChannel is null)
-            {
+            if (string.IsNullOrEmpty(compititionInfo.ScoresChannelUID)) 
+            { 
                 sb.AppendLine("Не задан канал для сбора скачаных скоров");
             }
             else
             {
-                scoresChannel = await client.GetChannelAsync((ulong)compititionInfo.ScoresChannel);
-                if (leaderboardChannel is null)
-                    sb.AppendLine($"Не удалось получить доступ к каналу для скачаных скоров: {compititionInfo.ScoresChannel}");
+                scoresChannel = await client.GetChannelAsync(ulong.Parse(compititionInfo.ScoresChannelUID));
+                if (scoresChannel is null)
+                    sb.AppendLine($"Не удалось получить доступ к каналу для скачаных скоров: {compititionInfo.ScoresChannelUID}");
             }
 
             if (sb.Length != 0)
@@ -178,34 +281,38 @@ namespace WAV_Bot_DSharp.Services
         /// Задать канал, в котором будет лидерборд
         /// </summary>
         /// <param name="channel">ID текстового канала</param>
-        public async Task SetLeaderboardChannel(ulong channel)
+        public async Task<bool> SetLeaderboardChannel(string channel)
         {
-            DiscordChannel lbChannel = await client.GetChannelAsync(channel);
+            DiscordChannel lbChannel = await client.GetChannelAsync(ulong.Parse(channel));
 
             if (lbChannel is null)
-                throw new NullReferenceException("Can't get access to channel");
+                return false;
 
-            compititionInfo.LeaderboardChannel = lbChannel.Id;
+            compititionInfo.LeaderboardChannelUID = lbChannel.Id.ToString();
             leaderboardChannel = lbChannel;
 
             UpdateCompitInfo();
+
+            return true;
         }
 
         /// <summary>
         /// Задать канал, куда будут отправляться скоры участников
         /// </summary>
         /// <param name="channel">ID текстового канала</param>
-        public async Task SetScoresChannel(ulong channel)
+        public async Task<bool> SetScoresChannel(string channel)
         {
-            DiscordChannel sChannel = await client.GetChannelAsync(channel);
+            DiscordChannel sChannel = await client.GetChannelAsync(ulong.Parse(channel));
 
             if (sChannel is null)
-                throw new NullReferenceException("Can't get access to channel");
+                return false;
 
-            compititionInfo.ScoresChannel = sChannel.Id;
+            compititionInfo.ScoresChannelUID = sChannel.Id.ToString();
             scoresChannel = sChannel;
 
             UpdateCompitInfo();
+
+            return true;
         }
 
         /// <summary>
@@ -223,7 +330,15 @@ namespace WAV_Bot_DSharp.Services
         /// </summary>
         public async Task UpdateLeaderboard()
         {
-            throw new NotImplementedException();
+            DiscordEmbed newEmbed = osuEmbed.ScoresToLeaderBoard(compititionInfo,
+                                                                 wavCompit.GetCategoryBestScores(CompitCategories.Beginner),
+                                                                 wavCompit.GetCategoryBestScores(CompitCategories.Alpha),
+                                                                 wavCompit.GetCategoryBestScores(CompitCategories.Beta),
+                                                                 wavCompit.GetCategoryBestScores(CompitCategories.Gamma),
+                                                                 wavCompit.GetCategoryBestScores(CompitCategories.Delta),
+                                                                 wavCompit.GetCategoryBestScores(CompitCategories.Epsilon));
+
+            await leaderboardMessage.ModifyAsync(embed: newEmbed);
         }
 
         /// <summary>
@@ -233,7 +348,7 @@ namespace WAV_Bot_DSharp.Services
         /// <param name="osuInfo">Информация о профиле</param>
         public async Task RegisterMember(DiscordMember member, WAVMemberOsuProfileInfo osuInfo)
         {
-            double avgPP = await CalculateAvgPP(osuInfo.Id, osuInfo.Server);
+            double avgPP = await CalculateAvgPP(osuInfo.OsuId, osuInfo.Server);
 
             CompitCategories category;
 
@@ -264,7 +379,7 @@ namespace WAV_Bot_DSharp.Services
                 Server = osuInfo.Server
             };
 
-            wavCompit.AddCompitProfile(member.Id, compitProfile);
+            wavCompit.AddCompitProfile(member.Id.ToString(), compitProfile);
 
             await EnableNotifications(member, compitProfile);
         }
@@ -342,7 +457,7 @@ namespace WAV_Bot_DSharp.Services
         /// <param name="member">Участник, которому нужно присвоить соответствующую роль</param>
         public async Task EnableNotifications(DiscordMember member, WAVMemberCompitProfile profile = null)
         {
-            WAVMemberCompitProfile compitProfile = profile ?? wavCompit.GetCompitProfile(member.Id);
+            WAVMemberCompitProfile compitProfile = profile ?? wavCompit.GetCompitProfile(member.Id.ToString());
             if (compitProfile is null)
             {
                 throw new NullReferenceException($"Couldn't get compitition profile for {member}");
@@ -384,7 +499,7 @@ namespace WAV_Bot_DSharp.Services
         /// <param name="member">Участник, с которого нужно снять соответствующую роль</param>
         public async Task DisableNotifications(DiscordMember member)
         {
-            WAVMemberCompitProfile compitProfile = wavCompit.GetCompitProfile(member.Id);
+            WAVMemberCompitProfile compitProfile = wavCompit.GetCompitProfile(member.Id.ToString());
             if (compitProfile is null)
             {
                 throw new NullReferenceException($"Couldn't get compitition profile for {member}");

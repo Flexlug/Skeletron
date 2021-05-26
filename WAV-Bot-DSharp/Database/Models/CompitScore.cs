@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 namespace WAV_Bot_DSharp.Database.Models
 {
     /// <summary>
@@ -14,7 +16,17 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// Discord ID пользователя
         /// </summary>
-        public ulong Player { get; set; }
+        public string DiscordUID { get; set; }
+
+        /// <summary>
+        /// Никнейм osu! профиля
+        /// </summary>
+        public string Nickname { get; set; }
+
+        /// <summary>
+        /// Категория скора
+        /// </summary>
+        public CompitCategories Category { get; set; }
 
         /// <summary>
         /// Количество очков, набранных в скоре

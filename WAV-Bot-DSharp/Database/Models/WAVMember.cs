@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
+using Newtonsoft.Json;
+
 namespace WAV_Bot_DSharp.Database.Models
 {
     /// <summary>
@@ -10,11 +12,11 @@ namespace WAV_Bot_DSharp.Database.Models
     /// </summary>
     public class WAVMember 
     { 
-        public WAVMember(ulong uid)
+        public WAVMember(string uid)
         {
-            Uid = uid;
+            DiscordUID = uid;
             OsuServers = new List<WAVMemberOsuProfileInfo>();
-            CompitionInfo = null;
+            CompitionProfile = null;
             LastActivity = DateTime.Now;
             ActivityPoints = 0;
         }
@@ -22,7 +24,7 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// Uid пользователя
         /// </summary>
-        public ulong Uid { get; set; }
+        public string DiscordUID { get; set; }
 
         /// <summary>
         /// Список серверов, на которых зарегистрирован участник
@@ -32,7 +34,7 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// Информация об участии в конкурсах
         /// </summary>
-        public WAVMemberCompitProfile CompitionInfo { get; set; }
+        public WAVMemberCompitProfile CompitionProfile { get; set; }
 
         /// <summary>
         /// Дата последней активности

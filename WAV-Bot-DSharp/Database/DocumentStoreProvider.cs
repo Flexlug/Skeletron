@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Raven.Client.Documents;
+using Raven.Client.Json.Serialization.NewtonsoftJson;
 
 namespace WAV_Bot_DSharp.Database
 {

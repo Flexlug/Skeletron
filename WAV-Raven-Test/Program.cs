@@ -50,10 +50,31 @@ namespace WAV_Raven_Test
             //    session.SaveChanges();
             //}
 
+            //using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
+            //{
+            //    List<WAVMember> members = session.Query<WAVMember>().Include(x => x.CompitionProfile).Where(x => x.CompitionProfile.ProvidedScore).ToList();
+            //    Console.WriteLine(members.Count);
+            //}
+
+            CompitCategories category = CompitCategories.Gamma;
+
+            List<CompitScore> scores;
+
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
-                List<WAVMember> members = session.Query<WAVMember>().Include(x => x.CompitionInfo).Where(x => x.CompitionInfo.ProvidedScore).ToList();
-                Console.WriteLine(members.Count);
+                IEnumerable<CompitScore> rawScores = session.Query<CompitScore>().ToList();
+
+
+                List<IGrouping<string, CompitScore>> scoresGroups = rawScores.Select(x => x)
+                                                               .Where(x => x.Category == category)
+                                                               .GroupBy(x => x.Nickname)
+                                                               .ToList();
+
+                scores = scoresGroups.Select(x => x.Select(x => x)
+                                                                     .OrderByDescending(x => x.Score)
+                                                                     .First())
+                                                       .ToList();
+
             }
 
             Console.WriteLine("Done");

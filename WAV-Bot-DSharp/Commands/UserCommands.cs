@@ -50,25 +50,11 @@ namespace WAV_Bot_DSharp.Commands
             await GetProfile(commandContext, commandContext.Member);
         }
 
-        [Command("profile-by-nickname"), Description("Получить информацию о своём W.w.W профиле."), RequireGuild]
-        public async Task GetProfile(CommandContext commandContext,
-            string username)
-        {
-            DiscordMember member = (await guild.GetAllMembersAsync()).FirstOrDefault(x => x.Username == username);
-            if (member is null)
-            {
-                await commandContext.RespondAsync("Не удалось найти такого пользователя.");
-                return;
-            }
-
-            await GetProfile(commandContext, member);
-        }
-
         [Command("profile"), Description("Получить информацию о своём W.w.W профиле."), RequireGuild]
         public async Task GetProfile(CommandContext commandContext,
             DiscordMember dmember)
         {
-            WAVMember member = wavMembers.GetMember(dmember.Id);
+            WAVMember member = wavMembers.GetMember(dmember.Id.ToString());
 
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
                 .WithTitle($"Информация об участнике WAV")
@@ -81,7 +67,7 @@ namespace WAV_Bot_DSharp.Commands
             if (member.OsuServers.Count != 0)
             {
                 foreach (var server in member.OsuServers)
-                    osuServersSb.AppendLine($"__{osuEnums.OsuServerToString(server.Server)}__: {server.Nickname}");
+                    osuServersSb.AppendLine($"__{osuEnums.OsuServerToString(server.Server)}__: {server.OsuNickname}");
             }
             else 
             {
@@ -89,15 +75,15 @@ namespace WAV_Bot_DSharp.Commands
             }
 
             StringBuilder compitSb = new StringBuilder();
-            if (member.CompitionInfo is not null)
+            if (member.CompitionProfile is not null)
             {
-                if (member.CompitionInfo.NonGrata)
+                if (member.CompitionProfile.NonGrata)
                     compitSb.AppendLine("__**Non-grata: Да**__\n");
                 compitSb.AppendLine("__Зарегистрирован__: Да");
-                compitSb.AppendLine($"__Средний PP__: {Math.Round(member.CompitionInfo.AvgPP, 2)}");
-                compitSb.AppendLine($"__Сервер__: {osuEnums.OsuServerToString(member.CompitionInfo.Server)}");
-                compitSb.AppendLine($"__Категория__: {osuEnums.CategoryToString(member.CompitionInfo.Category)}");
-                compitSb.AppendLine($"__Уведомления__: {member.CompitionInfo.Notifications}");
+                compitSb.AppendLine($"__Средний PP__: {Math.Round(member.CompitionProfile.AvgPP, 2)}");
+                compitSb.AppendLine($"__Сервер__: {osuEnums.OsuServerToString(member.CompitionProfile.Server)}");
+                compitSb.AppendLine($"__Категория__: {osuEnums.CategoryToString(member.CompitionProfile.Category)}");
+                compitSb.AppendLine($"__Уведомления__: {member.CompitionProfile.Notifications}");
             }
             else
             {

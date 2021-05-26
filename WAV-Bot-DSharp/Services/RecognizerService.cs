@@ -88,7 +88,12 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             logger.LogDebug($"Detected attachments. Count: {attachments.Count}");
 
-            // Skip messages not from osu channels
+            if (string.IsNullOrEmpty(e.Channel.Name))
+            {
+                logger.LogDebug($"Is dm");
+                return;
+            }
+
             if (!(e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("bot-debug")))
             {
                 logger.LogDebug($"Not osu channel");

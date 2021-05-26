@@ -40,13 +40,13 @@ namespace WAV_Bot_DSharp.Database
         /// </summary>
         /// <param name="uid">Discord uid</param>
         /// <returns></returns>
-        public WAVMember GetMember(ulong uid)
+        public WAVMember GetMember(string uid)
         {
             using (IDocumentSession session = store.OpenSession())
             {
                 WAVMember member = session.Query<WAVMember>()
                                           .Include(x => x.OsuServers)
-                                          .FirstOrDefault(x => x.Uid == uid);
+                                          .FirstOrDefault(x => x.DiscordUID == uid);
 
                 if (member is null)
                 {
@@ -65,13 +65,13 @@ namespace WAV_Bot_DSharp.Database
         /// <param name="uid">Uid участника</param>
         /// <param name="server">Название сервера</param>
         /// <param name="id">ID пользователя на сервере</param>
-        public void AddOsuServerInfo(ulong uid, WAVMemberOsuProfileInfo profile)
+        public void AddOsuServerInfo(string uid, WAVMemberOsuProfileInfo profile)
         {
             using (IDocumentSession session = store.OpenSession())
             {
                 WAVMember member = session.Query<WAVMember>()
                                           .Include(x => x.OsuServers)
-                                          .FirstOrDefault(x => x.Uid == uid);
+                                          .FirstOrDefault(x => x.DiscordUID == uid);
 
                 if (member is null)
                     throw new NullReferenceException("No such object in DB");
@@ -79,8 +79,8 @@ namespace WAV_Bot_DSharp.Database
                 WAVMemberOsuProfileInfo serverInfo = member.OsuServers.FirstOrDefault(x => x.Server == profile.Server);
                 if (serverInfo is not null)
                 {
-                    serverInfo.Id = profile.Id;
-                    serverInfo.Nickname = profile.Nickname;
+                    serverInfo.OsuId = profile.OsuId;
+                    serverInfo.OsuNickname = profile.OsuNickname;
                 }
                 else
                 {
@@ -97,13 +97,14 @@ namespace WAV_Bot_DSharp.Database
         /// <param name="uid">Discord id участника WAV</param>
         /// <param name="server">Название сервера</param>
         /// <returns></returns>
-        public WAVMemberOsuProfileInfo GetOsuProfileInfo(ulong uid, OsuServer server)
+        public WAVMemberOsuProfileInfo GetOsuProfileInfo(string uid, OsuServer server)
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
                 WAVMember member = session.Query<WAVMember>()
                                           .Include(x => x.OsuServers)
-                                          .FirstOrDefault(x => x.Uid == uid);
+                                          .Include(x => x.CompitionProfile)
+                                          .FirstOrDefault(x => x.DiscordUID == uid);
 
                 return member.OsuServers?.FirstOrDefault(x => x.Server == server);
             }

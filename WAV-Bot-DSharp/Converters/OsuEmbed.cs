@@ -9,6 +9,8 @@ using DSharpPlus.Entities;
 using WAV_Osu_NetApi.Models.Bancho;
 using WAV_Osu_NetApi.Models.Gatari;
 using Microsoft.Extensions.Logging;
+using WAV_Bot_DSharp.Database.Models;
+using System.Linq;
 
 namespace WAV_Bot_DSharp.Converters
 {
@@ -22,10 +24,24 @@ namespace WAV_Bot_DSharp.Converters
 
         private ILogger<OsuEmbed> logger;
 
-        public OsuEmbed(OsuEmoji emoji, OsuEnums enums, ILogger<OsuEmbed> logger)
+        private DiscordRole beginnerRole;
+        private DiscordRole alphaRole;
+        private DiscordRole betaRole;
+        private DiscordRole gammaRole;
+        private DiscordRole deltaRole;
+        private DiscordRole epsilonRole;
+
+        public OsuEmbed(OsuEmoji emoji, OsuEnums enums, ILogger<OsuEmbed> logger, DiscordGuild guild)
         {
             this.osuEmoji = emoji;
             this.osuEnums = enums;
+
+            this.beginnerRole = guild.GetRole(830432931150692362);
+            this.alphaRole = guild.GetRole(816610025258352641);
+            this.betaRole = guild.GetRole(816609978240204821);
+            this.gammaRole = guild.GetRole(816609883763376188);
+            this.deltaRole = guild.GetRole(816609826301935627);
+            this.epsilonRole = guild.GetRole(816609630359912468);
 
             this.logger = logger;
 
@@ -114,6 +130,100 @@ namespace WAV_Bot_DSharp.Converters
                         .WithDescription(sb.ToString());
 
             return embedBuilder.Build(); ;
+        }
+
+
+        public DiscordEmbed ScoresToLeaderBoard(CompitInfo compitInfo,
+                                                List<CompitScore> beginnerScores = null,
+                                                List<CompitScore> alphaScores = null,
+                                                List<CompitScore> betaScores = null,
+                                                List<CompitScore> gammaScores = null,
+                                                List<CompitScore> deltaScores = null,
+                                                List<CompitScore> epsilonScores = null)
+        {
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
+
+            embedBuilder.WithTitle("W.m.W leaderboard")
+                        .WithFooter($"Last update: {DateTime.Now}");
+
+            StringBuilder descrSb = new StringBuilder();
+
+
+            descrSb.AppendLine($"{beginnerRole.Mention}\n[{compitInfo.BeginnerMap.beatmapset.artist} {compitInfo.BeginnerMap.beatmapset.title} [{compitInfo.BeginnerMap.version}] by {compitInfo.BeginnerMap.beatmapset.creator}]({compitInfo.BeginnerMap.url})");
+            if (beginnerScores is not null && beginnerScores.Count != 0)
+            {
+                foreach (var score in beginnerScores.OrderByDescending(x => x.Score))
+                    descrSb.AppendLine($"`{score.Score:N0}` : `{score.Nickname}`");
+                descrSb.AppendLine();
+            }
+            else
+            {
+                descrSb.AppendLine($"-\n");
+            }
+
+            descrSb.AppendLine($"{alphaRole.Mention}\n[{compitInfo.AlphaMap.beatmapset.artist} {compitInfo.AlphaMap.beatmapset.title} [{compitInfo.AlphaMap.version}] by {compitInfo.AlphaMap.beatmapset.creator}]({compitInfo.AlphaMap.url})");
+            if (alphaScores is not null && alphaScores.Count != 0)
+            {
+                foreach (var score in alphaScores.OrderByDescending(x => x.Score))
+                    descrSb.AppendLine($"`{score.Score:N0}` : `{score.Nickname}`");
+                descrSb.AppendLine();
+            }
+            else
+            {
+                descrSb.AppendLine($"-\n");
+            }
+
+            descrSb.AppendLine($"{betaRole.Mention}\n[{compitInfo.BetaMap.beatmapset.artist} {compitInfo.BetaMap.beatmapset.title} [{compitInfo.BetaMap.version}] by {compitInfo.BetaMap.beatmapset.creator}]({compitInfo.BetaMap.url})");
+            if (betaScores is not null && betaScores.Count != 0)
+            {
+                foreach (var score in betaScores.OrderByDescending(x => x.Score))
+                    descrSb.AppendLine($"`{score.Score:N0}` : `{score.Nickname}`");
+                descrSb.AppendLine();
+            }
+            else
+            {
+                descrSb.AppendLine($"-\n");
+            }
+
+            descrSb.AppendLine($"{gammaRole.Mention}\n[{compitInfo.GammaMap.beatmapset.artist} {compitInfo.GammaMap.beatmapset.title} [{compitInfo.GammaMap.version}] by {compitInfo.GammaMap.beatmapset.creator}]({compitInfo.GammaMap.url})");
+            if (gammaScores is not null && gammaScores.Count != 0)
+            {
+                foreach (var score in gammaScores.OrderByDescending(x => x.Score))
+                    descrSb.AppendLine($"`{score.Score:N0}` : `{score.Nickname}`");
+                descrSb.AppendLine();
+            }
+            else
+            {
+                descrSb.AppendLine($"-\n");
+            }
+
+            descrSb.AppendLine($"{deltaRole.Mention}\n[{compitInfo.DeltaMap.beatmapset.artist} {compitInfo.DeltaMap.beatmapset.title} [{compitInfo.DeltaMap.version}] by {compitInfo.DeltaMap.beatmapset.creator}]({compitInfo.DeltaMap.url})");
+            if (deltaScores is not null && deltaScores.Count != 0)
+            {
+                foreach (var score in deltaScores.OrderByDescending(x => x.Score))
+                    descrSb.AppendLine($"`{score.Score:N0}` : `{score.Nickname}`");
+                descrSb.AppendLine();
+            }
+            else
+            {
+                descrSb.AppendLine($"-\n");
+            }
+
+            descrSb.AppendLine($"{epsilonRole.Mention}\n[{compitInfo.EpsilonMap.beatmapset.artist} {compitInfo.EpsilonMap.beatmapset.title} [{compitInfo.EpsilonMap.version}] by {compitInfo.EpsilonMap.beatmapset.creator}]({compitInfo.EpsilonMap.url})");
+            if (epsilonScores is not null && epsilonScores.Count != 0)
+            {
+                foreach (var score in epsilonScores.OrderByDescending(x => x.Score))
+                    descrSb.AppendLine($"`{score.Score:N0}` : `{score.Nickname}`");
+                descrSb.AppendLine();
+            }
+            else
+            {
+                descrSb.AppendLine($"-\n");
+            }
+
+            embedBuilder.WithDescription(descrSb.ToString());
+
+            return embedBuilder.Build();
         }
 
         /// <summary>

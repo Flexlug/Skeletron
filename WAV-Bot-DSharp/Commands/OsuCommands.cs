@@ -272,13 +272,13 @@ namespace WAV_Bot_DSharp.Commands
         public async Task LastRecent(CommandContext commandContext,
             params string[] args)
         {
-            if (!(commandContext.Channel.Name.Contains("-bot") || commandContext.Channel.Name.Contains("dev-announce")))
+            if (!(commandContext.Channel.Name.Contains("-bot") || commandContext.Channel.Name.Contains("dev-announce") || commandContext.Channel.Name.Contains("dev-announce")))
             {
                 await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
                 return;
             }
 
-            ulong discordId = commandContext.Member.Id;
+            string discordId = commandContext.Member.Id.ToString();
 
             OsuServer? mbChoosedServer = osuEnums.StringToOsuServer(args.FirstOrDefault()?.TrimStart('-') ?? "bancho");
             if (mbChoosedServer is null)
@@ -299,10 +299,10 @@ namespace WAV_Bot_DSharp.Commands
             switch (choosedServer)
             {
                 case OsuServer.Gatari:
-                    GScore gscore = gapi.GetUserRecentScores(userInfo.Id, 0, 1, true).First();
+                    GScore gscore = gapi.GetUserRecentScores(userInfo.OsuId, 0, 1, true).First();
 
                     GUser guser = null;
-                    if (!gapi.TryGetUser(userInfo.Id, ref guser))
+                    if (!gapi.TryGetUser(userInfo.OsuId, ref guser))
                     {
                         await commandContext.RespondAsync("Не удалось найти такого пользователя на Gatari.");
                         return;
@@ -314,10 +314,10 @@ namespace WAV_Bot_DSharp.Commands
                     return;
 
                 case OsuServer.Bancho:
-                    Score score = api.GetUserRecentScores(userInfo.Id, true, 0, 1).First();
+                    Score score = api.GetUserRecentScores(userInfo.OsuId, true, 0, 1).First();
 
                     User user = null;
-                    if (!api.TryGetUser(userInfo.Id, ref user))
+                    if (!api.TryGetUser(userInfo.OsuId, ref user))
                     {
                         await commandContext.RespondAsync("Не удалось найти такого пользователя на Gatari.");
                         return;
@@ -331,7 +331,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync($"Указанный сервер не поддерживается.");
         }
 
-        [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
+        [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild, Hidden]
         public async Task OsuSet(CommandContext commandContext,
             [Description("Пользователь WAV сервера")] DiscordMember member,
             [Description("Никнейм osu! профиля")] string nickname,
@@ -341,7 +341,7 @@ namespace WAV_Bot_DSharp.Commands
         }
 
 
-        [Command("osuset-manual-by-nickname"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
+        [Command("osuset-manual-by-nickname"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild, Hidden]
         public async Task OsuSet(CommandContext commandContext,
             [Description("Пользователь WAV сервера")] string member,
             [Description("Никнейм osu! профиля")] string nickname,
@@ -357,7 +357,7 @@ namespace WAV_Bot_DSharp.Commands
             await SetOsuProfileFor(commandContext, dmember, nickname, args);
         }
 
-        [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
+        [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild, Hidden]
         public async Task OsuSet(CommandContext commandContext,
             [Description("Пользователь WAV сервера")] ulong uid,
             [Description("Никнейм osu! профиля")] string nickname,
@@ -384,7 +384,7 @@ namespace WAV_Bot_DSharp.Commands
 
         public async Task SetOsuProfileFor(CommandContext commandContext, DiscordMember user, string nickname, params string[] args)
         {
-            ulong discordId = user.Id;
+            string discordId = user.Id.ToString();
 
             WAVMember member = wavMembers.GetMember(discordId);
 
@@ -445,8 +445,8 @@ namespace WAV_Bot_DSharp.Commands
             {
                 WAVMemberOsuProfileInfo profile = new WAVMemberOsuProfileInfo()
                 {
-                    Id = osu_id,
-                    Nickname = osu_nickname,
+                    OsuId = osu_id,
+                    OsuNickname = osu_nickname,
                     Server = choosedServer
                 };
 

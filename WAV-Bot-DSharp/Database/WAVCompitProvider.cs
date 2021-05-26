@@ -39,38 +39,38 @@ namespace WAV_Bot_DSharp.Database
             logger.LogInformation("WAVCompitProvider loaded");
         }
 
-        public WAVMemberCompitProfile GetCompitProfile(ulong uid)
+        public WAVMemberCompitProfile GetCompitProfile(string uid)
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
                 WAVMember member = session.Query<WAVMember>()
-                                          .Include(x => x.OsuServers)
-                                          .FirstOrDefault(x => x.Uid == uid);
+                                          .Include(x => x.CompitionProfile)
+                                          .FirstOrDefault(x => x.DiscordUID == uid);
 
-                return member.CompitionInfo;
+                return member?.CompitionProfile;
             }
         }
 
-        public void AddCompitProfile(ulong uid, WAVMemberCompitProfile compitProfile)
+        public void AddCompitProfile(string uid, WAVMemberCompitProfile compitProfile)
         {
             using (IDocumentSession session = store.OpenSession())
             {
                 WAVMember member = session.Query<WAVMember>()
                                           .Include(x => x.OsuServers)
-                                          .FirstOrDefault(x => x.Uid == uid);
+                                          .FirstOrDefault(x => x.DiscordUID == uid);
 
-                member.CompitionInfo = compitProfile;
+                member.CompitionProfile = compitProfile;
 
                 session.SaveChanges();
             }
         }
 
-        public List<CompitScore> GetUserScores(ulong id)
+        public List<CompitScore> GetUserScores(string uid)
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
                 List<CompitScore> scores = session.Query<CompitScore>()
-                                                 .Where(x => x.Player == id)
+                                                 .Where(x => x.DiscordUID == uid)
                                                  .ToList();
 
                 return scores;
@@ -97,6 +97,27 @@ namespace WAV_Bot_DSharp.Database
             {
                 session.Store(score);
                 session.SaveChanges();
+            }
+        }
+
+        public List<CompitScore> GetCategoryBestScores(CompitCategories category)
+        {
+            using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
+            {
+                IEnumerable<CompitScore> rawScores = session.Query<CompitScore>().ToList();
+
+
+                List<IGrouping<string, CompitScore>> scoresGroups = rawScores.Select(x => x)
+                                                               .Where(x => x.Category == category)
+                                                               .GroupBy(x => x.Nickname)
+                                                               .ToList();
+
+                List<CompitScore> scores = scoresGroups.Select(x => x.Select(x => x)
+                                                                     .OrderByDescending(x => x.Score)
+                                                                     .First())
+                                                       .ToList();
+
+                return scores;
             }
         }
 

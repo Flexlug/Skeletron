@@ -27,5 +27,6 @@ namespace WAV_Osu_NetApi.Models.Bancho
         public int? max_combo { get; set; }
         public string status { get; set; }
         public string url { get; set; }
+        public string checksum { get; set; }
     }
 }

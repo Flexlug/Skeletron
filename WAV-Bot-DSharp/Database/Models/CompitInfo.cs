@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WAV_Osu_NetApi.Models.Bancho;
 
 namespace WAV_Bot_DSharp.Database.Models
 {
@@ -19,17 +20,17 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// ID сообщения с лидербордом
         /// </summary>
-        public ulong? LeaderboardMessage { get; set; }
+        public string LeaderboardMessageUID { get; set; }
 
         /// <summary>
         /// ID текстового канала, где будет вестись лидерборд
         /// </summary>
-        public ulong? LeaderboardChannel { get; set; }
+        public string LeaderboardChannelUID { get; set; }
 
         /// <summary>
         /// ID текстового канала, куда будут отправляться все скоры
         /// </summary>
-        public ulong? ScoresChannel { get; set; }
+        public string ScoresChannelUID { get; set; }
 
         /// <summary>
         /// Дата окончания конкурса
@@ -44,31 +45,31 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// ID карты для категории Beginner
         /// </summary>
-        public string BeginnerMapHash { get; set; }
+        public Beatmap BeginnerMap { get; set; }
 
         /// <summary>
         /// ID карты для категории Alpha
         /// </summary>
-        public string AlphaMapHash { get; set; }
+        public Beatmap AlphaMap { get; set; }
 
         /// <summary>
         /// ID карты для категории Beta
         /// </summary>
-        public string BetaMapHash { get; set; }
+        public Beatmap BetaMap { get; set; }
 
         /// <summary>
         /// ID карты для категории Gamma
         /// </summary>
-        public string GammaMapHash { get; set; }
+        public Beatmap GammaMap { get; set; }
 
         /// <summary>
         /// ID карты для категории Delta
         /// </summary>
-        public string DeltaMapHash { get; set; }
+        public Beatmap DeltaMap { get; set; }
 
         /// <summary>
         /// ID карты для категории Epsilon
         /// </summary>
-        public string EpsilonMapHash { get; set; }
+        public Beatmap EpsilonMap { get; set; }
     }
 }
