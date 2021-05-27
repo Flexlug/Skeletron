@@ -353,30 +353,10 @@ namespace WAV_Bot_DSharp.Services
         {
             double avgPP = await CalculateAvgPP(osuInfo.OsuId, osuInfo.Server);
 
-            CompitCategories category;
-
-            if (avgPP < 35)
-                category = CompitCategories.Beginner;
-            else
-                if (avgPP < 100)
-                category = CompitCategories.Alpha;
-            else
-                if (avgPP < 200)
-                category = CompitCategories.Beta;
-            else
-                if (avgPP < 300)
-                category = CompitCategories.Gamma;
-            else
-                if (avgPP < 500)
-                category = CompitCategories.Delta;
-            else
-                category = CompitCategories.Epsilon;
-
-
             WAVMemberCompitProfile compitProfile = new WAVMemberCompitProfile()
             {
                 AvgPP = avgPP,
-                Category = category,
+                Category = PPToCategory(avgPP),
                 NonGrata = false,
                 Notifications = true,
                 Server = osuInfo.Server
@@ -424,6 +404,30 @@ namespace WAV_Bot_DSharp.Services
 
             avgPP /= 5;
             return avgPP;
+        }
+
+        public CompitCategories PPToCategory(double avgPP)
+        {
+            CompitCategories category;
+
+            if (avgPP < 35)
+                category = CompitCategories.Beginner;
+            else
+                if (avgPP < 100)
+                category = CompitCategories.Alpha;
+            else
+                if (avgPP < 200)
+                category = CompitCategories.Beta;
+            else
+                if (avgPP < 300)
+                category = CompitCategories.Gamma;
+            else
+                if (avgPP < 500)
+                category = CompitCategories.Delta;
+            else
+                category = CompitCategories.Epsilon;
+
+            return category;
         }
 
         public async Task SetNonGrata(DiscordMember member, bool toggle)

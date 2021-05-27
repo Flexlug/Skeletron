@@ -323,6 +323,14 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync(osuEmbeds.CompitInfoToEmbed(compitInfo));
         }
 
+        [Command("reset-all-scores"), , RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        public async Task ResetAllScores(CommandContext commandContext)
+        {
+            wavCompit.DeleteAllScores();
+
+            await commandContext.RespondAsync("Все скоры удалены.");
+        }
+
         [Command("submit"), Description("Отправить свой скор (к сообщению необходимо прикрепить свой реплей в формате .osr)."), RequireDirectMessage]
         public async Task SubmitScore(CommandContext commandContext)
         {
@@ -384,7 +392,7 @@ namespace WAV_Bot_DSharp.Commands
             catch (Exception e)
             {
                 logger.LogCritical(e, "Exception while parsing score"); 
-                await commandContext.RespondAsync("Не удалось считать реплей. Возмонжо он повержден.");
+                await Context.RespondAsync("Не удалось считать реплей. Возмонжо он повержден.");
                 return;
             }
 
