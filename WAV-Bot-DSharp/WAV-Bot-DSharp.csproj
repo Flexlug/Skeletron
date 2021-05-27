@@ -41,6 +41,7 @@
   <ItemGroup>
     <None Remove="Commands\AdminCommands.cs~RFe9c064.TMP" />
     <None Remove="Commands\TrackCommands.cs~RFd436c8.TMP" />
+    <None Remove="Converters\OsuEmbed.cs~RF1b0f0a72.TMP" />
     <None Remove="Database\Models\WAVMember.cs~RF146850fc.TMP" />
     <None Remove="trackedUsers.db-shm" />
     <None Remove="trackedUsers.db-wal" />

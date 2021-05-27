@@ -226,6 +226,27 @@ namespace WAV_Bot_DSharp.Converters
             return embedBuilder.Build();
         }
 
+        public DiscordEmbed CompitInfoToEmbed(CompitInfo compitInfo)
+        {
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
+
+            embed.WithTitle("W.m.W status")
+                 .AddField("Запущен", compitInfo.IsRunning ? "Да" : "Нет")
+                 .AddField("Дата начала", compitInfo.StartDate.ToString() ?? "Нет")
+                 .AddField("Дата завершения", compitInfo.Deadline.ToString() ?? "Нет")
+                 .AddField("Канал для лидерборда", compitInfo.LeaderboardChannelUID ?? "Нет")
+                 .AddField("Канал для скоров", compitInfo.ScoresChannelUID ?? "Нет")
+                 .AddField("Лидерборд", compitInfo.LeaderboardMessageUID ?? "Нет")
+                 .AddField("Карта Beginner", compitInfo.BeginnerMap?.url ?? "Нет")
+                 .AddField("Карта Alpha", compitInfo.AlphaMap?.url ?? "Нет")
+                 .AddField("Карта Beta", compitInfo.BetaMap?.url ?? "Нет")
+                 .AddField("Карта Gamma", compitInfo.GammaMap?.url ?? "Нет")
+                 .AddField("Карта Delta", compitInfo.DeltaMap?.url ?? "Нет")
+                 .AddField("Карта Epsilon", compitInfo.EpsilonMap?.url ?? "Нет");
+
+            return embed.Build();
+        }
+
         /// <summary>
         /// Получить Discord embed на основе gatari профиля
         /// </summary>
