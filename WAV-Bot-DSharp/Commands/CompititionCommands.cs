@@ -383,7 +383,9 @@ namespace WAV_Bot_DSharp.Commands
             }
             catch (Exception e)
             {
-                logger.LogCritical(e, "Exception while parsing score");
+                logger.LogCritical(e, "Exception while parsing score"); 
+                await commandContext.RespondAsync("Не удалось считать реплей. Возмонжо он повержден.");
+                return;
             }
 
             if (replay.Mods != 0)
