@@ -232,6 +232,21 @@ namespace WAV_Bot_DSharp.Commands
             await RegisterUser(commandContext, commandContext.Member, strServer);
         }
 
+        [Command("non-grata"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        public async Task NonGrata(CommandContext commandContext,
+            DiscordMember member,
+            bool toggle)
+        {
+            if (member is null)
+            {
+                await commandContext.RespondAsync("Не удалось найти такого пользователя.");
+                return;
+            }
+
+            compititionService.SetNonGrata(member, toggle);
+            await commandContext.RespondAsync($"Задан статус non-grata `{toggle}` для {member.DisplayName}.");
+        }
+
         [Command("register-manual-by-nickname"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
         public async Task RegisterUser(CommandContext commandContext,
             [Description("Регистрируемый участник")] string strMember,
@@ -286,7 +301,7 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        [Command("get-report"), RequireUserPermissions(Permissions.Administrator), Hidden]
+        [Command("get-report"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
         public async Task SendScoreSheet(CommandContext commandContext)
         {
             List<CompitScore> scores = wavCompit.GetAllScores();
@@ -300,7 +315,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync(new DiscordMessageBuilder().WithFile(sheetfileInfo));
         }
 
-        [Command("status"), RequireUserPermissions(Permissions.Administrator), Hidden]
+        [Command("status"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
         public async Task GetStatus(CommandContext commandContext)
         {
             CompitInfo compitInfo = wavCompit.GetCompitionInfo();

@@ -68,5 +68,12 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         /// </summary>
         /// <param name="info">Информация о конкурсе</param>
         public void SetCompitionInfo(CompitInfo info);
+
+        /// <summary>
+        /// Задать статус non-grata для заданного пользователя
+        /// </summary>
+        /// <param name="uid">Discord UID пользователя</param>
+        /// <param name="toggle">True/False</param>
+        public void SetNonGrata(string uid, bool toggle);
     }
 }

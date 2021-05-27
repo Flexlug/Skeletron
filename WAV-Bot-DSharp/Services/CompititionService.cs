@@ -54,6 +54,8 @@ namespace WAV_Bot_DSharp.Services
         private DiscordRole deltaRole;
         private DiscordRole epsilonRole;
 
+        private DiscordRole nonGrata;
+
         private ILogger<CompititionService> logger;
 
         public CompititionService(IWAVCompitProvider wavCompit,
@@ -94,6 +96,7 @@ namespace WAV_Bot_DSharp.Services
             this.gammaRole = guild.GetRole(816609883763376188);
             this.deltaRole = guild.GetRole(816609826301935627);
             this.epsilonRole = guild.GetRole(816609630359912468);
+            this.nonGrata = guild.GetRole(834475420073197579);
 
             this.logger.LogInformation("CompititionService loaded");
 
@@ -421,6 +424,21 @@ namespace WAV_Bot_DSharp.Services
 
             avgPP /= 5;
             return avgPP;
+        }
+
+        public async Task SetNonGrata(DiscordMember member, bool toggle)
+        {
+            wavCompit.SetNonGrata(member.Id.ToString(), toggle);
+
+            if (toggle)
+            {
+                await member.GrantRoleAsync(nonGrata);
+            }
+            else
+            {
+                if (member.Roles.Contains(nonGrata))
+                    await member.RevokeRoleAsync(nonGrata);
+            }
         }
 
         private async Task RemoveWrongNotificationRoles(DiscordMember member, CompitCategories category)

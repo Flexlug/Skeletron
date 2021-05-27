@@ -89,5 +89,12 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// </summary>
         /// <returns></returns>
         public Task UpdateLeaderboard();
+
+        /// <summary>
+        /// Задать статус non-grata для заданного пользователя
+        /// </summary>
+        /// <param name="member">Discord UID пользователя</param>
+        /// <param name="toggle">True/False</param>
+        public Task SetNonGrata(DiscordMember member, bool toggle);
     }
 }

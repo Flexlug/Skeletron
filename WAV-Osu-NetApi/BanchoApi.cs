@@ -43,6 +43,12 @@ namespace WAV_Osu_NetApi
                 _token = value;
             }
         }
+
+        public List<Beatmapset> Search(string v, object any)
+        {
+            throw new NotImplementedException();
+        }
+
         private DateTime TokenExpireDate;
 
         /// <summary>

@@ -165,5 +165,19 @@ namespace WAV_Bot_DSharp.Database
                 session.SaveChanges();
             }
         }
+
+        public void SetNonGrata(string uid, bool toggle)
+        {
+            using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
+            {
+                WAVMember member = session.Query<WAVMember>()
+                                          .Include(x => x.CompitionProfile)
+                                          .FirstOrDefault(x => x.DiscordUID == uid);
+
+                member.CompitionProfile.NonGrata = toggle;
+
+                session.SaveChanges();
+            }
+        }
     }
 }

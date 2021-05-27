@@ -5,11 +5,11 @@ using System.DrawingCore;
 using System.Collections.Generic;
 
 using WAV_Osu_NetApi;
-using WAV_Osu_NetApi.Bancho.Models;
 
 using WAV_Osu_Recognizer;
 
 using Newtonsoft.Json;
+using WAV_Osu_NetApi.Models.Bancho;
 
 namespace WAV_Osu_Recognizer_Test
 {
@@ -33,7 +33,7 @@ namespace WAV_Osu_Recognizer_Test
                 Image img = rec.LoadFromFile(path);
 
                 string[] recedText = rec.RecognizeTopText(img).Split('\n');
-                List<Beatmapset> bms = api.Search(recedText.First(), WAV_Osu_NetApi.Bancho.QuerryParams.MapType.Any);
+                List<Beatmapset> bms = api.Search(recedText.First(), MapType.Any);
 
                 foreach (string s in recedText)
                     Console.WriteLine(s);
