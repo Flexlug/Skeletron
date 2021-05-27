@@ -300,6 +300,14 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync(new DiscordMessageBuilder().WithFile(sheetfileInfo));
         }
 
+        [Command("status"), RequireUserPermissions(Permissions.Administrator), Hidden]
+        public async Task GetStatus(CommandContext commandContext)
+        {
+            CompitInfo compitInfo = wavCompit.GetCompitionInfo();
+
+            await commandContext.RespondAsync(osuEmbeds.CompitInfoToEmbed(compitInfo));
+        }
+
         [Command("submit"), Description("Отправить свой скор (к сообщению необходимо прикрепить свой реплей в формате .osr)."), RequireDirectMessage]
         public async Task SubmitScore(CommandContext commandContext)
         {
