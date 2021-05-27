@@ -15,6 +15,6 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// </summary>
         /// <param name="scores">Список всех скоров</param>
         /// <returns></returns>
-        public Task<FileInfo> CompitScoresToFile(List<CompitScore> scores);
+        public Task<FileStream> CompitScoresToFile(List<CompitScore> scores);
     }
 }

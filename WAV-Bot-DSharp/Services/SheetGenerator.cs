@@ -17,7 +17,7 @@ namespace WAV_Bot_DSharp.Services
 {
     public class SheetGenerator : ISheetGenerator
     {
-        public async Task<FileInfo> CompitScoresToFile(List<CompitScore> scores)
+        public async Task<FileStream> CompitScoresToFile(List<CompitScore> scores)
         {
             string filePath = $"temp/{DateTime.Now.Ticks}-scores.xlsx";
 
@@ -37,21 +37,6 @@ namespace WAV_Bot_DSharp.Services
                 wbsp.Stylesheet = GenerateStyleSheet();
                 wbsp.Stylesheet.Save();
 
-                // Задаем колонки и их ширину
-                Columns lstColumns = worksheetPart.Worksheet.GetFirstChild<Columns>();
-                Boolean needToInsertColumns = false;
-                if (lstColumns == null)
-                {
-                    lstColumns = new Columns();
-                    needToInsertColumns = true;
-                }
-
-                for (int i = 1; i <= 18; i++) 
-                    lstColumns.Append(new Column() { Min = 1, Max = 10, Width = 10, CustomWidth = true });
-
-                if (needToInsertColumns)
-                    worksheetPart.Worksheet.InsertAt(lstColumns, 0);
-
 
                 // Создаем лист в книге
                 Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
@@ -63,6 +48,7 @@ namespace WAV_Bot_DSharp.Services
                 // Добавим заголовки в первую строку
                 Row row = new Row() { RowIndex = 1 };
                 sheetData.Append(row);
+
 
                 InsertCell(row, 1, "Beginner", CellValues.String);
                 InsertCell(row, 2, " ", CellValues.String);
@@ -91,7 +77,7 @@ namespace WAV_Bot_DSharp.Services
                 int rowsCount = groupedScores.Select(x => x.Value).Max(x => x.Count);
 
                 // Итератор начинается с 2, чтобы соответствовать номерам строк
-                for (int i = 2; i < rowsCount + 2; i++) 
+                for (int i = 2; i < rowsCount + 2; i++)
                 {
                     Row scoresRow = new Row() { RowIndex = (uint)i };
                     rows.Add(scoresRow);
@@ -102,19 +88,30 @@ namespace WAV_Bot_DSharp.Services
                 {
                     List<CompitScore> catScores = groupedScores[(CompitCategories)cat];
 
-                    for (int i = 0; i < catScores.Count; i++)
+                    for (int i = 0; i < rowsCount; i++)
                     {
-                        InsertCell(rows[i], (cat * 3) + 1, catScores[i].Nickname, CellValues.String);
-                        InsertCell(rows[i], (cat * 3) + 2, catScores[i].Score.ToString(), CellValues.Number);
-                        InsertCell(rows[i], (cat * 3) + 3, catScores[i].ScoreUrl, CellValues.String);
+                        if (i < catScores.Count)
+                        {
+                            InsertCell(rows[i], (cat * 3) + 1, catScores[i].Nickname, CellValues.String);
+                            InsertCell(rows[i], (cat * 3) + 2, catScores[i].Score.ToString(), CellValues.Number);
+                            InsertCell(rows[i], (cat * 3) + 3, catScores[i].ScoreUrl, CellValues.String);
+                        }
+                        else
+                        {
+                            InsertCell(rows[i], (cat * 3) + 1, " ", CellValues.String);
+                            InsertCell(rows[i], (cat * 3) + 2, " ", CellValues.Number);
+                            InsertCell(rows[i], (cat * 3) + 3, " ", CellValues.String);
+                        }
                     }
                 }
 
                 workbookPart.Workbook.Save();
                 document.Close();
+
+
             }
 
-            FileInfo file = new FileInfo(filePath);
+            FileStream file = new FileStream(filePath, FileMode.Open);
             return file;
         }
 
@@ -157,37 +154,6 @@ namespace WAV_Bot_DSharp.Services
             // Устанавливает тип значения.
             newCell.CellValue = new CellValue(val);
             newCell.DataType = new EnumValue<CellValues>(type);
-        }
-
-        private void InsertCell3(Row row, int cell_num, int row_num, string val, WorksheetPart worksheetPart, SheetData sheetData, CellValues type, uint styleIndex = 0)
-        {
-            Cell refCell = null;
-            Cell newCell1 = new Cell() { CellReference = cell_num.ToString() + ":" + row.RowIndex.ToString(), StyleIndex = styleIndex };
-            Cell newCell2 = new Cell() { CellReference = (cell_num + 1).ToString() + ":" + row.RowIndex.ToString(), StyleIndex = styleIndex };
-            Cell newCell3 = new Cell() { CellReference = (cell_num + 2).ToString() + ":" + row.RowIndex.ToString(), StyleIndex = styleIndex };
-            row.InsertBefore(newCell1, refCell);
-            row.InsertBefore(newCell2, refCell);
-            row.InsertBefore(newCell3, refCell);
-
-            // Устанавливает тип значения.
-            newCell1.CellValue = new CellValue(val);
-            newCell1.DataType = new EnumValue<CellValues>(type);
-
-            MergeCells mergeCells = new MergeCells();
-
-            MergeCell mergeCell = new MergeCell() { Reference = new StringValue((char)(cell_num + 64) + row_num.ToString() + ':' + (char)(cell_num + 66) + row_num.ToString()) };
-            mergeCells.Append(mergeCell);
-
-            worksheetPart.Worksheet.InsertAfter(mergeCells, worksheetPart.Worksheet.Elements<SheetData>().First());
-        }
-
-        //Важный метод, при вставки текстовых значений надо использовать.
-        //Метод убирает из строки запрещенные спец символы.
-        //Если не использовать, то при наличии в строке таких символов, вылетит ошибка.
-        private string ReplaceHexadecimalSymbols(string txt)
-        {
-            string r = "[\x00-\x08\x0B\x0C\x0E-\x1F\x26]";
-            return Regex.Replace(txt, r, "", RegexOptions.Compiled);
         }
 
         //Метод генерирует стили для ячеек (за основу взят код, найденный где-то в интернете)

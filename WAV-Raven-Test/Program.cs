@@ -24,7 +24,9 @@ namespace WAV_Raven_Test
             List<CompitScore> allScores = new List<CompitScore>();
 
             for (int cat = 0; cat <= 6; cat++) {
-                for (int i = 0; i < 5; i++)
+                if (cat == 2)
+                    continue;
+                for (int i = 0; i < rnd.Next(5, 10); i++)
                     allScores.Add(new CompitScore()
                     {
                         Category = (CompitCategories)cat,
@@ -33,14 +35,6 @@ namespace WAV_Raven_Test
                         Score = rnd.Next(1, 100000),
                         ScoreUrl = "sample_string"
                     });
-            }
-
-            using (IDocumentSession session = store.OpenSession())
-            {
-                foreach (var score in allScores)
-                    session.Store(score);
-
-                session.SaveChanges();
             }
 
             SheetGenerator generator = new SheetGenerator();

@@ -21,6 +21,7 @@ using WAV_Bot_DSharp.Services.Entities;
 using WAV_Bot_DSharp.Database.Interfaces;
 using WAV_Bot_DSharp.Database.Models;
 using WAV_Bot_DSharp.Services.Interfaces;
+using System.Collections.Generic;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -40,6 +41,8 @@ namespace WAV_Bot_DSharp.Commands
         private IWAVMembersProvider wavMembers;
         private ICompititionService compititionService;
 
+        private ISheetGenerator generator;
+
         public CompititionCommands(ILogger<CompititionCommands> logger,
                                    OsuEmbed osuEmbeds,
                                    OsuEnums osuEnums,
@@ -47,7 +50,8 @@ namespace WAV_Bot_DSharp.Commands
                                    DiscordGuild guild,
                                    IWAVMembersProvider wavMembers,
                                    IWAVCompitProvider wavCompit,
-                                   ICompititionService compititionService)
+                                   ICompititionService compititionService,
+                                   ISheetGenerator generator)
         {
             this.osuEmbeds = osuEmbeds;
             this.osuEnums = osuEnums;
@@ -56,6 +60,7 @@ namespace WAV_Bot_DSharp.Commands
             this.wavCompit = wavCompit;
             this.wavMembers = wavMembers;
             this.compititionService = compititionService;
+            this.generator = generator;
 
             this.webClient = new WebClient();
 
@@ -279,6 +284,20 @@ namespace WAV_Bot_DSharp.Commands
             {
                 await commandContext.RespondAsync(e.Message);
             }
+        }
+
+        [Command("get-report"), RequireUserPermissions(Permissions.Administrator), Hidden]
+        public async Task SendScoreSheet(CommandContext commandContext)
+        {
+            List<CompitScore> scores = wavCompit.GetAllScores();
+            if (scores.Count == 0)
+            {
+                await commandContext.RespondAsync("Нет каких-либо скоров для создания отчета.");
+                return;
+            }
+
+            FileStream sheetfileInfo = await generator.CompitScoresToFile(scores);
+            await commandContext.RespondAsync(new DiscordMessageBuilder().WithFile(sheetfileInfo));
         }
 
         [Command("submit"), Description("Отправить свой скор (к сообщению необходимо прикрепить свой реплей в формате .osr)."), RequireDirectMessage]

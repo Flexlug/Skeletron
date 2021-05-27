@@ -100,6 +100,7 @@ namespace WAV_Bot_DSharp
                 .AddSingleton<DocumentStoreProvider>()
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
+                .AddSingleton<ISheetGenerator, SheetGenerator>()
                 .AddSingleton<IShedulerService, ShedulerService>()
                 .AddSingleton<IRecognizerService, RecognizerService>()
                 .AddSingleton<IWAVMembersProvider, WAVMembersProvider>()
