@@ -27,7 +27,7 @@ namespace WAV_Raven_Test
                 },
 
                 // Define a default database (optional)
-                Database = "WAVMembers",
+                Database = "TestBase",
 
                 // Initialize the Document Store
             }.Initialize();

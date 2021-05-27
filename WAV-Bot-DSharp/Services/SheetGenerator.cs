@@ -47,7 +47,7 @@ namespace WAV_Bot_DSharp.Services
                 }
 
                 for (int i = 1; i <= 18; i++) 
-                    lstColumns.Append(new Column() { Min = 1, Max = 10, Width = 20, CustomWidth = true });
+                    lstColumns.Append(new Column() { Min = 1, Max = 10, Width = 10, CustomWidth = true });
 
                 if (needToInsertColumns)
                     worksheetPart.Worksheet.InsertAt(lstColumns, 0);
@@ -64,12 +64,24 @@ namespace WAV_Bot_DSharp.Services
                 Row row = new Row() { RowIndex = 1 };
                 sheetData.Append(row);
 
-                InsertCell3(row, 1, "Beginner", worksheetPart, CellValues.String);
-                InsertCell3(row, 4, "Alpha", worksheetPart, CellValues.String);
-                InsertCell3(row, 7, "Beta", worksheetPart, CellValues.String);
-                InsertCell3(row, 10, "Gamma", worksheetPart, CellValues.String);
-                InsertCell3(row, 13, "Delta", worksheetPart, CellValues.String);
-                InsertCell3(row, 15, "Epsilon", worksheetPart, CellValues.String);
+                InsertCell(row, 1, "Beginner", CellValues.String);
+                InsertCell(row, 2, " ", CellValues.String);
+                InsertCell(row, 3, " ", CellValues.String);
+                InsertCell(row, 4, "Alpha", CellValues.String);
+                InsertCell(row, 5, " ", CellValues.String);
+                InsertCell(row, 6, " ", CellValues.String);
+                InsertCell(row, 7, "Beta", CellValues.String);
+                InsertCell(row, 8, " ", CellValues.String);
+                InsertCell(row, 9, " ", CellValues.String);
+                InsertCell(row, 10, "Gamma", CellValues.String);
+                InsertCell(row, 11, " ", CellValues.String);
+                InsertCell(row, 12, " ", CellValues.String);
+                InsertCell(row, 13, "Delta", CellValues.String);
+                InsertCell(row, 14, " ", CellValues.String);
+                InsertCell(row, 15, " ", CellValues.String);
+                InsertCell(row, 16, "Epsilon", CellValues.String);
+                InsertCell(row, 17, " ", CellValues.String);
+                InsertCell(row, 18, " ", CellValues.String);
 
                 // Получаем словарь скоров
                 var groupedScores = GroupScoresByCategories(scores);
@@ -147,21 +159,24 @@ namespace WAV_Bot_DSharp.Services
             newCell.DataType = new EnumValue<CellValues>(type);
         }
 
-        private void InsertCell3(Row row, int cell_num, string val, WorksheetPart worksheetPart, CellValues type, uint styleIndex = 0)
+        private void InsertCell3(Row row, int cell_num, int row_num, string val, WorksheetPart worksheetPart, SheetData sheetData, CellValues type, uint styleIndex = 0)
         {
             Cell refCell = null;
-            Cell newCell = new Cell() { CellReference = cell_num.ToString() + ":" + row.RowIndex.ToString(), StyleIndex = styleIndex };
-            row.InsertBefore(newCell, refCell);
+            Cell newCell1 = new Cell() { CellReference = cell_num.ToString() + ":" + row.RowIndex.ToString(), StyleIndex = styleIndex };
+            Cell newCell2 = new Cell() { CellReference = (cell_num + 1).ToString() + ":" + row.RowIndex.ToString(), StyleIndex = styleIndex };
+            Cell newCell3 = new Cell() { CellReference = (cell_num + 2).ToString() + ":" + row.RowIndex.ToString(), StyleIndex = styleIndex };
+            row.InsertBefore(newCell1, refCell);
+            row.InsertBefore(newCell2, refCell);
+            row.InsertBefore(newCell3, refCell);
 
             // Устанавливает тип значения.
-            newCell.CellValue = new CellValue(val);
-            newCell.DataType = new EnumValue<CellValues>(type);
+            newCell1.CellValue = new CellValue(val);
+            newCell1.DataType = new EnumValue<CellValues>(type);
 
             MergeCells mergeCells = new MergeCells();
 
-            mergeCells.Append(new MergeCell() { Reference = cell_num.ToString() + ":" + row.RowIndex.ToString() });
-            mergeCells.Append(new MergeCell() { Reference = (cell_num + 1).ToString() + ":" + row.RowIndex.ToString() });
-            mergeCells.Append(new MergeCell() { Reference = (cell_num + 2).ToString() + ":" + row.RowIndex.ToString() });
+            MergeCell mergeCell = new MergeCell() { Reference = new StringValue((char)(cell_num + 64) + row_num.ToString() + ':' + (char)(cell_num + 66) + row_num.ToString()) };
+            mergeCells.Append(mergeCell);
 
             worksheetPart.Worksheet.InsertAfter(mergeCells, worksheetPart.Worksheet.Elements<SheetData>().First());
         }
