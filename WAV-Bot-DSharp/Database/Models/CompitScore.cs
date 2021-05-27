@@ -34,6 +34,11 @@ namespace WAV_Bot_DSharp.Database.Models
         public int Score { get; set; }
 
         /// <summary>
+        /// ID скора
+        /// </summary>
+        public string ScoreId { get; set; }
+
+        /// <summary>
         /// Ссылка на файл скора
         /// </summary>
         public string ScoreUrl { get; set; }

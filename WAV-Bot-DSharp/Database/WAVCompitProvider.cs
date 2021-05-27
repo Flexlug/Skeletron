@@ -150,6 +150,16 @@ namespace WAV_Bot_DSharp.Database
             }
         }
 
+        public bool CheckScoreExists(string uid)
+        {
+            using (IDocumentSession session = store.OpenSession())
+            {
+                CompitScore compitInfo = session.Query<CompitScore>().FirstOrDefault(x => x.ScoreId == uid);
+
+                return compitInfo is not null;
+            }
+        }
+
         public void SetCompitionInfo(CompitInfo info)
         {
             using (IDocumentSession session = store.OpenSession())

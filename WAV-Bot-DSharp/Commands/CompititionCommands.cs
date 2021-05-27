@@ -439,14 +439,20 @@ namespace WAV_Bot_DSharp.Commands
 
             if (!correctMap)
             {
-                await commandContext.RespondAsync($"Мы не можем принять данный скор по причине того, что он поставлен не на той карте, которая выдана вашей категории {osuEnums.CategoryToString(wavMember.CompitionProfile.Category)}");
+                await commandContext.RespondAsync($"Мы не можем принять данный скор по причине того, что он поставлен не на той карте, которая выдана вашей категории {osuEnums.CategoryToString(wavMember.CompitionProfile.Category)}.");
                 return;
             }
 
             string osuNickname = wavMember.OsuServers.FirstOrDefault(x => x.Server == compitProfile.Server).OsuNickname;
             if (replay.PlayerName != osuNickname)
             {
-                await commandContext.RespondAsync($"Ваш никнейм не совпадает с автором скора. Если вы меняли никнейм, вызовите `sk!wmw recount`");
+                await commandContext.RespondAsync($"Ваш никнейм не совпадает с автором скора. Если вы меняли никнейм, вызовите `sk!wmw recount`.");
+                return;
+            }
+
+            if (!wavCompit.CheckScoreExists(replay.OnlineId.ToString()))
+            {
+                await commandContext.RespondAsync($"Вы уже отправляли раннее данный скор.");
                 return;
             }
 
@@ -477,6 +483,7 @@ namespace WAV_Bot_DSharp.Commands
                 Nickname = osuNickname,
                 Category = compitProfile.Category,
                 Score = replay.ReplayScore,
+                ScoreId = replay.OnlineId.ToString(),
                 ScoreUrl = scoreMessage.Attachments.FirstOrDefault()?.Url
             });
 

@@ -53,6 +53,13 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         public List<CompitScore> GetAllScores();
 
         /// <summary>
+        /// Проверить наличие скора
+        /// </summary>
+        /// <param name="id">ID скора</param>
+        /// <returns></returns>
+        public bool CheckScoreExists(string id);
+
+        /// <summary>
         /// Удалить все скоры за прошедший конкурс
         /// </summary>
         public void DeleteAllScores();
