@@ -83,7 +83,7 @@ namespace WAV_Bot_DSharp.Commands
                 compitSb.AppendLine($"__Средний PP__: {Math.Round(member.CompitionProfile.AvgPP, 2)}");
                 compitSb.AppendLine($"__Сервер__: {osuEnums.OsuServerToString(member.CompitionProfile.Server)}");
                 compitSb.AppendLine($"__Категория__: {osuEnums.CategoryToString(member.CompitionProfile.Category)}");
-                compitSb.AppendLine($"__Уведомления__: {member.CompitionProfile.Notifications}");
+                compitSb.AppendLine($"__Уведомления__: {(member.CompitionProfile.Notifications ? "Да" : "Нет")}");
             }
             else
             {

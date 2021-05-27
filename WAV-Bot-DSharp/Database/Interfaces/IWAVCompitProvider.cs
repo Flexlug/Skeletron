@@ -47,9 +47,15 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         public List<CompitScore> GetCategoryBestScores(CompitCategories category);
 
         /// <summary>
+        /// Получить список всех скоров
+        /// </summary>
+        /// <returns></returns>
+        public List<CompitScore> GetAllScores();
+
+        /// <summary>
         /// Удалить все скоры за прошедший конкурс
         /// </summary>
-        public void ResetScores();
+        public void DeleteAllScores();
 
         /// <summary>
         /// Получить записанную в БД информацию о конкурсе

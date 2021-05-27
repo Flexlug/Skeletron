@@ -77,7 +77,18 @@ namespace WAV_Bot_DSharp.Database
             }
         }
 
-        public void ResetScores()
+        public List<CompitScore> GetAllScores()
+        {
+            using (IDocumentSession session = store.OpenSession())
+            {
+                List<CompitScore> scores = session.Query<CompitScore>()
+                                                  .ToList();
+
+                return scores;
+            }
+        }
+
+        public void DeleteAllScores()
         {
             using (IDocumentSession session = store.OpenSession())
             {
