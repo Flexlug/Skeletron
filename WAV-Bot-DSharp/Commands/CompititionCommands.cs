@@ -323,7 +323,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync(osuEmbeds.CompitInfoToEmbed(compitInfo));
         }
 
-        [Command("reset-all-scores"), , RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("reset-all-scores"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
         public async Task ResetAllScores(CommandContext commandContext)
         {
             wavCompit.DeleteAllScores();
@@ -392,7 +392,7 @@ namespace WAV_Bot_DSharp.Commands
             catch (Exception e)
             {
                 logger.LogCritical(e, "Exception while parsing score"); 
-                await Context.RespondAsync("Не удалось считать реплей. Возмонжо он повержден.");
+                await commandContext.RespondAsync("Не удалось считать реплей. Возмонжо он повержден.");
                 return;
             }
 

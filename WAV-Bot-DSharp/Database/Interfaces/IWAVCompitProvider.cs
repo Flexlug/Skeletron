@@ -27,6 +27,32 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         public void AddCompitProfile(string uid, WAVMemberCompitProfile compitProfile);
 
         /// <summary>
+        /// Вернуть маппул
+        /// </summary>
+        /// <returns></returns>
+        public List<CompitMappolMap> GetCategoryMappol(CompitCategories category);
+
+        /// <summary>
+        /// Добавить в БД предлагаемую карту
+        /// </summary>
+        /// <param name="map">Предлагаемая карта</param>
+        public void SuggestMap(CompitMappolMap map);
+
+        /// <summary>
+        /// Проверить, предлагал ли кто-либо уже данную карту
+        /// </summary>
+        /// <param name="bmId"></param>
+        /// <returns></returns>
+        public bool CheckMapSuggested(int bmId, CompitCategories category);
+
+        /// <summary>
+        /// Проверить, предлагал ли уже пользователь карту для данного конкурса
+        /// </summary>
+        /// <param name="uid">Discord ID пользователя</param>
+        /// <returns></returns>
+        public bool CheckUserSuggestiosn(string uid);
+
+        /// <summary>
         /// Добавить в БД информацию о скоре участника
         /// </summary>
         /// <param name="score">Скор участника</param>
