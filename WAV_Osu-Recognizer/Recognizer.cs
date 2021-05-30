@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.DrawingCore;
 using System.Collections.Generic;
 
 using RestSharp;
 
 using Tesseract;
+using System.DrawingCore;
 using System.DrawingCore.Drawing2D;
 using System.DrawingCore.Imaging;
 
@@ -31,6 +31,7 @@ namespace WAV_Osu_Recognizer
         /// <returns></returns>
         public string RecognizeTopText(Image image)
         {
+
             Bitmap bbmp;
             if (image.Width < 2400 || image.Height < 1500)
                 bbmp = ResizeImage(image, image.Width * 3, image.Height * 3);
@@ -87,8 +88,6 @@ namespace WAV_Osu_Recognizer
         {
             var destRect = new Rectangle(0, 0, width, height);
             var destImage = new Bitmap(width, height);
-
-            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
 
             using (var graphics = Graphics.FromImage(destImage))
             {
