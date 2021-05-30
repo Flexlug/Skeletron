@@ -31,13 +31,11 @@ namespace WAV_Osu_Recognizer
         /// <returns></returns>
         public string RecognizeTopText(Image image)
         {
-            Image bmp = new Bitmap(image);
-
             Bitmap bbmp;
-            if (bmp.Width < 2400 || bmp.Height < 1500)
-                bbmp = ResizeImage(bmp, bmp.Width * 3, bmp.Height * 3);
+            if (image.Width < 2400 || image.Height < 1500)
+                bbmp = ResizeImage(image, image.Width * 3, image.Height * 3);
             else
-                bbmp = new Bitmap(bmp);
+                bbmp = new Bitmap(image);
 
 
             ToGrayScale(bbmp);
@@ -52,7 +50,6 @@ namespace WAV_Osu_Recognizer
             string mapName = pageName.GetText();
             pageName.Dispose();
 
-            bmp.Dispose();
             bbmp.Dispose();
 
             //if (File.Exists(fileName))
