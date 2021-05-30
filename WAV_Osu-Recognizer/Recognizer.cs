@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Drawing;
 using System.DrawingCore;
 using System.Collections.Generic;
 
 using RestSharp;
 
 using Tesseract;
+using System.DrawingCore.Drawing2D;
+using System.DrawingCore.Imaging;
 
 namespace WAV_Osu_Recognizer
 {
@@ -32,11 +33,18 @@ namespace WAV_Osu_Recognizer
         {
             Image bmp = new Bitmap(image);
 
-            ToGrayScale(bmp as Bitmap);
-            bmp = AddTopWhiteSpace(bmp);
+            Bitmap bbmp;
+            if (bmp.Width < 2400 || bmp.Height < 1500)
+                bbmp = ResizeImage(bmp, bmp.Width * 3, bmp.Height * 3);
+            else
+                bbmp = new Bitmap(bmp);
+
+
+            ToGrayScale(bbmp);
+            bbmp = AddTopWhiteSpace(bbmp);
 
             string fileName = $"temp/{DateTime.Now.Ticks}_BW.jpg";
-            bmp.Save(fileName);
+            bbmp.Save(fileName);
 
             Pix img = Pix.LoadFromFile(fileName);
 
@@ -45,8 +53,10 @@ namespace WAV_Osu_Recognizer
             pageName.Dispose();
 
             bmp.Dispose();
-            if (File.Exists(fileName))
-                File.Delete(fileName);
+            bbmp.Dispose();
+
+            //if (File.Exists(fileName))
+                //File.Delete(fileName);
 
             return mapName;
         }
@@ -69,9 +79,41 @@ namespace WAV_Osu_Recognizer
                 }
         }
 
-        public Image AddTopWhiteSpace(Image input)
+        /// <summary>
+        /// Изменить размеры картинки
+        /// </summary>
+        /// <param name="image">Изменяемая картинка</param>
+        /// <param name="width">Новая ширина</param>
+        /// <param name="height">Новая длина</param>
+        /// <returns></returns>
+        public static Bitmap ResizeImage(Image image, int width, int height)
         {
-            Image newBtmp = new Bitmap(input.Width, input.Height + 10);
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
+        public Bitmap AddTopWhiteSpace(Bitmap input)
+        {
+            Bitmap newBtmp = new Bitmap(input.Width, input.Height + 10);
             Graphics g = Graphics.FromImage(newBtmp);
 
             g.FillRectangle(Brushes.White, System.DrawingCore.Rectangle.FromLTRB(1, 1, newBtmp.Width - 1, newBtmp.Height - 1));
