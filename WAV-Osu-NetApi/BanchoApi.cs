@@ -85,6 +85,10 @@ namespace WAV_Osu_NetApi
                 .AddParameter("scope", "public");
 
             IRestResponse resp = client.Execute(req, Method.POST);
+
+            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+                return false;
+
             try
             {
                 TokenResponse token = JsonConvert.DeserializeObject<TokenResponse>(resp.Content);
