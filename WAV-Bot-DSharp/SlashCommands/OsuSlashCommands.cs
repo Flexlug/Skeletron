@@ -43,7 +43,8 @@ namespace WAV_Bot_DSharp.SlashCommands
             [Choice("Gatari server", "gatari")]
             [Option("server", "Возможные параметры: bancho, gatari")] string args)
         {
-            if (!(ctx.Channel.Name.Contains("-bot") || ctx.Channel.Name.Contains("dev-announce")))
+            if (!((ctx.Channel.Name?.Contains("-bot") ?? true) || 
+                  (ctx.Channel.Name?.Contains("dev-announce") ?? true)))
             {
                 await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, 
                                               new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")

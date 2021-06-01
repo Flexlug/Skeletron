@@ -20,19 +20,19 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// </summary>
         /// <param name="member">Регистрируемый участник</param>
         /// <param name="osuInfo">Информация о профиле</param>
-        public Task RegisterMember(DiscordMember member, WAVMemberOsuProfileInfo osuInfo);
+        public Task RegisterMember(DiscordUser member, WAVMemberOsuProfileInfo osuInfo);
 
         /// <summary>
         /// Выключить уведомления о конкурсе
         /// </summary>
         /// <param name="member">Участник, с которого нужно снять соответствующую роль</param>
-        public Task DisableNotifications(DiscordMember member);
+        public Task DisableNotifications(DiscordUser member);
 
         /// <summary>
         /// Включить уведомления о конкурсе
         /// </summary>
         /// <param name="member">Участник, которому нужно присвоить соответствующую роль</param>
-        public Task EnableNotifications(DiscordMember member, WAVMemberCompitProfile profile = null);
+        public Task EnableNotifications(DiscordUser member, WAVMemberCompitProfile profile = null);
 
         /// <summary>
         /// Проверка выполнения всех условий для старта конкурса
@@ -95,6 +95,6 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// </summary>
         /// <param name="member">Discord UID пользователя</param>
         /// <param name="toggle">True/False</param>
-        public Task SetNonGrata(DiscordMember member, bool toggle);
+        public Task SetNonGrata(DiscordUser member, bool toggle);
     }
 }

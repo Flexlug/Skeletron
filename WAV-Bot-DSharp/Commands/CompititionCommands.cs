@@ -152,16 +152,16 @@ namespace WAV_Bot_DSharp.Commands
 
         [Command("notify-manual"), Description("Включить или отключить пинги по всему, что связано с конкурсом"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
         public async Task ToggleNotifications(CommandContext commandContext,
-            DiscordMember discordMember,
+            DiscordUser discordUser,
             bool toggle)
         {
-            if (discordMember is null)
+            if (discordUser is null)
             {
                 await commandContext.RespondAsync("Не удалось найти такого пользователя.");
                 return;
             }
 
-            WAVMember member = wavMembers.GetMember(discordMember.Id.ToString());
+            WAVMember member = wavMembers.GetMember(discordUser.Id.ToString());
 
             if (member.CompitionProfile is null)
             {
@@ -171,12 +171,12 @@ namespace WAV_Bot_DSharp.Commands
 
             if (toggle)
             {
-                await compititionService.EnableNotifications(discordMember, member.CompitionProfile);
+                await compititionService.EnableNotifications(discordUser, member.CompitionProfile);
                 await commandContext.RespondAsync("Уведомления включены.");
             }
             else
             {
-                await compititionService.DisableNotifications(discordMember);
+                await compititionService.DisableNotifications(discordUser);
                 await commandContext.RespondAsync("Уведомления выключены.");
             }
         }
@@ -225,26 +225,26 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        [Command("register"), Description("Зарегистрироваться в конкурсе W.m.W и получить категорию. Зарегистрироваться можно только один раз. Средний PP будет время от времени пересчитываться."), RequireGuild]
+        [Command("register"), Description("Зарегистрироваться в конкурсе W.m.W и получить категорию. Зарегистрироваться можно только один раз. Средний PP будет время от времени пересчитываться.")]
         public async Task Register(CommandContext commandContext,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
         {
-            await RegisterUser(commandContext, commandContext.Member, strServer);
+            await RegisterUser(commandContext, commandContext.User, strServer);
         }
 
         [Command("non-grata"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
         public async Task NonGrata(CommandContext commandContext,
-            DiscordMember member,
+            DiscordUser user,
             bool toggle)
         {
-            if (member is null)
+            if (user is null)
             {
                 await commandContext.RespondAsync("Не удалось найти такого пользователя.");
                 return;
             }
 
-            compititionService.SetNonGrata(member, toggle);
-            await commandContext.RespondAsync($"Задан статус non-grata `{toggle}` для {member.DisplayName}.");
+            compititionService.SetNonGrata(user, toggle);
+            await commandContext.RespondAsync($"Задан статус non-grata `{toggle}` для {user.Username}.");
         }
 
         [Command("register-manual-by-nickname"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
@@ -252,19 +252,19 @@ namespace WAV_Bot_DSharp.Commands
             [Description("Регистрируемый участник")] string strMember,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
         {
-            DiscordMember dmember = (await guild.GetAllMembersAsync()).FirstOrDefault(x => x.Username == strMember);
-            if (dmember is null)
+            DiscordUser duser = (await guild.GetAllMembersAsync()).FirstOrDefault(x => x.Username == strMember);
+            if (duser is null)
             {
                 await commandContext.RespondAsync("Не удалось найти такого пользователя.");
                 return;
             }
 
-            await RegisterUser(commandContext, dmember, strServer);
+            await RegisterUser(commandContext, duser, strServer);
         }
 
         [Command("register-manual"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
         public async Task RegisterUser(CommandContext commandContext,
-            [Description("Регистрируемый участник")] DiscordMember dmember,
+            [Description("Регистрируемый участник")] DiscordUser dmember,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
         {
             WAVMember member = wavMembers.GetMember(dmember.Id.ToString());
@@ -460,7 +460,7 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            if (!wavCompit.CheckScoreExists(replay.OnlineId.ToString()))
+            if (wavCompit.CheckScoreExists(replay.OnlineId.ToString()))
             {
                 await commandContext.RespondAsync($"Вы уже отправляли раннее данный скор.");
                 return;

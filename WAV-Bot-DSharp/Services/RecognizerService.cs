@@ -94,7 +94,8 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return;
             }
 
-            if (!(e.Channel.Name.Contains("-osu") || e.Channel.Name.Contains("bot-debug")))
+            if (!((e.Channel.Name?.Contains("-osu") ?? true) || 
+                  (e.Channel.Name?.Contains("bot-debug") ?? true)))
             {
                 logger.LogDebug($"Not osu channel");
                 return;

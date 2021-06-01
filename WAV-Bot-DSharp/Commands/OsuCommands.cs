@@ -90,7 +90,10 @@ namespace WAV_Bot_DSharp.Commands
             if (!e.Message.Content.Contains("http"))
                 return;
 
-            if (!(e.Channel.Name.Contains("-osu") ||
+            if (e.Channel is null)
+                return;
+
+            if (!(e.Channel.Name.Contains("-osu")||
                   e.Channel.Name.Contains("map-offer") ||
                   e.Channel.Name.Contains("bot-debug") ||
                   e.Channel.Name.Contains("dev-announce") ||
@@ -208,7 +211,8 @@ namespace WAV_Bot_DSharp.Commands
             [Description("osu! никнейм")] string nickname,
             params string[] args)
         {
-            if (!(commandContext.Channel.Name.Contains("-bot") || commandContext.Channel.Name.Contains("dev-announce")))
+            if (!((commandContext.Channel.Name?.Contains("-bot") ?? false) || 
+                  (commandContext.Channel.Name?.Contains("dev-announce") ?? false)))
             {
                 await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
                 return;
@@ -272,7 +276,8 @@ namespace WAV_Bot_DSharp.Commands
         public async Task LastRecent(CommandContext commandContext,
             params string[] args)
         {
-            if (!(commandContext.Channel.Name.Contains("-bot") || commandContext.Channel.Name.Contains("dev-announce") || commandContext.Channel.Name.Contains("dev-announce")))
+            if (!((commandContext.Channel.Name?.Contains("-bot") ?? false) || 
+                  (commandContext.Channel.Name?.Contains("dev-announce") ?? true)))
             {
                 await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
                 return;
@@ -373,22 +378,23 @@ namespace WAV_Bot_DSharp.Commands
             await SetOsuProfileFor(commandContext, dmember, nickname, args);
         }
 
-        [Command("osuset"), Description("Добавить информацию о своём osu! профиле"), RequireGuild]
+        [Command("osuset"), Description("Добавить информацию о своём osu! профиле")]
         public async Task OsuSet(CommandContext commandContext,
             [Description("Никнейм osu! профиля")] string nickname,
             [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
         {
-            await SetOsuProfileFor(commandContext, commandContext.Member, nickname, args);
+            await SetOsuProfileFor(commandContext, commandContext.User, nickname, args);
         }
 
 
-        public async Task SetOsuProfileFor(CommandContext commandContext, DiscordMember user, string nickname, params string[] args)
+        public async Task SetOsuProfileFor(CommandContext commandContext, DiscordUser user, string nickname, params string[] args)
         {
             string discordId = user.Id.ToString();
 
             WAVMember member = wavMembers.GetMember(discordId);
 
-            if (!(commandContext.Channel.Name.Contains("-bot") || commandContext.Channel.Name.Contains("dev-announce")))
+            if (!((commandContext.Channel.Name?.Contains("-bot") ?? true) || 
+                  (commandContext.Channel.Name?.Contains("dev-announce") ?? true)))
             {
                 await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
                 return;

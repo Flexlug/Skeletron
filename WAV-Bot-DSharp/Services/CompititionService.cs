@@ -347,9 +347,9 @@ namespace WAV_Bot_DSharp.Services
         /// <summary>
         /// Зарегистрировать участника в конкурсе - вычислить среднее из 5 топ скоров и присвоить роль
         /// </summary>
-        /// <param name="member">Регистрируемый участник</param>
+        /// <param name="user">Регистрируемый участник</param>
         /// <param name="osuInfo">Информация о профиле</param>
-        public async Task RegisterMember(DiscordMember member, WAVMemberOsuProfileInfo osuInfo)
+        public async Task RegisterMember(DiscordUser user, WAVMemberOsuProfileInfo osuInfo)
         {
             double avgPP = await CalculateAvgPP(osuInfo.OsuId, osuInfo.Server);
 
@@ -362,9 +362,9 @@ namespace WAV_Bot_DSharp.Services
                 Server = osuInfo.Server
             };
 
-            wavCompit.AddCompitProfile(member.Id.ToString(), compitProfile);
+            wavCompit.AddCompitProfile(user.Id.ToString(), compitProfile);
 
-            await EnableNotifications(member, compitProfile);
+            await EnableNotifications(user, compitProfile);
         }
 
         /// <summary>
@@ -430,9 +430,10 @@ namespace WAV_Bot_DSharp.Services
             return category;
         }
 
-        public async Task SetNonGrata(DiscordMember member, bool toggle)
+        public async Task SetNonGrata(DiscordUser user, bool toggle)
         {
-            wavCompit.SetNonGrata(member.Id.ToString(), toggle);
+            DiscordMember member = await guild.GetMemberAsync(user.Id);
+            wavCompit.SetNonGrata(user.Id.ToString(), toggle);
 
             if (toggle)
             {
@@ -445,8 +446,9 @@ namespace WAV_Bot_DSharp.Services
             }
         }
 
-        private async Task RemoveWrongNotificationRoles(DiscordMember member, CompitCategories category)
+        private async Task RemoveWrongNotificationRoles(DiscordUser user, CompitCategories category)
         {
+            DiscordMember member = await guild.GetMemberAsync(user.Id);
             if (member.Roles.Contains(beginnerRole))
                 if (category != CompitCategories.Beginner)
                     await member.RevokeRoleAsync(beginnerRole);
@@ -477,8 +479,10 @@ namespace WAV_Bot_DSharp.Services
         /// Включить уведомления о конкурсе
         /// </summary>
         /// <param name="member">Участник, которому нужно присвоить соответствующую роль</param>
-        public async Task EnableNotifications(DiscordMember member, WAVMemberCompitProfile profile = null)
+        public async Task EnableNotifications(DiscordUser user, WAVMemberCompitProfile profile = null)
         {
+            DiscordMember member = await guild.GetMemberAsync(user.Id);
+
             WAVMemberCompitProfile compitProfile = profile ?? wavCompit.GetCompitProfile(member.Id.ToString());
             if (compitProfile is null)
             {
@@ -519,8 +523,10 @@ namespace WAV_Bot_DSharp.Services
         /// Выключить уведомления о конкурсе
         /// </summary>
         /// <param name="member">Участник, с которого нужно снять соответствующую роль</param>
-        public async Task DisableNotifications(DiscordMember member)
+        public async Task DisableNotifications(DiscordUser user)
         {
+            DiscordMember member = await guild.GetMemberAsync(user.Id);
+
             WAVMemberCompitProfile compitProfile = wavCompit.GetCompitProfile(member.Id.ToString());
             if (compitProfile is null)
             {
