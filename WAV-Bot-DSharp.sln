@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Osu-NetApi", "WAV-Osu-N
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Osu-NetApi-Test", "WAV-Osu-NetApi-Test\WAV-Osu-NetApi-Test.csproj", "{A393B866-B449-43B4-BD5F-719082C125CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAV-Raven-Test", "WAV-Raven-Test\WAV-Raven-Test.csproj", "{FE2E76B1-7A30-46E5-84B4-4CC8F58053F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Raven-Test", "WAV-Raven-Test\WAV-Raven-Test.csproj", "{FE2E76B1-7A30-46E5-84B4-4CC8F58053F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

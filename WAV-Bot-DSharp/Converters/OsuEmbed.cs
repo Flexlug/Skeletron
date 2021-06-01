@@ -102,7 +102,7 @@ namespace WAV_Bot_DSharp.Converters
             sb.AppendLine($"**PP:** `{user.statistics.pp} PP` **Acc**: `{user.statistics.hit_accuracy}%`");
             sb.AppendLine($"**Playcount:** `{user.statistics.play_count}` (`{(Math.Round((double)user.statistics.play_time / 3600))}` hrs)");
             sb.AppendLine($"**Ranks**: {osuEmoji.RankingEmoji("XH")}`{user.statistics.grade_counts.ssh}` {osuEmoji.RankingEmoji("X")}`{user.statistics.grade_counts.ss}` {osuEmoji.RankingEmoji("SH")}`{user.statistics.grade_counts.sh}` {osuEmoji.RankingEmoji("S")}`{user.statistics.grade_counts.s}` {osuEmoji.RankingEmoji("A")}`{user.statistics.grade_counts.a}`");
-            sb.AppendLine($"**Playstyle:** {string.Join(", ", user.playstyle)}\n");
+            sb.AppendLine($"**Playstyle:** {(user.playstyle is null ? string.Empty : string.Join(", ", user.playstyle))}\n");
 
             if (scores != null && scores?.Count != 0)
             {
