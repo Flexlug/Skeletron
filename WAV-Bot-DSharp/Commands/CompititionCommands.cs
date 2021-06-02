@@ -331,12 +331,12 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync("Все скоры удалены.");
         }
 
-        [Command("submit"), Description("Отправить свой скор (к сообщению необходимо прикрепить свой реплей в формате .osr)."), RequireDirectMessage]
+        [Command("submit"), Description("Отправить свой скор (к сообщению необходимо прикрепить свой реплей в формате .osr)."), RequireDirectMessage, Cooldown(1, 30, CooldownBucketType.User)]
         public async Task SubmitScore(CommandContext commandContext)
         {
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Id);
             logger.LogInformation($"DM {msg.Author}: {msg.Content} : {msg.Attachments.Count}");
-
+            
             if (msg.Attachments.Count == 0)
             {
                 await commandContext.RespondAsync("Вы не прикрепили к сообщению никаких файлов.");
@@ -460,11 +460,11 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            if (wavCompit.CheckScoreExists(replay.OnlineId.ToString()))
-            {
-                await commandContext.RespondAsync($"Вы уже отправляли раннее данный скор.");
-                return;
-            }
+            //if (wavCompit.CheckScoreExists(replay.OnlineId.ToString()))
+            //{
+            //    await commandContext.RespondAsync($"Вы уже отправляли раннее данный скор.");
+            //    return;
+            //}
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Osu nickname: `{replay.PlayerName}`");
