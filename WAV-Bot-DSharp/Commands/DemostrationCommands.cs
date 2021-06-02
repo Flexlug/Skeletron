@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Commands
@@ -19,6 +20,17 @@ namespace WAV_Bot_DSharp.Commands
             this.logger = logger;
 
             logger.LogInformation("DemostrationCommands loaded");
+        }
+
+        [Command("button-example"), Hidden, RequireOwner]
+        public async Task ButtonDemo(CommandContext ctx)
+        {
+            await new DiscordMessageBuilder()
+                .AddComponents(new DiscordButtonComponent(ButtonStyle.Danger, "asd", "ДУ НОТ ПРЕС МИ"),
+                               new DiscordButtonComponent(ButtonStyle.Primary, "asd", "ПРЕС МИ"),
+                               new DiscordButtonComponent(ButtonStyle.Secondary, "ASD", "Ю КЭН ПРЕС МИ"),
+                               new DiscordButtonComponent(ButtonStyle.Success, "ASD", "Ю ПРЕСД МИ!!!"))
+                .SendAsync(ctx.Channel);
         }
 
         /// <summary>
