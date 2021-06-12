@@ -130,7 +130,7 @@ namespace WAV_Bot_DSharp.Commands
 
             await commandContext.RespondAsync("", embed: new DiscordEmbedBuilder().WithAuthor(discordMember.DisplayName, iconUrl: discordMember.AvatarUrl)
                                                                            .WithTitle("**MUTED**")
-                                                                           .WithDescription($"Reason: {(reason != string.Empty ? reason : "not stated")}")
+                                                                           .WithDescription($"Reason: {(!string.IsNullOrEmpty(reason) ? reason : "not stated")}")
                                                                            .Build());
 
 
