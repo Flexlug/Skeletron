@@ -21,7 +21,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
         public override BaseHelpFormatter WithCommand(Command command)
         {
-            _embed.WithTitle("Command description");
+            _embed.WithTitle("Описание команды");
 
             StringBuilder sb = new StringBuilder();
 
@@ -34,24 +34,27 @@ namespace WAV_Bot_DSharp.Services.Entities
                 CommandOverload commandOverload = command.Overloads[i];
 
                 if (countOverloads)
-                    sb.AppendLine($"**__Variant {i + 1}__**");
+                    sb.AppendLine($"**__Вариант {i + 1}__**");
 
-                sb.AppendLine($"```\nsk!{command.Name} {string.Join(' ', commandOverload.Arguments.Select(x => $"[{ x.Name}]").ToList())}```{command.Description}");
+                sb.AppendLine($"```\nsk!{command.QualifiedName} {string.Join(' ', commandOverload.Arguments.Select(x => $"[{ x.Name}]").ToList())}```{command.Description}");
                 sb.AppendLine();
 
                 if (command.Aliases?.Count != 0)
                 {
-                    sb.AppendLine("**Aliases:**");
+                    sb.AppendLine("**Алиасы:**");
                     foreach (string alias in command.Aliases)
                         sb.AppendLine(alias);
 
                     sb.AppendLine();
                 }
 
-                sb.AppendLine("**Arguments:**");
-                foreach (var c in commandOverload.Arguments)
-                    sb.AppendLine($"`{c.Name}`: {c.Description}");
-                sb.AppendLine();
+                if (commandOverload?.Arguments.Count != 0)
+                {
+                    sb.AppendLine("**Аргументы:**");
+                    foreach (var c in commandOverload.Arguments)
+                        sb.AppendLine($"`{c.Name}`: {c.Description}");
+                    sb.AppendLine();
+                }
 
                 //if (command.ExecutionChecks?.Count != 0)
                 //{
@@ -90,7 +93,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             foreach (var kvp in comsDict)
                 _embed.AddField(kvp.Key, string.Join(' ', kvp.Value));
-            _embed.WithTitle("Commands overview");
+            _embed.WithTitle("Список команд");
 
             return this;
         }
