@@ -179,7 +179,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             string[] rawrecedText = recognizer.RecognizeTopText(image).Split('\n');
 
             foreach (string s in rawrecedText)
-                logger.LogDebug(s);
+                logger.LogInformation(s);
 
             // Searching for first non-empty or almost string
             string recedText = string.Empty;
