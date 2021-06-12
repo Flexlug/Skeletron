@@ -30,6 +30,7 @@ namespace WAV_Bot_DSharp.Commands
                                new DiscordButtonComponent(ButtonStyle.Primary, "asd", "ПРЕС МИ"),
                                new DiscordButtonComponent(ButtonStyle.Secondary, "ASD", "Ю КЭН ПРЕС МИ"),
                                new DiscordButtonComponent(ButtonStyle.Success, "ASD", "Ю ПРЕСД МИ!!!"))
+                .WithContent("типа контент")
                 .SendAsync(ctx.Channel);
         }
 
