@@ -38,6 +38,10 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Commands\AdminCommands.cs~RFe9c064.TMP" />
     <None Remove="Commands\TrackCommands.cs~RFd436c8.TMP" />
