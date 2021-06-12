@@ -214,6 +214,13 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
+            CompitInfo compitInfo = wavCompit.GetCompitionInfo();
+            if (compitInfo.IsRunning)
+            {
+                await commandContext.RespondAsync("Во время конкурса нельзя пересчитать свои PP.");
+                return;
+            }
+
             try
             {
                 await compititionService.RegisterMember(commandContext.Member, profileInfo);
