@@ -41,12 +41,12 @@ namespace WAV_Osu_Recognizer
           IDictionary<String, int> right)
         {
 
-            if (null == left)
-                if (null == right)
+            if (left is null)
+                if (right is null)
                     return 1.0;
                 else
                     return 0.0;
-            else if (null == right)
+            else if (right is null)
                 return 0.0;
 
             int all = left.Sum(pair => pair.Value);
@@ -66,7 +66,13 @@ namespace WAV_Osu_Recognizer
                 found += count < pair.Value ? count : pair.Value;
             }
 
-            return found / all;
+            int leftLen = left.Select(x => x.Value).Sum();
+            int rightLen = right.Select(x => x.Value).Sum();
+
+            int maxLen = Math.Max(leftLen, rightLen);
+            int minLen = Math.Min(leftLen, rightLen);
+
+            return found / all * (minLen / maxLen);
         }
 
         //public static double Compare(string s1, string s2)
