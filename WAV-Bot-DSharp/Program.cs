@@ -12,10 +12,13 @@ namespace WAV_Bot_DSharp
 {
     class Program
     {
+        public static DateTime StartTime { get; private set; }
+
         static void Main(string[] args)
         {
-            var settingsService = new SettingsLoader();
+            StartTime = DateTime.Now;
 
+            var settingsService = new SettingsLoader();
 
             Log.Logger = new LoggerConfiguration()
                 //.WriteTo.Console(new ExpressionTemplate ("{@t:HH:mm:ss} [{@l:u3}] [{Substring(SourceContext, LastIndexOf(SourceContext, '.') + 1)}] {@m}\n{@x}"),

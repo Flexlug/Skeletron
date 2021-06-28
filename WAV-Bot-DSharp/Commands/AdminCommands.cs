@@ -51,6 +51,17 @@ namespace WAV_Bot_DSharp.Commands
             logger.LogInformation("AdminCommands loaded");
         }
 
+        [Command("uptime"), Description("Получить информацию о времени работы бота.")]
+        public async Task Uptime(CommandContext context)
+        {
+            DiscordEmbed embed = new DiscordEmbedBuilder()
+                .AddField("Дата запуска бота", Program.StartTime.ToLongDateString())
+                .AddField("Время с момента запуска", (DateTime.Now - Program.StartTime).ToString())
+                .Build();
+
+            await context.RespondAsync(embed);
+        }
+
         /// <summary>
         /// A simple emoji based yes/no poll.
         /// </summary>
