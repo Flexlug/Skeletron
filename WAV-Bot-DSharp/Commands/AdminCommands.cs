@@ -56,10 +56,13 @@ namespace WAV_Bot_DSharp.Commands
         {
             TimeSpan uptime = DateTime.Now - Program.StartTime;
 
-            DiscordEmbed embed = new DiscordEmbedBuilder()
-                .AddField("Дата и время запуска", $"{Program.StartTime.ToLongDateString()}, {Program.StartTime.ToLongTimeString()}")
-                .AddField("Время работы", $"{uptime.Days}d, {uptime.Hours}h, {uptime.Minutes}m, {uptime.Seconds}s")
-                .Build();
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+                .AddField("Дата запуска", $"{Program.StartTime.ToLongDateString()}, {Program.StartTime.ToLongTimeString()}")
+                .AddField("Время работы", $"{uptime.Days}d, {uptime.Hours}h, {uptime.Minutes}m, {uptime.Seconds}s");
+
+            if (Program.LastFailure is not null)
+                embed.AddField("Дата последнего падения", $"{Program.LastFailure?.ToLongDateString()}, {Program.LastFailure?.ToLongTimeString()}")
+                     .AddField("Количество падений", Program.Failures.ToString());
 
             await context.RespondAsync(embed);
         }

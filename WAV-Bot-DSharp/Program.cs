@@ -13,10 +13,13 @@ namespace WAV_Bot_DSharp
     class Program
     {
         public static DateTime StartTime { get; private set; }
+        public static DateTime? LastFailure { get; private set; }
+        public static int Failures { get; private set; }
 
         static void Main(string[] args)
         {
             StartTime = DateTime.Now;
+            Failures = 0;
 
             var settingsService = new SettingsLoader();
 
@@ -33,9 +36,19 @@ namespace WAV_Bot_DSharp
             Log.Logger.Information($".NET Version: {System.Environment.Version}");
             Log.Logger.Information($"WAV-Bot-DSharp: {Assembly.GetEntryAssembly().GetName().Version} (builded {File.GetCreationTime(Assembly.GetCallingAssembly().Location)})");
 
-            using (var bot = new Bot(settingsService.LoadFromFile()))
+            while (true)
             {
-                bot.RunAsync().GetAwaiter().GetResult();
+                try
+                {
+                    LastFailure = DateTime.Now;
+                    using (var bot = new Bot(settingsService.LoadFromFile()))
+                        bot.RunAsync().GetAwaiter().GetResult();
+                }
+                catch(Exception ex)
+                {
+                    Log.Logger.Fatal(ex, "Bot failed");
+                    Failures++;
+                }
             }
         }
     }
