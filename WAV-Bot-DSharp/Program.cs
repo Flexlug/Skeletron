@@ -19,6 +19,7 @@ namespace WAV_Bot_DSharp
         static void Main(string[] args)
         {
             StartTime = DateTime.Now;
+            LastFailure = null;
             Failures = 0;
 
             var settingsService = new SettingsLoader();
@@ -40,13 +41,13 @@ namespace WAV_Bot_DSharp
             {
                 try
                 {
-                    LastFailure = DateTime.Now;
                     using (var bot = new Bot(settingsService.LoadFromFile()))
                         bot.RunAsync().GetAwaiter().GetResult();
                 }
                 catch(Exception ex)
                 {
                     Log.Logger.Fatal(ex, "Bot failed");
+                    LastFailure = DateTime.Now;
                     Failures++;
                 }
             }
