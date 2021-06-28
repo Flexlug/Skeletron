@@ -54,9 +54,11 @@ namespace WAV_Bot_DSharp.Commands
         [Command("uptime"), Description("Получить информацию о времени работы бота.")]
         public async Task Uptime(CommandContext context)
         {
+            TimeSpan uptime = DateTime.Now - Program.StartTime;
+
             DiscordEmbed embed = new DiscordEmbedBuilder()
-                .AddField("Дата запуска бота", Program.StartTime.ToLongDateString())
-                .AddField("Время с момента запуска", (DateTime.Now - Program.StartTime).ToString())
+                .AddField("Дата и время запуска", $"{Program.StartTime.ToLongDateString()}, {Program.StartTime.ToLongTimeString()}")
+                .AddField("Время работы", $"{uptime.Days}d, {uptime.Hours}h, {uptime.Minutes}m, {uptime.Seconds}s")
                 .Build();
 
             await context.RespondAsync(embed);
