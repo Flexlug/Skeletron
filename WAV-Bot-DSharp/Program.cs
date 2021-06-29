@@ -7,6 +7,7 @@ using Serilog.Templates;
 using Serilog.Sinks.SystemConsole.Themes;
 
 using WAV_Bot_DSharp.Configurations;
+using System.Collections.Generic;
 
 namespace WAV_Bot_DSharp
 {
@@ -15,6 +16,7 @@ namespace WAV_Bot_DSharp
         public static DateTime StartTime { get; private set; }
         public static DateTime? LastFailure { get; private set; }
         public static int Failures { get; private set; }
+        public static string BuildString { get; private set; }
 
         static void Main(string[] args)
         {
@@ -34,8 +36,8 @@ namespace WAV_Bot_DSharp
                 .Enrich.FromLogContext()
                 .CreateLogger();
 
-            Log.Logger.Information($".NET Version: {System.Environment.Version}");
-            Log.Logger.Information($"WAV-Bot-DSharp: {Assembly.GetEntryAssembly().GetName().Version} (builded {File.GetCreationTime(Assembly.GetCallingAssembly().Location)})");
+            BuildString = $"{Assembly.GetEntryAssembly().GetName().Version} {File.GetCreationTime(Assembly.GetCallingAssembly().Location)} .NET {System.Environment.Version}";
+            Log.Logger.Information($"WAV-Bot-DSharp: {Assembly.GetEntryAssembly().GetName().Version} (builded {File.GetCreationTime(Assembly.GetCallingAssembly().Location)}");
 
             while (true)
             {

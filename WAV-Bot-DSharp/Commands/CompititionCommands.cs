@@ -188,20 +188,26 @@ namespace WAV_Bot_DSharp.Commands
             await ToggleNotifications(commandContext, commandContext.Member, toggle);
         }
 
-        [Command("recount"), Description("Пересчитать среднее PP"), Cooldown(1, 300, CooldownBucketType.Global), RequireGuild]
-        public async Task Recount(CommandContext commandContext)
+        [Command("recount"), Description("Пересчитать среднее PP"), RequireGuild]
+        public async Task Recount(CommandContext context)
         {
-            WAVMember member = wavMembers.GetMember(commandContext.Member.Id.ToString());
+            await RecountManual(context, context.Member);
+        }
+
+        [Command("recount-manual"), Description("Пересчитать среднее PP для заданного участника"), RequireGuild, Hidden]
+        public async Task RecountManual(CommandContext context, DiscordMember dmember)
+        {
+            WAVMember member = wavMembers.GetMember(dmember.Id.ToString());
 
             if (member.OsuServers.Count == 0)
             {
-                await commandContext.RespondAsync("К Вашему профилю ещё нет привязаных osu! профилей. Привяжите свой профиль через `osuset`.");
+                await context.RespondAsync("К Вашему профилю ещё нет привязаных osu! профилей. Привяжите свой профиль через `osuset`.");
                 return;
             }
 
             if (member.CompitionProfile is null)
             {
-                await commandContext.RespondAsync("Вы не зарегистрированы.");
+                await context.RespondAsync("Вы не зарегистрированы.");
                 return;
             }
 
@@ -210,25 +216,25 @@ namespace WAV_Bot_DSharp.Commands
             WAVMemberOsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
             if (profileInfo is null)
             {
-                await commandContext.RespondAsync($"К Вашему профилю нет привязанного профиля сервера {osuEnums.OsuServerToString(server)}.");
+                await context.RespondAsync($"К Вашему профилю нет привязанного профиля сервера {osuEnums.OsuServerToString(server)}.");
                 return;
             }
 
             CompitInfo compitInfo = wavCompit.GetCompitionInfo();
             if (compitInfo.IsRunning)
             {
-                await commandContext.RespondAsync("Во время конкурса нельзя пересчитать свои PP.");
+                await context.RespondAsync("Во время конкурса нельзя пересчитать свои PP.");
                 return;
             }
 
             try
             {
-                await compititionService.RegisterMember(commandContext.Member, profileInfo);
-                await commandContext.RespondAsync($"Средний PP пересчитан.");
+                await compititionService.RegisterMember(dmember, profileInfo);
+                await context.RespondAsync($"Средний PP пересчитан.");
             }
             catch (Exception e)
             {
-                await commandContext.RespondAsync(e.Message);
+                await context.RespondAsync(e.Message);
             }
         }
 
