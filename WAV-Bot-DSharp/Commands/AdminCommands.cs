@@ -57,7 +57,8 @@ namespace WAV_Bot_DSharp.Commands
             TimeSpan uptime = DateTime.Now - Program.StartTime;
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
-                .AddField("Дата запуска", $"{Program.StartTime.ToLongDateString()}, {Program.StartTime.ToLongTimeString()}")
+                .AddField("Билд", Program.BuildString)
+                .AddField("Дата запуска", $"{Program.StartTime.ToLongTimeString()}, {Program.StartTime.ToLongDateString()}")
                 .AddField("Время работы", $"{uptime.Days}d, {uptime.Hours}h, {uptime.Minutes}m, {uptime.Seconds}s");
 
             if (Program.LastFailure is not null)
