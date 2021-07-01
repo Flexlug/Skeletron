@@ -153,7 +153,7 @@ namespace WAV_Bot_DSharp.Converters
             if (beginnerScores is not null && beginnerScores.Count != 0)
             {
                 foreach (var score in beginnerScores.OrderByDescending(x => x.Score))
-                    descrSb.AppendLine($"`{score.Score:N0}` : `{score.Nickname}`");
+                    descrSb.AppendLine($"`### ### ###` : `{score.Nickname}`");
                 descrSb.AppendLine();
             }
             else
@@ -164,8 +164,8 @@ namespace WAV_Bot_DSharp.Converters
             descrSb.AppendLine($"{alphaRole.Mention}\n[{compitInfo.AlphaMap.beatmapset.artist} {compitInfo.AlphaMap.beatmapset.title} [{compitInfo.AlphaMap.version}] by {compitInfo.AlphaMap.beatmapset.creator}]({compitInfo.AlphaMap.url})");
             if (alphaScores is not null && alphaScores.Count != 0)
             {
-                foreach (var score in alphaScores.OrderByDescending(x => x.Score))
-                    descrSb.AppendLine($"`{score.Score:N0}` : `{score.Nickname}`");
+                foreach (var score in alphaScores.OrderByDescending(x => x.Nickname))
+                    descrSb.AppendLine($"`### ### ###` : `{score.Nickname}`");
                 descrSb.AppendLine();
             }
             else
@@ -176,8 +176,8 @@ namespace WAV_Bot_DSharp.Converters
             descrSb.AppendLine($"{betaRole.Mention}\n[{compitInfo.BetaMap.beatmapset.artist} {compitInfo.BetaMap.beatmapset.title} [{compitInfo.BetaMap.version}] by {compitInfo.BetaMap.beatmapset.creator}]({compitInfo.BetaMap.url})");
             if (betaScores is not null && betaScores.Count != 0)
             {
-                foreach (var score in betaScores.OrderByDescending(x => x.Score))
-                    descrSb.AppendLine($"`{score.Score:N0}` : `{score.Nickname}`");
+                foreach (var score in betaScores.OrderByDescending(x => x.Nickname))
+                    descrSb.AppendLine($"`### ### ###` : `{score.Nickname}`");
                 descrSb.AppendLine();
             }
             else
@@ -188,8 +188,8 @@ namespace WAV_Bot_DSharp.Converters
             descrSb.AppendLine($"{gammaRole.Mention}\n[{compitInfo.GammaMap.beatmapset.artist} {compitInfo.GammaMap.beatmapset.title} [{compitInfo.GammaMap.version}] by {compitInfo.GammaMap.beatmapset.creator}]({compitInfo.GammaMap.url})");
             if (gammaScores is not null && gammaScores.Count != 0)
             {
-                foreach (var score in gammaScores.OrderByDescending(x => x.Score))
-                    descrSb.AppendLine($"`{score.Score:N0}` : `{score.Nickname}`");
+                foreach (var score in gammaScores.OrderByDescending(x => x.Nickname))
+                    descrSb.AppendLine($"`### ### ###` : `{score.Nickname}`");
                 descrSb.AppendLine();
             }
             else
@@ -200,8 +200,8 @@ namespace WAV_Bot_DSharp.Converters
             descrSb.AppendLine($"{deltaRole.Mention}\n[{compitInfo.DeltaMap.beatmapset.artist} {compitInfo.DeltaMap.beatmapset.title} [{compitInfo.DeltaMap.version}] by {compitInfo.DeltaMap.beatmapset.creator}]({compitInfo.DeltaMap.url})");
             if (deltaScores is not null && deltaScores.Count != 0)
             {
-                foreach (var score in deltaScores.OrderByDescending(x => x.Score))
-                    descrSb.AppendLine($"`{score.Score:N0}` : `{score.Nickname}`");
+                foreach (var score in deltaScores.OrderByDescending(x => x.Nickname))
+                    descrSb.AppendLine($"`### ### ###` : `{score.Nickname}`");
                 descrSb.AppendLine();
             }
             else
@@ -212,8 +212,8 @@ namespace WAV_Bot_DSharp.Converters
             descrSb.AppendLine($"{epsilonRole.Mention}\n[{compitInfo.EpsilonMap.beatmapset.artist} {compitInfo.EpsilonMap.beatmapset.title} [{compitInfo.EpsilonMap.version}] by {compitInfo.EpsilonMap.beatmapset.creator}]({compitInfo.EpsilonMap.url})");
             if (epsilonScores is not null && epsilonScores.Count != 0)
             {
-                foreach (var score in epsilonScores.OrderByDescending(x => x.Score))
-                    descrSb.AppendLine($"`{score.Score:N0}` : `{score.Nickname}`");
+                foreach (var score in epsilonScores.OrderByDescending(x => x.Nickname))
+                    descrSb.AppendLine($"`### ### ###` : `{score.Nickname}`");
                 descrSb.AppendLine();
             }
             else
