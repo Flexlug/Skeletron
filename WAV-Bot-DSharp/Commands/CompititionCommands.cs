@@ -416,15 +416,19 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            if (replay.Mods != 0)
+            if (!replay.Mods.HasFlag(OsuParsers.Enums.Mods.ScoreV2))
             {
-                const int allowedMods = (int)(OsuParsers.Enums.Mods.Perfect | OsuParsers.Enums.Mods.SuddenDeath);
-                if (((int)replay.Mods | allowedMods) != allowedMods)
-                {
-                    await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен с запрещенными на W.W.W модами. \nРазрешенные на W.W.W моды - `SD`, `PF`\nСкор система: V1");
-                    return;
-                }
+                await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен с использованием скор системы V1. Для конкурса обязательно использование мода Score V2.");
+                return;
             }
+
+            const int allowedMods = (int)(OsuParsers.Enums.Mods.Perfect | OsuParsers.Enums.Mods.SuddenDeath | OsuParsers.Enums.Mods.ScoreV2);
+            if (((int)replay.Mods | allowedMods) != allowedMods)
+            {
+                await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен с запрещенными на W.W.W модами. \nРазрешенные на W.W.W моды - `SD`, `PF`\nСкор система: V2");
+                return;
+            }
+            
 
             if (replay.ReplayTimestamp + TimeSpan.FromHours(3) > compitInfo.Deadline || replay.ReplayTimestamp + TimeSpan.FromHours(3) < compitInfo.StartDate)
             {
