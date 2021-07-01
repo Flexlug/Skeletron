@@ -143,7 +143,7 @@ namespace WAV_Bot_DSharp.Converters
         {
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
 
-            embedBuilder.WithTitle("W.w.W leaderboard")
+            embedBuilder.WithTitle("W.w.W participant list")
                         .WithFooter($"Last update: {DateTime.Now}");
 
             StringBuilder descrSb = new StringBuilder();
