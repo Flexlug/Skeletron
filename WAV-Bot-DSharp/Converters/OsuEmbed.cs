@@ -153,7 +153,7 @@ namespace WAV_Bot_DSharp.Converters
             if (beginnerScores is not null && beginnerScores.Count != 0)
             {
                 foreach (var score in beginnerScores.OrderByDescending(x => x.Score))
-                    descrSb.AppendLine($"`### ### ###` : `{score.Nickname}`");
+                    descrSb.AppendLine($"`{score.Nickname}`");
                 descrSb.AppendLine();
             }
             else
@@ -165,7 +165,7 @@ namespace WAV_Bot_DSharp.Converters
             if (alphaScores is not null && alphaScores.Count != 0)
             {
                 foreach (var score in alphaScores.OrderByDescending(x => x.Nickname))
-                    descrSb.AppendLine($"`### ### ###` : `{score.Nickname}`");
+                    descrSb.AppendLine($"`{score.Nickname}`");
                 descrSb.AppendLine();
             }
             else
@@ -177,7 +177,7 @@ namespace WAV_Bot_DSharp.Converters
             if (betaScores is not null && betaScores.Count != 0)
             {
                 foreach (var score in betaScores.OrderByDescending(x => x.Nickname))
-                    descrSb.AppendLine($"`### ### ###` : `{score.Nickname}`");
+                    descrSb.AppendLine($"`{score.Nickname}`");
                 descrSb.AppendLine();
             }
             else
@@ -189,7 +189,7 @@ namespace WAV_Bot_DSharp.Converters
             if (gammaScores is not null && gammaScores.Count != 0)
             {
                 foreach (var score in gammaScores.OrderByDescending(x => x.Nickname))
-                    descrSb.AppendLine($"`### ### ###` : `{score.Nickname}`");
+                    descrSb.AppendLine($"`{score.Nickname}`");
                 descrSb.AppendLine();
             }
             else
@@ -201,7 +201,7 @@ namespace WAV_Bot_DSharp.Converters
             if (deltaScores is not null && deltaScores.Count != 0)
             {
                 foreach (var score in deltaScores.OrderByDescending(x => x.Nickname))
-                    descrSb.AppendLine($"`### ### ###` : `{score.Nickname}`");
+                    descrSb.AppendLine($"`{score.Nickname}`");
                 descrSb.AppendLine();
             }
             else
@@ -213,7 +213,7 @@ namespace WAV_Bot_DSharp.Converters
             if (epsilonScores is not null && epsilonScores.Count != 0)
             {
                 foreach (var score in epsilonScores.OrderByDescending(x => x.Nickname))
-                    descrSb.AppendLine($"`### ### ###` : `{score.Nickname}`");
+                    descrSb.AppendLine($"`{score.Nickname}`");
                 descrSb.AppendLine();
             }
             else
