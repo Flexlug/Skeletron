@@ -92,7 +92,7 @@ namespace WAV_Bot_DSharp.Commands
 
             embedBuilder.WithDescription(overallInfo.ToString())
                         .AddField("Привязанные osu! профили:", osuServersSb.ToString())
-                        .AddField("W.m.W", compitSb.ToString());
+                        .AddField("W.w.W", compitSb.ToString());
 
             await commandContext.RespondAsync(embed: embedBuilder.Build());
         }

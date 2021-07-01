@@ -12,7 +12,7 @@ namespace WAV_Bot_DSharp.Commands
     {
         public MappolCommands()
         {
-            ModuleName = "W.m.W mappool";
+            ModuleName = "W.w.W mappool";
         }
     }
 }

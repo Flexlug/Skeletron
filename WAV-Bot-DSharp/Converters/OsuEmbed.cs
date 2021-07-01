@@ -143,7 +143,7 @@ namespace WAV_Bot_DSharp.Converters
         {
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
 
-            embedBuilder.WithTitle("W.m.W leaderboard")
+            embedBuilder.WithTitle("W.w.W leaderboard")
                         .WithFooter($"Last update: {DateTime.Now}");
 
             StringBuilder descrSb = new StringBuilder();
@@ -230,7 +230,7 @@ namespace WAV_Bot_DSharp.Converters
         {
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
 
-            embed.WithTitle("W.m.W status")
+            embed.WithTitle("W.w.W status")
                  .AddField("Запущен", compitInfo.IsRunning ? "Да" : "Нет")
                  .AddField("Дата начала", compitInfo.StartDate.ToString() ?? "Нет")
                  .AddField("Дата завершения", compitInfo.Deadline.ToString() ?? "Нет")

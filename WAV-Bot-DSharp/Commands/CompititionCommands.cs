@@ -238,7 +238,7 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        [Command("register"), Description("Зарегистрироваться в конкурсе W.m.W и получить категорию. Зарегистрироваться можно только один раз. Средний PP будет время от времени пересчитываться.")]
+        [Command("register"), Description("Зарегистрироваться в конкурсе W.w.W и получить категорию. Зарегистрироваться можно только один раз. Средний PP будет время от времени пересчитываться.")]
         public async Task Register(CommandContext commandContext,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
         {
@@ -421,7 +421,7 @@ namespace WAV_Bot_DSharp.Commands
                 const int allowedMods = (int)(OsuParsers.Enums.Mods.Perfect | OsuParsers.Enums.Mods.SuddenDeath);
                 if (((int)replay.Mods | allowedMods) != allowedMods)
                 {
-                    await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен с запрещенными на W.M.W модами. \nРазрешенные на W.M.W моды - `SD`, `PF`\nСкор система: V1");
+                    await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен с запрещенными на W.W.W модами. \nРазрешенные на W.W.W моды - `SD`, `PF`\nСкор система: V1");
                     return;
                 }
             }
