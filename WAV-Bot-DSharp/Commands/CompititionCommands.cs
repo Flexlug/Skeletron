@@ -64,7 +64,7 @@ namespace WAV_Bot_DSharp.Commands
 
             this.webClient = new WebClient();
 
-            this.ModuleName = "W.m.W команды";
+            this.ModuleName = "W.w.W команды";
 
             this.logger.LogInformation("CompititionCommands loaded");
         }
