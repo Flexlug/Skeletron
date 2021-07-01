@@ -25,7 +25,7 @@ using System.Collections.Generic;
 
 namespace WAV_Bot_DSharp.Commands
 {
-    [Group("wmw")]
+    [Group("www")]
     public class CompititionCommands : SkBaseCommandModule
     {
         private ILogger<CompititionCommands> logger;
@@ -389,6 +389,13 @@ namespace WAV_Bot_DSharp.Commands
             if (compitProfile.NonGrata)
             {
                 await commandContext.RespondAsync("Извините, но вы не можете принять участие в данном конкурсе, т.к. внесены в черный список.");
+                return;
+            }
+
+            var scores = wavCompit.GetUserScores(commandContext.User.Id.ToString());
+            if (!(scores is null || scores.Count == 0))
+            {
+                await commandContext.RespondAsync("Вы уже отправляли свой скор.");
                 return;
             }
 
