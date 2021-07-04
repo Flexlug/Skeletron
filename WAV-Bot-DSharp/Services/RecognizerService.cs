@@ -217,6 +217,8 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
 
             string diffName = recedText.Substring(indexStart).TrimStart('[').TrimEnd(']');
+            string mapName = recedText.Substring(0, recedText.IndexOf('['));
+
             logger.LogDebug($"diffName: {diffName}");
 
             if (bmsl == null || bmsl.Count == 0)
@@ -234,19 +236,21 @@ namespace WAV_Bot_DSharp.Services.Entities
                                      return x.Contains("mapped") || x.Contains("beatmap");
                                  });
 
-
             Beatmapset bms = null;
             if (!string.IsNullOrEmpty(mapper))
             {
                 mapper = mapper?.Substring(10);
                 logger.LogDebug($"Got mapper: {mapper}. Comparing...");
-                List<Tuple<Beatmapset, double>> bsm = bmsl.Select(x => Tuple.Create(x, WAV_Osu_Recognizer.RecStringComparer.Compare(x.creator, mapper)))
-                                                           .OrderByDescending(x => x.Item2)
-                                                           .ToList();
+                List<Tuple<Beatmapset, double, double>> bsm = bmsl.Select(x => Tuple.Create(x, 
+                                                                                    WAV_Osu_Recognizer.RecStringComparer.Compare(x.creator, mapper),
+                                                                                    WAV_Osu_Recognizer.RecStringComparer.Compare(x.title, mapName)))
+                                                                  .OrderByDescending(x => x.Item3)
+                                                                  .ThenByDescending(x => x.Item2)
+                                                                  .ToList();
 
 
                 foreach (var b in bsm)
-                    logger.LogDebug($"{b.Item1.creator}: {b.Item2}");
+                    logger.LogDebug($"{b.Item1.creator} {b.Item1.title}: {b.Item2} {b.Item3}");
 
                 if (bsm == null || bsm.Count == 0)
                     bms = bmsl.FirstOrDefault();
