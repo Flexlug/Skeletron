@@ -422,10 +422,10 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            const int allowedMods = (int)(OsuParsers.Enums.Mods.Perfect | OsuParsers.Enums.Mods.SuddenDeath | OsuParsers.Enums.Mods.ScoreV2);
+            const int allowedMods = (int)(OsuParsers.Enums.Mods.Perfect | OsuParsers.Enums.Mods.SuddenDeath | OsuParsers.Enums.Mods.ScoreV2 | OsuParsers.Enums.Mods.NoFail);
             if (((int)replay.Mods | allowedMods) != allowedMods)
             {
-                await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен с запрещенными на W.W.W модами. \nРазрешенные на W.W.W моды - `SD`, `PF`\nСкор система: V2");
+                await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен с запрещенными на W.W.W модами. \nРазрешенные на W.W.W моды - `SD`, `PF`, `NF`\nСкор система: V2");
                 return;
             }
             
