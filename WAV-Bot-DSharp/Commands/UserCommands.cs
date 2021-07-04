@@ -44,6 +44,30 @@ namespace WAV_Bot_DSharp.Commands
             logger.LogInformation("UserCommands loaded");
         }
 
+        [Command("words"), Description("Посчитать количество слов в указанном сообщении")]
+        public async Task WordsCount(CommandContext commandContext, DiscordMessage msg)
+        {
+            if (msg is null || msg.Content is null || msg.Content.Length == 0)
+            {
+                await commandContext.RespondAsync("Вы указали пустое сообщение");
+                return;
+            }
+
+            await commandContext.RespondAsync($"Количество слов в сообщении: {msg.Content.Split().Length}");
+        }
+
+        [Command("words"), Description("Посчитать количество слов в указанном сообщении")]
+        public async Task WordsCount(CommandContext commandContext)
+        {
+            if (commandContext.Message.ReferencedMessage is null)
+            {
+                await commandContext.RespondAsync("Вы указали пустое сообщение");
+                return;
+            }
+
+            await commandContext.RespondAsync($"Количество слов в сообщении: {commandContext.Message.ReferencedMessage.Content.Split().Length}");
+        }
+
         [Command("profile"), Description("Получить информацию о своём W.w.W профиле."), RequireGuild]
         public async Task GetProfile(CommandContext commandContext)
         {
