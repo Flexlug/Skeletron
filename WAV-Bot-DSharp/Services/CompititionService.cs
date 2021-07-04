@@ -144,6 +144,7 @@ namespace WAV_Bot_DSharp.Services
         public async Task StopCompition()
         {
             compititionInfo.IsRunning = false;
+            compititionInfo.LeaderboardMessageUID = string.Empty;
 
             UpdateCompitInfo();
         }
