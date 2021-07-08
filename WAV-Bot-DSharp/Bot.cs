@@ -27,6 +27,7 @@ using WAV_Bot_DSharp.Services;
 using WAV_Bot_DSharp.Database;
 using WAV_Bot_DSharp.Database.Interfaces;
 using DSharpPlus.Entities;
+using System.Linq;
 
 namespace WAV_Bot_DSharp
 {
@@ -175,8 +176,20 @@ namespace WAV_Bot_DSharp
 
         private Task OnCommandError(object sender, CommandErrorEventArgs e)
         {
-            // Send command error message as response.
-            e.Context.RespondAsync(e.Exception.Message);
+            DiscordEmbed embed = new DiscordEmbedBuilder()
+                .WithTitle("Error")
+                .WithDescription($"StackTrace: {e.Exception.StackTrace}")
+                .AddField("Command", e.Command?.Name ?? "-")
+                .AddField("Overload", string.Join(' ', (e.Context.Overload?.Arguments.Select(x => x.Name).ToArray() ??
+                                                       new string[] { "", "" })))
+                .AddField("Exception", e.Exception.GetType().ToString())
+                .AddField("Exception msg", e.Exception.Message)
+                .AddField("Inner exception", e.Exception.InnerException?.Message ?? "-")
+                .AddField("Channel", e.Context.Channel.Name)
+                .AddField("Author", e.Context.Member.Username)
+                .Build();
+
+            e.Context.RespondAsync(embed: embed);
             return Task.CompletedTask;
         }
 
