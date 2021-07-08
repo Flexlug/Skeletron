@@ -364,7 +364,7 @@ namespace WAV_Bot_DSharp.Commands
             await msg.Channel.DeleteMessagesAsync(new[] { msg, commandContext.Message }, reason);
         }
 
-        [Command("get-sheduled-tasks-list"), RequirePermissions(Permissions.Administrator), Hidden]
+        [Command("get-sheduled-tasks-list"), RequirePermissions(Permissions.Administrator)]
         public async Task GetListOFSheduledTasks(CommandContext context)
         {
             var sheduledTasks = sheduler.GetAllTasks();

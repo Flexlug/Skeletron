@@ -336,7 +336,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync($"Указанный сервер не поддерживается.");
         }
 
-        [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild, Hidden]
+        [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
         public async Task OsuSet(CommandContext commandContext,
             [Description("Пользователь WAV сервера")] DiscordMember member,
             [Description("Никнейм osu! профиля")] string nickname,
@@ -345,24 +345,7 @@ namespace WAV_Bot_DSharp.Commands
             await SetOsuProfileFor(commandContext, member, nickname, args);
         }
 
-
-        [Command("osuset-manual-by-nickname"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild, Hidden]
-        public async Task OsuSet(CommandContext commandContext,
-            [Description("Пользователь WAV сервера")] string member,
-            [Description("Никнейм osu! профиля")] string nickname,
-            [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
-        {
-            DiscordMember dmember = (await guild.GetAllMembersAsync()).FirstOrDefault(x => x.Username == nickname);
-            if (dmember is null)
-            {
-                await commandContext.RespondAsync("Не удалось найти такого пользователя.");
-                return;
-            }
-
-            await SetOsuProfileFor(commandContext, dmember, nickname, args);
-        }
-
-        [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild, Hidden]
+        [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
         public async Task OsuSet(CommandContext commandContext,
             [Description("Пользователь WAV сервера")] ulong uid,
             [Description("Никнейм osu! профиля")] string nickname,

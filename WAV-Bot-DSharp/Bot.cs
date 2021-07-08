@@ -182,6 +182,12 @@ namespace WAV_Bot_DSharp
                 return Task.CompletedTask;
             }
 
+            if (e.Exception is DSharpPlus.CommandsNext.Exceptions.CommandNotFoundException)
+            {
+                e.Context.RespondAsync($"Не удалось найти данную команду.");
+                return Task.CompletedTask;
+            }
+
             DiscordEmbed embed = new DiscordEmbedBuilder()
                 .WithTitle("Error")
                 .WithDescription($"StackTrace: {e.Exception.StackTrace}")

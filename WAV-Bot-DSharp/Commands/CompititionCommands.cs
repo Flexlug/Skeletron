@@ -69,7 +69,7 @@ namespace WAV_Bot_DSharp.Commands
             this.logger.LogInformation("CompititionCommands loaded");
         }
 
-        [Command("start"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("start"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task StartCompit(CommandContext commandContext)
         {
             string checkResult = await compititionService.CompititionPreexecutionCheck();
@@ -85,21 +85,21 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        [Command("stop"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("stop"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task StopCompit(CommandContext commandContext)
         {
             await compititionService.StopCompition();
             await commandContext.RespondAsync("Stopped");
         }
 
-        [Command("update-leaderboard"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("update-leaderboard"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task UpdateLeaderboard(CommandContext commandContext)
         {
             await compititionService.UpdateLeaderboard();
             await commandContext.RespondAsync("Leaderboard updated");
         }
 
-        [Command("set-map"), Description("Задать карту для выбранной категории"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("set-map"), Description("Задать карту для выбранной категории"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task SetMap(CommandContext commandContext,
             [Description("Ссылка на карту (только bancho)")] string url,
             [Description("Категория")] string category)
@@ -117,7 +117,7 @@ namespace WAV_Bot_DSharp.Commands
                 await commandContext.RespondAsync("Карта успешно задана.");
         }
 
-        [Command("set-deadline"), Description("Задать дату окончания конкурса"), RequireGuild, Hidden]
+        [Command("set-deadline"), Description("Задать дату окончания конкурса"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task SetDeadline(CommandContext commandContext,
             [Description("Дата, когда конкурс должен закончиться")] DateTime deadline)
         {
@@ -128,7 +128,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync($"Дата окончания конкурса: {deadline}.");
         }
 
-        [Command("set-scores-channel"), Description("Задать канал для скоров"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("set-scores-channel"), Description("Задать канал для скоров"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task SetScoresChannel(CommandContext commandContext,
             [Description("Текстовый канал")] DiscordChannel channel)
         {
@@ -139,7 +139,7 @@ namespace WAV_Bot_DSharp.Commands
                 await commandContext.RespondAsync("Канал для скоров успешно задан.");
         }
 
-        [Command("set-leaderboard-channel"), Description("Задать канал для лидерборда"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("set-leaderboard-channel"), Description("Задать канал для лидерборда"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task SetLeaderboardChannel(CommandContext commandContext,
             [Description("Текстовый канал")] DiscordChannel channel)
         {
@@ -150,7 +150,7 @@ namespace WAV_Bot_DSharp.Commands
                 await commandContext.RespondAsync("Канал для лидерборда успешно задан.");
         }
 
-        [Command("notify-manual"), Description("Включить или отключить пинги по всему, что связано с конкурсом"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("notify-manual"), Description("Включить или отключить пинги по всему, что связано с конкурсом"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task ToggleNotifications(CommandContext commandContext,
             DiscordUser discordUser,
             bool toggle)
@@ -194,7 +194,7 @@ namespace WAV_Bot_DSharp.Commands
             await RecountManual(context, context.Member);
         }
 
-        [Command("recount-manual"), Description("Пересчитать среднее PP для заданного участника"), RequireGuild, Hidden]
+        [Command("recount-manual"), Description("Пересчитать среднее PP для заданного участника"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task RecountManual(CommandContext context, DiscordMember dmember)
         {
             WAVMember member = wavMembers.GetMember(dmember.Id.ToString());
@@ -245,7 +245,7 @@ namespace WAV_Bot_DSharp.Commands
             await RegisterUser(commandContext, commandContext.User, strServer);
         }
 
-        [Command("non-grata"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("non-grata"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task NonGrata(CommandContext commandContext,
             DiscordUser user,
             bool toggle)
@@ -260,7 +260,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync($"Задан статус non-grata `{toggle}` для {user.Username}.");
         }
 
-        [Command("register-manual-by-nickname"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("register-manual-by-nickname"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task RegisterUser(CommandContext commandContext,
             [Description("Регистрируемый участник")] string strMember,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
@@ -275,7 +275,7 @@ namespace WAV_Bot_DSharp.Commands
             await RegisterUser(commandContext, duser, strServer);
         }
 
-        [Command("register-manual"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("register-manual"), Description("Зарегистрировать другого участника в конкурсе"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task RegisterUser(CommandContext commandContext,
             [Description("Регистрируемый участник")] DiscordUser dmember,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
@@ -314,7 +314,7 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        [Command("get-report"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("get-report"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task SendScoreSheet(CommandContext commandContext)
         {
             List<CompitScore> scores = wavCompit.GetAllScores();
@@ -328,7 +328,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync(new DiscordMessageBuilder().WithFile(sheetfileInfo));
         }
 
-        [Command("status"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("status"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task GetStatus(CommandContext commandContext)
         {
             CompitInfo compitInfo = wavCompit.GetCompitionInfo();
@@ -336,7 +336,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync(osuEmbeds.CompitInfoToEmbed(compitInfo));
         }
 
-        [Command("reset-scores"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("reset-scores"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task ResetAllScores(CommandContext commandContext)
         {
             wavCompit.DeleteAllScores();

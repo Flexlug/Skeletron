@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -153,7 +154,7 @@ namespace WAV_Bot_DSharp.Commands
         /// </summary>
         /// <param name="commandContext">CommandContext from the message that has executed this command.</param>
         /// <returns></returns>
-        [Command("ping"), Description("Показывает пинг бота.")]
+        [Command("ping"), Description("Показывает пинг бота."), Hidden]
         public async Task PingAsync(CommandContext commandContext)
         {
             await commandContext.RespondAsync($"Bot latency to the discord api server: {commandContext.Client.Ping}");
@@ -165,7 +166,7 @@ namespace WAV_Bot_DSharp.Commands
         /// <param name="commandContext">CommandContext from the message that has executed this command.</param>
         /// <param name="timeSpan">Timespan to recognize</param>
         /// <returns></returns>
-        [Command("timespan"), Description("Предпринимает попытку конвертировать строку в тип данных TimeSpan.")]
+        [Command("timespan"), Description("Предпринимает попытку конвертировать строку в тип данных TimeSpan."), Hidden]
         public async Task GetTimespan(CommandContext commandContext,
             [Description("Конвертируемая строка")] TimeSpan timeSpan)
         {
@@ -178,11 +179,19 @@ namespace WAV_Bot_DSharp.Commands
         /// <param name="commandContext">CommandContext from the message that has executed this command.</param>
         /// <param name="datetime">Datetime to recognize</param>
         /// <returns></returns>
-        [Command("datetime"), Description("Предпринимает поытку конвертировать строку в тип данных DateTime.")]
+        [Command("datetime"), Description("Предпринимает поытку конвертировать строку в тип данных DateTime."), Hidden]
         public async Task GetDatetime(CommandContext commandContext, 
             [Description("Конвертируемая строка")] DateTime datetime)
         {
             await commandContext.RespondAsync($"{datetime.ToShortDateString()} {datetime.ToLongTimeString()}");
+        }
+
+        [Command("lmgt"), Description("Let me do that job for you")]
+        public async Task Lmgtfy(CommandContext commandContext,
+            [Description("Search querry"), RemainingText] string querry)
+        {
+            string searchQuerry = @$"https://letmegooglethat.com/?q={HttpUtility.UrlEncode(querry)}";
+            await commandContext.RespondAsync(searchQuerry);
         }
     }
 }
