@@ -19,10 +19,12 @@ namespace WAV_Bot_DSharp.Converters
     /// </summary>
     public class OsuEmbed
     {
-        private OsuEmoji osuEmoji { get; set; }
-        private OsuEnums osuEnums { get; set; }
+        private OsuEmoji osuEmoji;
+        private OsuEnums osuEnums;
 
         private ILogger<OsuEmbed> logger;
+
+        private DiscordGuild wav_guild;
 
         private DiscordRole beginnerRole;
         private DiscordRole alphaRole;
@@ -35,6 +37,8 @@ namespace WAV_Bot_DSharp.Converters
         {
             this.osuEmoji = emoji;
             this.osuEnums = enums;
+
+            this.wav_guild = guild;
 
             this.beginnerRole = guild.GetRole(830432931150692362);
             this.alphaRole = guild.GetRole(816610025258352641);
@@ -234,8 +238,12 @@ namespace WAV_Bot_DSharp.Converters
                  .AddField("Запущен", compitInfo.IsRunning ? "Да" : "Нет")
                  .AddField("Дата начала", compitInfo.StartDate?.ToString() ?? "Нет")
                  .AddField("Дата завершения", compitInfo.Deadline?.ToString() ?? "Нет")
-                 .AddField("Канал для лидерборда", string.IsNullOrEmpty(compitInfo.LeaderboardChannelUID) ? "Нет" : compitInfo.LeaderboardChannelUID)
-                 .AddField("Канал для скоров", string.IsNullOrEmpty(compitInfo.ScoresChannelUID) ? "Нет" : compitInfo.ScoresChannelUID)
+                 .AddField("Канал для лидерборда", string.IsNullOrEmpty(compitInfo.LeaderboardChannelUID) ? 
+                                                                        "Нет" : 
+                                                                        wav_guild.GetChannel(ulong.Parse(compitInfo.LeaderboardChannelUID)).Name)
+                 .AddField("Канал для скоров", string.IsNullOrEmpty(compitInfo.ScoresChannelUID) ? 
+                                                                    "Нет" :
+                                                                    wav_guild.GetChannel(ulong.Parse(compitInfo.ScoresChannelUID)).Name)
                  .AddField("Лидерборд", string.IsNullOrEmpty(compitInfo.LeaderboardMessageUID) ? "Нет" : compitInfo.LeaderboardMessageUID)
                  .AddField("Карта Beginner", compitInfo.BeginnerMap?.url ?? "Нет")
                  .AddField("Карта Alpha", compitInfo.AlphaMap?.url ?? "Нет")

@@ -176,6 +176,12 @@ namespace WAV_Bot_DSharp
 
         private Task OnCommandError(object sender, CommandErrorEventArgs e)
         {
+            if (e.Exception is ArgumentException)
+            {
+                e.Context.RespondAsync($"Не удалось вызвать команду `sk!{e.Command.QualifiedName}` с заданными аргументами. Используйте `sk!help`, чтобы проверить правильность вызова команды.");
+                return Task.CompletedTask;
+            }
+
             DiscordEmbed embed = new DiscordEmbedBuilder()
                 .WithTitle("Error")
                 .WithDescription($"StackTrace: {e.Exception.StackTrace}")
@@ -189,7 +195,7 @@ namespace WAV_Bot_DSharp
                 .AddField("Author", e.Context.Member.Username)
                 .Build();
 
-            e.Context.RespondAsync(embed: embed);
+            e.Context.RespondAsync($"{Guild.Owner.Mention}", embed: embed);
             return Task.CompletedTask;
         }
 

@@ -336,7 +336,7 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync(osuEmbeds.CompitInfoToEmbed(compitInfo));
         }
 
-        [Command("reset-all-scores"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
+        [Command("reset-scores"), RequireUserPermissions(Permissions.Administrator), RequireGuild, Hidden]
         public async Task ResetAllScores(CommandContext commandContext)
         {
             wavCompit.DeleteAllScores();
@@ -514,7 +514,7 @@ namespace WAV_Bot_DSharp.Commands
             await compititionService.SubmitScore(new CompitScore()
             {
                 DiscordUID = commandContext.User.Id.ToString(),
-                DiscordNickname = commandContext.User.Username,
+                DiscordNickname = $"{commandContext.User.Username}#{commandContext.User.Discriminator}",
                 Nickname = osuNickname,
                 Category = compitProfile.Category,
                 Score = replay.ReplayScore,
