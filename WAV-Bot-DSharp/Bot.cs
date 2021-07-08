@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Globalization;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.CommandsNext;
@@ -20,15 +23,15 @@ using WAV_Bot_DSharp.Configurations;
 using WAV_Bot_DSharp.Converters;
 using WAV_Bot_DSharp.Services.Interfaces;
 
-using Serilog;
-using Microsoft.Extensions.Logging;
 using WAV_Bot_DSharp.SlashCommands;
 using WAV_Bot_DSharp.Services;
 using WAV_Bot_DSharp.Database;
 using WAV_Bot_DSharp.Database.Interfaces;
-using DSharpPlus.Entities;
-using System.Linq;
+
+using Serilog;
+
 using NumbersAPI.NET;
+using GoogleApi;
 
 namespace WAV_Bot_DSharp
 {
@@ -103,6 +106,7 @@ namespace WAV_Bot_DSharp
                 .AddSingleton<NumbersApi>()
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
+                .AddSingleton(new GoogleSearch())
                 .AddSingleton<ISheetGenerator, SheetGenerator>()
                 .AddSingleton<IShedulerService, ShedulerService>()
                 .AddSingleton<IRecognizerService, RecognizerService>()

@@ -16,6 +16,12 @@ namespace WAV_Bot_DSharp.Configurations
         public int ClientId { get; set; }
         public string Secret { get; set; }
 
+        // Other credentials
+        public string GoogleClientID { get; set; }
+        public string GoogleClientSecret { get; set; }
+        public string GoogleKey { get; set; }
+        public string SearchKey { get; set; }
+
         public Settings() : this("", DefaultPrefixes) { }
 
         public Settings(string token, IList<string> prefixes)

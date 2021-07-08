@@ -8,7 +8,11 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using GoogleApi;
+using GoogleApi.Entities.Search;
+using GoogleApi.Entities.Search.Web.Request;
 using Microsoft.Extensions.Logging;
+using WAV_Bot_DSharp.Configurations;
 using WAV_Bot_DSharp.Converters;
 using WAV_Bot_DSharp.Database.Interfaces;
 using WAV_Bot_DSharp.Database.Models;
@@ -28,11 +32,16 @@ namespace WAV_Bot_DSharp.Commands
 
         private DiscordGuild guild;
 
+        private GoogleSearch gsearch;
+        private Settings settings;
+
         public UserCommands(ILogger<UserCommands> logger,
                             IWAVMembersProvider wavMembers,
                             OsuEnums osuEnums,
                             DiscordClient client,
-                            DiscordGuild guild)
+                            DiscordGuild guild,
+                            GoogleSearch gsearch,
+                            Settings settings)
         {
             ModuleName = "Разное";
 
@@ -41,6 +50,9 @@ namespace WAV_Bot_DSharp.Commands
             this.wavMembers = wavMembers;
 
             this.osuEnums = osuEnums;
+
+            this.gsearch = gsearch;
+            this.settings = settings;
             
             logger.LogInformation("UserCommands loaded");
         }
@@ -192,6 +204,36 @@ namespace WAV_Bot_DSharp.Commands
         {
             string searchQuerry = @$"https://letmegooglethat.com/?q={HttpUtility.UrlEncode(querry)}";
             await commandContext.RespondAsync(searchQuerry);
+        }
+
+        [Command("google"), Description("Запустить поиск в google по заданному запросу")]
+        public async Task GoogleSearchQuerry(CommandContext context,
+                     [Description("Запрос")] string querry)
+        {
+            if (string.IsNullOrEmpty(querry))
+            {
+                await context.RespondAsync("Вы ввели пустой запрос");
+                return;
+            }
+
+            WebSearchRequest baseSearchRequest = new WebSearchRequest()
+            {
+                Key = settings.GoogleKey,
+                Query = querry,
+                SearchEngineId = settings.SearchKey
+            };
+            BaseSearchResponse resp = await GoogleSearch.WebSearch.QueryAsync(baseSearchRequest);
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var item in resp.Items.Take(5))
+                sb.AppendLine($"[{item.Title}]({item.Link})\n{item.Snippet}\n");
+
+            await context.RespondAsync(embed: new DiscordEmbedBuilder()
+                .WithTitle($"Поисковый запрос: {querry}")
+                .WithDescription(sb.ToString())
+                .WithThumbnail("https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png")
+                .Build());
         }
     }
 }
