@@ -83,4 +83,10 @@
     <ProjectReference Include="..\WAV_Osu-Recognizer\WAV-Osu-Recognizer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="NumbersAPI.NET">
+      <HintPath>..\..\NumbersAPI.NET\NumbersAPI.NET\bin\Release\net5.0\NumbersAPI.NET.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

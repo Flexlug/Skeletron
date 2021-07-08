@@ -92,7 +92,7 @@ namespace WAV_Bot_DSharp.Services
                     {
                         if (i < catScores.Count)
                         {
-                            InsertCell(rows[i], (cat * 3) + 1, catScores[i].Nickname, CellValues.String);
+                            InsertCell(rows[i], (cat * 3) + 1, catScores[i].DiscordNickname, CellValues.String);
                             InsertCell(rows[i], (cat * 3) + 2, catScores[i].Score.ToString(), CellValues.Number);
                             InsertCell(rows[i], (cat * 3) + 3, catScores[i].ScoreUrl, CellValues.String);
                         }

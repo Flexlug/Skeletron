@@ -28,6 +28,7 @@ using WAV_Bot_DSharp.Database;
 using WAV_Bot_DSharp.Database.Interfaces;
 using DSharpPlus.Entities;
 using System.Linq;
+using NumbersAPI.NET;
 
 namespace WAV_Bot_DSharp
 {
@@ -99,6 +100,7 @@ namespace WAV_Bot_DSharp
                 .AddSingleton<OsuEnums>()
                 .AddSingleton<OsuRegex>()
                 .AddSingleton<DocumentStoreProvider>()
+                .AddSingleton<NumbersApi>()
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
                 .AddSingleton<ISheetGenerator, SheetGenerator>()
@@ -192,8 +194,9 @@ namespace WAV_Bot_DSharp
                 .WithTitle("Error")
                 .WithDescription($"StackTrace: {e.Exception.StackTrace}")
                 .AddField("Command", e.Command?.Name ?? "-")
-                .AddField("Overload", string.Join(' ', (e.Context.Overload?.Arguments.Select(x => x.Name).ToArray() ??
-                                                       new string[] { "", "" })))
+                .AddField("Overload", e.Context.Overload.Arguments.Count == 0 ?
+                                      "-" :
+                                      string.Join(' ', e.Context.Overload.Arguments.Select(x => x.Name)?.ToArray()))
                 .AddField("Exception", e.Exception.GetType().ToString())
                 .AddField("Exception msg", e.Exception.Message)
                 .AddField("Inner exception", e.Exception.InnerException?.Message ?? "-")
