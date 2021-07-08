@@ -19,6 +19,11 @@ namespace WAV_Bot_DSharp.Database.Models
         public string DiscordUID { get; set; }
 
         /// <summary>
+        /// Никнейм discord
+        /// </summary>
+        public string DiscordNickname { get; set; }
+
+        /// <summary>
         /// Никнейм osu! профиля
         /// </summary>
         public string Nickname { get; set; }

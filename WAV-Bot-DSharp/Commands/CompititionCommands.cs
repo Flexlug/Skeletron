@@ -514,6 +514,7 @@ namespace WAV_Bot_DSharp.Commands
             await compititionService.SubmitScore(new CompitScore()
             {
                 DiscordUID = commandContext.User.Id.ToString(),
+                DiscordNickname = commandContext.User.Username,
                 Nickname = osuNickname,
                 Category = compitProfile.Category,
                 Score = replay.ReplayScore,
