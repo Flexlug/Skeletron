@@ -21,24 +21,37 @@ namespace WAV_Osu_Recognizer
             return DictionaryPercentage(WordsToCounts(left), WordsToCounts(right));
         }
 
-        public static Dictionary<String, int> WordsToCounts(String value)
+        public static Dictionary<char, int> WordsToCounts(String value)
         {
             if (String.IsNullOrEmpty(value))
-                return new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                return null;
 
-            return value
-              .Split(' ', '\r', '\n', '\t')
-              .Select(item => item.Trim(',', '.', '?', '!', ':', ';', '"'))
-              .Where(item => !String.IsNullOrEmpty(item))
-              .GroupBy(item => item, StringComparer.OrdinalIgnoreCase)
-              .ToDictionary(chunk => chunk.Key,
-                            chunk => chunk.Count(),
-                            StringComparer.OrdinalIgnoreCase);
+            string word = value.Trim(',', '.', '?', '!', ':', ';', '"');
+            Dictionary<char, int> dict = new();
+
+            foreach (char c in word)
+            {
+                if (dict.ContainsKey(c))
+                    dict[c]++;
+                else
+                    dict.Add(c, 1);
+            }
+
+            return dict;
+
+            //return value
+            //  .Split(' ', '\r', '\n', '\t')
+            //  .Select(item => item.Trim(',', '.', '?', '!', ':', ';', '"'))
+            //  .Where(item => !String.IsNullOrEmpty(item))
+            //  .GroupBy(item => item, StringComparer.OrdinalIgnoreCase)
+            //  .ToDictionary(chunk => chunk.Key,
+            //                chunk => chunk.Count(),
+            //                StringComparer.OrdinalIgnoreCase);
         }
 
         public static Double DictionaryPercentage(
-          IDictionary<String, int> left,
-          IDictionary<String, int> right)
+          IDictionary<char, int> left,
+          IDictionary<char, int> right)
         {
 
             if (left is null)
@@ -72,7 +85,7 @@ namespace WAV_Osu_Recognizer
             int maxLen = Math.Max(leftLen, rightLen);
             int minLen = Math.Min(leftLen, rightLen);
 
-            return found / all * (minLen / maxLen);
+            return (double)found / all * ((double)minLen / maxLen);
         }
 
         //public static double Compare(string s1, string s2)
