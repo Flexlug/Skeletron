@@ -1,8 +1,15 @@
 ﻿using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using Microsoft.Extensions.Logging;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
+using System.Collections.Generic;
+using System;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -14,10 +21,13 @@ namespace WAV_Bot_DSharp.Commands
     public sealed class DemonstrationCommands : SkBaseCommandModule
     {
         private ILogger<DemonstrationCommands> logger;
+        private DiscordClient client;
 
-        public DemonstrationCommands(ILogger<DemonstrationCommands> logger)
+        public DemonstrationCommands(ILogger<DemonstrationCommands> logger,
+                                     DiscordClient client)
         {
             this.logger = logger;
+            this.client = client;
 
             logger.LogInformation("DemostrationCommands loaded");
         }
@@ -25,13 +35,48 @@ namespace WAV_Bot_DSharp.Commands
         [Command("button-example"), Hidden, RequireOwner]
         public async Task ButtonDemo(CommandContext ctx)
         {
-            await new DiscordMessageBuilder()
-                .AddComponents(new DiscordButtonComponent(ButtonStyle.Danger, "asd", "ДУ НОТ ПРЕС МИ"),
-                               new DiscordButtonComponent(ButtonStyle.Primary, "asd", "ПРЕС МИ"),
-                               new DiscordButtonComponent(ButtonStyle.Secondary, "ASD", "Ю КЭН ПРЕС МИ"),
-                               new DiscordButtonComponent(ButtonStyle.Success, "ASD", "Ю ПРЕСД МИ!!!"))
-                .WithContent("типа контент")
+            var interactivity = ctx.Client.GetInteractivity();
+
+            var buttons = new List<DiscordButtonComponent>(new[] { new DiscordButtonComponent(ButtonStyle.Primary, "primaryAdd", "+1"),
+                                                                   new DiscordButtonComponent(ButtonStyle.Danger, "dangerAdd", "+1") });
+
+            int primary = 0,
+                danger = 0;
+
+            var msg = await new DiscordMessageBuilder()
+                .AddComponents(buttons)
+                .WithContent($"Primary: {primary}\nDanger: {danger}")
                 .SendAsync(ctx.Channel);
+
+            while (true)
+            {
+                var resp = await interactivity.WaitForButtonAsync(msg, buttons, TimeSpan.FromSeconds(10));
+
+                if (resp.TimedOut)
+                {
+                    await msg.ModifyAsync(new DiscordMessageBuilder()
+                        .WithContent($"RESULT:\n\nPrimary: {primary}\nDanger: {danger}"));
+                    break;
+                }
+
+                switch (resp.Result.Id)
+                {
+                    case "primaryAdd":
+                        primary++;
+                        break;
+                    case "dangerAdd":
+                        danger++;
+                        break;
+                    default:
+                        break;
+                        
+                }
+
+                await resp.Result.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder()
+                                                                                                            .WithContent($"Primary: {primary}\nDanger: {danger}")
+                                                                                                            .AddComponents(buttons));
+            }
+
         }
 
         /// <summary>
