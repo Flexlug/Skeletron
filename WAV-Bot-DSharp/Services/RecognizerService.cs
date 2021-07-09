@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 
 using WAV_Bot_DSharp.Threading;
 using WAV_Bot_DSharp.Configurations;
@@ -22,6 +23,7 @@ using WAV_Osu_Recognizer;
 using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Models.Bancho;
 using WAV_Osu_NetApi.Models.Gatari;
+using DSharpPlus.Interactivity.Extensions;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -40,6 +42,7 @@ namespace WAV_Bot_DSharp.Services.Entities
         private Dictionary<int, DateTime> ignoreList;
         private OsuEmoji emoji;
         private OsuEmbed utils;
+        private OsuRegex regex;
         private BackgroundQueue queue;
 
         private ILogger<RecognizerService> logger;
@@ -50,6 +53,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                                  ILogger<RecognizerService> logger, 
                                  OsuEmoji emoji, 
                                  OsuEmbed utils,
+                                 OsuRegex regex,
                                  IShedulerService sheduler)
         {
             this.client = client;
@@ -58,6 +62,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             this.sheduler = sheduler;
 
             this.emoji = emoji;
+            this.regex = regex;
 
             recognizer = new Recognizer();
             webClient = new WebClient();
@@ -161,7 +166,61 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             DiscordEmbed embed = utils.BeatmapToEmbed(banchoBeatmap, banchoBeatmapset, gBeatmap);
 
-            await message.RespondAsync(embed: embed);
+            var interactivity = client.GetInteractivity();
+            var buttons = new List<DiscordButtonComponent>(new[]
+                                                           {
+                                                               new DiscordButtonComponent(ButtonStyle.Primary, $"wrong-{banchoBeatmap.id}", "Не та карта")
+                                                           });
+
+            var msg = await message.RespondAsync(new DiscordMessageBuilder()
+                .WithEmbed(embed)
+                .AddComponents(buttons));
+
+            var resp = await interactivity.WaitForButtonAsync(msg, buttons, TimeSpan.FromMinutes(1));
+            if (resp.TimedOut)
+            {
+                await msg.ModifyAsync(new DiscordMessageBuilder()
+                         .WithEmbed(embed));
+                return;
+            }
+
+            await resp.Result.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder()
+                .WithContent("Ответьте на это сообщение ссылкой на правильную карту (bancho url)"));
+
+            var msg_res = await interactivity.WaitForMessageAsync((new_msg) => new_msg.ReferencedMessage?.Id == msg.Id, TimeSpan.FromSeconds(10));
+            if (msg_res.TimedOut)
+            {
+                await msg.ModifyAsync(new DiscordMessageBuilder()
+                         .WithEmbed(embed));
+                return;
+            }
+
+            var correct_bm = regex.GetBMandBMSIdFromBanchoUrl(msg_res.Result.Content);
+            if (correct_bm is null) 
+            {
+                await msg_res.Result.RespondAsync("Ссылка не распознана");
+                await message.ModifyAsync(new DiscordMessageBuilder()
+                .WithEmbed(embed));
+                return;
+            }
+
+            banchoBeatmapset = api.GetBeatmapset(correct_bm.Item1);
+            banchoBeatmap = api.GetBeatmap(correct_bm.Item2);
+
+            // Contruct message
+            embedBuilder = new DiscordEmbedBuilder();
+
+            mapLen = TimeSpan.FromSeconds(banchoBeatmap.total_length);
+
+            banchoRankEmoji = emoji.RankStatusEmoji(banchoBeatmap.ranked);
+            diffEmoji = emoji.DiffEmoji(banchoBeatmap.difficulty_rating);
+
+            // Check gatari
+            gBeatmap = gapi.TryGetBeatmap(banchoBeatmap.id);
+
+            embed = utils.BeatmapToEmbed(banchoBeatmap, banchoBeatmapset, gBeatmap);
+
+            await msg.ModifyAsync("", embed: embed);
         }
 
         /// <summary>

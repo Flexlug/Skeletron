@@ -38,7 +38,7 @@ namespace WAV_Bot_DSharp.Commands
             var interactivity = ctx.Client.GetInteractivity();
 
             var buttons = new List<DiscordButtonComponent>(new[] { new DiscordButtonComponent(ButtonStyle.Primary, "primaryAdd", "+1"),
-                                                                   new DiscordButtonComponent(ButtonStyle.Danger, "dangerAdd", "+1") });
+                                                                   new DiscordButtonComponent(ButtonStyle.Danger, "dangerAdd", "", emoji: new DiscordComponentEmoji("⚠"))});
 
             int primary = 0,
                 danger = 0;

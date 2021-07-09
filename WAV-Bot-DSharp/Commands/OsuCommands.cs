@@ -87,13 +87,18 @@ namespace WAV_Bot_DSharp.Commands
 
         private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
+            //await GetMap(sender, e);
+        }
+
+        public async Task GetMap(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
+        {
             if (!e.Message.Content.Contains("http"))
                 return;
 
             if (e.Channel is null)
                 return;
 
-            if (!(e.Channel.Name.Contains("-osu")||
+            if (!(e.Channel.Name.Contains("-osu") ||
                   e.Channel.Name.Contains("map-offer") ||
                   e.Channel.Name.Contains("bot-debug") ||
                   e.Channel.Name.Contains("dev-announce") ||
