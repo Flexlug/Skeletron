@@ -87,7 +87,7 @@ namespace WAV_Bot_DSharp.Commands
 
         private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
-            //await GetMap(sender, e);
+            await GetMap(sender, e);
         }
 
         public async Task GetMap(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
@@ -96,6 +96,9 @@ namespace WAV_Bot_DSharp.Commands
                 return;
 
             if (e.Channel is null)
+                return;
+
+            if (e.Message.ReferencedMessage?.Author.IsBot ?? false)
                 return;
 
             if (!(e.Channel.Name.Contains("-osu") ||
