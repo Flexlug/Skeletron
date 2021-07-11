@@ -5,9 +5,10 @@ using System.Collections.Generic;
 using RestSharp;
 
 using Tesseract;
-using System.DrawingCore;
-using System.DrawingCore.Drawing2D;
-using System.DrawingCore.Imaging;
+
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 
 namespace WAV_Osu_Recognizer
 {
@@ -31,7 +32,6 @@ namespace WAV_Osu_Recognizer
         /// <returns></returns>
         public string RecognizeTopText(Image image)
         {
-
             Bitmap bbmp;
             if (image.Width < 2400 || image.Height < 1500)
                 bbmp = ResizeImage(image, image.Width * 3, image.Height * 3);
@@ -42,10 +42,10 @@ namespace WAV_Osu_Recognizer
             ToGrayScale(bbmp);
             bbmp = AddTopWhiteSpace(bbmp);
 
-            string fileName = $"temp/{DateTime.Now.Ticks}_BW.jpg";
+            string fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"temp/{DateTime.Now.Ticks}_BW.jpg");
             bbmp.Save(fileName);
 
-            Pix img = Pix.LoadFromFile(fileName);
+            Pix img = PixConverter.ToPix(bbmp);
 
             Page pageName = ocr.Process(img, new Rect(1, 1, img.Width - 10, (int)(img.Height * 0.13)));
             string mapName = pageName.GetText();
@@ -66,14 +66,14 @@ namespace WAV_Osu_Recognizer
         public void ToGrayScale(Bitmap Bmp)
         {
             int rgb;
-            System.DrawingCore.Color c;
+            Color c;
 
             for (int y = 0; y < Bmp.Height; y++)
                 for (int x = 0; x < Bmp.Width; x++)
                 {
                     c = Bmp.GetPixel(x, y);
                     rgb = Math.Round(.299 * c.R + .587 * c.G + .114 * c.B) < 120 ? 255 : 1;
-                    Bmp.SetPixel(x, y, System.DrawingCore.Color.FromArgb(rgb, rgb, rgb));
+                    Bmp.SetPixel(x, y, System.Drawing.Color.FromArgb(rgb, rgb, rgb));
                 }
         }
 
@@ -112,7 +112,7 @@ namespace WAV_Osu_Recognizer
             Bitmap newBtmp = new Bitmap(input.Width, input.Height + 10);
             Graphics g = Graphics.FromImage(newBtmp);
 
-            g.FillRectangle(Brushes.White, System.DrawingCore.Rectangle.FromLTRB(1, 1, newBtmp.Width - 1, newBtmp.Height - 1));
+            g.FillRectangle(Brushes.White, Rectangle.FromLTRB(1, 1, newBtmp.Width - 1, newBtmp.Height - 1));
             g.DrawImageUnscaled(input, 1, 10);
 
             g.Flush();

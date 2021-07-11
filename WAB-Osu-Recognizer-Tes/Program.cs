@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.DrawingCore;
+using System.Drawing;
 using System.Collections.Generic;
 
 using WAV_Osu_NetApi;

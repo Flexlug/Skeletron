@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="RestSharp" Version="106.11.7" />
     <PackageReference Include="Tesseract" Version="4.1.1" />
+    <PackageReference Include="Tesseract.Drawing" Version="4.1.1" />
     <PackageReference Include="ZKWeb.System.Drawing" Version="4.0.1" />
   </ItemGroup>
 
