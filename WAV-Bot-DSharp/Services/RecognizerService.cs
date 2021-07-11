@@ -2,7 +2,7 @@
 using System.Net;
 using System.Linq;
 using System.Text;
-using System.DrawingCore;
+using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 
 using WAV_Bot_DSharp.Threading;
 using WAV_Bot_DSharp.Configurations;
@@ -23,7 +24,6 @@ using WAV_Osu_Recognizer;
 using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Models.Bancho;
 using WAV_Osu_NetApi.Models.Gatari;
-using DSharpPlus.Interactivity.Extensions;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -319,7 +319,20 @@ namespace WAV_Bot_DSharp.Services.Entities
             else
             {
                 logger.LogInformation($"Couldn't get mapper");
-                bms = bmsl.FirstOrDefault();
+
+                List<Tuple<Beatmapset, double>> bsm = bmsl.Select(x => Tuple.Create(x,
+                                                                    WAV_Osu_Recognizer.RecStringComparer.Compare(x.title, mapName)))
+                                                  .OrderByDescending(x => x.Item2)
+                                                  .ToList();
+
+
+                foreach (var b in bsm)
+                    logger.LogDebug($"{b.Item1.creator} {b.Item1.title}: {b.Item2}");
+
+                if (bsm == null || bsm.Count == 0)
+                    bms = bmsl.FirstOrDefault();
+                else
+                    bms = bsm.First().Item1;
             }
 
 
