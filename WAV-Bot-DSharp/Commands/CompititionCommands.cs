@@ -430,7 +430,7 @@ namespace WAV_Bot_DSharp.Commands
             }
             
 
-            if (replay.ReplayTimestamp + TimeSpan.FromHours(3) > compitInfo.Deadline || replay.ReplayTimestamp + TimeSpan.FromHours(3) < compitInfo.StartDate)
+            if (replay.ReplayTimestamp + TimeSpan.FromHours(3) < compitInfo.StartDate)
             {
                 await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен не во время конкурса.");
                 return;
