@@ -40,6 +40,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
 
   <ItemGroup>
@@ -69,6 +70,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="OppaiSharp" Version="3.4.0" />
     <PackageReference Include="OsuParsers" Version="1.7.0" />
     <PackageReference Include="RavenDB.Client" Version="5.1.8" />
     <PackageReference Include="Serilog" Version="2.10.0" />
