@@ -33,28 +33,24 @@ namespace WAV_Osu_Recognizer
         public string RecognizeTopText(Image image)
         {
             Bitmap bbmp;
-            if (image.Width < 2400 || image.Height < 1500)
-                bbmp = ResizeImage(image, image.Width * 3, image.Height * 3);
-            else
-                bbmp = new Bitmap(image);
 
+            Rectangle s = new Rectangle(0, 0, (int)(image.Width * 0.98), (int)(image.Height * 0.13));
 
+            bbmp = CropImage(image, s);
+            bbmp = ResizeImage(bbmp, bbmp.Width * 3, bbmp.Height * 3);
             ToGrayScale(bbmp);
             bbmp = AddTopWhiteSpace(bbmp);
 
             string fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"temp/{DateTime.Now.Ticks}_BW.jpg");
-            bbmp.Save(fileName);
 
             Pix img = PixConverter.ToPix(bbmp);
+            bbmp.Save(fileName);
 
-            Page pageName = ocr.Process(img, new Rect(1, 1, img.Width - 10, (int)(img.Height * 0.13)));
+            Page pageName = ocr.Process(img);
             string mapName = pageName.GetText();
             pageName.Dispose();
 
             bbmp.Dispose();
-
-            //if (File.Exists(fileName))
-                //File.Delete(fileName);
 
             return mapName;
         }
@@ -105,6 +101,20 @@ namespace WAV_Osu_Recognizer
             }
 
             return destImage;
+        }
+
+        public static Bitmap CropImage(Image src, Rectangle rect)
+        {
+            Bitmap target = new Bitmap(rect.Width, rect.Height);
+
+            using (Graphics g = Graphics.FromImage(target))
+            {
+                g.DrawImage(src, new Rectangle(0, 0, rect.Width, rect.Height),
+                                 rect,
+                                 GraphicsUnit.Pixel);
+            }
+
+            return target;
         }
 
         public Bitmap AddTopWhiteSpace(Bitmap input)

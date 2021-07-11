@@ -70,6 +70,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="OneOf" Version="3.0.190" />
     <PackageReference Include="OppaiSharp" Version="3.4.0" />
     <PackageReference Include="OsuParsers" Version="1.7.0" />
     <PackageReference Include="RavenDB.Client" Version="5.1.8" />

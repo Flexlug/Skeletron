@@ -59,7 +59,7 @@ namespace WAV_Bot_DSharp.Converters
         /// <param name="bms">Beatmapset object</param>
         /// <param name="gBeatmap">Beatmap object from gatari (if exists)</param>
         /// <returns></returns>
-        public DiscordEmbed BeatmapToEmbed(Beatmap bm, Beatmapset bms, GBeatmap gBeatmap = null)
+        public DiscordEmbed BeatmapToEmbed(Beatmap bm, Beatmapset bms, GBeatmap gBeatmap = null, bool recognizerWarn = false)
         {
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
 
@@ -74,6 +74,11 @@ namespace WAV_Bot_DSharp.Converters
             {
                 DiscordEmoji gatariRankEmoji = osuEmoji.RankStatusEmoji(gBeatmap.ranked);
                 embedMsg.AppendLine($"\nGatari: {gatariRankEmoji} : [link](https://osu.gatari.pw/s/{gBeatmap.beatmapset_id}#osu/{gBeatmap.beatmap_id})\nLast updated: {(gBeatmap.ranking_data != 0 ? new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(gBeatmap.ranking_data).ToString() : "")}");
+            }
+
+            if (recognizerWarn)
+            {
+                embedMsg.AppendLine($"\n⚠ Difficulty recognition warning ⚠");
             }
 
             // Construct embed
