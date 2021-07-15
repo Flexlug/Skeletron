@@ -8,6 +8,9 @@ namespace WAV_Bot_DSharp.Configurations
     {
         public static readonly IList<string> DefaultPrefixes = new List<string>();
 
+        public string DB_IP { get; set; }
+        public string DB_NAME { get; set; }
+
         // Discord credential
         public string Token { get; set; }
         public IList<string> Prefixes { get; set; }
