@@ -47,6 +47,8 @@ namespace WAV_Bot_DSharp.Services.Entities
         private OsuRegex regex;
         private BackgroundQueue queue;
 
+        DiscordEmoji eyesEmoji;
+
         private ILogger<RecognizerService> logger;
         private IShedulerService sheduler;
 
@@ -75,6 +77,8 @@ namespace WAV_Bot_DSharp.Services.Entities
             gapi = new GatariApi();
 
             queue = new BackgroundQueue();
+
+            eyesEmoji = DiscordEmoji.FromName(client, ":eyes:");
 
             logger.LogInformation("RecognizerService loaded");
             ConfigureFilesInterceptor(client);
@@ -108,7 +112,6 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return;
             }
 
-
             foreach (DiscordAttachment attachment in attachments)
             {
                 if (!(attachment.Width >= 750 && attachment.Height >= 550))
@@ -117,7 +120,6 @@ namespace WAV_Bot_DSharp.Services.Entities
                 //if (!(attachment.FileName.StartsWith("screenshot") && attachment.FileName.EndsWith(".jpg")))
                     //continue;
 
-                logger.LogInformation($"Beatmap detect attempt");
                 ThreadPool.QueueUserWorkItem(new WaitCallback(async delegate (object state)
                 {
                     await ExecuteMessageTrack(e.Message, attachment);
@@ -132,6 +134,21 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// <param name="attachment">Картинка</param>
         private async Task ExecuteMessageTrack(DiscordMessage message, DiscordAttachment attachment)
         {
+            await message.CreateReactionAsync(eyesEmoji);
+
+            var interactivity = client.GetInteractivity();
+            var pollres = await interactivity.WaitForReactionAsync(args => args.Emoji == eyesEmoji &&
+                                                                           args.Message.Id == message.Id,
+                                                                   TimeSpan.FromSeconds(10));
+
+            if (pollres.TimedOut)
+            {
+                logger.LogDebug("Raction wait timed out");
+                return;
+            }
+
+            logger.LogInformation($"Beatmap detect attempt");
+
             var res = await queue.QueueTask(() => DownloadAndRecognizeImage(attachment));
 
             Beatmapset banchoBeatmapset = null;
@@ -162,7 +179,6 @@ namespace WAV_Bot_DSharp.Services.Entities
                         pages.Add(new DSharpPlus.Interactivity.Page("", new DiscordEmbedBuilder(utils.BeatmapToEmbed(bm, banchoBeatmapset, null, true))));
                     }
 
-                    var interactivity = client.GetInteractivity();
                     await interactivity.SendPaginatedMessageAsync(message.Channel,
                                                                   message.Author,
                                                                   pages,
@@ -201,8 +217,6 @@ namespace WAV_Bot_DSharp.Services.Entities
                 GBeatmap gBeatmap = gapi.TryGetBeatmap(banchoBeatmap.id);
 
                 DiscordEmbed embed = utils.BeatmapToEmbed(banchoBeatmap, banchoBeatmapset, gBeatmap);
-
-                var interactivity = client.GetInteractivity();
 
                 var msg = await message.RespondAsync(new DiscordMessageBuilder()
                     .WithEmbed(embed));
@@ -297,18 +311,18 @@ namespace WAV_Bot_DSharp.Services.Entities
             {
                 mapper = mapper?.Substring(10);
                 logger.LogDebug($"Got mapper: {mapper}. Comparing...");
-                List<Tuple<Beatmapset, double, double>> bsm = bmsl.Select(x => Tuple.Create(x, 
-                                                                                    WAV_Osu_Recognizer.RecStringComparer.Compare(x.creator, mapper),
+
+                List<Tuple<Beatmapset, double>> bsm = bmsl.Select(x => Tuple.Create(x, 
+                                                                                    WAV_Osu_Recognizer.RecStringComparer.Compare(x.creator, mapper) +
                                                                                     WAV_Osu_Recognizer.RecStringComparer.Compare(x.title, mapName)))
-                                                                  .OrderByDescending(x => x.Item3)
-                                                                  .ThenByDescending(x => x.Item2)
+                                                                  .OrderByDescending(x => x.Item2)
                                                                   .ToList();
 
 
                 foreach (var b in bsm)
-                    logger.LogDebug($"{b.Item1.creator} {b.Item1.title}: {b.Item2} {b.Item3}");
+                    logger.LogDebug($"{b.Item1.creator} {b.Item1.title}: {b.Item2}");
 
-                if (bsm.All(x => x.Item2 < 0.1 && x.Item3 < 0.1))
+                if (bsm.All(x => x.Item2 < 0.2))
                     return new BeatmapsetNotFoundException();
 
                 if (bsm == null || bsm.Count == 0)

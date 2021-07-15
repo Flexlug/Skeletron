@@ -31,6 +31,7 @@ namespace WAV_Bot_DSharp.Commands
         private ILogger<AdminCommands> logger;
 
         private IShedulerService sheduler;
+        private IWordsService words;
 
         private DiscordChannel LogChannel;
         private DiscordGuild wavGuild;
@@ -38,17 +39,63 @@ namespace WAV_Bot_DSharp.Commands
         public AdminCommands(ILogger<AdminCommands> logger, 
                             DiscordClient client,
                             DiscordGuild wavGuild,
-                            IShedulerService sheduler)
+                            IShedulerService sheduler,
+                            IWordsService words)
         {
             ModuleName = "Администрирование";
 
             this.logger = logger;
             this.sheduler = sheduler;
+            this.words = words;
 
             this.wavGuild = wavGuild;
             LogChannel = client.GetChannelAsync(816396082153521183).Result;
 
             logger.LogInformation("AdminCommands loaded");
+        }
+
+        [Command("words-clear"), RequireRoles(RoleCheckMode.Any, "Admin"), Description("Полностью сбросить игру \'words\'"), RequireGuild]
+        public async Task ResetWords(CommandContext ctx)
+        {
+            words.ClearWords();
+            await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 805364968593686549));
+
+            logger.LogInformation($"Words cleared by {ctx.Member.Nickname}");
+        }
+
+        [Command("words-delete"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Удалить слово из коллекции"), RequireGuild]
+        public async Task DeleteWord(CommandContext ctx, 
+            [Description("Удаляемое слово")] string word)
+        {
+            string checkingWord = word.ToLower();
+
+            if (words.CheckWord(checkingWord)) {
+                words.DeleteWord(checkingWord);
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 805364968593686549));
+                logger.LogInformation($"Word {word} deleted by {ctx.Member.Nickname}");
+            }
+            else
+            {
+                await ctx.RespondAsync("Такого слова и так нет");
+            }
+        }
+
+        [Command("words-get"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Получить список всех использованных слов"), RequireGuild]
+        public async Task DeleteWord(CommandContext ctx)
+        {
+            var wordsList = words.GetWords();
+
+            if (wordsList is null || wordsList.Count == 0)
+            {
+                await ctx.RespondAsync("Слов нет");
+                return;
+            }
+
+            string allWords = string.Join(", ", words.GetWords());
+            await ctx.RespondAsync(new DiscordEmbedBuilder()
+                .WithTitle("Использованные слова:")
+                .WithDescription(allWords)
+                .Build());
         }
 
         [Command("uptime"), Description("Получить информацию о времени работы бота.")]

@@ -32,6 +32,7 @@ using Serilog;
 
 using NumbersAPI.NET;
 using GoogleApi;
+using DSharpPlus.SlashCommands.EventArgs;
 
 namespace WAV_Bot_DSharp
 {
@@ -107,12 +108,14 @@ namespace WAV_Bot_DSharp
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
                 .AddSingleton(new GoogleSearch())
+                .AddSingleton<IWordsProvider, WordsProvider>()
                 .AddSingleton<ISheetGenerator, SheetGenerator>()
                 .AddSingleton<IShedulerService, ShedulerService>()
                 .AddSingleton<IRecognizerService, RecognizerService>()
                 .AddSingleton<IWAVMembersProvider, WAVMembersProvider>()
                 .AddSingleton<IWAVCompitProvider, WAVCompitProvider>()
                 .AddSingleton<ICompititionService, CompititionService>()
+                .AddSingleton<IWordsService, WordsService>()
                 .BuildServiceProvider();
         }
 
@@ -145,9 +148,17 @@ namespace WAV_Bot_DSharp
 
             // Register slash commands modules
             SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
+            SlashCommands.RegisterCommands<UserSlashCommands>(WAV_UID);
+
+            SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
 
             // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;
+        }
+
+        private async Task SlashCommands_SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
+        {
+            logger.LogError($"Error on executing slash command {e.Context.CommandName} - {e.Exception}");
         }
 
         private void RegisterEvents()
