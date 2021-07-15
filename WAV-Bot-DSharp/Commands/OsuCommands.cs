@@ -108,6 +108,9 @@ namespace WAV_Bot_DSharp.Commands
                   e.Channel.Name.Contains("www-register")))
                 return;
 
+            if (e.Message.Content[0] == '>' || e.Message.Content[0] == '!')
+                return;
+
             // Check, if it is map url from bancho
             Tuple<int, int> BMSandBMid = osuRegex.GetBMandBMSIdFromBanchoUrl(e.Message.Content);
             if (!(BMSandBMid is null))
