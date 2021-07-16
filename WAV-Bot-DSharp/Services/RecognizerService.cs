@@ -117,8 +117,21 @@ namespace WAV_Bot_DSharp.Services.Entities
                 if (!(attachment.Width >= 750 && attachment.Height >= 550))
                     continue;
 
-                if (!(attachment.FileName.EndsWith(".mp4") ||
-                      attachment.FileName.EndsWith(".avi")))
+                string fileName = attachment.FileName.ToLower();
+
+                // Ignore videofiles
+                if (!(fileName.EndsWith(".mp4") ||
+                      fileName.EndsWith(".avi") ||
+                      fileName.EndsWith(".mkv") ||
+                      fileName.EndsWith(".m4v") ||
+                      fileName.EndsWith(".webm") ||
+                      fileName.EndsWith(".mov") ||
+                      fileName.EndsWith(".mts") ||
+                      fileName.EndsWith(".flv") ||
+                      fileName.EndsWith(".3gp") ||
+                      fileName.EndsWith(".m2ts") ||
+                      fileName.EndsWith(".mpg") ||
+                      fileName.EndsWith(".tga")))
                     continue;
 
                 ThreadPool.QueueUserWorkItem(new WaitCallback(async delegate (object state)
