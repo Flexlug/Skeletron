@@ -117,8 +117,9 @@ namespace WAV_Bot_DSharp.Services.Entities
                 if (!(attachment.Width >= 750 && attachment.Height >= 550))
                     continue;
 
-                //if (!(attachment.FileName.StartsWith("screenshot") && attachment.FileName.EndsWith(".jpg")))
-                    //continue;
+                if (!(attachment.FileName.EndsWith(".mp4") ||
+                      attachment.FileName.EndsWith(".avi")))
+                    continue;
 
                 ThreadPool.QueueUserWorkItem(new WaitCallback(async delegate (object state)
                 {
@@ -144,6 +145,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             if (pollres.TimedOut)
             {
                 logger.LogDebug("Raction wait timed out");
+                await message.DeleteAllReactionsAsync();
                 return;
             }
 
