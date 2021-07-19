@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using Microsoft.Extensions.Logging;
 
@@ -16,12 +17,11 @@ using OsuParsers.Decoders;
 using OsuParsers.Replays;
 
 using WAV_Osu_NetApi.Models;
+
 using WAV_Bot_DSharp.Converters;
-using WAV_Bot_DSharp.Services.Entities;
 using WAV_Bot_DSharp.Database.Interfaces;
 using WAV_Bot_DSharp.Database.Models;
 using WAV_Bot_DSharp.Services.Interfaces;
-using System.Collections.Generic;
 
 namespace WAV_Bot_DSharp.Commands
 {

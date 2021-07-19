@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -9,9 +8,6 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
-using OsuParsers.Replays;
-using OsuParsers.Decoders;
 
 using Microsoft.Extensions.Logging;
 

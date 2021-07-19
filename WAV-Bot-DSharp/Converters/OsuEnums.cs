@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 using WAV_Osu_NetApi.Models;
 using WAV_Osu_NetApi.Models.Bancho;
+
 using WAV_Bot_DSharp.Database.Models;
+
 using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Converters

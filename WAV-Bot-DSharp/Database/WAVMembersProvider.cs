@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using DSharpPlus.Entities;
 using DSharpPlus;
 
 using Raven.Client.Documents;
-using Raven.Client.Documents.Linq;
 using Raven.Client.Documents.Session;
 
-using WAV_Bot_DSharp.Utils;
 using WAV_Bot_DSharp.Database.Models;
 using WAV_Bot_DSharp.Database.Interfaces;
 
 using WAV_Osu_NetApi.Models;
+
 using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Database

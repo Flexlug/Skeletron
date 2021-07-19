@@ -9,13 +9,11 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
+
 using Microsoft.Extensions.Logging;
-using WAV_Bot_DSharp.Configurations;
-using WAV_Bot_DSharp.Services;
-using WAV_Bot_DSharp.Services.Entities;
+
 using WAV_Bot_DSharp.Services.Interfaces;
 
 namespace WAV_Bot_DSharp.Commands

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-
-using DSharpPlus.CommandsNext;
+﻿using DSharpPlus.CommandsNext;
 
 namespace WAV_Bot_DSharp.Commands
 {

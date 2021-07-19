@@ -1,9 +1,10 @@
-﻿using DSharpPlus;
+﻿using System;
+
+using DSharpPlus;
 using DSharpPlus.Entities;
+
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using WAV_Osu_NetApi.Models.Bancho;
 using WAV_Osu_NetApi.Models.Gatari.Enums;
 

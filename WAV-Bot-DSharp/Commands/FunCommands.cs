@@ -1,15 +1,15 @@
-﻿using DSharpPlus;
+﻿using System;
+using System.Threading.Tasks;
+
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using Microsoft.Extensions.Logging;
+
 using NumbersAPI.NET;
 using NumbersAPI.NET.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace WAV_Bot_DSharp.Commands
 {

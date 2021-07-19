@@ -1,9 +1,8 @@
-﻿using DSharpPlus.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
+
+using DSharpPlus.Entities;
+
 using WAV_Bot_DSharp.Database.Models;
 
 namespace WAV_Bot_DSharp.Services.Interfaces

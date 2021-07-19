@@ -1,14 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Threading;
 
 using WAV_Osu_NetApi;
 
 using Newtonsoft.Json;
-using WAV_Osu_NetApi.Models.Bancho;
 
 namespace WAV_Osu_NetApi_Test
 {
@@ -24,7 +19,7 @@ namespace WAV_Osu_NetApi_Test
             BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
             Console.WriteLine(api.ReloadToken());
 
-            List<Score> scores = api.GetUserRecentScores(6885792, false, 0, 5);
+            var map = api.GetBeatmap(281843);
 
             //while (true)
             //{

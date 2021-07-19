@@ -1,16 +1,16 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
-using DSharpPlus;
 using DSharpPlus.Entities;
 
 using WAV_Osu_NetApi.Models.Bancho;
 using WAV_Osu_NetApi.Models.Gatari;
+
 using Microsoft.Extensions.Logging;
+
 using WAV_Bot_DSharp.Database.Models;
-using System.Linq;
 
 namespace WAV_Bot_DSharp.Converters
 {

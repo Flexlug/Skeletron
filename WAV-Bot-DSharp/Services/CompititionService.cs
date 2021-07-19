@@ -10,7 +10,6 @@ using DSharpPlus.Entities;
 using WAV_Bot_DSharp.Converters;
 using WAV_Bot_DSharp.Database.Interfaces;
 using WAV_Bot_DSharp.Database.Models;
-using WAV_Bot_DSharp.Services.Entities;
 using WAV_Bot_DSharp.Services.Interfaces;
 using WAV_Bot_DSharp.Services.Models;
 

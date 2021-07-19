@@ -1,15 +1,14 @@
-﻿using System.Threading.Tasks;
-
-using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Extensions;
-using System.Collections.Generic;
-using System;
+
+using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Commands
 {

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.CommandsNext.Attributes;
 
 using Microsoft.Extensions.Logging;
+
 using WAV_Bot_DSharp.Converters;
 
 using WAV_Osu_NetApi;

@@ -3,11 +3,9 @@ using System.IO;
 using System.Reflection;
 
 using Serilog;
-using Serilog.Templates;
 using Serilog.Sinks.SystemConsole.Themes;
 
 using WAV_Bot_DSharp.Configurations;
-using System.Collections.Generic;
 
 namespace WAV_Bot_DSharp
 {

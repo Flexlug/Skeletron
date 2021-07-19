@@ -11,21 +11,21 @@ using Microsoft.Extensions.Logging;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 
-using WAV_Bot_DSharp.Threading;
-using WAV_Bot_DSharp.Configurations;
 using WAV_Bot_DSharp.Services.Interfaces;
+using WAV_Bot_DSharp.Configurations;
+using WAV_Bot_DSharp.Threading;
 using WAV_Bot_DSharp.Converters;
+using WAV_Bot_DSharp.Exceptions;
 
 using WAV_Osu_Recognizer;
 
 using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Models.Bancho;
 using WAV_Osu_NetApi.Models.Gatari;
+
 using OneOf;
-using WAV_Bot_DSharp.Exceptions;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -120,18 +120,18 @@ namespace WAV_Bot_DSharp.Services.Entities
                 string fileName = attachment.FileName.ToLower();
 
                 // Ignore videofiles
-                if (!(fileName.EndsWith(".mp4") ||
-                      fileName.EndsWith(".avi") ||
-                      fileName.EndsWith(".mkv") ||
-                      fileName.EndsWith(".m4v") ||
-                      fileName.EndsWith(".webm") ||
-                      fileName.EndsWith(".mov") ||
-                      fileName.EndsWith(".mts") ||
-                      fileName.EndsWith(".flv") ||
-                      fileName.EndsWith(".3gp") ||
-                      fileName.EndsWith(".m2ts") ||
-                      fileName.EndsWith(".mpg") ||
-                      fileName.EndsWith(".tga")))
+                if ((fileName.EndsWith(".mp4") ||
+                     fileName.EndsWith(".avi") ||
+                     fileName.EndsWith(".mkv") ||
+                     fileName.EndsWith(".m4v") ||
+                     fileName.EndsWith(".webm") ||
+                     fileName.EndsWith(".mov") ||
+                     fileName.EndsWith(".mts") ||
+                     fileName.EndsWith(".flv") ||
+                     fileName.EndsWith(".3gp") ||
+                     fileName.EndsWith(".m2ts") ||
+                     fileName.EndsWith(".mpg") ||
+                     fileName.EndsWith(".tga")))
                     continue;
 
                 ThreadPool.QueueUserWorkItem(new WaitCallback(async delegate (object state)
@@ -176,13 +176,22 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return;
             }
 
+            GBeatmap gBeatmap;
+            DiscordEmbed embed = null; 
+            DiscordMessage msg = null;
+            DiscordEmbedBuilder embedBuilder = null;
+            var buttons = new List<DiscordButtonComponent>(new[]
+                                                           {
+                                                               new DiscordButtonComponent(ButtonStyle.Primary, $"wrong-{message.Id}", "Не та карта")
+                                                           });
+
             // got only beatmapset
             if (res.IsT1)
             {
                 banchoBeatmapset = res.AsT1;
 
                 // Contruct message
-                DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
+                embedBuilder = new DiscordEmbedBuilder();
 
 
                 if (banchoBeatmapset.beatmaps.Count > 1)
@@ -204,8 +213,9 @@ namespace WAV_Bot_DSharp.Services.Entities
                 else
                 {
                     banchoBeatmap = banchoBeatmapset.beatmaps.Last();
-                    await message.RespondAsync(new DiscordMessageBuilder()
-                        .WithEmbed(utils.BeatmapToEmbed(banchoBeatmap, banchoBeatmapset, null, true)));
+                    msg = await message.RespondAsync(new DiscordMessageBuilder()
+                                       .WithEmbed(utils.BeatmapToEmbed(banchoBeatmap, banchoBeatmapset, null, true))
+                                       .AddComponents(buttons));
                 }
             }
 
@@ -229,15 +239,55 @@ namespace WAV_Bot_DSharp.Services.Entities
                 ignoreList.Add(banchoBeatmap.id, DateTime.Now);
 
                 // Check gatari
-                GBeatmap gBeatmap = gapi.TryGetBeatmap(banchoBeatmap.id);
+                gBeatmap = gapi.TryGetBeatmap(banchoBeatmap.id);
 
-                DiscordEmbed embed = utils.BeatmapToEmbed(banchoBeatmap, banchoBeatmapset, gBeatmap);
+                embed = utils.BeatmapToEmbed(banchoBeatmap, banchoBeatmapset, gBeatmap);
 
-                var msg = await message.RespondAsync(new DiscordMessageBuilder()
-                    .WithEmbed(embed));
+                msg = await message.RespondAsync(new DiscordMessageBuilder()
+                    .WithEmbed(embed)
+                    .AddComponents(buttons));
             }
 
+            var resp = await interactivity.WaitForButtonAsync(msg, buttons, TimeSpan.FromMinutes(1));
+            if (resp.TimedOut)
+            {
+                await msg.ModifyAsync(new DiscordMessageBuilder()
+                         .WithEmbed(embed));
+                return;
+            }
 
+            await resp.Result.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder()
+                                         .WithContent("Ответьте на это сообщение ссылкой на правильную карту (bancho url)"));
+
+            var msg_res = await interactivity.WaitForMessageAsync((new_msg) => new_msg.ReferencedMessage?.Id == msg.Id, TimeSpan.FromMinutes(1));
+            if (msg_res.TimedOut)
+            {
+                await msg.ModifyAsync(new DiscordMessageBuilder()
+                         .WithEmbed(embed));
+                return;
+            }
+
+            var correct_bm = regex.GetBMandBMSIdFromBanchoUrl(msg_res.Result.Content);
+            if (correct_bm is null)
+            {
+                await msg_res.Result.RespondAsync("Ссылка не распознана");
+                await message.ModifyAsync(new DiscordMessageBuilder()
+                .WithEmbed(embed));
+                return;
+            }
+
+            banchoBeatmapset = api.GetBeatmapset(correct_bm.Item1);
+            banchoBeatmap = api.GetBeatmap(correct_bm.Item2);
+
+            // Contruct message
+            embedBuilder = new DiscordEmbedBuilder();
+
+            // Check gatari
+            gBeatmap = gapi.TryGetBeatmap(banchoBeatmap.id);
+
+            embed = utils.BeatmapToEmbed(banchoBeatmap, banchoBeatmapset, gBeatmap);
+
+            await msg.ModifyAsync("", embed: embed);
         }
 
         /// <summary>

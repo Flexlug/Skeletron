@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using WAV_Bot_DSharp.Services.Interfaces;
 
 namespace WAV_Bot_DSharp.Services.Models

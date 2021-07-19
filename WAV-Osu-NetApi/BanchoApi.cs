@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Encodings.Web;
-using Newtonsoft.Json;
 
 using RestSharp;
 
 using WAV_Osu_NetApi.Converters;
 using WAV_Osu_NetApi.Models.Bancho;
+
+using Newtonsoft.Json;
 
 namespace WAV_Osu_NetApi
 {

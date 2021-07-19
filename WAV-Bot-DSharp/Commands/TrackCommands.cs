@@ -1,19 +1,13 @@
-﻿using System;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+﻿using System.Threading.Tasks;
 
-using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
-using WAV_Bot_DSharp.Services;
-using WAV_Bot_DSharp.Services.Entities;
 using WAV_Bot_DSharp.Services.Interfaces;
 
-using WAV_Osu_NetApi;
-
 using Microsoft.Extensions.Logging;
+
+using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Models.Gatari;
 using WAV_Osu_NetApi.Models.Bancho;
 
