@@ -81,6 +81,10 @@ namespace WAV_Bot_DSharp.Converters
                 case RankStatus.Qualified:
                     return DiscordEmoji.FromGuildEmote(client, 805364968593686549);
 
+                // approved (the same as qualified)
+                case RankStatus.Approved:
+                    return DiscordEmoji.FromGuildEmote(client, 805364968593686549);
+
                 // loved
                 case RankStatus.Loved:
                     return DiscordEmoji.FromGuildEmote(client, 805366123902009356);
@@ -106,6 +110,10 @@ namespace WAV_Bot_DSharp.Converters
 
                 // qualified
                 case GRankStatus.Qualified:
+                    return DiscordEmoji.FromGuildEmote(client, 805364968593686549);
+
+                // approved (the same as qualified)
+                case GRankStatus.Approved:
                     return DiscordEmoji.FromGuildEmote(client, 805364968593686549);
 
                 // loved
