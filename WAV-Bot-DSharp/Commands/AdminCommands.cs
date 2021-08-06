@@ -216,7 +216,7 @@ namespace WAV_Bot_DSharp.Commands
 
         [Command("unmute"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Размьютить указанного пользователя.")]
         public async Task UnmuteUser(CommandContext commandContext,
-            [Description("ПОльзователь, с короторого необходимо снять мьют.")] DiscordMember discordMember)
+            [Description("Пользователь, с короторого необходимо снять мьют.")] DiscordMember discordMember)
         {
             DiscordRole muteRole = commandContext.Guild.Roles.FirstOrDefault(x => x.Value.Name == "Muted").Value;
             if (discordMember.Roles.Contains(muteRole))

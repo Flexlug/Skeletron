@@ -259,7 +259,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                     .AddComponents(buttons));
             }
 
-            var resp = await interactivity.WaitForButtonAsync(msg, buttons, TimeSpan.FromMinutes(1));
+            var resp = await interactivity.WaitForButtonAsync(msg, msg.Author, TimeSpan.FromMinutes(1));
             if (resp.TimedOut)
             {
                 await msg.ModifyAsync(new DiscordMessageBuilder()
@@ -270,7 +270,10 @@ namespace WAV_Bot_DSharp.Services.Entities
             await resp.Result.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder()
                                          .WithContent("Ответьте на это сообщение ссылкой на правильную карту (bancho url)"));
 
-            var msg_res = await interactivity.WaitForMessageAsync((new_msg) => new_msg.ReferencedMessage?.Id == msg.Id, TimeSpan.FromMinutes(1));
+            var msg_res = await interactivity.WaitForMessageAsync((new_msg) => 
+                                                                            new_msg.ReferencedMessage?.Id == msg.Id &&
+                                                                            new_msg.Author.Id == msg.Author.Id, 
+                                                                  TimeSpan.FromMinutes(1));
             if (msg_res.TimedOut)
             {
                 await msg.ModifyAsync(new DiscordMessageBuilder()
