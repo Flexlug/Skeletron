@@ -26,6 +26,7 @@ using WAV_Osu_NetApi.Models.Bancho;
 using WAV_Osu_NetApi.Models.Gatari;
 
 using OneOf;
+using DSharpPlus.EventArgs;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
@@ -141,6 +142,16 @@ namespace WAV_Bot_DSharp.Services.Entities
             }
         }
 
+        private bool check(MessageReactionAddEventArgs args, DiscordMessage message)
+        {
+            logger.LogInformation($"emoji: {args.Emoji}, id equals: {args.Message.Id == message.Id}, isBot: {args.Message.Author.IsBot}");
+            return args.Emoji == eyesEmoji && 
+                   args.Message.Id == message.Id && 
+                   !args.Message.Author.IsBot && 
+                   args.Message.Author.Username == message.Author.Username;
+        }
+
+
         /// <summary>
         /// Начинает отслеживание реакций сообщения с картинкой.
         /// </summary>
@@ -151,9 +162,8 @@ namespace WAV_Bot_DSharp.Services.Entities
             await message.CreateReactionAsync(eyesEmoji);
 
             var interactivity = client.GetInteractivity();
-            var pollres = await interactivity.WaitForReactionAsync(args => args.Emoji == eyesEmoji &&
-                                                                           args.Message.Id == message.Id,
-                                                                   TimeSpan.FromSeconds(10));
+            var pollres = await interactivity.WaitForReactionAsync(args => check(args, message),
+                                                                           TimeSpan.FromSeconds(10));
 
             if (pollres.TimedOut)
             {
@@ -162,6 +172,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 return;
             }
 
+            logger.LogInformation($"Triggered recognition by {pollres.Result.User.Username}");
             logger.LogInformation($"Beatmap detect attempt");
 
             var res = await queue.QueueTask(() => DownloadAndRecognizeImage(attachment));

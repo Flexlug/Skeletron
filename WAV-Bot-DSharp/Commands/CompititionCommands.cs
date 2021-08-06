@@ -198,7 +198,7 @@ namespace WAV_Bot_DSharp.Commands
         public async Task RecountManual(CommandContext context, DiscordMember dmember)
         {
             WAVMember member = wavMembers.GetMember(dmember.Id.ToString());
-
+            
             if (member.OsuServers.Count == 0)
             {
                 await context.RespondAsync("К Вашему профилю ещё нет привязаных osu! профилей. Привяжите свой профиль через `osuset`.");

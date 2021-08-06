@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -16,7 +17,7 @@ namespace WAV_Bot_DSharp
         public static int Failures { get; private set; }
         public static string BuildString { get; private set; }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             StartTime = DateTime.Now;
             LastFailure = null;
@@ -42,7 +43,7 @@ namespace WAV_Bot_DSharp
                 try
                 {
                     using (var bot = new Bot(settingsService.LoadFromFile()))
-                        bot.RunAsync().GetAwaiter().GetResult();
+                        await bot.RunAsync();
                 }
                 catch(Exception ex)
                 {
