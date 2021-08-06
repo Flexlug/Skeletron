@@ -174,12 +174,21 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        [Command("sendtochannel"), RequireUserPermissions(Permissions.Administrator), Description("Отправить в заданный канал простое текстовое сообщение.")]
+        [Command("sendtochannel"), Aliases("stc"), RequireUserPermissions(Permissions.Administrator), Description("Отправить в заданный канал простое текстовое сообщение.")]
         public async Task SendToChannelAsync(CommandContext commandContext,
             [Description("Текстовый канал, куда будет отправлено сообщение.")] DiscordChannel targetChannel,
             [Description("Отправляемое сообщение."), RemainingText] string message)
         {
             await targetChannel.SendMessageAsync(message);
+        }
+
+        [Command("react"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder"), Description("Добавить к указанному сообщению реакцию")]
+        public async Task AddEmojiAsync(CommandContext ctx,
+            [Description("Сообщение, к которому необходимо добавить эмодзи")] DiscordMessage message,
+            [Description("Добавляемый эмодзи")] DiscordEmoji emoji)
+        {
+            await message.CreateReactionAsync(emoji);
+            await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 805364968593686549));
         }
 
         [Command("mute"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Замьютить указанного пользователя.")]
