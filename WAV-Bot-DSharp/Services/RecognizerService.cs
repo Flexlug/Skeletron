@@ -147,7 +147,7 @@ namespace WAV_Bot_DSharp.Services.Entities
             logger.LogInformation($"emoji: {args.Emoji}, id equals: {args.Message.Id == message.Id}, isBot: {args.Message.Author.IsBot}");
             return args.Emoji == eyesEmoji && 
                    args.Message.Id == message.Id && 
-                   !args.Message.Author.IsBot && 
+                   !args.User.IsBot && 
                    args.Message.Author.Username == message.Author.Username;
         }
 
