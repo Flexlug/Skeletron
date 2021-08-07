@@ -484,11 +484,11 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            if (wavCompit.CheckScoreExists(replay.OnlineId.ToString()))
-            {
-                await commandContext.RespondAsync($"Вы уже отправляли раннее данный скор.");
-                return;
-            }
+            //if (wavCompit.CheckScoreExists(replay.OnlineId.ToString()))
+            //{
+            //    await commandContext.RespondAsync($"Вы уже отправляли раннее данный скор.");
+            //    return;
+            //}
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Osu nickname: `{replay.PlayerName}`");
