@@ -484,6 +484,8 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
+            // НЕ ВКЛЮЧАТЬ
+            // ГЛЮЧИТ
             //if (wavCompit.CheckScoreExists(replay.OnlineId.ToString()))
             //{
             //    await commandContext.RespondAsync($"Вы уже отправляли раннее данный скор.");

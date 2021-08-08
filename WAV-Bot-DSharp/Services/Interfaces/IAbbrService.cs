@@ -13,7 +13,5 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// </summary>
         /// <returns></returns>
         string GetRandomWord();
-
-
     }
 }
