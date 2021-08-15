@@ -19,7 +19,12 @@ namespace WAV_Osu_NetApi_Test
             BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
             Console.WriteLine(api.ReloadToken());
 
-            var map = api.GetBeatmap(281843);
+            foreach (var m in api.Search("Under The Covers - Join Us For A Bite [Sister Location]", WAV_Osu_NetApi.Models.Bancho.MapType.Any))
+            {
+                Console.WriteLine($"{m.creator} - {m.artist} {m.title}");
+                foreach (var mm in m.beatmaps)
+                    Console.WriteLine($"\t{mm.version}");
+            }
 
             //while (true)
             //{

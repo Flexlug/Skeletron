@@ -48,6 +48,8 @@ namespace WAV_Bot_DSharp.Services.Entities
         private OsuRegex regex;
         private BackgroundQueue queue;
 
+        private DiscordChannel debugChannel;
+
         DiscordEmoji eyesEmoji;
 
         private ILogger<RecognizerService> logger;
@@ -68,6 +70,8 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             this.emoji = emoji;
             this.regex = regex;
+
+            this.debugChannel = client.GetChannelAsync(823835078298828841).Result;
 
             recognizer = new Recognizer();
             webClient = new WebClient();
@@ -175,10 +179,16 @@ namespace WAV_Bot_DSharp.Services.Entities
             logger.LogInformation($"Triggered recognition by {pollres.Result.User.Username}");
             logger.LogInformation($"Beatmap detect attempt");
 
-            var res = await queue.QueueTask(() => DownloadAndRecognizeImage(attachment));
+            string[] recedText = null;
+            string searchQuerry = string.Empty;
+
+            var res = await queue.QueueTask(() => DownloadAndRecognizeImage(attachment, ref recedText, ref searchQuerry));
 
             Beatmapset banchoBeatmapset = null;
             Beatmap banchoBeatmap = null;
+
+            Beatmapset firstBanchoBeatmapset = null;
+            Beatmap firstBanchoBeatmap = null;
 
             // returned exception
             if (res.IsT2)
@@ -259,23 +269,29 @@ namespace WAV_Bot_DSharp.Services.Entities
                     .AddComponents(buttons));
             }
 
-            var resp = await interactivity.WaitForButtonAsync(msg, msg.Author, TimeSpan.FromMinutes(1));
+            firstBanchoBeatmap = banchoBeatmap;
+            firstBanchoBeatmapset = banchoBeatmapset;
+
+            var resp = await interactivity.WaitForButtonAsync(msg, message.Author, TimeSpan.FromMinutes(1));
             if (resp.TimedOut)
             {
+                logger.LogInformation($"Beatmap correction timed out - {banchoBeatmap.id}");
                 await msg.ModifyAsync(new DiscordMessageBuilder()
                          .WithEmbed(embed));
                 return;
             }
+            logger.LogInformation($"Waiting for correction - {banchoBeatmap.id} by {resp.Result.User.Mention}");
 
             await resp.Result.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder()
                                          .WithContent("Ответьте на это сообщение ссылкой на правильную карту (bancho url)"));
 
             var msg_res = await interactivity.WaitForMessageAsync((new_msg) => 
                                                                             new_msg.ReferencedMessage?.Id == msg.Id &&
-                                                                            new_msg.Author.Id == msg.Author.Id, 
+                                                                            new_msg.Author.Id == message.Author.Id, 
                                                                   TimeSpan.FromMinutes(1));
             if (msg_res.TimedOut)
             {
+                logger.LogInformation($"Correction timed out - {banchoBeatmap.id} by {msg_res.Result.Author.Mention}");
                 await msg.ModifyAsync(new DiscordMessageBuilder()
                          .WithEmbed(embed));
                 return;
@@ -284,15 +300,16 @@ namespace WAV_Bot_DSharp.Services.Entities
             var correct_bm = regex.GetBMandBMSIdFromBanchoUrl(msg_res.Result.Content);
             if (correct_bm is null)
             {
+                logger.LogInformation($"Coudn't verify link - {banchoBeatmap.id} by {msg_res.Result.Author.Mention}");
                 await msg_res.Result.RespondAsync("Ссылка не распознана");
-                await message.ModifyAsync(new DiscordMessageBuilder()
+                await msg.ModifyAsync(new DiscordMessageBuilder()
                 .WithEmbed(embed));
                 return;
             }
+            logger.LogInformation($"Applying changes - {banchoBeatmap.id} by {msg_res.Result.Author.Mention}");
 
             banchoBeatmapset = api.GetBeatmapset(correct_bm.Item1);
             banchoBeatmap = api.GetBeatmap(correct_bm.Item2);
-
             // Contruct message
             embedBuilder = new DiscordEmbedBuilder();
 
@@ -302,13 +319,24 @@ namespace WAV_Bot_DSharp.Services.Entities
             embed = utils.BeatmapToEmbed(banchoBeatmap, banchoBeatmapset, gBeatmap);
 
             await msg.ModifyAsync("", embed: embed);
+
+            await debugChannel.SendMessageAsync("<@286893444448780290>", new DiscordEmbedBuilder()
+                .WithDescription($"Search querry: `{searchQuerry}`\nRecognized text:\n```{string.Join('\n', recedText)}```")
+                .WithTitle("Recognition error report")
+                .WithImageUrl(message.Attachments.FirstOrDefault()?.Url ?? @"https://cdn.discordapp.com/icons/708860200341471264/a_9c50e0ada346ccf6528efc140bb4c4b1.gif?size=1024")
+                .AddField("Message url: ", message.JumpLink.ToString())
+                .AddField("Author: ", message.Author.Mention)
+                .AddField("Wrong url: ", firstBanchoBeatmap.url)
+                .AddField("Correct url: ", banchoBeatmap.url)
+                .Build()
+                );
         }
 
         /// <summary>
         /// Начинает распознавание картинки
         /// </summary>
         /// <param name="attachment">Картинка</param>
-        private OneOf<Tuple<Beatmapset, Beatmap>, Beatmapset, BeatmapsetNotFoundException> DownloadAndRecognizeImage(DiscordAttachment attachment)
+        private OneOf<Tuple<Beatmapset, Beatmap>, Beatmapset, BeatmapsetNotFoundException> DownloadAndRecognizeImage(DiscordAttachment attachment, ref string[] recedTextOut, ref string searchQuerry)
         {
             string webFileName = $"{DateTime.Now.Ticks}-{attachment.FileName}";
             webClient.DownloadFile(attachment.Url, $"downloads/{webFileName}");
@@ -336,6 +364,8 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             logger.LogDebug($"Recognized text: {recedText}");
 
+            recedTextOut = rawrecedText;
+
             // Cut artist
             int indexStart = recedText.IndexOf('-');
             if (indexStart == -1)
@@ -346,6 +376,8 @@ namespace WAV_Bot_DSharp.Services.Entities
                 logger.LogDebug("Cutting artist");
                 recedText = recedText.Substring(indexStart).TrimStart(new char[] { ' ', '-', '—' });
             }
+
+            searchQuerry = recedText;
 
             logger.LogDebug($"Searching for: {recedText}");
             List<Beatmapset> bmsl = api.Search(recedText, MapType.Any);
