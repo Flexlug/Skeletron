@@ -229,7 +229,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                                                                   pages,
                                                                   
                                                                   behaviour: DSharpPlus.Interactivity.Enums.PaginationBehaviour.WrapAround,
-                                                                  deletion: DSharpPlus.Interactivity.Enums.PaginationDeletion.DeleteEmojis);
+                                                                  deletion: DSharpPlus.Interactivity.Enums.ButtonPaginationBehavior.DeleteButtons);
                 }
                 else
                 {

@@ -8,12 +8,17 @@ using WAV_Osu_NetApi.Models.Bancho;
 
 namespace WAV_Bot_DSharp.Database.Models
 {
-    public class CompitMappolMap
+    public class OfferedMap
     {
-        public CompitMappolMap()
-        {
-            Voted = new List<string>();
-        }
+        /// <summary>
+        /// ID beatmap-ы
+        /// </summary>
+        public int BeatmapId { get; set; }
+
+        /// <summary>
+        /// Данная карта была предложена администрацией сервера в качестве 
+        /// </summary>
+        public bool AdminMap { get; set; }
 
         /// <summary>
         /// Предлагаемая карта
@@ -24,15 +29,15 @@ namespace WAV_Bot_DSharp.Database.Models
         /// Категория, для которой предлагается карта
         /// </summary>
         public CompitCategories Category { get; set; }
-        
-        /// <summary>
-        /// Список проголосовавших
-        /// </summary>
-        public List<string> Voted { get; set; }
 
         /// <summary>
         /// Discord ID предложившего карту
         /// </summary>
         public string SuggestedBy { get; set; }
+
+        /// <summary>
+        /// Проголосовавшие за карту
+        /// </summary>
+        public List<string> Votes {  get; set; }
     }
 }

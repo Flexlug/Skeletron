@@ -61,53 +61,13 @@ namespace WAV_Bot_DSharp.Database
             }
         }
 
-        public List<CompitMappolMap> GetCategoryMappol(CompitCategories category)
-        {
-            using (IDocumentSession session = store.OpenSession())
-            {
-                List<CompitMappolMap> maps = session.Query<CompitMappolMap>()
-                                                    .ToList();
-
-                return maps;
-            }
-        }
-
-        public void SuggestMap(CompitMappolMap map)
-        {
-            using (IDocumentSession session = store.OpenSession())
-            {
-                session.Store(map);
-                session.SaveChanges();
-            }
-        }
-
-        public bool CheckMapSuggested(int bmId, CompitCategories category)
-        {
-            using (IDocumentSession session = store.OpenSession())
-            {
-                return session.Query<CompitMappolMap>()
-                              .Select(x => x)
-                              .FirstOrDefault(x => x.Category == category && x.Beatmap.id == bmId) is not null;
-            }
-        }
-
-        public bool CheckUserSuggestiosn(string uid)
-        {
-            using (IDocumentSession session = store.OpenSession())
-            {
-                return session.Query<CompitMappolMap>()
-                              .Select(x => x)
-                              .FirstOrDefault(x => x.SuggestedBy == uid) is not null;
-            }
-        }
-
         public List<CompitScore> GetUserScores(string uid)
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
                 List<CompitScore> scores = session.Query<CompitScore>()
-                                                 .Where(x => x.DiscordUID == uid)
-                                                 .ToList();
+                                                  .Where(x => x.DiscordUID == uid)
+                                                  .ToList();
 
                 return scores;
             }
