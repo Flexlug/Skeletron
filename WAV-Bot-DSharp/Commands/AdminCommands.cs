@@ -120,7 +120,7 @@ namespace WAV_Bot_DSharp.Commands
         /// <param name="duration">Amount of time how long the poll should last.</param>
         /// <param name="question">Polls question</param>
         /// <returns></returns>
-        [Command("emojipoll"), RequireUserPermissions(Permissions.Administrator), Description("Создать опрос типа \"да\\нет\" с заданной длительностью."), Cooldown(2, 30, CooldownBucketType.Guild)]
+        [Command("emojipoll"), RequireUserPermissions(Permissions.Administrator), Description("Создать опрос типа \"да\\нет\" с заданной длительностью."), Cooldown(2, 30, CooldownBucketType.Guild)]                                  
         public async Task EmojiPollAsync(CommandContext commandContext, 
             [Description("Длительность опроса. (к примеру 1m = 1 минута).")] TimeSpan duration, 
             [Description("Формулировка обсуждаемого вопроса."), RemainingText] string question)
@@ -263,7 +263,8 @@ namespace WAV_Bot_DSharp.Commands
             [Description("Причина."), RemainingText] string reason = "")
         {
             await discordMember.RemoveAsync(reason);
-            await commandContext.RespondAsync("Забанен по причине конченный долбоёб.", embed: new DiscordEmbedBuilder().WithAuthor(discordMember.DisplayName, iconUrl: discordMember.AvatarUrl)
+            await commandContext.RespondAsync("Забанен по причине конченный долбоёб.", embed: new DiscordEmbedBuilder()
+                                                                           .WithAuthor(discordMember.DisplayName, iconUrl: discordMember.AvatarUrl)
                                                                            .WithTitle("**BANNED**")
                                                                            .WithDescription($"Reason: {(reason != string.Empty ? reason : "not stated")}")
                                                                            .Build());

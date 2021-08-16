@@ -19,5 +19,4 @@ namespace WAV_Osu_NetApi.Models.Gatari
         public int ranked_status_frozen { get; set; } 
         public string song_name { get; set; } 
     }
-
 }
