@@ -15,7 +15,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
 		/// </summary>
 		/// <param name="category">Запрашиваемая категория</param>
 		/// <returns>Возвращает в виде Embed список карт или ошибку</returns>
-		public DiscordEmbed GetCategoryMappool(CompitCategories category);
+		public DiscordEmbed GetCategoryMappool(string category);
 
 		/// <summary>
 		/// Добавить голос за карту
@@ -24,7 +24,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
 		/// <param name="category">Категория, в которой находится выбранная карта</param>
 		/// <param name="url">Ссылка на карту, за которую голосующий отдаёт свой голос</param>
 		/// <returns>Возвращает строку "done" в случае успеха. Иначе возвращает ошибку</returns>
-		public string Vote(DiscordMember member, CompitCategories category, string url);
+		public string Vote(DiscordMember member, string category, string url);
 
 		/// <summary>
 		/// Добавить карту
@@ -33,7 +33,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
 		/// <param name="category">Категория, для которой предлагается карта</param>
 		/// <param name="url">Ссылка на карту, за которую голосующий отдаёт свой голос</param>
 		/// <returns>Возвращает строку "done" в случае успеха. Иначе возвращает ошибку</returns>
-		public string AddMap(DiscordMember member, CompitCategories category, string url);
+		public string AddMap(DiscordMember member, string category, string url);
 
 		/// <summary>
 		/// Добавить карту как администратор
@@ -41,7 +41,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
 		/// <param name="category">Категория, для которой предлагается карта</param>
 		/// <param name="url">Предлагаемая карта</param>
 		/// <returns>Возвращает строку "done" в случае успеха. Иначе возвращает ошибку</returns>
-		public string AddAdminMap(CompitCategories category, string url);
+		public string AddAdminMap(string category, string url);
 
 		/// <summary>
 		/// Удалить карту
@@ -49,7 +49,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
 		/// <param name="category">Категория, из которой удаляется карта</param>
 		/// <param name="bmId">Id карты</param>
 		/// <returns>Возвращает строку "done" в случае успеха. Иначе возвращает ошибку</returns>
-		public string RemoveMap(CompitCategories category, string bmId);
+		public string RemoveMap(string category, string bmId);
 
 		/// <summary>
 		/// Очистить все карты
