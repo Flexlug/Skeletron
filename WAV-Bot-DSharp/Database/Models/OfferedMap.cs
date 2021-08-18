@@ -28,7 +28,7 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// Категория, для которой предлагается карта
         /// </summary>
-        public CompitCategories Category { get; set; }
+        public CompitCategory Category { get; set; }
 
         /// <summary>
         /// Discord ID предложившего карту

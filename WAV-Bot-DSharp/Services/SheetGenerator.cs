@@ -84,7 +84,7 @@ namespace WAV_Bot_DSharp.Services
 
                 for (int cat = 0; cat < groupedScores.Count; cat++)
                 {
-                    List<CompitScore> catScores = groupedScores[(CompitCategories)cat];
+                    List<CompitScore> catScores = groupedScores[(CompitCategory)cat];
 
                     for (int i = 0; i < rowsCount; i++)
                     {
@@ -113,21 +113,21 @@ namespace WAV_Bot_DSharp.Services
             return file;
         }
 
-        private Dictionary<CompitCategories, List<CompitScore>> GroupScoresByCategories(List<CompitScore> rawScores)
+        private Dictionary<CompitCategory, List<CompitScore>> GroupScoresByCategories(List<CompitScore> rawScores)
         {
-            Dictionary<CompitCategories, List<CompitScore>> allScores = new Dictionary<CompitCategories, List<CompitScore>>();
+            Dictionary<CompitCategory, List<CompitScore>> allScores = new Dictionary<CompitCategory, List<CompitScore>>();
 
-            allScores.Add(CompitCategories.Beginner, GetBestByCategory(rawScores, CompitCategories.Beginner));
-            allScores.Add(CompitCategories.Alpha, GetBestByCategory(rawScores, CompitCategories.Alpha));
-            allScores.Add(CompitCategories.Beta, GetBestByCategory(rawScores, CompitCategories.Beta));
-            allScores.Add(CompitCategories.Gamma, GetBestByCategory(rawScores, CompitCategories.Gamma));
-            allScores.Add(CompitCategories.Delta, GetBestByCategory(rawScores, CompitCategories.Delta));
-            allScores.Add(CompitCategories.Epsilon, GetBestByCategory(rawScores, CompitCategories.Epsilon));
+            allScores.Add(CompitCategory.Beginner, GetBestByCategory(rawScores, CompitCategory.Beginner));
+            allScores.Add(CompitCategory.Alpha, GetBestByCategory(rawScores, CompitCategory.Alpha));
+            allScores.Add(CompitCategory.Beta, GetBestByCategory(rawScores, CompitCategory.Beta));
+            allScores.Add(CompitCategory.Gamma, GetBestByCategory(rawScores, CompitCategory.Gamma));
+            allScores.Add(CompitCategory.Delta, GetBestByCategory(rawScores, CompitCategory.Delta));
+            allScores.Add(CompitCategory.Epsilon, GetBestByCategory(rawScores, CompitCategory.Epsilon));
 
             return allScores;
         }
 
-        private List<CompitScore> GetBestByCategory(List<CompitScore> rawScores, CompitCategories category)
+        private List<CompitScore> GetBestByCategory(List<CompitScore> rawScores, CompitCategory category)
         {
             List<IGrouping<string, CompitScore>> scoresGroups = rawScores.Select(x => x)
                                                              .Where(x => x.Category == category)

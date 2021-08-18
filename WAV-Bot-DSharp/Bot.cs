@@ -152,6 +152,7 @@ namespace WAV_Bot_DSharp
             SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
             SlashCommands.RegisterCommands<UserSlashCommands>(WAV_UID);
             SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
+            SlashCommands.RegisterCommands<AdminMappoolSlashCommands>(WAV_UID);
 
             SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
 

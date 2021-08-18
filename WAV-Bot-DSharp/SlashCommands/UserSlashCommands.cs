@@ -10,6 +10,7 @@ using WAV_Bot_DSharp.Services.Interfaces;
 
 namespace WAV_Bot_DSharp.SlashCommands
 {
+    [SlashModuleLifespan(SlashModuleLifespan.Singleton)]
     public class UserSlashCommands : ApplicationCommandModule
     {
         private IWordsService service;

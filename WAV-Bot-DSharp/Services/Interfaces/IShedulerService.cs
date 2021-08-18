@@ -13,16 +13,10 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         public void AddTask(SheduledTask task);
 
         /// <summary>
-        /// Получить информацию о запланированных задачах, если таковые имеются
+        /// Проверить наличие указанной задачи
         /// </summary>
         /// <param name="name">Название задачи</param>
-        public List<SheduledTask> FetchTask(string name);
-
-        /// <summary>
-        /// Удалить задачу с заданным именем
-        /// </summary>
-        /// <param name="name">Название задачи</param>
-        public void RemoveTask(string name);
+        public bool FetchTask(SheduledTask task);
 
         /// <summary>
         /// Удалить задачу с заданным именем

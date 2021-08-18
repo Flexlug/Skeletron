@@ -48,7 +48,7 @@ namespace WAV_Bot_DSharp.Database
             }
         }
 
-        public List<OfferedMap> GetCategoryMaps(CompitCategories category)
+        public List<OfferedMap> GetCategoryMaps(CompitCategory category)
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
@@ -56,13 +56,14 @@ namespace WAV_Bot_DSharp.Database
                                           .Include(x => x.Votes)
                                           .Select(x => x)
                                           .Where(x => x.Category == category)
+                                          .OrderBy(x => x.Votes.Count)
                                           .ToList();
 
                 return categoryMaps;
             }
         }
 
-        public bool CheckMapOffered(int mapId, CompitCategories category)
+        public bool CheckMapOffered(int mapId, CompitCategory category)
         {
             using (IDocumentSession session = store.OpenSession())
             {
@@ -96,7 +97,7 @@ namespace WAV_Bot_DSharp.Database
             }
         }
 
-        public void MapVote(string userId, CompitCategories category, int beatmapId)
+        public void MapVote(string userId, CompitCategory category, int beatmapId)
         {
             using (IDocumentSession session = store.OpenSession())
             {
@@ -126,7 +127,7 @@ namespace WAV_Bot_DSharp.Database
             }
         }
 
-        public void MapRemove(CompitCategories category, int beatmapId)
+        public void MapRemove(CompitCategory category, int beatmapId)
         {
             using (IDocumentSession session = store.OpenSession())
             {

@@ -15,7 +15,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
 		/// </summary>
 		/// <param name="category">Запрашиваемая категория</param>
 		/// <returns>Возвращает в виде Embed список карт или ошибку</returns>
-		public DiscordEmbed GetCategoryMappool(string category);
+		public DiscordEmbed GetCategoryMappool(CompitCategory category);
 
 		/// <summary>
 		/// Получить предложенные карты для заданной категории
@@ -30,7 +30,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
 		/// <param name="memberId">Discord ID голосующего</param>
 		/// <param name="bmId">ID карты</param>
 		/// <returns>Возвращает строку "done" в случае успеха. Иначе возвращает ошибку</returns>
-		public string Vote(string memberId, string bmId);
+		public string Vote(string memberId, int bmId);
 
 		/// <summary>
 		/// Добавить карту
@@ -47,7 +47,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
 		/// <param name="category">Категория, для которой предлагается карта</param>
 		/// <param name="url">Предлагаемая карта</param>
 		/// <returns>Возвращает строку "done" в случае успеха. Иначе возвращает ошибку</returns>
-		public string AddAdminMap(string category, string url);
+		public string AddAdminMap(CompitCategory category, string url);
 
 		/// <summary>
 		/// Удалить карту
@@ -55,7 +55,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
 		/// <param name="category">Категория, из которой удаляется карта</param>
 		/// <param name="bmId">Id карты</param>
 		/// <returns>Возвращает строку "done" в случае успеха. Иначе возвращает ошибку</returns>
-		public string RemoveMap(string category, string bmId);
+		public string RemoveMap(CompitCategory category, int bmId);
 
 		/// <summary>
 		/// Очистить все карты

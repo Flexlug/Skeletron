@@ -26,14 +26,14 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         /// </summary>
         /// <param name="category">Категория, для которой предложены карты</param>
         /// <returns></returns>
-        public List<OfferedMap> GetCategoryMaps(CompitCategories category); // Для того, чтобы показать список всех карт для конкретной категории
+        public List<OfferedMap> GetCategoryMaps(CompitCategory category); // Для того, чтобы показать список всех карт для конкретной категории
 
         /// <summary>
         /// Проверить, предлагал ли кто-либо уже такую карту
         /// </summary>
         /// <param name="mapId">ID карты</param>
         /// <returns></returns>
-        public bool CheckMapOffered(int mapId, CompitCategories category);
+        public bool CheckMapOffered(int mapId, CompitCategory category);
 
         /// <summary>
         /// Проверить, предлагал ли уже пользователь какую-либо карту
@@ -62,13 +62,13 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         /// <param name="userId">Discord ID предложившего карту</param>
         /// <param name="beatmapId">    </param>
         /// <returns></returns>
-        public void MapVote(string userId, CompitCategories category, int beatmapId);
+        public void MapVote(string userId, CompitCategory category, int beatmapId);
 
         /// <summary>
         /// Удалить карту
         /// </summary>
         /// <param name="category"></param>
         /// <param name="beatmapId"></param>
-        public void MapRemove(CompitCategories category, int beatmapId);
+        public void MapRemove(CompitCategory category, int beatmapId);
     }
 }

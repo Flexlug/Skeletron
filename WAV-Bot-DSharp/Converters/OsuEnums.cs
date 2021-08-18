@@ -170,26 +170,26 @@ namespace WAV_Bot_DSharp.Converters
         /// </summary>
         /// <param name="category">Категория</param>
         /// <returns></returns>
-        public string CategoryToString(CompitCategories category)
+        public string CategoryToString(CompitCategory category)
         {
             switch (category)
             {
-                case CompitCategories.Beginner:
+                case CompitCategory.Beginner:
                     return "beginner";
 
-                case CompitCategories.Alpha:
+                case CompitCategory.Alpha:
                     return "alpha";
 
-                case CompitCategories.Beta:
+                case CompitCategory.Beta:
                     return "beta";
 
-                case CompitCategories.Gamma:
+                case CompitCategory.Gamma:
                     return "gamma";
 
-                case CompitCategories.Delta:
+                case CompitCategory.Delta:
                     return "delta";
 
-                case CompitCategories.Epsilon:
+                case CompitCategory.Epsilon:
                     return "epsilon";
 
                 default:
@@ -202,27 +202,27 @@ namespace WAV_Bot_DSharp.Converters
         /// </summary>
         /// <param name="category">Преобразуемая строка</param>
         /// <returns></returns>
-        public CompitCategories? StringToCategory(string category)
+        public CompitCategory? StringToCategory(string category)
         {
             switch(category)
             {
                 case "beginner":
-                    return CompitCategories.Beginner;
+                    return CompitCategory.Beginner;
 
                 case "alpha":
-                    return CompitCategories.Alpha;
+                    return CompitCategory.Alpha;
 
                 case "beta":
-                    return CompitCategories.Beta;
+                    return CompitCategory.Beta;
 
                 case "gamma":
-                    return CompitCategories.Gamma;
+                    return CompitCategory.Gamma;
 
                 case "delta":
-                    return CompitCategories.Delta;
+                    return CompitCategory.Delta;
 
                 case "epsilon":
-                    return CompitCategories.Epsilon;
+                    return CompitCategory.Epsilon;
 
                 default:
                     return null;

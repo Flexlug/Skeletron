@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.SlashCommands.Attributes;
+
 
 using WAV_Bot_DSharp.Services.Interfaces;
+using WAV_Bot_DSharp.Database.Models;
 
 using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.SlashCommands
 {
+    [SlashModuleLifespan(SlashModuleLifespan.Singleton)]
+    [SlashCommandGroup("mappool", "Команды для управления предложкой")]
     public class MappoolSlashCommands : ApplicationCommandModule
     {
         private IMappoolService mappoolService;
@@ -21,28 +26,42 @@ namespace WAV_Bot_DSharp.SlashCommands
         {
             this.mappoolService = mappoolService;
 
-            logger.LogInformation("OsuSlashCommands loaded");
+            this.logger = logger;
+
+            logger.LogInformation("MappolSlashCommands loaded");
         }
 
-        [SlashCommand("mappol-for", "Показать предлагаемые карты для следующего W.w.W. для выбранной категории.")]
+        [SlashCommand("get-for", "Показать предлагаемые карты для следующего W.w.W. для выбранной категории.")]
         public async Task GetMappol(InteractionContext ctx,
-            [Choice("Beginner", "beginner")]
-            [Choice("Alpha", "alpha")]
-            [Choice("Beta", "beta")]
-            [Choice("Gamma", "gamma")]
-            [Choice("Delta", "delta")]
-            [Choice("Epsilon", "epsilon")]
-            [Option("category", "Конкурсная категория")] string category)
+            [Option("category", "Конкурсная категория")] CompitCategory category)
         {
-            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
+            if (!((ctx.Channel.Name?.Contains("-bot") ?? true) ||
+                  (ctx.Channel.Name?.Contains("dev-announce") ?? true)))
+            {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                                              new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")
+                                                                                     .AsEphemeral(true));
+                return;
+            }
+
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                                          new DiscordInteractionResponseBuilder()
                                             .AddEmbed(mappoolService.GetCategoryMappool(category)));
         }
 
-        [SlashCommand("mappol", "Показать предлагаемые карты для следующего W.w.W.")]
+        [SlashCommand("get", "Показать предлагаемые карты для следующего W.w.W.")]
         public async Task GetMappol(InteractionContext ctx)
         {
-            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
+            if (!((ctx.Channel.Name?.Contains("-bot") ?? true) ||
+                  (ctx.Channel.Name?.Contains("dev-announce") ?? true)))
+            {
+                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
+                                              new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")
+                                                                                     .AsEphemeral(true));
+                return;
+            }
+
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                                          new DiscordInteractionResponseBuilder()
                                             .AddEmbed(mappoolService.GetCategoryMappool(ctx.Member)));
         }
@@ -51,48 +70,27 @@ namespace WAV_Bot_DSharp.SlashCommands
         public async Task AddMap(InteractionContext ctx,
             [Option("mapUrl", "Ссылка на карту (Bancho)")] string url)
         {
+
             string res = mappoolService.AddMap(ctx.Member.Id.ToString(), url);
 
             if (res == "done")
                 res = ":ok_hand:";
 
-            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                                           new DiscordInteractionResponseBuilder()
                                              .AsEphemeral(true)
                                              .WithContent(res));
         }
-
-        [SlashCommand("offer-default", "[ТОЛЬКО ДЛЯ АДМИНОВ] Предложить карту на W.w.W в качестве карты по умолчанию."), RequireRoles(RoleCheckMode.Any, "Admin", "Moder")]
-        public async Task AddMapAdmin(InteractionContext ctx,
-            [Choice("Beginner", "beginner")]
-            [Choice("Alpha", "alpha")]
-            [Choice("Beta", "beta")]
-            [Choice("Gamma", "gamma")]
-            [Choice("Delta", "delta")]
-            [Choice("Epsilon", "epsilon")]
-            [Option("category", "Конкурсная категория")] string category,
-            [Option("mapUrl", "Ссылка на карту (Bancho)")] string url)
-        {
-            string res = mappoolService.AddAdminMap(ctx.Member.Id.ToString(), url);
-
-            if (res == "done")
-                res = ":ok_hand:";
-
-            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
-                                          new DiscordInteractionResponseBuilder()
-                                             .AsEphemeral(true)
-                                             .WithContent(res));
-        }
-
+        [SlashCommand("vote", "Проголосовать за выбранную карту")]
         public async Task Vote(InteractionContext ctx,
-            [Option("id", "ID карты")] string bmId)
+            [Option("id", "ID карты")] long bmId)
         {
-            string res = mappoolService.Vote(ctx.Member.Id.ToString(), bmId);
+            string res = mappoolService.Vote(ctx.Member.Id.ToString(), (int)bmId);
 
             if (res == "done")
                 res = ":ok_hand:";
 
-            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                                           new DiscordInteractionResponseBuilder()
                                              .AsEphemeral(true)
                                              .WithContent(res));

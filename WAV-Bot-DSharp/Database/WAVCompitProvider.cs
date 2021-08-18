@@ -107,7 +107,7 @@ namespace WAV_Bot_DSharp.Database
             }
         }
 
-        public List<CompitScore> GetCategoryBestScores(CompitCategories category)
+        public List<CompitScore> GetCategoryBestScores(CompitCategory category)
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WAV_Bot_DSharp.Database.Models
 {
-    public enum CompitCategories
+    public enum CompitCategory
     {
         Beginner,
         Alpha,

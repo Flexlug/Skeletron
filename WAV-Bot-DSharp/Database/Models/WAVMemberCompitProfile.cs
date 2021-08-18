@@ -32,6 +32,6 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// Категория, в которую определен участник
         /// </summary>
-        public CompitCategories Category { get; set; }
+        public CompitCategory Category { get; set; }
     }
 }

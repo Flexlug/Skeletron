@@ -14,6 +14,7 @@ using WAV_Osu_NetApi.Models.Bancho;
 
 namespace WAV_Bot_DSharp.SlashCommands
 {
+    [SlashModuleLifespan(SlashModuleLifespan.Singleton)]
     class OsuSlashCommands : ApplicationCommandModule
     {
         private BanchoApi api;

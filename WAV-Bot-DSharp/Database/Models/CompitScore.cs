@@ -31,7 +31,7 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// Категория скора
         /// </summary>
-        public CompitCategories Category { get; set; }
+        public CompitCategory Category { get; set; }
 
         /// <summary>
         /// Количество очков, набранных в скоре

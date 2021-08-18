@@ -26,6 +26,7 @@ namespace WAV_Bot_DSharp.Services
         private IWAVMembersProvider members;
 
         private OsuRegex regex;
+        private OsuEmoji emoji;
 
         private BanchoApi bapi;
         private GatariApi gapi;
@@ -34,12 +35,14 @@ namespace WAV_Bot_DSharp.Services
                               IWAVCompitProvider compitProvider,
                               IWAVMembersProvider membersProvider,
                               OsuRegex regex,
+                              OsuEmoji emoji,
                               BanchoApi bapi,
                               GatariApi gapi)
         {
             this.mappoolProvider = mappoolProvider;
 
             this.regex = regex;
+            this.emoji = emoji;
 
             this.members = membersProvider;
             this.compitProvider = compitProvider;
@@ -48,24 +51,22 @@ namespace WAV_Bot_DSharp.Services
             this.gapi = gapi;
         }
 
-        public string AddAdminMap(string category, string url)
+        public string AddAdminMap(CompitCategory cat, string url)
         {
-            var cat = StrToCompitCategory(category);
-
-            if (cat is null)
-                return $"Неизвестная категория: {category}";
-
             var ids = regex.GetBMandBMSIdFromBanchoUrl(url);
             var bBeatmap = bapi.GetBeatmap(ids.Item2);
             if (bBeatmap is null)
                 return $"Не удалось получить карту с id {ids.Item2}";
+
+            if (mappoolProvider.CheckMapOffered(bBeatmap.id, cat))
+                return "Данную карту уже кто-то предложил.";
 
             mappoolProvider.MapAdd(new()
             {
                 AdminMap = true,
                 Beatmap = bBeatmap,
                 BeatmapId = ids.Item2,
-                Category = (CompitCategories)cat,
+                Category = cat,
                 SuggestedBy = "admin",
                 Votes = new() { "default" }
             });
@@ -79,7 +80,6 @@ namespace WAV_Bot_DSharp.Services
 
             if (compitProvider is null)
                 return "Вы не зарегистрированы в конкурсе.";
-
 
             var cat = compitProfile.Category;
 
@@ -107,10 +107,10 @@ namespace WAV_Bot_DSharp.Services
 
             mappoolProvider.MapAdd(new()
             {
-                AdminMap = true,
+                AdminMap = false,
                 Beatmap = bBeatmap,
                 BeatmapId = ids.Item2,
-                Category = (CompitCategories)cat,
+                Category = cat,
                 SuggestedBy = memberId,
                 Votes = new() { memberId }
             });
@@ -118,17 +118,9 @@ namespace WAV_Bot_DSharp.Services
             return "done";
         }
 
-        public DiscordEmbed GetCategoryMappool(string category)
+        public DiscordEmbed GetCategoryMappool(CompitCategory cat)
         {
-            var cat = StrToCompitCategory(category);
-
-            if (cat is null)
-                return new DiscordEmbedBuilder()
-                    .WithTitle("Ошибка")
-                    .WithDescription($"Неизвестная категория: {category}.")
-                    .Build();
-
-            var maps = mappoolProvider.GetCategoryMaps((CompitCategories)cat);
+            var maps = mappoolProvider.GetCategoryMaps(cat);
 
             StringBuilder str = new();
             if (maps is null || maps.Count == 0)
@@ -136,16 +128,16 @@ namespace WAV_Bot_DSharp.Services
 
             foreach(var map in maps)
             {
-                str.AppendLine($"`{map.BeatmapId}`: [{map.Beatmap.beatmapset.artist} - {map.Beatmap.beatmapset.artist} [{map.Beatmap.version}]](https://osu.ppy.sh/beatmapsets/{map.Beatmap.id}#osu/{map.Beatmap.id})");
+                str.AppendLine($"`{map.BeatmapId}`: {emoji.RankStatusEmoji(map.Beatmap.ranked)} [{map.Beatmap.beatmapset.artist} - {map.Beatmap.beatmapset.artist} [{map.Beatmap.version}]](https://osu.ppy.sh/beatmapsets/{map.Beatmap.beatmapset_id}#osu/{map.Beatmap.id})");
                 str.AppendLine($"▸ {map.Beatmap.difficulty_rating}★ ▸**CS** {map.Beatmap.cs} ▸**HP**: {map.Beatmap.drain} ▸**AR**: {map.Beatmap.ar} ▸**OD**: {map.Beatmap.accuracy}");
                 str.AppendLine($"Предложил: {(map.AdminMap ? "<@&708869211312619591>" : $"<@{map.SuggestedBy}>")}");
                 str.AppendLine($"**__Проголосовало:__** {map.Votes.Count}\n");
             }
 
             return new DiscordEmbedBuilder()
-                .WithTitle($"Предложка для категории {category}")
+                .WithTitle($"Предложка для категории {cat}")
                 .WithDescription(str.ToString())
-                .WithFooter(DateTime.Now.ToLongTimeString())
+                .WithFooter($"{DateTime.Now.ToLongDateString()} {DateTime.Now.ToLongTimeString()}")
                 .Build();
         }
 
@@ -169,7 +161,7 @@ namespace WAV_Bot_DSharp.Services
 
             foreach (var map in maps)
             {
-                str.AppendLine($"`{map.BeatmapId}`: [{map.Beatmap.beatmapset.artist} - {map.Beatmap.beatmapset.artist} [{map.Beatmap.version}]](https://osu.ppy.sh/beatmapsets/{map.Beatmap.id}#osu/{map.Beatmap.id})");
+                str.AppendLine($"`{map.BeatmapId}`: {emoji.RankStatusEmoji(map.Beatmap.ranked)} [{map.Beatmap.beatmapset.artist} - {map.Beatmap.beatmapset.artist} [{map.Beatmap.version}]](https://osu.ppy.sh/beatmapsets/{map.Beatmap.beatmapset_id}#osu/{map.Beatmap.id})");
                 str.AppendLine($"▸ {map.Beatmap.difficulty_rating}★ ▸**CS** {map.Beatmap.cs} ▸**HP**: {map.Beatmap.drain} ▸**AR**: {map.Beatmap.ar} ▸**OD**: {map.Beatmap.accuracy}");
                 str.AppendLine($"Предложил: {(map.AdminMap ? "<@&708869211312619591>" : $"<@{map.SuggestedBy}>")}");
                 str.AppendLine($"**__Проголосовало:__** {map.Votes.Count}\n");
@@ -178,23 +170,14 @@ namespace WAV_Bot_DSharp.Services
             return new DiscordEmbedBuilder()
                 .WithTitle($"Предложка для категории {cat}")
                 .WithDescription(str.ToString())
-                .WithFooter(DateTime.Now.ToLongTimeString())
+                .WithFooter($"{DateTime.Now.ToLongDateString()} {DateTime.Now.ToLongTimeString()}")
                 .Build();
         }
 
-        public string RemoveMap(string category, string bmId)
+        public string RemoveMap(CompitCategory cat, int id)
         {
-            var cat = StrToCompitCategory(category);
-
-            if (cat is null)
-                return $"Неизвестная категория: {category}.";
-
-            int id;
-            if (!int.TryParse(bmId, out id))
-                return "Введенный id не является числом.";
-
-            if (mappoolProvider.CheckMapOffered(id, (CompitCategories)cat))
-                mappoolProvider.MapRemove((CompitCategories)cat, id);
+            if (mappoolProvider.CheckMapOffered(id, cat))
+                mappoolProvider.MapRemove(cat, id);
             else
                 return "Данной карты нет.";
 
@@ -206,53 +189,22 @@ namespace WAV_Bot_DSharp.Services
             mappoolProvider.ResetMappool();
         }
 
-        public string Vote(string memberId, string bmId)
+        public string Vote(string memberId, int bmId)
         {
             var compitProfile = compitProvider.GetCompitProfile(memberId);
 
-            if (compitProvider is null)
+            if (compitProfile is null)
                 return "Вы не зарегистрированы в конкурсе.";
 
-            int id;
-            if (!int.TryParse(bmId, out id))
-                return "Введенный id не является числом.";
-
-            if (!mappoolProvider.CheckMapOffered(id, compitProfile.Category))
+            if (!mappoolProvider.CheckMapOffered(bmId, compitProfile.Category))
                 return "Такой карты для данной категории нет.";
 
             if (mappoolProvider.CheckUserVoted(memberId))
                 return "Вы уже голосовали.";
 
-            mappoolProvider.MapVote(memberId, compitProfile.Category, id);
+            mappoolProvider.MapVote(memberId, compitProfile.Category, bmId);
 
             return "done";
-        }
-
-        private CompitCategories? StrToCompitCategory(string category)
-        {
-            switch (category)
-            {
-                case "beginner":
-                    return CompitCategories.Beginner;
-
-                case "alpha":
-                    return CompitCategories.Alpha;
-
-                case "beta":
-                    return CompitCategories.Beta;
-
-                case "gamma":
-                    return CompitCategories.Gamma;
-
-                case "delta":
-                    return CompitCategories.Delta;
-
-                case "epsilon":
-                    return CompitCategories.Epsilon;
-
-                default:
-                    return null;
-            }
         }
     }
 }

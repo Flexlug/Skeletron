@@ -29,7 +29,7 @@ namespace WAV_Raven_Test
                 for (int i = 0; i < rnd.Next(5, 10); i++)
                     allScores.Add(new CompitScore()
                     {
-                        Category = (CompitCategories)cat,
+                        Category = (CompitCategory)cat,
                         DiscordUID = rnd.Next().ToString(),
                         Nickname = rnd.Next().ToString(),
                         Score = rnd.Next(1, 100000),

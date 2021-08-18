@@ -38,7 +38,7 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         /// </summary>
         /// <param name="category">Категория, для которой необходимо получить лучшие скоры</param>
         /// <returns></returns>
-        public List<CompitScore> GetCategoryBestScores(CompitCategories category);
+        public List<CompitScore> GetCategoryBestScores(CompitCategory category);
 
         /// <summary>
         /// Получить список всех скоров
