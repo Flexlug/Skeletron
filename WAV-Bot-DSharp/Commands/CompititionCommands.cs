@@ -51,7 +51,8 @@ namespace WAV_Bot_DSharp.Commands
                                    IWAVMembersProvider wavMembers,
                                    IWAVCompitProvider wavCompit,
                                    ICompititionService compititionService,
-                                   ISheetGenerator generator)
+                                   ISheetGenerator generator,
+                                   IShedulerService sheduler)
         {
             this.osuEmbeds = osuEmbeds;
             this.osuEnums = osuEnums;
@@ -188,11 +189,11 @@ namespace WAV_Bot_DSharp.Commands
             await ToggleNotifications(commandContext, commandContext.Member, toggle);
         }
 
-        [Command("recount"), Description("Пересчитать среднее PP"), RequireGuild]
-        public async Task Recount(CommandContext context)
-        {
-            await RecountManual(context, context.Member);
-        }
+        //[Command("recount"), Description("Пересчитать среднее PP"), RequireGuild]
+        //public async Task Recount(CommandContext context)
+        //{
+        //    await RecountManual(context, context.Member);
+        //}
 
         [Command("recount-manual"), Description("Пересчитать среднее PP для заданного участника"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task RecountManual(CommandContext context, DiscordMember dmember)
@@ -440,32 +441,32 @@ namespace WAV_Bot_DSharp.Commands
 
             switch (compitProfile.Category)
             {
-                case CompitCategories.Beginner:
+                case CompitCategory.Beginner:
                     if (replay.BeatmapMD5Hash == compitInfo.BeginnerMap.checksum)
                         correctMap = true;
                     break;
 
-                case CompitCategories.Alpha:
+                case CompitCategory.Alpha:
                     if (replay.BeatmapMD5Hash == compitInfo.AlphaMap.checksum)
                         correctMap = true;
                     break;
 
-                case CompitCategories.Beta:
+                case CompitCategory.Beta:
                     if (replay.BeatmapMD5Hash == compitInfo.BetaMap.checksum)
                         correctMap = true;
                     break;
 
-                case CompitCategories.Gamma:
+                case CompitCategory.Gamma:
                     if (replay.BeatmapMD5Hash == compitInfo.GammaMap.checksum)
                         correctMap = true;
                     break;
 
-                case CompitCategories.Delta:
+                case CompitCategory.Delta:
                     if (replay.BeatmapMD5Hash == compitInfo.DeltaMap.checksum)
                         correctMap = true;
                     break;
 
-                case CompitCategories.Epsilon:
+                case CompitCategory.Epsilon:
                     if (replay.BeatmapMD5Hash == compitInfo.EpsilonMap.checksum)
                         correctMap = true;
                     break;
