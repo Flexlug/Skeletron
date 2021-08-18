@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.SlashCommands
 {
-    public class AbbrSlashCommands : SlashCommandModule
+    public class AbbrSlashCommands : ApplicationCommandModule
     {
         private ILogger<UserSlashCommands> logger;
 
@@ -18,7 +18,5 @@ namespace WAV_Bot_DSharp.SlashCommands
         {
             this.logger = logger;
         }
-
-
     }
 }

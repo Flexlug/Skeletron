@@ -115,6 +115,8 @@ namespace WAV_Bot_DSharp
                 .AddSingleton<IWAVMembersProvider, WAVMembersProvider>()
                 .AddSingleton<IWAVCompitProvider, WAVCompitProvider>()
                 .AddSingleton<ICompititionService, CompititionService>()
+                .AddSingleton<IMappoolProvider, MappoolProvider>()
+                .AddSingleton<IMappoolService, MappoolService>()
                 .AddSingleton<IWordsService, WordsService>()
                 .BuildServiceProvider();
         }
@@ -149,6 +151,7 @@ namespace WAV_Bot_DSharp
             // Register slash commands modules
             SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
             SlashCommands.RegisterCommands<UserSlashCommands>(WAV_UID);
+            SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
 
             SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
 

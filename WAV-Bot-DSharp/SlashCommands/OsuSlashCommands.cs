@@ -14,7 +14,7 @@ using WAV_Osu_NetApi.Models.Bancho;
 
 namespace WAV_Bot_DSharp.SlashCommands
 {
-    class OsuSlashCommands : SlashCommandModule
+    class OsuSlashCommands : ApplicationCommandModule
     {
         private BanchoApi api;
         private GatariApi gapi;

@@ -18,22 +18,28 @@ namespace WAV_Bot_DSharp.Services.Interfaces
 		public DiscordEmbed GetCategoryMappool(string category);
 
 		/// <summary>
+		/// Получить предложенные карты для заданной категории
+		/// </summary>
+		/// <param name="user">Запрашивающий маппул</param>
+		/// <returns>Возвращает в виде Embed список карт или ошибку</returns>
+		public DiscordEmbed GetCategoryMappool(DiscordMember user);
+
+		/// <summary>
 		/// Добавить голос за карту
 		/// </summary>
-		/// <param name="member">Голосующий</param>
-		/// <param name="category">Категория, в которой находится выбранная карта</param>
-		/// <param name="url">Ссылка на карту, за которую голосующий отдаёт свой голос</param>
+		/// <param name="memberId">Discord ID голосующего</param>
+		/// <param name="bmId">ID карты</param>
 		/// <returns>Возвращает строку "done" в случае успеха. Иначе возвращает ошибку</returns>
-		public string Vote(DiscordMember member, string category, string url);
+		public string Vote(string memberId, string bmId);
 
 		/// <summary>
 		/// Добавить карту
 		/// </summary>
-		/// <param name="member">Предложивший карту</param>
+		/// <param name="memberId">Discord ID предлагающего карту</param>
 		/// <param name="category">Категория, для которой предлагается карта</param>
 		/// <param name="url">Ссылка на карту, за которую голосующий отдаёт свой голос</param>
 		/// <returns>Возвращает строку "done" в случае успеха. Иначе возвращает ошибку</returns>
-		public string AddMap(DiscordMember member, string category, string url);
+		public string AddMap(string memberId, string url);
 
 		/// <summary>
 		/// Добавить карту как администратор

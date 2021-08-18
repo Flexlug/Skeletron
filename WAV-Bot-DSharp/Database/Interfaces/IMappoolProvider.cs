@@ -59,8 +59,8 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         /// <summary>
         /// Добавить запись о голосе за карту
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="beatmapId"></param>
+        /// <param name="userId">Discord ID предложившего карту</param>
+        /// <param name="beatmapId">    </param>
         /// <returns></returns>
         public void MapVote(string userId, CompitCategories category, int beatmapId);
 
