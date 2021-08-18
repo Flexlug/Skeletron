@@ -21,6 +21,8 @@ namespace WAV_Bot_DSharp.Database
 
         private ILogger<WAVCompitProvider> logger;
 
+        private int iter = 0;
+
         public WAVMembersProvider(DiscordClient client,
                                   ILogger<WAVCompitProvider> logger)
         {
@@ -102,6 +104,26 @@ namespace WAV_Bot_DSharp.Database
                                           .FirstOrDefault(x => x.DiscordUID == uid);
 
                 return member.OsuServers?.FirstOrDefault(x => x.Server == server);
+            }
+        }
+
+        public WAVMember Next()
+        {
+            using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
+            {
+                int count = session.Query<WAVMember>().Count();
+
+                if (iter >= count)
+                    iter = 0;
+
+                var res = session.Query<WAVMember>()
+                                 .Skip(iter)
+                                 .Take(1)
+                                 .FirstOrDefault();
+
+                iter++;
+
+                return res;
             }
         }
     }

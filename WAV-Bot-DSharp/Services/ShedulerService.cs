@@ -44,6 +44,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 if (task.Ready())
                 {
                     queue.QueueTask(task.Action);
+                    task.UpdateLastInvokationTime();
                     if (!task.Repeat)
                         sheduledTasks.Remove(task);
                 }
@@ -62,31 +63,6 @@ namespace WAV_Bot_DSharp.Services.Entities
         public void AddTask(SheduledTask task) => sheduledTasks.Add(task);
 
         /// <summary>
-        /// Получить информацию о запланированных задачах, если таковые имеются
-        /// </summary>
-        /// <param name="name">Название задачи</param>
-        public List<SheduledTask> FetchTask(string name)
-        {
-            return sheduledTasks.Select(x => x)
-                                .Where(x => x.Name == name)
-                                .ToList();
-        }
-
-        /// <summary>
-        /// Удалить задачу с заданным именем
-        /// </summary>
-        /// <param name="name">Название задачи</param>
-        public void RemoveTask(string name)
-        {
-            SheduledTask task = sheduledTasks.FirstOrDefault(x => x.Name == name);
-
-            if (task is null)
-                return;
-
-            sheduledTasks.Remove(task);
-        }
-
-        /// <summary>
         /// Удалить задачу с заданным именем
         /// </summary>
         /// <param name="name">Ссылка на задачу</param>
@@ -100,5 +76,10 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// Вернуть все запланированные задачи
         /// </summary>
         public List<SheduledTask> GetAllTasks() => sheduledTasks;
+
+        public bool FetchTask(SheduledTask task)
+        {
+            return sheduledTasks.Exists(x => x.Equals(task));
+        }
     }
 }

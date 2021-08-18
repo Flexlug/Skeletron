@@ -26,5 +26,11 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         /// <param name="server">Название сервера</param>
         /// <returns></returns>
         public WAVMemberOsuProfileInfo GetOsuProfileInfo(string uid, OsuServer server);
+
+        /// <summary>
+        /// Получить одного 
+        /// </summary>
+        /// <returns></returns>
+        public WAVMember Next();
     }
 }

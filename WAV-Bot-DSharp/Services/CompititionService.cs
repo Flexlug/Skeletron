@@ -26,7 +26,9 @@ namespace WAV_Bot_DSharp.Services
     {
         private IWAVCompitProvider wavCompit;
         private IWAVMembersProvider wavMembers;
+
         private IShedulerService sheduler;
+        private SheduledTask recountTask;
 
         private CompitInfo compititionInfo;
 
@@ -99,6 +101,11 @@ namespace WAV_Bot_DSharp.Services
 
             this.logger.LogInformation("CompititionService loaded");
 
+            recountTask = new SheduledTask("RecountTask",
+                                           () => RecountTask(),
+                                           TimeSpan.FromMinutes(1),
+                                           true);
+
             // Запустить конкурс, если тот уже идет. Может произойти при перезапуске бота
             if (compititionInfo.IsRunning)
             {
@@ -110,6 +117,36 @@ namespace WAV_Bot_DSharp.Services
                 else
                     logger.LogCritical($"Compitition is running, but preexecution check is not passed! {checkRes}");
             }
+            else
+            {
+                StartRecountTask();
+            }
+        }
+
+        private async Task StartRecountTask() 
+        {
+            if (!sheduler.FetchTask(recountTask))
+            {
+                sheduler.AddTask(recountTask);
+                logger.LogInformation("Added SheduledTask recountTask");
+            }
+            else
+            {
+                logger.LogInformation("Can't add RecountTask, because it already exists");
+            }
+        }
+
+        private async Task StopRecountTask()
+        {
+            if (sheduler.FetchTask(recountTask))
+            {
+                sheduler.RemoveTask(recountTask);
+                logger.LogInformation("Removed SheduledTask recountTask");
+            }
+            else
+            {
+                logger.LogInformation("Can't delete RecountTask. No task");
+            }
         }
 
         /// <summary>
@@ -117,16 +154,18 @@ namespace WAV_Bot_DSharp.Services
         /// </summary>
         public async Task InitCompitition()
         {
+            await StopRecountTask();
+
             if (!string.IsNullOrEmpty(compititionInfo.LeaderboardMessageUID))
             {
                 leaderboardMessage = await leaderboardChannel.GetMessageAsync(ulong.Parse(compititionInfo.LeaderboardMessageUID)) ??
                                      await leaderboardChannel.SendMessageAsync(osuEmbed.ScoresToLeaderBoard(compititionInfo,
-                                                                                                            wavCompit.GetCategoryBestScores(CompitCategories.Beginner),
-                                                                                                            wavCompit.GetCategoryBestScores(CompitCategories.Alpha),
-                                                                                                            wavCompit.GetCategoryBestScores(CompitCategories.Beta),
-                                                                                                            wavCompit.GetCategoryBestScores(CompitCategories.Gamma),
-                                                                                                            wavCompit.GetCategoryBestScores(CompitCategories.Delta),
-                                                                                                            wavCompit.GetCategoryBestScores(CompitCategories.Epsilon)));
+                                                                                                            wavCompit.GetCategoryBestScores(CompitCategory.Beginner),
+                                                                                                            wavCompit.GetCategoryBestScores(CompitCategory.Alpha),
+                                                                                                            wavCompit.GetCategoryBestScores(CompitCategory.Beta),
+                                                                                                            wavCompit.GetCategoryBestScores(CompitCategory.Gamma),
+                                                                                                            wavCompit.GetCategoryBestScores(CompitCategory.Delta),
+                                                                                                            wavCompit.GetCategoryBestScores(CompitCategory.Epsilon)));
             }
             else
             {
@@ -140,10 +179,62 @@ namespace WAV_Bot_DSharp.Services
             UpdateCompitInfo();
         }
 
+        public void RecountTask()
+        {
+            var member = wavMembers.Next();
+
+            if (member.OsuServers.Count == 0)
+            {
+                logger.LogDebug($"Skipping recount for {member.DiscordUID} - no osu! servers");
+                return;
+            }
+
+            if (member.CompitionProfile is null)
+            {
+                logger.LogDebug($"Skipping recount for {member.DiscordUID} - no registration");
+                return;
+            }
+
+            OsuServer server = member.CompitionProfile.Server;
+
+            WAVMemberOsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
+            if (profileInfo is null)
+            {
+                logger.LogDebug($"Skipping recount for {member.DiscordUID} - no default osu! server");
+                return;
+            }
+
+            DiscordMember dMember = null;
+            try
+            {
+                dMember = guild.GetMemberAsync(ulong.Parse(member.DiscordUID)).Result;
+            }
+            catch(DSharpPlus.Exceptions.NotFoundException)
+            {
+                logger.LogWarning($"Skipping recount for {member?.DiscordUID} osu: {profileInfo?.OsuNickname} - couldn't get DiscordMember");
+                return;
+            }
+            catch(AggregateException)
+            {
+                logger.LogWarning($"Skipping recount for {member?.DiscordUID} osu: {profileInfo?.OsuNickname} - couldn't get DiscordMember");
+                return;
+            }
+            catch(Exception e)
+            {
+                logger.LogError(e, $"Unexpected exception in RecountTask for {member?.DiscordUID} osu: {profileInfo?.OsuNickname}");
+                return;
+            }
+
+            RegisterMember(dMember, profileInfo);
+            logger.LogInformation($"Recounted {dMember.Username}");
+        }
+
         public async Task StopCompition()
         {
             compititionInfo.IsRunning = false;
             compititionInfo.LeaderboardMessageUID = string.Empty;
+
+            await StartRecountTask();
 
             UpdateCompitInfo();
         }
@@ -169,33 +260,33 @@ namespace WAV_Bot_DSharp.Services
             if (beatmap is null)
                 return false;
 
-            CompitCategories? compitCategory = osuEnums.StringToCategory(category);
+            CompitCategory? compitCategory = osuEnums.StringToCategory(category);
             if (compitCategory is null)
                 return false;
 
             switch (compitCategory)
             {
-                case CompitCategories.Beginner:
+                case CompitCategory.Beginner:
                     compititionInfo.BeginnerMap = beatmap;
                     break;
 
-                case CompitCategories.Alpha:
+                case CompitCategory.Alpha:
                     compititionInfo.AlphaMap = beatmap;
                     break;
 
-                case CompitCategories.Beta:
+                case CompitCategory.Beta:
                     compititionInfo.BetaMap = beatmap;
                     break;
 
-                case CompitCategories.Gamma:
+                case CompitCategory.Gamma:
                     compititionInfo.GammaMap = beatmap;
                     break;
 
-                case CompitCategories.Delta:
+                case CompitCategory.Delta:
                     compititionInfo.DeltaMap = beatmap;
                     break;
 
-                case CompitCategories.Epsilon:
+                case CompitCategory.Epsilon:
                     compititionInfo.EpsilonMap = beatmap;
                     break;
 
@@ -334,12 +425,12 @@ namespace WAV_Bot_DSharp.Services
         public async Task UpdateLeaderboard()
         {
             DiscordEmbed newEmbed = osuEmbed.ScoresToLeaderBoard(compititionInfo,
-                                                                 wavCompit.GetCategoryBestScores(CompitCategories.Beginner),
-                                                                 wavCompit.GetCategoryBestScores(CompitCategories.Alpha),
-                                                                 wavCompit.GetCategoryBestScores(CompitCategories.Beta),
-                                                                 wavCompit.GetCategoryBestScores(CompitCategories.Gamma),
-                                                                 wavCompit.GetCategoryBestScores(CompitCategories.Delta),
-                                                                 wavCompit.GetCategoryBestScores(CompitCategories.Epsilon));
+                                                                 wavCompit.GetCategoryBestScores(CompitCategory.Beginner),
+                                                                 wavCompit.GetCategoryBestScores(CompitCategory.Alpha),
+                                                                 wavCompit.GetCategoryBestScores(CompitCategory.Beta),
+                                                                 wavCompit.GetCategoryBestScores(CompitCategory.Gamma),
+                                                                 wavCompit.GetCategoryBestScores(CompitCategory.Delta),
+                                                                 wavCompit.GetCategoryBestScores(CompitCategory.Epsilon));
 
             await leaderboardMessage.ModifyAsync(embed: newEmbed);
         }
@@ -406,26 +497,26 @@ namespace WAV_Bot_DSharp.Services
             return avgPP;
         }
 
-        public CompitCategories PPToCategory(double avgPP)
+        public CompitCategory PPToCategory(double avgPP)
         {
-            CompitCategories category;
+            CompitCategory category;
 
             if (avgPP < 35)
-                category = CompitCategories.Beginner;
+                category = CompitCategory.Beginner;
             else
                 if (avgPP < 100)
-                category = CompitCategories.Alpha;
+                category = CompitCategory.Alpha;
             else
                 if (avgPP < 200)
-                category = CompitCategories.Beta;
+                category = CompitCategory.Beta;
             else
                 if (avgPP < 300)
-                category = CompitCategories.Gamma;
+                category = CompitCategory.Gamma;
             else
                 if (avgPP < 500)
-                category = CompitCategories.Delta;
+                category = CompitCategory.Delta;
             else
-                category = CompitCategories.Epsilon;
+                category = CompitCategory.Epsilon;
 
             return category;
         }
@@ -446,31 +537,31 @@ namespace WAV_Bot_DSharp.Services
             }
         }
 
-        private async Task RemoveWrongNotificationRoles(DiscordUser user, CompitCategories category)
+        private async Task RemoveWrongNotificationRoles(DiscordUser user, CompitCategory category)
         {
             DiscordMember member = await guild.GetMemberAsync(user.Id);
             if (member.Roles.Contains(beginnerRole))
-                if (category != CompitCategories.Beginner)
+                if (category != CompitCategory.Beginner)
                     await member.RevokeRoleAsync(beginnerRole);
 
             if (member.Roles.Contains(alphaRole))
-                if (category != CompitCategories.Alpha)
+                if (category != CompitCategory.Alpha)
                     await member.RevokeRoleAsync(alphaRole);
 
             if (member.Roles.Contains(betaRole))
-                if (category != CompitCategories.Beta)
+                if (category != CompitCategory.Beta)
                     await member.RevokeRoleAsync(betaRole);
 
             if (member.Roles.Contains(gammaRole))
-                if (category != CompitCategories.Gamma)
+                if (category != CompitCategory.Gamma)
                     await member.RevokeRoleAsync(gammaRole);
 
             if (member.Roles.Contains(deltaRole))
-                if (category != CompitCategories.Delta)
+                if (category != CompitCategory.Delta)
                     await member.RevokeRoleAsync(deltaRole);
 
             if (member.Roles.Contains(epsilonRole))
-                if (category != CompitCategories.Epsilon)
+                if (category != CompitCategory.Epsilon)
                 await member.RevokeRoleAsync(epsilonRole);
 
         }
@@ -489,29 +580,35 @@ namespace WAV_Bot_DSharp.Services
                 throw new NullReferenceException($"Couldn't get compitition profile for {member}");
             }
 
+            if (!compitProfile.Notifications)
+            {
+                logger.LogInformation("Notifications for this user are disabled");
+                return;
+            }
+
             switch (compitProfile.Category)
             {
-                case CompitCategories.Beginner:
+                case CompitCategory.Beginner:
                     await member.GrantRoleAsync(beginnerRole);
                     break;
 
-                case CompitCategories.Alpha:
+                case CompitCategory.Alpha:
                     await member.GrantRoleAsync(alphaRole);
                     break;
 
-                case CompitCategories.Beta:
+                case CompitCategory.Beta:
                     await member.GrantRoleAsync(betaRole);
                     break;
 
-                case CompitCategories.Gamma:
+                case CompitCategory.Gamma:
                     await member.GrantRoleAsync(gammaRole);
                     break;
 
-                case CompitCategories.Delta:
+                case CompitCategory.Delta:
                     await member.GrantRoleAsync(deltaRole);
                     break;
 
-                case CompitCategories.Epsilon:
+                case CompitCategory.Epsilon:
                     await member.GrantRoleAsync(epsilonRole);
                     break;
             }

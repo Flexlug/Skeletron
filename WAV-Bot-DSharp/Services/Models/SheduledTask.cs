@@ -38,7 +38,7 @@ namespace WAV_Bot_DSharp.Services.Models
         /// <param name="action">Выполняемая задача</param>
         /// <param name="interval">Интервал времени, через который будет выполнена команда</param>
         /// <param name="repeat">Будет ли команда выполняться циклично</param>
-        public SheduledTask(Action action, TimeSpan interval, bool repeat = false)
+        public SheduledTask(string name, Action action, TimeSpan interval, bool repeat = false)
         {
             this.Action = action;
             this.Interval = interval;
@@ -63,5 +63,10 @@ namespace WAV_Bot_DSharp.Services.Models
             else
                 return false;
         }
+
+        /// <summary>
+        /// Обновить последнюю дату и время запуска задачи
+        /// </summary>
+        public void UpdateLastInvokationTime() => LastInvokeTime = DateTime.Now;
     }
 }
