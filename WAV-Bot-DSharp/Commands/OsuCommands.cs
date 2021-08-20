@@ -98,10 +98,8 @@ namespace WAV_Bot_DSharp.Commands
                 return;
 
             if (!(e.Channel.Name.Contains("-osu") ||
-                  e.Channel.Name.Contains("map-offer") ||
                   e.Channel.Name.Contains("bot-debug") ||
-                  e.Channel.Name.Contains("dev-announce") ||
-                  e.Channel.Name.Contains("www-register")))
+                  e.Channel.Name.Contains("dev-announce")))
                 return;
 
             if (e.Message.Content[0] == '>' || e.Message.Content[0] == '!')
@@ -219,7 +217,8 @@ namespace WAV_Bot_DSharp.Commands
             params string[] args)
         {
             if (!((commandContext.Channel.Name?.Contains("-bot") ?? false) || 
-                  (commandContext.Channel.Name?.Contains("dev-announce") ?? false)))
+                  (commandContext.Channel.Name?.Contains("dev-announce") ?? false) ||
+                  (commandContext.Channel.Name?.Contains("-scores") ?? false)))
             {
                 await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
                 return;
@@ -283,8 +282,9 @@ namespace WAV_Bot_DSharp.Commands
         public async Task LastRecent(CommandContext commandContext,
             params string[] args)
         {
-            if (!((commandContext.Channel.Name?.Contains("-bot") ?? false) || 
-                  (commandContext.Channel.Name?.Contains("dev-announce") ?? true)))
+            if (!((commandContext.Channel.Name?.Contains("-bot") ?? false) ||
+                  (commandContext.Channel.Name?.Contains("dev-announce") ?? false) ||
+                  (commandContext.Channel.Name?.Contains("-scores") ?? false)))
             {
                 await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
                 return;
@@ -383,8 +383,9 @@ namespace WAV_Bot_DSharp.Commands
 
             WAVMember member = wavMembers.GetMember(discordId);
 
-            if (!((commandContext.Channel.Name?.Contains("-bot") ?? true) || 
-                  (commandContext.Channel.Name?.Contains("dev-announce") ?? true)))
+            if (!((commandContext.Channel.Name?.Contains("-bot") ?? false) ||
+                  (commandContext.Channel.Name?.Contains("dev-announce") ?? false) ||
+                  (commandContext.Channel.Name?.Contains("-scores") ?? false)))
             {
                 await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
                 return;

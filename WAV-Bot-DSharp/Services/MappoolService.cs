@@ -88,7 +88,7 @@ namespace WAV_Bot_DSharp.Services
             if (bBeatmap is null)
                 return $"Не удалось получить карту с id {ids.Item2}";
 
-            if (!(bBeatmap.ranked == RankStatus.Ranked || 
+            if (!(bBeatmap.ranked == RankStatus.Ranked ||
                 bBeatmap.ranked == RankStatus.Qualified ||
                 bBeatmap.ranked == RankStatus.Loved ||
                 bBeatmap.ranked == RankStatus.Approved))

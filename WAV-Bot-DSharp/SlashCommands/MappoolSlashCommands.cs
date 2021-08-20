@@ -35,8 +35,9 @@ namespace WAV_Bot_DSharp.SlashCommands
         public async Task GetMappol(InteractionContext ctx,
             [Option("category", "Конкурсная категория")] CompitCategory category)
         {
-            if (!((ctx.Channel.Name?.Contains("-bot") ?? true) ||
-                  (ctx.Channel.Name?.Contains("dev-announce") ?? true)))
+            if (!((ctx.Channel.Name?.Contains("-bot") ?? false) ||
+                  (ctx.Channel.Name?.Contains("dev-announce") ?? false) ||
+                  (ctx.Channel.Name?.Contains("-scores") ?? false)))
             {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                                               new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")
@@ -52,10 +53,11 @@ namespace WAV_Bot_DSharp.SlashCommands
         [SlashCommand("get", "Показать предлагаемые карты для следующего W.w.W.")]
         public async Task GetMappol(InteractionContext ctx)
         {
-            if (!((ctx.Channel.Name?.Contains("-bot") ?? true) ||
-                  (ctx.Channel.Name?.Contains("dev-announce") ?? true)))
+            if (!((ctx.Channel.Name?.Contains("-bot") ?? false) ||
+                  (ctx.Channel.Name?.Contains("dev-announce") ?? false) ||
+                  (ctx.Channel.Name?.Contains("-scores") ?? false)))
             {
-                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource,
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                                               new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")
                                                                                      .AsEphemeral(true));
                 return;

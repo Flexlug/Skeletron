@@ -34,7 +34,7 @@ namespace WAV_Bot_DSharp.SlashCommands
         }
 
         [SlashCommand("offer-default", "[ТОЛЬКО ДЛЯ АДМИНОВ] Предложить карту на W.w.W в качестве карты по умолчанию.")]
-        [SlashRequireUserPermissions(Permissions.Administrator | Permissions.BanMembers)]
+        [SlashRequireUserPermissions(Permissions.BanMembers)]
         public async Task AddMapAdmin(InteractionContext ctx,
             [Option("category", "Конкурсная категория")] CompitCategory category,
             [Option("mapUrl", "Ссылка на карту (Bancho)")] string url)
@@ -51,7 +51,7 @@ namespace WAV_Bot_DSharp.SlashCommands
         }
 
         [SlashCommand("offer-remove", "[ТОЛЬКО ДЛЯ АДМИНОВ] Удалить выбранную карту")]
-        [SlashRequireUserPermissions(Permissions.Administrator | Permissions.BanMembers)]
+        [SlashRequireUserPermissions(Permissions.BanMembers)]
         public async Task RemoveMap(InteractionContext ctx,
             [Option("category", "Конкурсная категория")] CompitCategory category,
             [Option("id", "ID карты")] long bmId)
@@ -68,7 +68,7 @@ namespace WAV_Bot_DSharp.SlashCommands
         }
 
         [SlashCommand("reset", "[ТОЛЬКО ДЛЯ АДМИНОВ] Очистить всю предложку")]
-        [SlashRequireUserPermissions(Permissions.Administrator | Permissions.BanMembers)]
+        [SlashRequireUserPermissions(Permissions.BanMembers)]
         public async Task ResetMappool(InteractionContext ctx)
         {
             mappoolService.ResetMappool();

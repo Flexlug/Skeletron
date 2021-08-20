@@ -11,6 +11,7 @@ using WAV_Bot_DSharp.Converters;
 using WAV_Osu_NetApi;
 using WAV_Osu_NetApi.Models.Gatari;
 using WAV_Osu_NetApi.Models.Bancho;
+using DSharpPlus;
 
 namespace WAV_Bot_DSharp.SlashCommands
 {
@@ -41,10 +42,11 @@ namespace WAV_Bot_DSharp.SlashCommands
             [Choice("Gatari server", "gatari")]
             [Option("server", "Возможные параметры: bancho, gatari")] string args)
         {
-            if (!((ctx.Channel.Name?.Contains("-bot") ?? true) || 
-                  (ctx.Channel.Name?.Contains("dev-announce") ?? true)))
+            if (!((ctx.Channel.Name?.Contains("-bot") ?? false) ||
+                  (ctx.Channel.Name?.Contains("dev-announce") ?? false) ||
+                  (ctx.Channel.Name?.Contains("-scores") ?? false)))
             {
-                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, 
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                                               new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")
                                                                                      .AsEphemeral(true));
                 return;
