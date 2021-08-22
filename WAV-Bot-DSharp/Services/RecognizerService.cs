@@ -163,20 +163,20 @@ namespace WAV_Bot_DSharp.Services.Entities
         /// <param name="attachment">Картинка</param>
         private async Task ExecuteMessageTrack(DiscordMessage message, DiscordAttachment attachment)
         {
-            await message.CreateReactionAsync(eyesEmoji);
+            //await message.CreateReactionAsync(eyesEmoji);
 
             var interactivity = client.GetInteractivity();
-            var pollres = await interactivity.WaitForReactionAsync(args => check(args, message),
-                                                                           TimeSpan.FromSeconds(10));
+            //var pollres = await interactivity.WaitForReactionAsync(args => check(args, message),
+            //                                                               TimeSpan.FromSeconds(10));
 
-            if (pollres.TimedOut)
-            {
-                logger.LogDebug("Raction wait timed out");
-                await message.DeleteAllReactionsAsync();
-                return;
-            }
+            //if (pollres.TimedOut)
+            //{
+            //    logger.LogDebug("Raction wait timed out");
+            //    await message.DeleteAllReactionsAsync();
+            //    return;
+            //}
 
-            logger.LogInformation($"Triggered recognition by {pollres.Result.User.Username}");
+            //logger.LogInformation($"Triggered recognition by {pollres.Result.User.Username}");
             logger.LogInformation($"Beatmap detect attempt");
 
             string[] recedText = null;
