@@ -35,37 +35,39 @@ namespace WAV_Bot_DSharp.SlashCommands
         public async Task GetMappol(InteractionContext ctx,
             [Option("category", "Конкурсная категория")] CompitCategory category)
         {
-            if (!((ctx.Channel.Name?.Contains("-bot") ?? false) ||
-                  (ctx.Channel.Name?.Contains("dev-announce") ?? false) ||
-                  (ctx.Channel.Name?.Contains("-scores") ?? false)))
-            {
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                                              new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")
-                                                                                     .AsEphemeral(true));
-                return;
-            }
+            //if (!((ctx.Channel.Name?.Contains("-bot") ?? false) ||
+            //      (ctx.Channel.Name?.Contains("dev-announce") ?? false) ||
+            //      (ctx.Channel.Name?.Contains("-scores") ?? false)))
+            //{
+            //    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+            //                                  new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")
+            //                                                                         .AsEphemeral(true));
+            //    return;
+            //}
 
             await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                                          new DiscordInteractionResponseBuilder()
-                                            .AddEmbed(mappoolService.GetCategoryMappool(category)));
+                                            .AddEmbed(mappoolService.GetCategoryMappool(category))
+                                            .AsEphemeral(true));
         }
 
         [SlashCommand("get", "Показать предлагаемые карты для следующего W.w.W.")]
         public async Task GetMappol(InteractionContext ctx)
         {
-            if (!((ctx.Channel.Name?.Contains("-bot") ?? false) ||
-                  (ctx.Channel.Name?.Contains("dev-announce") ?? false) ||
-                  (ctx.Channel.Name?.Contains("-scores") ?? false)))
-            {
-                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                                              new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")
-                                                                                     .AsEphemeral(true));
-                return;
-            }
+            //if (!((ctx.Channel.Name?.Contains("-bot") ?? false) ||
+            //      (ctx.Channel.Name?.Contains("dev-announce") ?? false) ||
+            //      (ctx.Channel.Name?.Contains("-scores") ?? false)))
+            //{
+            //    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+            //                                  new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")
+            //                                                                         .AsEphemeral(true));
+            //    return;
+            //}
 
             await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                                          new DiscordInteractionResponseBuilder()
-                                            .AddEmbed(mappoolService.GetCategoryMappool(ctx.Member)));
+                                            .AddEmbed(mappoolService.GetCategoryMappool(ctx.Member))
+                                            .AsEphemeral(true));
         }
 
         [SlashCommand("offer", "Предложить карту на W.w.W и проголосовать за неё.")]
