@@ -379,8 +379,12 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             searchQuerry = recedText;
 
-            logger.LogDebug($"Searching for: {recedText}");
-            List<Beatmapset> bmsl = api.Search(recedText, MapType.Any);
+            logger.LogDebug($"Reced title: {searchQuerry}");
+
+            searchQuerry = searchQuerry.Replace("|<", "k");
+
+            logger.LogDebug($"Searching for: {searchQuerry}");
+            List<Beatmapset> bmsl = api.Search(searchQuerry, MapType.Any);
 
 
             // Get map diff
