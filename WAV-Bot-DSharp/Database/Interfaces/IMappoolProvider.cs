@@ -16,6 +16,18 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         public void ResetMappool(); // Для админской команды
 
         /// <summary>
+        /// Получить статус отслеживания маппула
+        /// </summary>
+        /// <returns></returns>
+        public MappoolSpectateStatus GetMappoolStatus();
+
+        /// <summary>
+        /// Обновить статус маппула
+        /// </summary>
+        /// <param name="spectateStatus"></param>
+        public void SetMappoolMessages(MappoolSpectateStatus spectateStatus);
+
+        /// <summary>
         /// Получить все карты
         /// </summary>
         /// <returns></returns>
