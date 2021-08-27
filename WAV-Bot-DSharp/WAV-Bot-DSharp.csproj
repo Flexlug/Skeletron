@@ -61,15 +61,8 @@
     <PackageReference Include="DSharpPlus.VoiceNext" Version="4.2.0-nightly-00963" />
     <PackageReference Include="GoogleApi" Version="3.10.11" />
     <PackageReference Include="IDoEverything.DSharpPlus.SlashCommands" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />    
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.6">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="OneOf" Version="3.0.190" />
     <PackageReference Include="OppaiSharp" Version="3.4.0" />
     <PackageReference Include="OsuParsers" Version="1.7.0" />
