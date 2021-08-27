@@ -1,8 +1,5 @@
-﻿using System;
+﻿using System.Linq;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Raven.Client.Documents.Linq;
 using Raven.Client.Documents.Session;
@@ -31,7 +28,7 @@ namespace WAV_Bot_DSharp.Utils
         public static IEnumerable<T> GetPage<T>(this IRavenQueryable<T> queryable, int page)
         {
             return queryable
-            .Skip((page - 1) * PAGE_SIZE)
+            .Skip(page * PAGE_SIZE)
                        .Take(PAGE_SIZE)
                        .ToArray();
         }

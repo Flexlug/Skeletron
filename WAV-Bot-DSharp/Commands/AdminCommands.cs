@@ -9,12 +9,12 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
+
 using Microsoft.Extensions.Logging;
-using WAV_Bot_DSharp.Configurations;
-using WAV_Bot_DSharp.Services;
+
+using WAV_Bot_DSharp.Services.Interfaces;
 
 namespace WAV_Bot_DSharp.Commands
 {
@@ -28,20 +28,89 @@ namespace WAV_Bot_DSharp.Commands
 
         private ILogger<AdminCommands> logger;
 
-        private DiscordChannel LogChannel;
+        private IShedulerService sheduler;
+        private IWordsService words;
 
+        private DiscordChannel LogChannel;
         private DiscordGuild wavGuild;
 
-        public AdminCommands(ILogger<AdminCommands> logger, DiscordClient client)
+        public AdminCommands(ILogger<AdminCommands> logger, 
+                            DiscordClient client,
+                            DiscordGuild wavGuild,
+                            IShedulerService sheduler,
+                            IWordsService words)
         {
-            ModuleName = "Admin";
+            ModuleName = "Администрирование";
 
             this.logger = logger;
+            this.sheduler = sheduler;
+            this.words = words;
 
+            this.wavGuild = wavGuild;
             LogChannel = client.GetChannelAsync(816396082153521183).Result;
-            wavGuild = client.GetGuildAsync(708860200341471264).Result;
 
             logger.LogInformation("AdminCommands loaded");
+        }
+
+        [Command("words-clear"), RequireRoles(RoleCheckMode.Any, "Admin"), Description("Полностью сбросить игру \'words\'"), RequireGuild]
+        public async Task ResetWords(CommandContext ctx)
+        {
+            words.ClearWords();
+            await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 805364968593686549));
+
+            logger.LogInformation($"Words cleared by {ctx.Member.Nickname}");
+        }
+
+        [Command("words-delete"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Удалить слово из коллекции"), RequireGuild]
+        public async Task DeleteWord(CommandContext ctx, 
+            [Description("Удаляемое слово")] string word)
+        {
+            string checkingWord = word.ToLower();
+
+            if (words.CheckWord(checkingWord)) {
+                words.DeleteWord(checkingWord);
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 805364968593686549));
+                logger.LogInformation($"Word {word} deleted by {ctx.Member.Nickname}");
+            }
+            else
+            {
+                await ctx.RespondAsync("Такого слова и так нет");
+            }
+        }
+
+        [Command("words-get"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Получить список всех использованных слов"), RequireGuild]
+        public async Task DeleteWord(CommandContext ctx)
+        {
+            var wordsList = words.GetWords();
+
+            if (wordsList is null || wordsList.Count == 0)
+            {
+                await ctx.RespondAsync("Слов нет");
+                return;
+            }
+
+            string allWords = string.Join(", ", words.GetWords());
+            await ctx.RespondAsync(new DiscordEmbedBuilder()
+                .WithTitle("Использованные слова:")
+                .WithDescription(allWords)
+                .Build());
+        }
+
+        [Command("uptime"), Description("Получить информацию о времени работы бота.")]
+        public async Task Uptime(CommandContext context)
+        {
+            TimeSpan uptime = DateTime.Now - Program.StartTime;
+
+            DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
+                .AddField("Билд", Program.BuildString)
+                .AddField("Дата запуска", $"{Program.StartTime.ToLongTimeString()}, {Program.StartTime.ToLongDateString()}")
+                .AddField("Время работы", $"{uptime.Days}d, {uptime.Hours}h, {uptime.Minutes}m, {uptime.Seconds}s");
+
+            if (Program.LastFailure is not null)
+                embed.AddField("Дата последнего падения", $"{Program.LastFailure?.ToLongDateString()}, {Program.LastFailure?.ToLongTimeString()}")
+                     .AddField("Количество падений", Program.Failures.ToString());
+
+            await context.RespondAsync(embed);
         }
 
         /// <summary>
@@ -51,10 +120,10 @@ namespace WAV_Bot_DSharp.Commands
         /// <param name="duration">Amount of time how long the poll should last.</param>
         /// <param name="question">Polls question</param>
         /// <returns></returns>
-        [Command("emojipoll"), RequireUserPermissions(Permissions.Administrator), Description("Start a simple emoji poll for a simple yes/no question"), Cooldown(2, 30, CooldownBucketType.Guild)]
+        [Command("emojipoll"), RequireUserPermissions(Permissions.Administrator), Description("Создать опрос типа \"да\\нет\" с заданной длительностью."), Cooldown(2, 30, CooldownBucketType.Guild)]                                  
         public async Task EmojiPollAsync(CommandContext commandContext, 
-            [Description("How long should the poll last. (e.g. 1m = 1 minute)")] TimeSpan duration, 
-            [Description("Poll question"), RemainingText] string question)
+            [Description("Длительность опроса. (к примеру 1m = 1 минута).")] TimeSpan duration, 
+            [Description("Формулировка обсуждаемого вопроса."), RemainingText] string question)
         {
             if (!string.IsNullOrEmpty(question))
             {
@@ -105,25 +174,34 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
-        [Command("sendtochannel"), RequireUserPermissions(Permissions.Administrator), Description("Send a message to a special channel")]
+        [Command("sendtochannel"), Aliases("stc"), RequireUserPermissions(Permissions.Administrator), Description("Отправить в заданный канал простое текстовое сообщение.")]
         public async Task SendToChannelAsync(CommandContext commandContext,
-            [Description("Target discord channel")] DiscordChannel targetChannel,
-            [Description("Message to send"), RemainingText] string message)
+            [Description("Текстовый канал, куда будет отправлено сообщение.")] DiscordChannel targetChannel,
+            [Description("Отправляемое сообщение."), RemainingText] string message)
         {
             await targetChannel.SendMessageAsync(message);
         }
 
-        [Command("mute"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Mute specified user")]
+        [Command("react"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder"), Description("Добавить к указанному сообщению реакцию")]
+        public async Task AddEmojiAsync(CommandContext ctx,
+            [Description("Сообщение, к которому необходимо добавить эмодзи")] DiscordMessage message,
+            [Description("Добавляемый эмодзи")] DiscordEmoji emoji)
+        {
+            await message.CreateReactionAsync(emoji);
+            await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 805364968593686549));
+        }
+
+        [Command("mute"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Замьютить указанного пользователя.")]
         public async Task MuteUser(CommandContext commandContext,
-            [Description("User which should be muted")] DiscordMember discordMember,
-            [Description("Reason"), RemainingText] string reason)
+            [Description("Пользователь, которого необходимо отправить в мьют.")] DiscordMember discordMember,
+            [Description("Причина."), RemainingText] string reason)
         {
             DiscordRole muteRole = commandContext.Guild.Roles.FirstOrDefault(x => x.Value.Name == "Muted").Value;
             await discordMember.GrantRoleAsync(muteRole, reason);
 
             await commandContext.RespondAsync("", embed: new DiscordEmbedBuilder().WithAuthor(discordMember.DisplayName, iconUrl: discordMember.AvatarUrl)
                                                                            .WithTitle("**MUTED**")
-                                                                           .WithDescription($"Reason: {(reason != string.Empty ? reason : "not stated")}")
+                                                                           .WithDescription($"Reason: {(!string.IsNullOrEmpty(reason) ? reason : "not stated")}")
                                                                            .Build());
 
 
@@ -136,9 +214,9 @@ namespace WAV_Bot_DSharp.Commands
                                                 .Build());
         }
 
-        [Command("unmute"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Unmute specified user")]
+        [Command("unmute"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Размьютить указанного пользователя.")]
         public async Task UnmuteUser(CommandContext commandContext,
-            [Description("User to unmute")] DiscordMember discordMember)
+            [Description("Пользователь, с короторого необходимо снять мьют.")] DiscordMember discordMember)
         {
             DiscordRole muteRole = commandContext.Guild.Roles.FirstOrDefault(x => x.Value.Name == "Muted").Value;
             if (discordMember.Roles.Contains(muteRole))
@@ -159,10 +237,10 @@ namespace WAV_Bot_DSharp.Commands
                                                 .Build());
         }
 
-        [Command("kick"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Kick specified user")]
+        [Command("kick"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Кикнуть заданного пользователя.")]
         public async Task KickUser(CommandContext commandContext,
-            [Description("User to kick")] DiscordMember discordMember,
-            [Description("Reason"), RemainingText] string reason = "")
+            [Description("Пользователь, которого необходимо кикнуть.")] DiscordMember discordMember,
+            [Description("Причина."), RemainingText] string reason = "")
         {
             await discordMember.RemoveAsync(reason);
             await commandContext.RespondAsync("Отправляйся в вальхаллу.", embed: new DiscordEmbedBuilder().WithAuthor(discordMember.DisplayName, iconUrl: discordMember.AvatarUrl)
@@ -179,13 +257,14 @@ namespace WAV_Bot_DSharp.Commands
                                                 .Build());
         }
 
-        [Command("ban"), RequireUserPermissions(Permissions.Administrator | Permissions.BanMembers), Description("Ban specified user")]
+        [Command("ban"), RequireUserPermissions(Permissions.Administrator | Permissions.BanMembers), Description("Забанить указанного ползователя.")]
         public async Task BanUser(CommandContext commandContext,
-            [Description("User to ban")] DiscordMember discordMember,
-            [Description("Reason"), RemainingText] string reason = "")
+            [Description("Пользователь, которого необходимо забанить.")] DiscordMember discordMember,
+            [Description("Причина."), RemainingText] string reason = "")
         {
             await discordMember.RemoveAsync(reason);
-            await commandContext.RespondAsync("Забанен по причине долбоёб.", embed: new DiscordEmbedBuilder().WithAuthor(discordMember.DisplayName, iconUrl: discordMember.AvatarUrl)
+            await commandContext.RespondAsync("Забанен по причине конченный долбоёб.", embed: new DiscordEmbedBuilder()
+                                                                           .WithAuthor(discordMember.DisplayName, iconUrl: discordMember.AvatarUrl)
                                                                            .WithTitle("**BANNED**")
                                                                            .WithDescription($"Reason: {(reason != string.Empty ? reason : "not stated")}")
                                                                            .Build());
@@ -199,10 +278,10 @@ namespace WAV_Bot_DSharp.Commands
                                                 .Build());
         }
 
-        [Command("d"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Delete message and notify about this in DM")]
+        [Command("d"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Удалить сообщение и уведомить автора об этом.")]
         public async Task DeleteMessageByLinkAndNotify(CommandContext commandContext,
-        [Description("Deleteing message")] DiscordMessage msg,
-        [Description("Deleting reason"), RemainingText] string reason)
+        [Description("Удаляемое сообщение.")] DiscordMessage msg,
+        [Description("Причина."), RemainingText] string reason)
         {
             if (msg is null)
             {
@@ -259,9 +338,9 @@ namespace WAV_Bot_DSharp.Commands
             await msg.Channel.DeleteMessageAsync(msg, reason);
         }
 
-        [Command("d"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Delete message and notify about this in DM")]
+        [Command("d"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Удалить сообщение и уведомить автора об этом.")]
         public async Task DeleteMessageAndNotify(CommandContext commandContext,
-        [Description("Deleting reason"), RemainingText] string reason)
+        [Description("Причина."), RemainingText] string reason)
         {
             if (commandContext.Message.Reference is null)
             {
@@ -279,10 +358,10 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.Message.Channel.DeleteMessageAsync(commandContext.Message);
         }
 
-        [Command("rd"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Resend message to specified channel and delete it")]
+        [Command("rd"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Переслать сообщение в другой канал и удалить его с предыдущего.")]
         public async Task ResendAndDeleteAsync(CommandContext commandContext,
-        [Description("Channel, where message has to be resent")] DiscordChannel targetChannel,
-        [Description("Resend reason"), RemainingText] string reason)
+        [Description("Канал, куда необходимо переслать сообщение.")] DiscordChannel targetChannel,
+        [Description("Причина."), RemainingText] string reason)
         {
             if (commandContext.Message.Reference is null)
             {
@@ -338,6 +417,26 @@ namespace WAV_Bot_DSharp.Commands
                                     .WithFooter()
                                     .Build());
             await msg.Channel.DeleteMessagesAsync(new[] { msg, commandContext.Message }, reason);
+        }
+
+        [Command("get-sheduled-tasks-list"), RequirePermissions(Permissions.Administrator)]
+        public async Task GetListOFSheduledTasks(CommandContext context)
+        {
+            var sheduledTasks = sheduler.GetAllTasks();
+
+            if (sheduledTasks is null || sheduledTasks.Count == 0)
+            {
+                await context.RespondAsync("No sheduled tasks");
+                return;
+            }
+
+            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
+                .WithTitle("Запланированные задачи");
+
+            foreach (var task in sheduledTasks)
+                embedBuilder.AddField(task.Name, $"Interval: {task.Interval}, Repeat: {task.Repeat}");
+
+            await context.RespondAsync(embed: embedBuilder.Build());
         }
     }
 }

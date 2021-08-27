@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29519.181
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31423.177
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Bot-DSharp", "WAV-Bot-DSharp\WAV-Bot-DSharp.csproj", "{9EC912DD-8BC4-45F0-93E9-A16B958FC5C3}"
 EndProject
@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Osu-NetApi", "WAV-Osu-N
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Osu-NetApi-Test", "WAV-Osu-NetApi-Test\WAV-Osu-NetApi-Test.csproj", "{A393B866-B449-43B4-BD5F-719082C125CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAV-Raven-Test", "WAV-Raven-Test\WAV-Raven-Test.csproj", "{FE2E76B1-7A30-46E5-84B4-4CC8F58053F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Raven-Test", "WAV-Raven-Test\WAV-Raven-Test.csproj", "{FE2E76B1-7A30-46E5-84B4-4CC8F58053F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

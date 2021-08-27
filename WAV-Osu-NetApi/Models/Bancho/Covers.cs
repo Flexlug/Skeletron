@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace WAV_Osu_NetApi.Bancho.Models
+namespace WAV_Osu_NetApi.Models.Bancho
 {
     public class Covers
     {

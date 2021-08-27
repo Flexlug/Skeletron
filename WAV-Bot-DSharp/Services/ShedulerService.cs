@@ -1,24 +1,27 @@
-﻿using System;
-using System.Text;
+﻿using System.Linq;
 using System.Timers;
 using System.Collections.Generic;
 
 using WAV_Bot_DSharp.Threading;
 using WAV_Bot_DSharp.Services.Models;
+using WAV_Bot_DSharp.Services.Interfaces;
 
 using Microsoft.Extensions.Logging;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace WAV_Bot_DSharp.Services.Entities
 {
-    public class ShedulerService
+    public class ShedulerService : IShedulerService
     {
         private List<SheduledTask> sheduledTasks;
         private BackgroundQueue queue;
         private Timer timer;
 
         private ILogger<ShedulerService> logger;
+
+        /// <summary>
+        /// Частота проверки наличия задач (мс)
+        /// </summary>
+        private const int SHEDULER_INTERVAL = 1000;
 
         public ShedulerService(ILogger<ShedulerService> logger)
         {
@@ -27,7 +30,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             this.logger = logger;
 
-            timer = new Timer(1000);
+            timer = new Timer(SHEDULER_INTERVAL);
             timer.Elapsed += Timer_Elapsed;
 
             logger.LogInformation("ShedulerService started");
@@ -41,12 +44,13 @@ namespace WAV_Bot_DSharp.Services.Entities
                 if (task.Ready())
                 {
                     queue.QueueTask(task.Action);
+                    task.UpdateLastInvokationTime();
                     if (!task.Repeat)
                         sheduledTasks.Remove(task);
                 }
         }
 
-        public void StartSheduler()
+        private void StartSheduler()
         {
             logger.LogDebug("ShedulerService timer started");
             timer.Start();
@@ -59,23 +63,23 @@ namespace WAV_Bot_DSharp.Services.Entities
         public void AddTask(SheduledTask task) => sheduledTasks.Add(task);
 
         /// <summary>
-        /// Запланировать удаление файла (будет удален через 30 секунд)
+        /// Удалить задачу с заданным именем
         /// </summary>
-        /// <param name="path"></param>
-        public void AddFileDeleteTask(string path)
+        /// <param name="name">Ссылка на задачу</param>
+        public void RemoveTask(SheduledTask task)
         {
-            logger.LogInformation($"File deletion sheduled. Path: {path}");
-            sheduledTasks.Add(new SheduledTask(() => 
-            {
-                try
-                {
-                    File.Delete(path); 
-                }
-                catch(Exception e) 
-                {
-                    logger.LogInformation($"File deletion error. Path: {path}");
-                }
-            }, TimeSpan.FromSeconds(5)));
+            if (sheduledTasks.Exists(x => x.Equals(task)))
+                sheduledTasks.Remove(task);
+        }
+
+        /// <summary>
+        /// Вернуть все запланированные задачи
+        /// </summary>
+        public List<SheduledTask> GetAllTasks() => sheduledTasks;
+
+        public bool FetchTask(SheduledTask task)
+        {
+            return sheduledTasks.Exists(x => x.Equals(task));
         }
     }
 }

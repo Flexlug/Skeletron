@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using WAV_Bot_DSharp.Services.Models;
-using WAV_Osu_NetApi.Gatari.Models;
+
+using WAV_Bot_DSharp.Database.Models;
+
+using WAV_Osu_NetApi.Models.Gatari;
 
 namespace WAV_Bot_DSharp.Services.Interfaces
 {

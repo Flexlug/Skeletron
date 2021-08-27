@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Globalization;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.CommandsNext;
@@ -20,9 +23,16 @@ using WAV_Bot_DSharp.Configurations;
 using WAV_Bot_DSharp.Converters;
 using WAV_Bot_DSharp.Services.Interfaces;
 
-using Serilog;
-using Microsoft.Extensions.Logging;
 using WAV_Bot_DSharp.SlashCommands;
+using WAV_Bot_DSharp.Services;
+using WAV_Bot_DSharp.Database;
+using WAV_Bot_DSharp.Database.Interfaces;
+
+using Serilog;
+
+using NumbersAPI.NET;
+using GoogleApi;
+using DSharpPlus.SlashCommands.EventArgs;
 
 namespace WAV_Bot_DSharp
 {
@@ -33,6 +43,7 @@ namespace WAV_Bot_DSharp
         private CommandsNextExtension CommandsNext { get; set; }
         private SlashCommandsExtension SlashCommands { get; set; }
         private DiscordClient Discord { get; }
+        private DiscordGuild Guild { get; }
         private Settings Settings { get; }
         private IServiceProvider Services { get; set; }
         private bool IsDisposed { get; set; }
@@ -44,6 +55,8 @@ namespace WAV_Bot_DSharp
 
         public Bot(Settings settings)
         {
+            Settings = settings;
+
             logFactory = new LoggerFactory().AddSerilog();
             logger = logFactory.CreateLogger<Bot>();
 
@@ -51,7 +64,8 @@ namespace WAV_Bot_DSharp
             {
                 Token = Settings.Token,
                 TokenType = TokenType.Bot,
-                LoggerFactory = logFactory
+                LoggerFactory = logFactory,
+                Intents = DiscordIntents.All
             });
 
             // Activating Interactivity module for the DiscordClient
@@ -63,6 +77,8 @@ namespace WAV_Bot_DSharp
 
             // For correct datetime recognizing
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru-RU");
+
+            Guild = Discord.GetGuildAsync(WAV_UID).Result;
 
             ConfigureServices();
 
@@ -81,13 +97,27 @@ namespace WAV_Bot_DSharp
             Services = new ServiceCollection()
                 .AddLogging(conf => conf.AddSerilog(dispose: true))
                 .AddSingleton(Settings)
+                .AddSingleton(new DocumentStoreProvider(Settings))
                 .AddSingleton(Discord)
+                .AddSingleton(Guild)
                 .AddSingleton<OsuEmoji>()
-                .AddSingleton<OsuUtils>()
+                .AddSingleton<OsuEmbed>()
+                .AddSingleton<OsuEnums>()
+                .AddSingleton<OsuRegex>()
+                .AddSingleton<NumbersApi>()
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
-                .AddSingleton<ShedulerService>()
+                .AddSingleton(new GoogleSearch())
+                .AddSingleton<IWordsProvider, WordsProvider>()
+                .AddSingleton<ISheetGenerator, SheetGenerator>()
+                .AddSingleton<IShedulerService, ShedulerService>()
                 .AddSingleton<IRecognizerService, RecognizerService>()
+                .AddSingleton<IWAVMembersProvider, WAVMembersProvider>()
+                .AddSingleton<IWAVCompitProvider, WAVCompitProvider>()
+                .AddSingleton<ICompititionService, CompititionService>()
+                .AddSingleton<IMappoolProvider, MappoolProvider>()
+                .AddSingleton<IMappoolService, MappoolService>()
+                .AddSingleton<IWordsService, WordsService>()
                 .BuildServiceProvider();
         }
 
@@ -109,6 +139,7 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
+            CommandsNext.RegisterCommands<CompititionCommands>();
 
             var slashCommandsConfiguration = new SlashCommandsConfiguration()
             {
@@ -119,9 +150,19 @@ namespace WAV_Bot_DSharp
 
             // Register slash commands modules
             SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
+            SlashCommands.RegisterCommands<UserSlashCommands>(WAV_UID);
+            SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
+            SlashCommands.RegisterCommands<AdminMappoolSlashCommands>(WAV_UID);
+
+            SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
 
             // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;
+        }
+
+        private async Task SlashCommands_SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
+        {
+            logger.LogError($"Error on executing slash command {e.Context.CommandName} - {e.Exception}");
         }
 
         private void RegisterEvents()
@@ -149,13 +190,40 @@ namespace WAV_Bot_DSharp
         {
             await Discord.UpdateStatusAsync(new DSharpPlus.Entities.DiscordActivity("тебе в душу", DSharpPlus.Entities.ActivityType.Watching), DSharpPlus.Entities.UserStatus.Online);
 
+            await Guild.GetAllMembersAsync();
+
             Log.Logger.Information("The bot is online");
         }
 
         private Task OnCommandError(object sender, CommandErrorEventArgs e)
         {
-            // Send command error message as response.
-            e.Context.RespondAsync(e.Exception.Message);
+            if (e.Exception is ArgumentException)
+            {
+                e.Context.RespondAsync($"Не удалось вызвать команду `sk!{e.Command.QualifiedName}` с заданными аргументами. Используйте `sk!help`, чтобы проверить правильность вызова команды.");
+                return Task.CompletedTask;
+            }
+
+            if (e.Exception is DSharpPlus.CommandsNext.Exceptions.CommandNotFoundException)
+            {
+                e.Context.RespondAsync($"Не удалось найти данную команду.");
+                return Task.CompletedTask;
+            }
+
+            DiscordEmbed embed = new DiscordEmbedBuilder()
+                .WithTitle("Error")
+                .WithDescription($"StackTrace: {e.Exception.StackTrace}")
+                .AddField("Command", e.Command?.Name ?? "-")
+                .AddField("Overload", e.Context.Overload.Arguments.Count == 0 ?
+                                      "-" :
+                                      string.Join(' ', e.Context.Overload.Arguments.Select(x => x.Name)?.ToArray()))
+                .AddField("Exception", e.Exception.GetType().ToString())
+                .AddField("Exception msg", e.Exception.Message)
+                .AddField("Inner exception", e.Exception.InnerException?.Message ?? "-")
+                .AddField("Channel", e.Context.Channel.Name)
+                .AddField("Author", e.Context.Member.Username)
+                .Build();
+
+            e.Context.RespondAsync($"{Guild.Owner.Mention}", embed: embed);
             return Task.CompletedTask;
         }
 

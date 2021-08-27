@@ -1,6 +1,6 @@
-using WAV_Osu_NetApi.Gatari.Models.Enums;
+using WAV_Osu_NetApi.Models.Gatari.Enums;
 
-namespace WAV_Osu_NetApi.Gatari.Models
+namespace WAV_Osu_NetApi.Models.Gatari
 { 
     public class GBeatmap
     {
@@ -19,5 +19,4 @@ namespace WAV_Osu_NetApi.Gatari.Models
         public int ranked_status_frozen { get; set; } 
         public string song_name { get; set; } 
     }
-
 }

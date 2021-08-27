@@ -1,10 +1,12 @@
-﻿using DSharpPlus;
+﻿using System;
+
+using DSharpPlus;
 using DSharpPlus.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using WAV_Osu_NetApi.Bancho.Models.Enums;
-using WAV_Osu_NetApi.Gatari.Models.Enums;
+
+using Microsoft.Extensions.Logging;
+
+using WAV_Osu_NetApi.Models.Bancho;
+using WAV_Osu_NetApi.Models.Gatari.Enums;
 
 namespace WAV_Bot_DSharp.Converters
 {
@@ -12,9 +14,14 @@ namespace WAV_Bot_DSharp.Converters
     {
         private DiscordClient client;
 
-        public OsuEmoji(DiscordClient client)
+        private ILogger<OsuEmoji> logger;
+
+        public OsuEmoji(DiscordClient client, ILogger<OsuEmoji> logger)
         {
             this.client = client;
+
+            this.logger = logger;
+            logger.LogInformation("OsuEmoji loaded");
         }
 
         /// <summary>
@@ -74,6 +81,10 @@ namespace WAV_Bot_DSharp.Converters
                 case RankStatus.Qualified:
                     return DiscordEmoji.FromGuildEmote(client, 805364968593686549);
 
+                // approved (the same as qualified)
+                case RankStatus.Approved:
+                    return DiscordEmoji.FromGuildEmote(client, 805364968593686549);
+
                 // loved
                 case RankStatus.Loved:
                     return DiscordEmoji.FromGuildEmote(client, 805366123902009356);
@@ -99,6 +110,10 @@ namespace WAV_Bot_DSharp.Converters
 
                 // qualified
                 case GRankStatus.Qualified:
+                    return DiscordEmoji.FromGuildEmote(client, 805364968593686549);
+
+                // approved (the same as qualified)
+                case GRankStatus.Approved:
                     return DiscordEmoji.FromGuildEmote(client, 805364968593686549);
 
                 // loved

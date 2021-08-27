@@ -38,20 +38,29 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Commands\AdminCommands.cs~RFe9c064.TMP" />
     <None Remove="Commands\TrackCommands.cs~RFd436c8.TMP" />
+    <None Remove="Converters\OsuEmbed.cs~RF1b0f0a72.TMP" />
+    <None Remove="Database\Models\WAVMember.cs~RF146850fc.TMP" />
     <None Remove="trackedUsers.db-shm" />
     <None Remove="trackedUsers.db-wal" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.0.1" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.1" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.1" />
-    <PackageReference Include="DSharpPlus.Rest" Version="4.0.1" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.1" />
-    <PackageReference Include="IDoEverything.DSharpPlus.SlashCommands" Version="1.2.1" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.13.0" />
+    <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-00963" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-00963" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-00963" />
+    <PackageReference Include="DSharpPlus.Rest" Version="4.2.0-nightly-00963" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.2.0-nightly-00963" />
+    <PackageReference Include="GoogleApi" Version="3.10.11" />
+    <PackageReference Include="IDoEverything.DSharpPlus.SlashCommands" Version="2.0.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
@@ -61,8 +70,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="OneOf" Version="3.0.190" />
+    <PackageReference Include="OppaiSharp" Version="3.4.0" />
     <PackageReference Include="OsuParsers" Version="1.7.0" />
-    <PackageReference Include="RavenDB.Client" Version="5.1.7" />
+    <PackageReference Include="RavenDB.Client" Version="5.1.8" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
     <PackageReference Include="Serilog.Expressions" Version="2.0.0" />
@@ -74,6 +85,12 @@
   <ItemGroup>
     <ProjectReference Include="..\WAV-Osu-NetApi\WAV-Osu-NetApi.csproj" />
     <ProjectReference Include="..\WAV_Osu-Recognizer\WAV-Osu-Recognizer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="NumbersAPI.NET">
+      <HintPath>..\..\NumbersAPI.NET\NumbersAPI.NET\bin\Release\net5.0\NumbersAPI.NET.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

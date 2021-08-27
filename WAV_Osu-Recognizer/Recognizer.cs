@@ -1,12 +1,14 @@
 ﻿using System;
 using System.IO;
-using System.Drawing;
-using System.DrawingCore;
 using System.Collections.Generic;
 
 using RestSharp;
 
 using Tesseract;
+
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 
 namespace WAV_Osu_Recognizer
 {
@@ -30,23 +32,25 @@ namespace WAV_Osu_Recognizer
         /// <returns></returns>
         public string RecognizeTopText(Image image)
         {
-            Image bmp = new Bitmap(image);
+            Bitmap bbmp;
 
-            ToGrayScale(bmp as Bitmap);
-            bmp = AddTopWhiteSpace(bmp);
+            Rectangle s = new Rectangle(0, 0, (int)(image.Width * 0.98), (int)(image.Height * 0.13));
 
-            string fileName = $"temp/{DateTime.Now.Ticks}_BW.jpg";
-            bmp.Save(fileName);
+            bbmp = CropImage(image, s);
+            bbmp = ResizeImage(bbmp, bbmp.Width * 3, bbmp.Height * 3);
+            ToGrayScale(bbmp);
+            bbmp = AddTopWhiteSpace(bbmp);
 
-            Pix img = Pix.LoadFromFile(fileName);
+            string fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"temp/{DateTime.Now.Ticks}_BW.jpg");
 
-            Page pageName = ocr.Process(img, new Rect(1, 1, img.Width - 10, (int)(img.Height * 0.13)));
+            Pix img = PixConverter.ToPix(bbmp);
+            bbmp.Save(fileName);
+
+            Page pageName = ocr.Process(img);
             string mapName = pageName.GetText();
             pageName.Dispose();
 
-            bmp.Dispose();
-            if (File.Exists(fileName))
-                File.Delete(fileName);
+            bbmp.Dispose();
 
             return mapName;
         }
@@ -58,23 +62,67 @@ namespace WAV_Osu_Recognizer
         public void ToGrayScale(Bitmap Bmp)
         {
             int rgb;
-            System.DrawingCore.Color c;
+            Color c;
 
             for (int y = 0; y < Bmp.Height; y++)
                 for (int x = 0; x < Bmp.Width; x++)
                 {
                     c = Bmp.GetPixel(x, y);
                     rgb = Math.Round(.299 * c.R + .587 * c.G + .114 * c.B) < 120 ? 255 : 1;
-                    Bmp.SetPixel(x, y, System.DrawingCore.Color.FromArgb(rgb, rgb, rgb));
+                    Bmp.SetPixel(x, y, System.Drawing.Color.FromArgb(rgb, rgb, rgb));
                 }
         }
 
-        public Image AddTopWhiteSpace(Image input)
+        /// <summary>
+        /// Изменить размеры картинки
+        /// </summary>
+        /// <param name="image">Изменяемая картинка</param>
+        /// <param name="width">Новая ширина</param>
+        /// <param name="height">Новая длина</param>
+        /// <returns></returns>
+        public static Bitmap ResizeImage(Image image, int width, int height)
         {
-            Image newBtmp = new Bitmap(input.Width, input.Height + 10);
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
+        public static Bitmap CropImage(Image src, Rectangle rect)
+        {
+            Bitmap target = new Bitmap(rect.Width, rect.Height);
+
+            using (Graphics g = Graphics.FromImage(target))
+            {
+                g.DrawImage(src, new Rectangle(0, 0, rect.Width, rect.Height),
+                                 rect,
+                                 GraphicsUnit.Pixel);
+            }
+
+            return target;
+        }
+
+        public Bitmap AddTopWhiteSpace(Bitmap input)
+        {
+            Bitmap newBtmp = new Bitmap(input.Width, input.Height + 10);
             Graphics g = Graphics.FromImage(newBtmp);
 
-            g.FillRectangle(Brushes.White, System.DrawingCore.Rectangle.FromLTRB(1, 1, newBtmp.Width - 1, newBtmp.Height - 1));
+            g.FillRectangle(Brushes.White, Rectangle.FromLTRB(1, 1, newBtmp.Width - 1, newBtmp.Height - 1));
             g.DrawImageUnscaled(input, 1, 10);
 
             g.Flush();

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Encodings.Web;
-using Newtonsoft.Json;
 
 using RestSharp;
 
-using WAV_Osu_NetApi.Bancho.Models;
-using WAV_Osu_NetApi.Bancho.QuerryParams;
 using WAV_Osu_NetApi.Converters;
+using WAV_Osu_NetApi.Models.Bancho;
+
+using Newtonsoft.Json;
 
 namespace WAV_Osu_NetApi
 {
@@ -44,6 +43,12 @@ namespace WAV_Osu_NetApi
                 _token = value;
             }
         }
+
+        public List<Beatmapset> Search(string v, object any)
+        {
+            throw new NotImplementedException();
+        }
+
         private DateTime TokenExpireDate;
 
         /// <summary>
@@ -80,6 +85,10 @@ namespace WAV_Osu_NetApi
                 .AddParameter("scope", "public");
 
             IRestResponse resp = client.Execute(req, Method.POST);
+
+            if (resp.StatusCode != System.Net.HttpStatusCode.OK)
+                return false;
+
             try
             {
                 TokenResponse token = JsonConvert.DeserializeObject<TokenResponse>(resp.Content);
@@ -245,6 +254,24 @@ namespace WAV_Osu_NetApi
         {
             IRestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmaps/{beatmapId}")
                 .AddHeader(@"Authorization", $@"Bearer {Token}");
+
+            IRestResponse resp = client.Execute(req);
+
+            Beatmap bm = JsonConvert.DeserializeObject<Beatmap>(resp.Content);
+
+            return bm;
+        }
+
+        /// <summary>
+        /// Get beatmap by it's MD5 hash
+        /// </summary>
+        /// <param name="beatmapId">Beatmap hash</param>
+        /// <returns></returns>
+        public Beatmap GetBeatmap(string hash)
+        {
+            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmaps/lookup")
+                .AddHeader(@"Authorization", $@"Bearer {Token}")
+                .AddParameter("checksum", hash);
 
             IRestResponse resp = client.Execute(req);
 

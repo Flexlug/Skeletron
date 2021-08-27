@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
-using WAV_Osu_NetApi.Bancho.QuerryParams;
+using System.Collections.Generic;
+
+using WAV_Osu_NetApi.Models.Bancho;
 
 namespace WAV_Osu_NetApi.Converters
 {

@@ -1,7 +1,6 @@
 using System;
-using WAV_Osu_NetApi.Bancho.Models.Enums;
 
-namespace WAV_Osu_NetApi.Bancho.Models
+namespace WAV_Osu_NetApi.Models.Bancho
 {
     public class Beatmap : BeatmapCompact
     { 
@@ -28,5 +27,6 @@ namespace WAV_Osu_NetApi.Bancho.Models
         public int? max_combo { get; set; }
         public string status { get; set; }
         public string url { get; set; }
+        public string checksum { get; set; }
     }
 }

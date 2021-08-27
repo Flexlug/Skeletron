@@ -6,6 +6,10 @@ using WAV_Bot_DSharp.Services.Models;
 
 using Raven.Client;
 using Raven.Client.Documents.Session;
+using WAV_Bot_DSharp.Database.Models;
+using WAV_Bot_DSharp.Utils;
+using Raven.Client.Documents;
+using WAV_Bot_DSharp.Services;
 
 namespace WAV_Raven_Test
 {
@@ -15,32 +19,26 @@ namespace WAV_Raven_Test
         {
             var store = DocumentStoreProvider.Store;
 
-            WAVMember membesr = new WAVMember()
-            {
-                Uid = 708860200341471264,
-                ActivityPoints = 4,
-                LastActivity = DateTime.Now,
-                OsuServers = new List<WAVMemberOsuProfileInfo>()
-                {
-                    new WAVMemberOsuProfileInfo()
+            Random rnd = new Random();
+
+            List<CompitScore> allScores = new List<CompitScore>();
+
+            for (int cat = 0; cat <= 6; cat++) {
+                if (cat == 2)
+                    continue;
+                for (int i = 0; i < rnd.Next(5, 10); i++)
+                    allScores.Add(new CompitScore()
                     {
-                        BestLast = DateTime.Now,
-                        Id = 4,
-                        RecentLast = DateTime.Now,
-                        Server = "bancho",
-                        TrackBest = true,
-                        TrackRecent = true
-                    }
-                }
-            };
-
-            using (IDocumentSession session = store.OpenSession())
-            {
-                WAVMember member = session.Query<WAVMember>()
-                                          .FirstOrDefault(x => x.Uid == 708860200341471264);
-
-                Console.ReadKey();
+                        Category = (CompitCategory)cat,
+                        DiscordUID = rnd.Next().ToString(),
+                        Nickname = rnd.Next().ToString(),
+                        Score = rnd.Next(1, 100000),
+                        ScoreUrl = "sample_string"
+                    });
             }
+
+            SheetGenerator generator = new SheetGenerator();
+            var file = generator.CompitScoresToFile(allScores);
 
             Console.WriteLine("Done");
         }
