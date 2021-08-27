@@ -198,6 +198,7 @@ namespace WAV_Bot_DSharp.Services
             OsuServer server = member.CompitionProfile.Server;
 
             WAVMemberOsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
+
             if (profileInfo is null)
             {
                 logger.LogDebug($"Skipping recount for {member.DiscordUID} - no default osu! server");
@@ -225,7 +226,7 @@ namespace WAV_Bot_DSharp.Services
                 return;
             }
 
-            RegisterMember(dMember, profileInfo);
+            RecountMember(dMember, profileInfo, member.CompitionProfile);
             logger.LogInformation($"Recounted {dMember.Username}");
         }
 
@@ -451,6 +452,28 @@ namespace WAV_Bot_DSharp.Services
                 NonGrata = false,
                 Notifications = true,
                 Server = osuInfo.Server
+            };
+
+            wavCompit.AddCompitProfile(user.Id.ToString(), compitProfile);
+
+            await EnableNotifications(user, compitProfile);
+        }
+
+        /// <summary>
+        /// Пересчитать PP для заданного пользователя
+        /// </summary>
+        /// <returns></returns>
+        public async Task RecountMember(DiscordUser user, WAVMemberOsuProfileInfo osuProfile, WAVMemberCompitProfile oldCompitProfile)
+        {
+            double avgPP = await CalculateAvgPP(osuProfile.OsuId, osuProfile.Server);
+
+            WAVMemberCompitProfile compitProfile = new WAVMemberCompitProfile()
+            {
+                AvgPP = avgPP,
+                Category = oldCompitProfile.Category,
+                NonGrata = oldCompitProfile.NonGrata,
+                Notifications = oldCompitProfile.Notifications,
+                Server = oldCompitProfile.Server
             };
 
             wavCompit.AddCompitProfile(user.Id.ToString(), compitProfile);
