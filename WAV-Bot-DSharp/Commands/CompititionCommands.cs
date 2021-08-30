@@ -170,6 +170,9 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
+            member.CompitionProfile.Notifications = toggle;
+            wavCompit.AddCompitProfile(member.DiscordUID, member.CompitionProfile);
+
             if (toggle)
             {
                 await compititionService.EnableNotifications(discordUser, member.CompitionProfile);
