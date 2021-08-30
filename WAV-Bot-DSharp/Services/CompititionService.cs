@@ -463,22 +463,37 @@ namespace WAV_Bot_DSharp.Services
         /// Пересчитать PP для заданного пользователя
         /// </summary>
         /// <returns></returns>
-        public async Task RecountMember(DiscordUser user, WAVMemberOsuProfileInfo osuProfile, WAVMemberCompitProfile oldCompitProfile)
+        public async Task RecountMember(DiscordMember user, WAVMemberOsuProfileInfo osuProfile, WAVMemberCompitProfile oldCompitProfile)
         {
             double avgPP = await CalculateAvgPP(osuProfile.OsuId, osuProfile.Server);
 
+            logger.LogDebug($"avgPP for {user.Username}: {avgPP}");
             WAVMemberCompitProfile compitProfile = new WAVMemberCompitProfile()
             {
                 AvgPP = avgPP,
-                Category = oldCompitProfile.Category,
+                Category = PPToCategory(avgPP),
                 NonGrata = oldCompitProfile.NonGrata,
                 Notifications = oldCompitProfile.Notifications,
                 Server = oldCompitProfile.Server
             };
 
+            if (compitProfile.Category != oldCompitProfile.Category)
+                if (compitProfile.Notifications)
+                    await SendNewCategoryDMNotification(user, compitProfile);
+
             wavCompit.AddCompitProfile(user.Id.ToString(), compitProfile);
 
             await EnableNotifications(user, compitProfile);
+        }
+
+        public async Task SendNewCategoryDMNotification(DiscordMember user, WAVMemberCompitProfile compitProfile)
+        {
+            DiscordDmChannel channel = await user.CreateDmChannelAsync();
+            await channel.SendMessageAsync(new DiscordEmbedBuilder()
+                .WithTitle($"Вы перешли в следующую категорию – {compitProfile.Category} :partying_face:")
+                .WithDescription($"Вы набрали достаточно PP для того, чтобы перейти в следующую категорию. Поздравляем!")
+                .WithFooter("Не хотите получать уведомления? Воспользуйтесь командой `sk!www notify false`.")
+                .Build());
         }
 
         /// <summary>
