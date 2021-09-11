@@ -67,28 +67,36 @@ namespace WAV_Bot_DSharp.Converters
 
             DiscordEmoji banchoRankEmoji = osuEmoji.RankStatusEmoji(bm.ranked);
             DiscordEmoji diffEmoji = osuEmoji.DiffEmoji(bm.difficulty_rating);
-            
+
             StringBuilder embedMsg = new StringBuilder();
-            embedMsg.AppendLine($"{diffEmoji}  **__[{bm.version}]__**\n▸**Difficulty**: {bm.difficulty_rating}★\n▸**CS**: {bm.cs} ▸**HP**: {bm.drain} ▸**AR**: {bm.ar} ▸**OD**: {bm.accuracy}\n\nBancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{bms.id}#osu/{bm.id})\nLast updated: {bm.last_updated}");
+
+            embedBuilder.WithTitle($"{banchoRankEmoji}  {bms.artist} – {bms.title} by {bms.creator}");
+            embedBuilder.WithUrl(bm.url);
+
+            embedMsg.AppendLine($"{diffEmoji}  **__[{bm.version}]__**");
+            embedMsg.AppendLine($"▸**Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)}, **BPM**: {bm.bpm}");
+            embedMsg.AppendLine($"▸**Difficulty**: {bm.difficulty_rating}★");
+            embedMsg.AppendLine($"▸**CS**: {bm.cs} ▸**HP**: {bm.drain} ▸**AR**: {bm.ar} ▸**OD**: {bm.accuracy}");
+
+            embedMsg.AppendLine();
+            embedMsg.Append($"Bancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{bms.id}#osu/{bm.id})\nLast updated: {bm.last_updated}\n");
+
             if (!(gBeatmap is null))
             {
                 DiscordEmoji gatariRankEmoji = osuEmoji.RankStatusEmoji(gBeatmap.ranked);
                 embedMsg.AppendLine($"\nGatari: {gatariRankEmoji} : [link](https://osu.gatari.pw/s/{gBeatmap.beatmapset_id}#osu/{gBeatmap.beatmap_id})\nLast updated: {(gBeatmap.ranking_data != 0 ? new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(gBeatmap.ranking_data).ToString() : "")}");
             }
 
+            embedMsg.AppendLine();
+
             if (recognizerWarn)
             {
-                embedMsg.AppendLine($"\n⚠ Difficulty recognition warning ⚠");
+                embedMsg.AppendLine();
+                embedMsg.AppendLine($"⚠ Difficulty recognition warning ⚠");
             }
 
-            // Construct embed
-            embedBuilder.WithTitle($"{banchoRankEmoji}  {bms.artist} – {bms.title} by {bms.creator}");
-            embedBuilder.WithUrl(bm.url);
-            embedBuilder.AddField($"Length: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)}, BPM: {bm.bpm}",
-                                  embedMsg.ToString(),
-                                  true);
+            embedBuilder.WithDescription(embedMsg.ToString());
             embedBuilder.WithThumbnail(bms.covers.List2x);
-            embedBuilder.WithFooter(bms.tags);
 
             return embedBuilder.Build();
         }
