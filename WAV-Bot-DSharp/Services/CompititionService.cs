@@ -478,8 +478,11 @@ namespace WAV_Bot_DSharp.Services
             };
 
             if (compitProfile.Category != oldCompitProfile.Category)
+            {
+                logger.LogDebug($"Category upgrade for {user.Username} – {compitProfile.Category}");
                 if (compitProfile.Notifications)
                     await SendNewCategoryDMNotification(user, compitProfile);
+            }
 
             wavCompit.AddCompitProfile(user.Id.ToString(), compitProfile);
 
@@ -488,6 +491,7 @@ namespace WAV_Bot_DSharp.Services
 
         public async Task SendNewCategoryDMNotification(DiscordMember user, WAVMemberCompitProfile compitProfile)
         {
+            logger.LogDebug($"Sent DM notification to {user.Username} about new category – {compitProfile.Category}");
             DiscordDmChannel channel = await user.CreateDmChannelAsync();
             await channel.SendMessageAsync(new DiscordEmbedBuilder()
                 .WithTitle($"Вы перешли в следующую категорию – {compitProfile.Category} :partying_face:")
