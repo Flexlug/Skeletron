@@ -227,9 +227,9 @@ namespace WAV_Bot_DSharp.Services.Entities
                     await interactivity.SendPaginatedMessageAsync(message.Channel,
                                                                   message.Author,
                                                                   pages,
-                                                                  
+                                                                  emojis: new DSharpPlus.Interactivity.PaginationEmojis(),
                                                                   behaviour: DSharpPlus.Interactivity.Enums.PaginationBehaviour.WrapAround,
-                                                                  deletion: DSharpPlus.Interactivity.Enums.ButtonPaginationBehavior.DeleteButtons);
+                                                                  deletion: DSharpPlus.Interactivity.Enums.PaginationDeletion.DeleteEmojis);
                 }
                 else
                 {
@@ -437,8 +437,9 @@ namespace WAV_Bot_DSharp.Services.Entities
                 foreach (var b in bsm)
                     logger.LogDebug($"{b.Item1.creator} {b.Item1.title}: {b.Item2}");
 
-                if (bsm.All(x => x.Item2 < 0.2))
+                if (bsm.All(x => x.Item2 < 0.8))
                     return new BeatmapsetNotFoundException();
+
 
                 if (bsm == null || bsm.Count == 0)
                     bms = bmsl.FirstOrDefault();
@@ -457,6 +458,9 @@ namespace WAV_Bot_DSharp.Services.Entities
 
                 foreach (var b in bsm)
                     logger.LogDebug($"{b.Item1.creator} {b.Item1.title}: {b.Item2}");
+
+                if (bsm.All(x => x.Item2 < 0.6))
+                    return new BeatmapsetNotFoundException();
 
                 if (bsm == null || bsm.Count == 0)
                     bms = bmsl.FirstOrDefault();
