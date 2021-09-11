@@ -332,6 +332,33 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync(new DiscordMessageBuilder().WithFile(sheetfileInfo));
         }
 
+        [Command("send-welcome-msg"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
+        public async Task GetWelcomeMessage(CommandContext ctx,
+            [Description("Номер W.w.W")] int wwwNumber)
+        {
+            var compitInfo = wavCompit.GetCompitionInfo();
+
+            if (compitInfo is null)
+            {
+                await ctx.RespondAsync("Не удалось получить информацию о конкурсе. Заполните информацию о предстоящем конкурсе");
+                return;
+            }
+
+            if (compitInfo.BeginnerMap is null ||
+                compitInfo.AlphaMap is null ||
+                compitInfo.BetaMap is null ||
+                compitInfo.GammaMap is null ||
+                compitInfo.DeltaMap is null ||
+                compitInfo.EpsilonMap is null ||
+                compitInfo.Deadline is null)
+            {
+                await ctx.RespondAsync("Недостаточно информации о предстоящем конкурсе");
+                return;
+            }
+
+            await compititionService.SendWelcomeMessage(compitInfo, wwwNumber);
+        }
+
         [Command("status"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task GetStatus(CommandContext commandContext)
         {
@@ -531,5 +558,4 @@ namespace WAV_Bot_DSharp.Commands
             await commandContext.RespondAsync("Ваш скор был отправлен на рассмотрение. Спасибо за участие!");
         }
     }
-
 }

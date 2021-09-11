@@ -690,5 +690,32 @@ namespace WAV_Bot_DSharp.Services
             if (member.Roles.Contains(epsilonRole))
                 await member.RevokeRoleAsync(epsilonRole);
         }
+
+        public async Task SendWelcomeMessage(CompitInfo compitInfo, int wwwNumber)
+        {
+            StringBuilder sb = new();
+
+            sb.AppendLine($"```");
+            sb.AppendLine($"{DiscordEmoji.FromGuildEmote(client, 800151689696247848)} Приветствуем участников сервера WAV! Начинаем **{wwwNumber}**-ю неделю нашего конкурса W.w.W!");
+            sb.AppendLine();
+            sb.AppendLine($"<@&830432931150692362>: \"{compitInfo.BeginnerMap.beatmapset.artist} – {compitInfo.BeginnerMap.beatmapset.title} [{compitInfo.BeginnerMap.version}]\" – <{compitInfo.BeginnerMap.url}>\n");
+            sb.AppendLine($"<@&816610025258352641>: \"{compitInfo.AlphaMap.beatmapset.artist} – {compitInfo.AlphaMap.beatmapset.title} [{compitInfo.AlphaMap.version}]\" – <{compitInfo.AlphaMap.url}>\n");
+            sb.AppendLine($"<@&816609978240204821>: \"{compitInfo.BetaMap.beatmapset.artist} – {compitInfo.BetaMap.beatmapset.title} [{compitInfo.BetaMap.version}]\" – <{compitInfo.BetaMap.url}>\n");
+            sb.AppendLine($"<@&816609883763376188>: \"{compitInfo.GammaMap.beatmapset.artist} – {compitInfo.GammaMap.beatmapset.title} [{compitInfo.GammaMap.version}]\" – <{compitInfo.GammaMap.url}>\n");
+            sb.AppendLine($"<@&816609826301935627>: \"{compitInfo.DeltaMap.beatmapset.artist} – {compitInfo.DeltaMap.beatmapset.title} [{compitInfo.DeltaMap.version}]\" – <{compitInfo.DeltaMap.url}>\n");
+            sb.AppendLine($"<@&816609630359912468>: \"{compitInfo.EpsilonMap.beatmapset.artist} – {compitInfo.EpsilonMap.beatmapset.title} [{compitInfo.EpsilonMap.version}]\" – <{compitInfo.EpsilonMap.url}>\n");
+            sb.AppendLine($"{DiscordEmoji.FromName(client, ":warning:")} Скор должен быть поставлен в промежутке с даты публикации данного сообщения до **{compitInfo.Deadline.Value.Day}-го {compitInfo.Deadline.Value:MMM HH:mm} по МСК**.");
+            sb.AppendLine($"Скоры, поставленные раньше или позже этого промежутка, будут автоматически отклонены!\n");
+            sb.AppendLine($"{DiscordEmoji.FromName(client, ":information_source:")} Результаты будут оглашены **после {compitInfo.Deadline.Value.Day}-го {compitInfo.Deadline.Value:MMM}** в течение дня\n");
+            sb.AppendLine($"Желаем успехов! {DiscordEmoji.FromName(client, ":four_leaf_clover:")}");
+            sb.AppendLine("```");
+
+            await leaderboardChannel.SendMessageAsync(sb.ToString());
+        }
+
+        public Task SendReportMessage()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
