@@ -80,7 +80,7 @@ namespace WAV_Bot_DSharp.Database
                 var allMaps = session.Query<OfferedMap>()
                                           .ToList();
 
-                foreach(var map in allMaps)
+                foreach (var map in allMaps)
                     session.Delete(map);
 
                 session.SaveChanges();
@@ -102,7 +102,7 @@ namespace WAV_Bot_DSharp.Database
             using (IDocumentSession session = store.OpenSession())
             {
                 var map = session.Query<OfferedMap>()
-                                 .FirstOrDefault(x => x.BeatmapId == beatmapId && 
+                                 .FirstOrDefault(x => x.BeatmapId == beatmapId &&
                                                       x.Category == category);
 
                 map.Votes.Add(userId);
@@ -135,13 +135,69 @@ namespace WAV_Bot_DSharp.Database
                                   .FirstOrDefault(x => x.Category == category &&
                                                        x.BeatmapId == beatmapId);
 
-                if (map is null) 
+                if (map is null)
                 {
                     logger.LogError($"Не удалось найти карту в методе MapRemove - {beatmapId}");
                     return;
                 }
 
                 session.Delete(map);
+                session.SaveChanges();
+            }
+        }
+
+        public MappoolSpectateStatus GetMappoolStatus()
+        {
+            using (IDocumentSession session = store.OpenSession())
+            {
+                var mappoolStatus = session.Query<MappoolSpectateStatus>()
+                                           .FirstOrDefault();
+
+                if (mappoolStatus is null)
+                {
+                    mappoolStatus = new MappoolSpectateStatus()
+                    {
+                        IsSpectating = false,
+
+                        BeginnerMessageId = string.Empty,
+                        AlphaMessageId = string.Empty,
+                        BetaMessageId = string.Empty,
+                        GammaMessageId = string.Empty,
+                        DeltaMessageId = string.Empty,
+                        EpsilonMessageId = string.Empty
+                    };
+
+                    session.Store(mappoolStatus);
+                    session.SaveChanges();
+                }
+
+                return mappoolStatus;
+            }
+        }
+
+        public void SetMappoolStatus(MappoolSpectateStatus spectateStatus)
+        {
+            using (IDocumentSession session = store.OpenSession())
+            {
+                var mappoolStatus = session.Query<MappoolSpectateStatus>()
+                                           .FirstOrDefault();
+
+                if (mappoolStatus is null)
+                {
+                    session.Store(spectateStatus);
+                    session.SaveChanges();
+
+                    return;
+                }
+
+                mappoolStatus.IsSpectating = spectateStatus.IsSpectating;
+                mappoolStatus.BeginnerMessageId = spectateStatus.BeginnerMessageId;
+                mappoolStatus.AlphaMessageId = spectateStatus.AlphaMessageId;
+                mappoolStatus.BetaMessageId = spectateStatus.BetaMessageId;
+                mappoolStatus.GammaMessageId = spectateStatus.GammaMessageId;
+                mappoolStatus.DeltaMessageId = spectateStatus.DeltaMessageId;
+                mappoolStatus.EpsilonMessageId = spectateStatus.EpsilonMessageId;
+
                 session.SaveChanges();
             }
         }
