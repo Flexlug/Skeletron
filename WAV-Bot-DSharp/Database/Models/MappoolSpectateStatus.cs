@@ -11,7 +11,7 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// Указывает, включено ли сейчас отслеживание изменений в маппуле
         /// </summary>
-        public bool SpectateStatus { get; set; }
+        public bool IsSpectating { get; set; }
 
         /// <summary>
         /// Id канала, в котором будут публиковаться изменения и результаты маппула

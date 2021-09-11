@@ -75,15 +75,15 @@ namespace WAV_Bot_DSharp.Services
 
             debugChannel = client.GetChannelAsync(823835078298828841).Result;
 
-            CheckMappoolSpectateStatus();
+            CheckMappoolSpectateStatus().RunSynchronously();
         }
 
-        private void CheckMappoolSpectateStatus()
+        private async Task CheckMappoolSpectateStatus()
         {
             spectateStatus = mappoolProvider.GetMappoolStatus();
 
             // Если отслеживание не запущено, то вырубаем проверку
-            if (!spectateStatus.SpectateStatus)
+            if (!spectateStatus.IsSpectating)
                 return;
 
             // Получить канал для анонсов
@@ -97,17 +97,17 @@ namespace WAV_Bot_DSharp.Services
 
             try
             {
-                announceChannel = client.GetChannelAsync(spectateId).Result;
-                beginnerMappoolAnnounceMsg = announceChannel.GetMessageAsync(beginnerId).Result;
-                alphaMappoolAnnounceMsg = announceChannel.GetMessageAsync(alphaId).Result;
-                betaMappoolAnnounceMsg = announceChannel.GetMessageAsync(betaId).Result;
-                gammaMappoolAnnounceMsg = announceChannel.GetMessageAsync(gammaId).Result;
-                deltaMappoolAnnounceMsg = announceChannel.GetMessageAsync(deltaId).Result;
-                epsilonMappoolAnnounceMsg = announceChannel.GetMessageAsync(epsilonId).Result;
+                announceChannel = await client.GetChannelAsync(spectateId).ConfigureAwait(false);
+                beginnerMappoolAnnounceMsg = await announceChannel.GetMessageAsync(beginnerId).ConfigureAwait(false);
+                alphaMappoolAnnounceMsg = await announceChannel.GetMessageAsync(alphaId).ConfigureAwait(false);
+                betaMappoolAnnounceMsg = await announceChannel.GetMessageAsync(betaId).ConfigureAwait(false);
+                gammaMappoolAnnounceMsg = await announceChannel.GetMessageAsync(gammaId).ConfigureAwait(false);
+                deltaMappoolAnnounceMsg = await announceChannel.GetMessageAsync(deltaId).ConfigureAwait(false);
+                epsilonMappoolAnnounceMsg = await announceChannel.GetMessageAsync(epsilonId).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                debugChannel.SendMessageAsync($"Ошибка при запуске отслеживания маппула: {ex.InnerException}\n{ex.Message}");
+                await debugChannel.SendMessageAsync($"Ошибка при запуске отслеживания маппула: {ex.InnerException}\n{ex.Message}").ConfigureAwait(false);
             }
         }
 
@@ -240,17 +240,85 @@ namespace WAV_Bot_DSharp.Services
             mappoolProvider.ResetMappool();
         }
 
-        public async Task StartSpectating()
+        public async Task<string> StartSpectating()
         {
-            UpdateSpectateMessage(true);
+            try
+            {
+                await UpdateSpectateMessage(true).ConfigureAwait(false);
+
+                spectateStatus.IsSpectating = true;
+                mappoolProvider.SetMappoolStatus(spectateStatus);
+            }
+            catch(Exception e)
+            {
+                return $"{e.Message} : {e.StackTrace}";
+            }
+
+            return "done";
         }
 
-        public void StopSpectating()
+        public async Task<string> StopSpectating()
         {
-            throw new NotImplementedException();
+            try
+            {
+                FinalizeMappoolSpectate();
+            }
+            catch (Exception e)
+            {
+                return $"{e.Message} : {e.StackTrace}";
+            }
+
+            return "done";
         }
 
-        public void UpdateSpectateMessage(bool sendNewMessages)
+        public async Task<string> UpdateMappoolStatus()
+        {   
+            try
+            {
+                await UpdateSpectateMessage(false).ConfigureAwait(false);
+
+            }
+            catch (Exception e)
+            {
+                return $"{e.Message} : {e.StackTrace}";
+            }
+
+            return "done";
+        }
+
+        public async Task<string> HaltSpectating()
+        {
+            try
+            {
+                spectateStatus.IsSpectating = false;
+                mappoolProvider.SetMappoolStatus(spectateStatus);
+            }
+            catch (Exception e)
+            {
+                return $"{e.Message} : {e.StackTrace}";
+            }
+
+            return "done";
+        }
+
+        public async Task<string> SetAnnounceChannel(ulong channel_id)
+        {
+            try
+            {
+                announceChannel = await client.GetChannelAsync(channel_id).ConfigureAwait(false);
+
+                spectateStatus.AnnounceChannelId = announceChannel.Id.ToString();
+                mappoolProvider.SetMappoolStatus(spectateStatus);
+            }
+            catch (Exception e)
+            {
+                return $"{e.Message} : {e.StackTrace}";
+            }
+
+            return "done";
+        }
+
+        public async Task UpdateSpectateMessage(bool sendNewMessages)
         {
             List<OfferedMap> beginnerMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Beginner)
                                                         .OrderByDescending(x => x.Votes.Count)
@@ -310,91 +378,89 @@ namespace WAV_Bot_DSharp.Services
             DiscordEmbed epsilonEmbed = new DiscordEmbedBuilder()
                 .WithAuthor("Топ-3 карта для Epsilon")
                 .WithDescription(string.Join('\n', epsilonMappoolTop.Select(x => OfferedMapToString(x))))
+                .WithFooter($"Время последнего обновления маппула: {DateTime.Now}")
                 .Build();
 
             if (sendNewMessages)
             {
-                beginnerMappoolAnnounceMsg = announceChannel.SendMessageAsync(beginnerEmbed).Result;
-                alphaMappoolAnnounceMsg = announceChannel.SendMessageAsync(alphaEmbed).Result;
-                betaMappoolAnnounceMsg = announceChannel.SendMessageAsync(betaEmbed).Result;
-                gammaMappoolAnnounceMsg = announceChannel.SendMessageAsync(gammaEmbed).Result;
-                deltaMappoolAnnounceMsg = announceChannel.SendMessageAsync(deltaEmbed).Result;
-                epsilonMappoolAnnounceMsg = announceChannel.SendMessageAsync(epsilonEmbed).Result;
+                beginnerMappoolAnnounceMsg = await announceChannel.SendMessageAsync(beginnerEmbed).ConfigureAwait(false);
+                alphaMappoolAnnounceMsg = await announceChannel.SendMessageAsync(alphaEmbed).ConfigureAwait(false);
+                betaMappoolAnnounceMsg = await announceChannel.SendMessageAsync(betaEmbed).ConfigureAwait(false);
+                gammaMappoolAnnounceMsg = await announceChannel.SendMessageAsync(gammaEmbed).ConfigureAwait(false);
+                deltaMappoolAnnounceMsg = await announceChannel.SendMessageAsync(deltaEmbed).ConfigureAwait(false);
+                epsilonMappoolAnnounceMsg = await announceChannel.SendMessageAsync(epsilonEmbed).ConfigureAwait(false);
             }
             else
             {
-                beginnerMappoolAnnounceMsg.ModifyAsync(beginnerEmbed);
-                alphaMappoolAnnounceMsg.ModifyAsync(alphaEmbed);
-                betaMappoolAnnounceMsg.ModifyAsync(betaEmbed);
-                gammaMappoolAnnounceMsg.ModifyAsync(gammaEmbed);
-                deltaMappoolAnnounceMsg.ModifyAsync(deltaEmbed);
-                epsilonMappoolAnnounceMsg.ModifyAsync(epsilonEmbed);
+                await beginnerMappoolAnnounceMsg.ModifyAsync(beginnerEmbed);
+                await alphaMappoolAnnounceMsg.ModifyAsync(alphaEmbed);
+                await betaMappoolAnnounceMsg.ModifyAsync(betaEmbed);
+                await gammaMappoolAnnounceMsg.ModifyAsync(gammaEmbed);
+                await deltaMappoolAnnounceMsg.ModifyAsync(deltaEmbed);
+                await epsilonMappoolAnnounceMsg.ModifyAsync(epsilonEmbed);
             }
         }
 
-        public void FinalizeMappoolSpectate(bool sendNewMessages)
+        private async Task<OfferedMap> ChooseMap(List<OfferedMap> maps)
         {
-            List<OfferedMap> beginnerMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Beginner)
-                                                        .OrderByDescending(x => x.Votes.Count)
-                                                        .Take(3)
-                                                        .ToList();
-
-            List<OfferedMap> alphaMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Alpha)
-                                                              .OrderByDescending(x => x.Votes.Count)
-                                                              .Take(3)
-                                                              .ToList();
-
-            List<OfferedMap> betaMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Beta)
-                                                             .OrderByDescending(x => x.Votes.Count)
-                                                             .Take(3)
-                                                             .ToList();
-
-            List<OfferedMap> gammaMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Gamma)
-                                                              .OrderByDescending(x => x.Votes.Count)
-                                                              .Take(3)
-                                                              .ToList();
-
-            List<OfferedMap> deltaMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Delta)
-                                                              .OrderByDescending(x => x.Votes.Count)
-                                                              .Take(3)
-                                                              .ToList();
-
-            List<OfferedMap> epsilonMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Epsilon)
-                                                                .OrderByDescending(x => x.Votes.Count)
-                                                                .Take(3)
-                                                                .ToList();
-
+            int maxVotes = maps.Max(x => x.Votes.Count);
             Random rnd = new Random();
+
+            var topVoted = maps.FindAll(x => x.Votes.Count == maxVotes);
+            if (topVoted.Count == 1)
+                return topVoted.First();
+            else
+                return topVoted.ElementAt(rnd.Next(1, topVoted.Count));
+        }
+
+        public async void FinalizeMappoolSpectate()
+        {
+            Random rnd = new Random();
+
+            OfferedMap beginnerChosenMap = await ChooseMap(mappoolProvider.GetCategoryMaps(CompitCategory.Beginner)),
+                       alphaChosenMap = await ChooseMap(mappoolProvider.GetCategoryMaps(CompitCategory.Alpha)),
+                       betaChosenMap = await ChooseMap(mappoolProvider.GetCategoryMaps(CompitCategory.Beta)),
+                       gammaChosenMap = await ChooseMap(mappoolProvider.GetCategoryMaps(CompitCategory.Gamma)),
+                       deltaChosenMap = await ChooseMap(mappoolProvider.GetCategoryMaps(CompitCategory.Delta)),
+                       epsilonChosenMap = await ChooseMap(mappoolProvider.GetCategoryMaps(CompitCategory.Epsilon));
 
             DiscordEmbed beginnerEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Beginner")
-                .WithDescription(OfferedMapToString(beginnerMappoolTop.ElementAt(rnd.Next(1, beginnerMappoolTop.Count))))
+                .WithDescription(OfferedMapToString(beginnerChosenMap))
                 .Build();
 
             DiscordEmbed alphaEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Alpha")
-                .WithDescription(OfferedMapToString(alphaMappoolTop.ElementAt(rnd.Next(1, alphaMappoolTop.Count))))
+                .WithDescription(OfferedMapToString(alphaChosenMap))
                 .Build();
 
             DiscordEmbed betaEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Beta")
-                .WithDescription(OfferedMapToString(betaMappoolTop.ElementAt(rnd.Next(1, betaMappoolTop.Count))))
+                .WithDescription(OfferedMapToString(betaChosenMap))
                 .Build();
 
             DiscordEmbed gammaEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Gamma")
-                .WithDescription(OfferedMapToString(gammaMappoolTop.ElementAt(rnd.Next(1, gammaMappoolTop.Count))))
+                .WithDescription(OfferedMapToString(gammaChosenMap))
                 .Build();
 
             DiscordEmbed deltaEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Delta")
-                .WithDescription(OfferedMapToString(deltaMappoolTop.ElementAt(rnd.Next(1, deltaMappoolTop.Count))))
+                .WithDescription(OfferedMapToString(deltaChosenMap))
                 .Build();
 
             DiscordEmbed epsilonEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Epsilon")
-                .WithDescription(OfferedMapToString(epsilonMappoolTop.ElementAt(rnd.Next(1, epsilonMappoolTop.Count))))
+                .WithDescription(OfferedMapToString(epsilonChosenMap))
                 .Build();
+
+            await beginnerMappoolAnnounceMsg.ModifyAsync(beginnerEmbed);
+            await alphaMappoolAnnounceMsg.ModifyAsync(alphaEmbed);
+            await betaMappoolAnnounceMsg.ModifyAsync(betaEmbed);
+            await gammaMappoolAnnounceMsg.ModifyAsync(gammaEmbed);
+            await deltaMappoolAnnounceMsg.ModifyAsync(deltaEmbed);
+            await epsilonMappoolAnnounceMsg.ModifyAsync(epsilonEmbed);
+
         }
 
         public string OfferedMapToString(OfferedMap map)

@@ -1,7 +1,7 @@
 ﻿using DSharpPlus.Entities;
 
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using WAV_Bot_DSharp.Database.Models;
 
 using WAV_Osu_NetApi.Models.Bancho;
@@ -61,5 +61,36 @@ namespace WAV_Bot_DSharp.Services.Interfaces
 		/// Очистить все карты
 		/// </summary>
 		public void ResetMappool();
+
+		/// <summary>
+		/// Начать отслеживание изменений маппула
+		/// </summary>
+		/// <returns></returns>
+		public Task<string> StartSpectating();
+
+		/// <summary>
+		/// Обновить Embed маппула
+		/// </summary>
+		/// <returns></returns>
+		public Task<string> UpdateMappoolStatus();
+
+		/// <summary>
+		/// Отключить отслеживание предложки без подведения итогов
+		/// </summary>
+		/// <returns></returns>
+		public Task<string> HaltSpectating();
+
+		/// <summary>
+		/// Остановить отслеживание предложки и подвести результаты голосования
+		/// </summary>
+		/// <returns></returns>
+		public Task<string> StopSpectating();
+
+		/// <summary>
+		/// Задать канал для анонса маппула
+		/// </summary>
+		/// <param name="channel_id">Id текстового канала</param>
+		/// <returns></returns>
+		public Task<string> SetAnnounceChannel(ulong channel_id);
 	}
 }

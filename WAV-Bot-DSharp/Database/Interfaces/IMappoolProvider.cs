@@ -25,7 +25,7 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         /// Обновить статус маппула
         /// </summary>
         /// <param name="spectateStatus"></param>
-        public void SetMappoolMessages(MappoolSpectateStatus spectateStatus);
+        public void SetMappoolStatus(MappoolSpectateStatus spectateStatus);
 
         /// <summary>
         /// Получить все карты

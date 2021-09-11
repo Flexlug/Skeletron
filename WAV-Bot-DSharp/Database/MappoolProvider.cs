@@ -157,7 +157,7 @@ namespace WAV_Bot_DSharp.Database
                 {
                     mappoolStatus = new MappoolSpectateStatus()
                     {
-                        SpectateStatus = false,
+                        IsSpectating = false,
 
                         BeginnerMessageId = string.Empty,
                         AlphaMessageId = string.Empty,
@@ -175,7 +175,7 @@ namespace WAV_Bot_DSharp.Database
             }
         }
 
-        public void SetMappoolMessages(MappoolSpectateStatus spectateStatus)
+        public void SetMappoolStatus(MappoolSpectateStatus spectateStatus)
         {
             using (IDocumentSession session = store.OpenSession())
             {
@@ -190,7 +190,7 @@ namespace WAV_Bot_DSharp.Database
                     return;
                 }
 
-                mappoolStatus.SpectateStatus = spectateStatus.SpectateStatus;
+                mappoolStatus.IsSpectating = spectateStatus.IsSpectating;
                 mappoolStatus.BeginnerMessageId = spectateStatus.BeginnerMessageId;
                 mappoolStatus.AlphaMessageId = spectateStatus.AlphaMessageId;
                 mappoolStatus.BetaMessageId = spectateStatus.BetaMessageId;
