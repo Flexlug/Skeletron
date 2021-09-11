@@ -192,11 +192,11 @@ namespace WAV_Bot_DSharp.Commands
             await ToggleNotifications(commandContext, commandContext.Member, toggle);
         }
 
-        //[Command("recount"), Description("Пересчитать среднее PP"), RequireGuild]
-        //public async Task Recount(CommandContext context)
-        //{
-        //    await RecountManual(context, context.Member);
-        //}
+        [Command("recount"), Description("Пересчитать среднее PP"), RequireGuild]
+        public async Task Recount(CommandContext context)
+        {
+            await context.RespondAsync(@"Отныне пересчет PP происходит автоматически. Пересчитывать свои скоры вручную не нужно. Ссылка на анонс: <https://ptb.discord.com/channels/708860200341471264/828042392124915712/877557409361571940>.");
+        }
 
         [Command("recount-manual"), Description("Пересчитать среднее PP для заданного участника"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task RecountManual(CommandContext context, DiscordMember dmember)
