@@ -140,6 +140,7 @@ namespace WAV_Bot_DSharp
             CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
             CommandsNext.RegisterCommands<CompititionCommands>();
+            CommandsNext.RegisterCommands<MappoolCommands>();
 
             var slashCommandsConfiguration = new SlashCommandsConfiguration()
             {

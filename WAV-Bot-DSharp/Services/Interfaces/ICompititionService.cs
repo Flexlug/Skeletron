@@ -59,6 +59,19 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         public Task<bool> SetScoresChannel(string channel);
 
         /// <summary>
+        /// Сгенерировать приветственное сообщение для W.w.W на основе заданных настроек
+        /// </summary>
+        /// <param name="wwwNumber"></param>
+        /// <returns></returns>
+        public Task SendWelcomeMessage(CompitInfo compitInfo, int wwwNumber);
+
+        /// <summary>
+        /// Сгенерировать сообщение анонса результатов
+        /// </summary>
+        /// <returns></returns>
+        public Task SendReportMessage();
+
+        /// <summary>
         /// Задать дату окончания конкурса
         /// </summary>
         /// <param name="deadline">Дата, когда конкурс должен закончиться</param>

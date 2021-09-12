@@ -27,6 +27,7 @@ namespace WAV_Bot_DSharp.Services
         private ILogger<MappoolService> logger;
 
         private IMappoolProvider mappoolProvider;
+        private ICompititionService compitService;
         private IWAVCompitProvider compitProvider;
 
         private DiscordChannel announceChannel;
@@ -54,6 +55,7 @@ namespace WAV_Bot_DSharp.Services
         public MappoolService(ILogger<MappoolService> logger,
                               IMappoolProvider mappoolProvider,
                               IWAVCompitProvider compitProvider,
+                              ICompititionService compitService,
                               DiscordClient client,
                               OsuRegex regex,
                               OsuEmoji emoji,
@@ -65,6 +67,7 @@ namespace WAV_Bot_DSharp.Services
             this.client = client;
 
             this.mappoolProvider = mappoolProvider;
+            this.compitService = compitService;
             this.compitProvider = compitProvider;
 
             this.regex = regex;
@@ -73,15 +76,15 @@ namespace WAV_Bot_DSharp.Services
             this.bapi = bapi;
             this.gapi = gapi;
 
+            this.spectateStatus = mappoolProvider.GetMappoolStatus();
+
             debugChannel = client.GetChannelAsync(823835078298828841).Result;
 
-            CheckMappoolSpectateStatus().RunSynchronously();
+            CheckMappoolSpectateStatus().Wait();
         }
 
         private async Task CheckMappoolSpectateStatus()
         {
-            spectateStatus = mappoolProvider.GetMappoolStatus();
-
             // Если отслеживание не запущено, то вырубаем проверку
             if (!spectateStatus.IsSpectating)
                 return;
@@ -131,6 +134,8 @@ namespace WAV_Bot_DSharp.Services
                 Votes = new() { "default" }
             });
 
+            UpdateCategoryMessage(cat).Wait();
+
             return "done";
         }
 
@@ -175,6 +180,8 @@ namespace WAV_Bot_DSharp.Services
                 Votes = new() { memberId }
             });
 
+            UpdateCategoryMessage(cat).Wait();
+
             return "done";
         }
 
@@ -187,7 +194,7 @@ namespace WAV_Bot_DSharp.Services
                 str.AppendLine("Никто ещё не предложил карт для данной категории.");
 
             foreach (var map in maps)
-                str.AppendLine(OfferedMapToString(map));
+                str.AppendLine(OfferedMapToLongString(map));
 
             return new DiscordEmbedBuilder()
                 .WithTitle($"Предложка для категории {cat}")
@@ -214,7 +221,7 @@ namespace WAV_Bot_DSharp.Services
                 str.AppendLine("Никто ещё не предложил карт для данной категории.");
 
             foreach (var map in maps)
-                str.AppendLine(OfferedMapToString(map));
+                str.AppendLine(OfferedMapToLongString(map));
 
             return new DiscordEmbedBuilder()
                 .WithTitle($"Предложка для категории {cat}")
@@ -230,6 +237,8 @@ namespace WAV_Bot_DSharp.Services
             else
                 return "Данной карты нет.";
 
+            UpdateCategoryMessage(cat).Wait();
+
             return "done";
         }
 
@@ -244,7 +253,15 @@ namespace WAV_Bot_DSharp.Services
         {
             try
             {
-                await UpdateSpectateMessage(true).ConfigureAwait(false);
+                if (string.IsNullOrEmpty(spectateStatus.AnnounceChannelId))
+                    return "Канал для маппула не задан";
+
+                announceChannel = await client.GetChannelAsync(ulong.Parse(spectateStatus.AnnounceChannelId));
+
+                if (spectateStatus.IsSpectating)
+                    return "Отслеживание маппула уже включено";
+
+                await UpdateAllSpectateMessages(true).ConfigureAwait(false);
 
                 spectateStatus.IsSpectating = true;
                 mappoolProvider.SetMappoolStatus(spectateStatus);
@@ -261,7 +278,13 @@ namespace WAV_Bot_DSharp.Services
         {
             try
             {
-                FinalizeMappoolSpectate();
+                if (!spectateStatus.IsSpectating)
+                    return "Отслеживание уже отключено";
+
+                await FinalizeMappoolSpectate().ConfigureAwait(false);
+
+                spectateStatus.IsSpectating = false;
+                mappoolProvider.SetMappoolStatus(spectateStatus);
             }
             catch (Exception e)
             {
@@ -272,11 +295,13 @@ namespace WAV_Bot_DSharp.Services
         }
 
         public async Task<string> UpdateMappoolStatus()
-        {   
+        {
             try
             {
-                await UpdateSpectateMessage(false).ConfigureAwait(false);
+                if (!spectateStatus.IsSpectating)
+                    return "Отслеживание отключено";
 
+                await UpdateAllSpectateMessages(false).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -305,7 +330,7 @@ namespace WAV_Bot_DSharp.Services
         {
             try
             {
-                announceChannel = await client.GetChannelAsync(channel_id).ConfigureAwait(false);
+                announceChannel = await client.GetChannelAsync(channel_id);
 
                 spectateStatus.AnnounceChannelId = announceChannel.Id.ToString();
                 mappoolProvider.SetMappoolStatus(spectateStatus);
@@ -318,66 +343,128 @@ namespace WAV_Bot_DSharp.Services
             return "done";
         }
 
-        public async Task UpdateSpectateMessage(bool sendNewMessages)
+        public async Task<string> OfferedMapsToString(List<OfferedMap> list)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var map in list)
+            {
+                sb.AppendLine(OfferedMapToShortString(map));
+            }
+
+            //if (list.Count != 3) {
+            //    for (int i = list.Count; i < 3; i++)
+            //    {
+            //        sb.AppendLine("-");
+            //        sb.AppendLine("-");
+            //        sb.AppendLine("-");
+            //        sb.AppendLine();
+            //    }
+            //}
+
+            return sb.ToString();
+        }
+
+        public async Task UpdateCategoryMessage(CompitCategory category)
+        {
+            List<OfferedMap> categoryTop = mappoolProvider.GetCategoryMaps(category)
+                .OrderByDescending(x => x.Votes.Count)
+                .Take(3)
+                .ToList();
+
+            DiscordEmbed categoryEmbed = new DiscordEmbedBuilder()
+                .WithTitle($"Топ-3 карт для {category}")
+                .WithDescription(await OfferedMapsToString(categoryTop))
+                .Build();
+
+            switch (category)
+            {
+                case CompitCategory.Beginner:
+                    await beginnerMappoolAnnounceMsg.ModifyAsync(categoryEmbed);
+                    break;
+
+                case CompitCategory.Alpha:
+                    await alphaMappoolAnnounceMsg.ModifyAsync(categoryEmbed);
+                    break;
+
+                case CompitCategory.Beta:
+                    await betaMappoolAnnounceMsg.ModifyAsync(categoryEmbed);
+                    break;
+
+                case CompitCategory.Gamma:
+                    await gammaMappoolAnnounceMsg.ModifyAsync(categoryEmbed);
+                    break;
+
+                case CompitCategory.Delta:
+                    await deltaMappoolAnnounceMsg.ModifyAsync(categoryEmbed);
+                    break;
+
+                case CompitCategory.Epsilon:
+                    await epsilonMappoolAnnounceMsg.ModifyAsync(categoryEmbed);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+
+        }
+
+        public async Task UpdateAllSpectateMessages(bool sendNewMessages)
         {
             List<OfferedMap> beginnerMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Beginner)
-                                                        .OrderByDescending(x => x.Votes.Count)
-                                                        .Take(3)
-                                                        .ToList();
+                .OrderByDescending(x => x.Votes.Count)
+                .ToList();
 
             List<OfferedMap> alphaMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Alpha)
-                                                              .OrderByDescending(x => x.Votes.Count)
-                                                              .Take(3)
-                                                              .ToList();
+                .OrderByDescending(x => x.Votes.Count)
+                .ToList();
 
             List<OfferedMap> betaMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Beta)
-                                                             .OrderByDescending(x => x.Votes.Count)
-                                                             .Take(3)
-                                                             .ToList();
+                .OrderByDescending(x => x.Votes.Count)
+                .ToList();
 
             List<OfferedMap> gammaMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Gamma)
-                                                              .OrderByDescending(x => x.Votes.Count)
-                                                              .Take(3)
-                                                              .ToList();
+                .OrderByDescending(x => x.Votes.Count)
+                .ToList();
 
             List<OfferedMap> deltaMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Delta)
-                                                              .OrderByDescending(x => x.Votes.Count)
-                                                              .Take(3)
-                                                              .ToList();
+                .OrderByDescending(x => x.Votes.Count)
+                .Take(3)
+                .ToList();
 
             List<OfferedMap> epsilonMappoolTop = mappoolProvider.GetCategoryMaps(CompitCategory.Epsilon)
-                                                                .OrderByDescending(x => x.Votes.Count)
-                                                                .Take(3)
-                                                                .ToList();
+                .OrderByDescending(x => x.Votes.Count)
+                .ToList();
 
             DiscordEmbed beginnerEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Топ-3 карт для Beginner")
-                .WithDescription(string.Join('\n', beginnerMappoolTop.Select(x => OfferedMapToString(x))))
+                .WithDescription(await OfferedMapsToString(beginnerMappoolTop))
                 .Build();
 
             DiscordEmbed alphaEmbed = new DiscordEmbedBuilder()
-                .WithAuthor("Топ-3 карт для Alpha")
-                .WithDescription(string.Join('\n', alphaMappoolTop.Select(x => OfferedMapToString(x))))
+                .WithTitle("Топ-3 карт для Alpha")
+                .WithDescription(await OfferedMapsToString(alphaMappoolTop))
                 .Build();
 
             DiscordEmbed betaEmbed = new DiscordEmbedBuilder()
-                .WithAuthor("Топ-3 карта для Beta")
-                .WithDescription(string.Join('\n', betaMappoolTop.Select(x => OfferedMapToString(x))))
+                .WithTitle("Топ-3 карта для Beta")
+                .WithDescription(await OfferedMapsToString(betaMappoolTop))
                 .Build();
 
             DiscordEmbed gammaEmbed = new DiscordEmbedBuilder()
-                .WithAuthor("Топ-3 карта для Gamma")
-                .WithDescription(string.Join('\n', gammaMappoolTop.Select(x => OfferedMapToString(x))))
+                .WithTitle("Топ-3 карта для Gamma")
+                .WithDescription(await OfferedMapsToString(gammaMappoolTop))
                 .Build();
 
             DiscordEmbed deltaEmbed = new DiscordEmbedBuilder()
-                .WithAuthor("Топ-3 карта для Delta")
-                .WithDescription(string.Join('\n', deltaMappoolTop.Select(x => OfferedMapToString(x))))
+                .WithTitle("Топ-3 карта для Delta")
+                .WithDescription(await OfferedMapsToString(deltaMappoolTop))
                 .Build();
 
             DiscordEmbed epsilonEmbed = new DiscordEmbedBuilder()
-                .WithAuthor("Топ-3 карта для Epsilon")
-                .WithDescription(string.Join('\n', epsilonMappoolTop.Select(x => OfferedMapToString(x))))
+                .WithTitle("Топ-3 карта для Epsilon")
+                .WithDescription(await OfferedMapsToString(epsilonMappoolTop))
                 .WithFooter($"Время последнего обновления маппула: {DateTime.Now}")
                 .Build();
 
@@ -389,6 +476,15 @@ namespace WAV_Bot_DSharp.Services
                 gammaMappoolAnnounceMsg = await announceChannel.SendMessageAsync(gammaEmbed).ConfigureAwait(false);
                 deltaMappoolAnnounceMsg = await announceChannel.SendMessageAsync(deltaEmbed).ConfigureAwait(false);
                 epsilonMappoolAnnounceMsg = await announceChannel.SendMessageAsync(epsilonEmbed).ConfigureAwait(false);
+
+                spectateStatus.BeginnerMessageId = beginnerMappoolAnnounceMsg.Id.ToString();
+                spectateStatus.AlphaMessageId = alphaMappoolAnnounceMsg.Id.ToString();
+                spectateStatus.BetaMessageId = betaMappoolAnnounceMsg.Id.ToString();
+                spectateStatus.GammaMessageId = gammaMappoolAnnounceMsg.Id.ToString();
+                spectateStatus.DeltaMessageId = deltaMappoolAnnounceMsg.Id.ToString();
+                spectateStatus.EpsilonMessageId = epsilonMappoolAnnounceMsg.Id.ToString();
+
+                mappoolProvider.SetMappoolStatus(spectateStatus);
             }
             else
             {
@@ -410,10 +506,10 @@ namespace WAV_Bot_DSharp.Services
             if (topVoted.Count == 1)
                 return topVoted.First();
             else
-                return topVoted.ElementAt(rnd.Next(1, topVoted.Count));
+                return topVoted.ElementAt(rnd.Next(0, topVoted.Count - 1));
         }
 
-        public async void FinalizeMappoolSpectate()
+        public async Task FinalizeMappoolSpectate()
         {
             Random rnd = new Random();
 
@@ -426,32 +522,32 @@ namespace WAV_Bot_DSharp.Services
 
             DiscordEmbed beginnerEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Beginner")
-                .WithDescription(OfferedMapToString(beginnerChosenMap))
+                .WithDescription(OfferedMapToLongString(beginnerChosenMap))
                 .Build();
 
             DiscordEmbed alphaEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Alpha")
-                .WithDescription(OfferedMapToString(alphaChosenMap))
+                .WithDescription(OfferedMapToLongString(alphaChosenMap))
                 .Build();
 
             DiscordEmbed betaEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Beta")
-                .WithDescription(OfferedMapToString(betaChosenMap))
+                .WithDescription(OfferedMapToLongString(betaChosenMap))
                 .Build();
 
             DiscordEmbed gammaEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Gamma")
-                .WithDescription(OfferedMapToString(gammaChosenMap))
+                .WithDescription(OfferedMapToLongString(gammaChosenMap))
                 .Build();
 
             DiscordEmbed deltaEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Delta")
-                .WithDescription(OfferedMapToString(deltaChosenMap))
+                .WithDescription(OfferedMapToLongString(deltaChosenMap))
                 .Build();
 
             DiscordEmbed epsilonEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Epsilon")
-                .WithDescription(OfferedMapToString(epsilonChosenMap))
+                .WithDescription(OfferedMapToLongString(epsilonChosenMap))
                 .Build();
 
             await beginnerMappoolAnnounceMsg.ModifyAsync(beginnerEmbed);
@@ -461,19 +557,28 @@ namespace WAV_Bot_DSharp.Services
             await deltaMappoolAnnounceMsg.ModifyAsync(deltaEmbed);
             await epsilonMappoolAnnounceMsg.ModifyAsync(epsilonEmbed);
 
+            await compitService.SetMap($@"https://osu.ppy.sh/beatmapsets/{beginnerChosenMap.Beatmap.beatmapset_id}#osu/{beginnerChosenMap.Beatmap.id}", "beginner");
+            await compitService.SetMap($@"https://osu.ppy.sh/beatmapsets/{alphaChosenMap.Beatmap.beatmapset_id}#osu/{alphaChosenMap.Beatmap.id}", "alpha");
+            await compitService.SetMap($@"https://osu.ppy.sh/beatmapsets/{betaChosenMap.Beatmap.beatmapset_id}#osu/{betaChosenMap.Beatmap.id}", "beta");
+            await compitService.SetMap($@"https://osu.ppy.sh/beatmapsets/{gammaChosenMap.Beatmap.beatmapset_id}#osu/{gammaChosenMap.Beatmap.id}", "gamma");
+            await compitService.SetMap($@"https://osu.ppy.sh/beatmapsets/{deltaChosenMap.Beatmap.beatmapset_id}#osu/{deltaChosenMap.Beatmap.id}", "delta");
+            await compitService.SetMap($@"https://osu.ppy.sh/beatmapsets/{epsilonChosenMap.Beatmap.beatmapset_id}#osu/{epsilonChosenMap.Beatmap.id}", "epsilon");
         }
 
-        public string OfferedMapToString(OfferedMap map)
+        public string OfferedMapToLongString(OfferedMap map)
         {
             StringBuilder str = new StringBuilder();
 
-            str.AppendLine($"`{map.BeatmapId}`: {emoji.RankStatusEmoji(map.Beatmap.ranked)} [{map.Beatmap.beatmapset.artist} - {map.Beatmap.beatmapset.title} [{map.Beatmap.version}]](https://osu.ppy.sh/beatmapsets/{map.Beatmap.beatmapset_id}#osu/{map.Beatmap.id})");
+            str.AppendLine($"`{map.Beatmap.id}` {emoji.RankStatusEmoji(map.Beatmap.ranked)} [{map.Beatmap.beatmapset.artist} - {map.Beatmap.beatmapset.title} [{map.Beatmap.version}]](https://osu.ppy.sh/beatmapsets/{map.Beatmap.beatmapset_id}#osu/{map.Beatmap.id})");
             str.AppendLine($"▸ {map.Beatmap.difficulty_rating}★ ▸**CS** {map.Beatmap.cs} ▸**HP**: {map.Beatmap.drain} ▸**AR**: {map.Beatmap.ar} ▸**OD**: {map.Beatmap.accuracy}");
-            str.AppendLine($"Предложил: {(map.AdminMap ? "<@&708869211312619591>" : $"<@{map.SuggestedBy}>")}");
-            str.AppendLine($"**__Проголосовало:__** {map.Votes.Count}\n");
+            str.Append($"Предложил: {(map.AdminMap ? "<@&708869211312619591>" : $"<@{map.SuggestedBy}>")} ");
+            str.AppendLine($"Проголосовало: {map.Votes.Count}");
 
             return str.ToString();
         }
+
+        public string OfferedMapToShortString(OfferedMap map) =>
+            $"`{map.Beatmap.id}` {emoji.RankStatusEmoji(map.Beatmap.ranked)} [{map.Beatmap.beatmapset.artist} - {map.Beatmap.beatmapset.title} [{map.Beatmap.version}]](https://osu.ppy.sh/beatmapsets/{map.Beatmap.beatmapset_id}#osu/{map.Beatmap.id}) : {map.Votes.Count}";
 
         public string Vote(string memberId, int bmId)
         {

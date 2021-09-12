@@ -191,6 +191,7 @@ namespace WAV_Bot_DSharp.Database
                 }
 
                 mappoolStatus.IsSpectating = spectateStatus.IsSpectating;
+                mappoolStatus.AnnounceChannelId = spectateStatus.AnnounceChannelId;
                 mappoolStatus.BeginnerMessageId = spectateStatus.BeginnerMessageId;
                 mappoolStatus.AlphaMessageId = spectateStatus.AlphaMessageId;
                 mappoolStatus.BetaMessageId = spectateStatus.BetaMessageId;

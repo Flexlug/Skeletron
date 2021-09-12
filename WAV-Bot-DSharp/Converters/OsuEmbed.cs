@@ -247,6 +247,43 @@ namespace WAV_Bot_DSharp.Converters
         {
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
 
+            string beginner = string.Empty,
+                   alpha = string.Empty,
+                   beta = string.Empty,
+                   gamma = string.Empty,
+                   delta = string.Empty,
+                   epsilon = string.Empty;
+
+            if (compitInfo.BeginnerMap is null)
+                beginner = "Нет";
+            else
+                beginner = $"{compitInfo.BeginnerMap.beatmapset.artist} - {compitInfo.BeginnerMap.beatmapset.title}\n{compitInfo.BeginnerMap.url}";
+
+            if (compitInfo.AlphaMap is null)
+                alpha = "Нет";
+            else
+                alpha = $"{compitInfo.AlphaMap.beatmapset.artist} - {compitInfo.AlphaMap.beatmapset.title}\n{compitInfo.AlphaMap.url}";
+
+            if (compitInfo.BetaMap is null)
+                beta = "Нет";
+            else
+                beta = $"{compitInfo.BetaMap.beatmapset.artist} - {compitInfo.BetaMap.beatmapset.title}\n{compitInfo.BetaMap.url}";
+
+            if (compitInfo.GammaMap is null)
+                gamma = "Нет";
+            else
+                gamma = $"{compitInfo.GammaMap.beatmapset.artist} - {compitInfo.GammaMap.beatmapset.title}\n{compitInfo.GammaMap.url}";
+
+            if (compitInfo.DeltaMap is null)
+                delta = "Нет";
+            else
+                delta = $"{compitInfo.DeltaMap.beatmapset.artist} - {compitInfo.DeltaMap.beatmapset.title}\n{compitInfo.DeltaMap.url}";
+
+            if (compitInfo.EpsilonMap is null)
+                epsilon = "Нет";
+            else
+                epsilon = $"{compitInfo.EpsilonMap.beatmapset.artist} - {compitInfo.EpsilonMap.beatmapset.title}\n{compitInfo.EpsilonMap.url}";
+
             embed.WithTitle("W.w.W status")
                  .AddField("Запущен", compitInfo.IsRunning ? "Да" : "Нет")
                  .AddField("Дата начала", compitInfo.StartDate?.ToString() ?? "Нет")
@@ -258,12 +295,12 @@ namespace WAV_Bot_DSharp.Converters
                                                                     "Нет" :
                                                                     wav_guild.GetChannel(ulong.Parse(compitInfo.ScoresChannelUID)).Name)
                  .AddField("Лидерборд", string.IsNullOrEmpty(compitInfo.LeaderboardMessageUID) ? "Нет" : compitInfo.LeaderboardMessageUID)
-                 .AddField("Карта Beginner", compitInfo.BeginnerMap?.url ?? "Нет")
-                 .AddField("Карта Alpha", compitInfo.AlphaMap?.url ?? "Нет")
-                 .AddField("Карта Beta", compitInfo.BetaMap?.url ?? "Нет")
-                 .AddField("Карта Gamma", compitInfo.GammaMap?.url ?? "Нет")
-                 .AddField("Карта Delta", compitInfo.DeltaMap?.url ?? "Нет")
-                 .AddField("Карта Epsilon", compitInfo.EpsilonMap?.url ?? "Нет");
+                 .AddField("Карта Beginner", beginner)
+                 .AddField("Карта Alpha", alpha)
+                 .AddField("Карта Beta", beta)
+                 .AddField("Карта Gamma", gamma)
+                 .AddField("Карта Delta", delta)
+                 .AddField("Карта Epsilon", epsilon);
 
             return embed.Build();
         }
