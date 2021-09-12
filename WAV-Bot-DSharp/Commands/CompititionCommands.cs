@@ -162,7 +162,7 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            WAVMember member = wavMembers.GetMember(discordUser.Id.ToString());
+            ServerMember member = wavMembers.GetMember(discordUser.Id.ToString());
 
             if (member.CompitionProfile is null)
             {
@@ -201,7 +201,7 @@ namespace WAV_Bot_DSharp.Commands
         [Command("recount-manual"), Description("Пересчитать среднее PP для заданного участника"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task RecountManual(CommandContext context, DiscordMember dmember)
         {
-            WAVMember member = wavMembers.GetMember(dmember.Id.ToString());
+            ServerMember member = wavMembers.GetMember(dmember.Id.ToString());
             
             if (member.OsuServers.Count == 0)
             {
@@ -217,7 +217,7 @@ namespace WAV_Bot_DSharp.Commands
 
             OsuServer server = member.CompitionProfile.Server;
 
-            WAVMemberOsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
+            OsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
             if (profileInfo is null)
             {
                 await context.RespondAsync($"К Вашему профилю нет привязанного профиля сервера {osuEnums.OsuServerToString(server)}.");
@@ -284,7 +284,7 @@ namespace WAV_Bot_DSharp.Commands
             [Description("Регистрируемый участник")] DiscordUser dmember,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
         {
-            WAVMember member = wavMembers.GetMember(dmember.Id.ToString());
+            ServerMember member = wavMembers.GetMember(dmember.Id.ToString());
 
             if (member.OsuServers.Count == 0)
             {
@@ -300,7 +300,7 @@ namespace WAV_Bot_DSharp.Commands
             }
 
             OsuServer server = (OsuServer)mbServer;
-            WAVMemberOsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
+            OsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
             if (profileInfo is null)
             {
                 await commandContext.RespondAsync($"К Вашему профилю не привязанного профиля сервера {osuEnums.OsuServerToString(server)}.");
@@ -409,8 +409,8 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            WAVMember wavMember = wavMembers.GetMember(commandContext.User.Id.ToString());
-            WAVMemberCompitProfile compitProfile = wavCompit.GetCompitProfile(commandContext.User.Id.ToString());
+            ServerMember wavMember = wavMembers.GetMember(commandContext.User.Id.ToString());
+            CompitionProfile compitProfile = wavCompit.GetCompitProfile(commandContext.User.Id.ToString());
             if (compitProfile is null)
             {
                 await commandContext.RespondAsync("Вы не зарегистрированы на конкурсе.");

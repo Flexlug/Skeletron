@@ -19,7 +19,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// </summary>
         /// <param name="member">Регистрируемый участник</param>
         /// <param name="osuInfo">Информация о профиле</param>
-        public Task RegisterMember(DiscordUser member, WAVMemberOsuProfileInfo osuInfo);
+        public Task RegisterMember(DiscordUser member, OsuProfileInfo osuInfo);
 
         /// <summary>
         /// Выключить уведомления о конкурсе
@@ -31,7 +31,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// Включить уведомления о конкурсе
         /// </summary>
         /// <param name="member">Участник, которому нужно присвоить соответствующую роль</param>
-        public Task EnableNotifications(DiscordUser member, WAVMemberCompitProfile profile = null);
+        public Task EnableNotifications(DiscordUser member, CompitionProfile profile = null);
 
         /// <summary>
         /// Проверка выполнения всех условий для старта конкурса

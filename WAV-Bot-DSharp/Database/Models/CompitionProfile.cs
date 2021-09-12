@@ -7,7 +7,7 @@ using WAV_Osu_NetApi.Models;
 
 namespace WAV_Bot_DSharp.Database.Models
 {
-    public class WAVMemberCompitProfile
+    public class CompitionProfile
     {
         /// <summary>
         /// Забанен ли пользователь на конкурсе

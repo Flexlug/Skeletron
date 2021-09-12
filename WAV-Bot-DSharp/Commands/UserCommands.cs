@@ -94,7 +94,7 @@ namespace WAV_Bot_DSharp.Commands
         public async Task GetProfile(CommandContext commandContext,
             DiscordMember dmember)
         {
-            WAVMember member = wavMembers.GetMember(dmember.Id.ToString());
+            ServerMember member = wavMembers.GetMember(dmember.Id.ToString());
 
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
                 .WithTitle($"Информация об участнике WAV")

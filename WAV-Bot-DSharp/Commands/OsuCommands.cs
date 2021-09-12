@@ -301,7 +301,7 @@ namespace WAV_Bot_DSharp.Commands
 
             OsuServer choosedServer = (OsuServer)mbChoosedServer;
 
-            WAVMemberOsuProfileInfo userInfo = wavMembers.GetOsuProfileInfo(discordId, choosedServer);
+            OsuProfileInfo userInfo = wavMembers.GetOsuProfileInfo(discordId, choosedServer);
             if (userInfo is null)
             {
                 await commandContext.RespondAsync($"Не удалось найти ваш osu! профиль сервера `{choosedServer}`. Добавьте свой профиль через команду `osuset`");
@@ -381,7 +381,7 @@ namespace WAV_Bot_DSharp.Commands
         {
             string discordId = user.Id.ToString();
 
-            WAVMember member = wavMembers.GetMember(discordId);
+            ServerMember member = wavMembers.GetMember(discordId);
 
             if (!((commandContext.Channel.Name?.Contains("-bot") ?? false) ||
                   (commandContext.Channel.Name?.Contains("dev-announce") ?? false) ||
@@ -440,7 +440,7 @@ namespace WAV_Bot_DSharp.Commands
 
             try
             {
-                WAVMemberOsuProfileInfo profile = new WAVMemberOsuProfileInfo()
+                OsuProfileInfo profile = new OsuProfileInfo()
                 {
                     OsuId = osu_id,
                     OsuNickname = osu_nickname,

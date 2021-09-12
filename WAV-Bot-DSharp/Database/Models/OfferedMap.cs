@@ -31,6 +31,11 @@ namespace WAV_Bot_DSharp.Database.Models
         public CompitCategory Category { get; set; }
 
         /// <summary>
+        /// Дата добавления карты в предложку
+        /// </summary>
+        public DateTime AdditionDate { get; set; }
+
+        /// <summary>
         /// Discord ID предложившего карту
         /// </summary>
         public string SuggestedBy { get; set; }

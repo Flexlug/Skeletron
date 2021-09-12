@@ -197,7 +197,7 @@ namespace WAV_Bot_DSharp.Services
 
             OsuServer server = member.CompitionProfile.Server;
 
-            WAVMemberOsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
+            OsuProfileInfo profileInfo = member.OsuServers.FirstOrDefault(x => x.Server == server);
 
             if (profileInfo is null)
             {
@@ -441,11 +441,11 @@ namespace WAV_Bot_DSharp.Services
         /// </summary>
         /// <param name="user">Регистрируемый участник</param>
         /// <param name="osuInfo">Информация о профиле</param>
-        public async Task RegisterMember(DiscordUser user, WAVMemberOsuProfileInfo osuInfo)
+        public async Task RegisterMember(DiscordUser user, OsuProfileInfo osuInfo)
         {
             double avgPP = await CalculateAvgPP(osuInfo.OsuId, osuInfo.Server);
 
-            WAVMemberCompitProfile compitProfile = new WAVMemberCompitProfile()
+            CompitionProfile compitProfile = new CompitionProfile()
             {
                 AvgPP = avgPP,
                 Category = PPToCategory(avgPP),
@@ -463,12 +463,12 @@ namespace WAV_Bot_DSharp.Services
         /// Пересчитать PP для заданного пользователя
         /// </summary>
         /// <returns></returns>
-        public async Task RecountMember(DiscordMember user, WAVMemberOsuProfileInfo osuProfile, WAVMemberCompitProfile oldCompitProfile)
+        public async Task RecountMember(DiscordMember user, OsuProfileInfo osuProfile, CompitionProfile oldCompitProfile)
         {
             double avgPP = await CalculateAvgPP(osuProfile.OsuId, osuProfile.Server);
 
             logger.LogDebug($"avgPP for {user.Username}: {avgPP}");
-            WAVMemberCompitProfile compitProfile = new WAVMemberCompitProfile()
+            CompitionProfile compitProfile = new CompitionProfile()
             {
                 AvgPP = avgPP,
                 Category = PPToCategory(avgPP),
@@ -489,7 +489,7 @@ namespace WAV_Bot_DSharp.Services
             await EnableNotifications(user, compitProfile);
         }
 
-        public async Task SendNewCategoryDMNotification(DiscordMember user, WAVMemberCompitProfile compitProfile)
+        public async Task SendNewCategoryDMNotification(DiscordMember user, CompitionProfile compitProfile)
         {
             logger.LogDebug($"Sent DM notification to {user.Username} about new category – {compitProfile.Category}");
             DiscordDmChannel channel = await user.CreateDmChannelAsync();
@@ -612,11 +612,11 @@ namespace WAV_Bot_DSharp.Services
         /// Включить уведомления о конкурсе
         /// </summary>
         /// <param name="member">Участник, которому нужно присвоить соответствующую роль</param>
-        public async Task EnableNotifications(DiscordUser user, WAVMemberCompitProfile profile = null)
+        public async Task EnableNotifications(DiscordUser user, CompitionProfile profile = null)
         {
             DiscordMember member = await guild.GetMemberAsync(user.Id);
 
-            WAVMemberCompitProfile compitProfile = profile ?? wavCompit.GetCompitProfile(member.Id.ToString());
+            CompitionProfile compitProfile = profile ?? wavCompit.GetCompitProfile(member.Id.ToString());
             if (compitProfile is null)
             {
                 throw new NullReferenceException($"Couldn't get compitition profile for {member}");
@@ -666,7 +666,7 @@ namespace WAV_Bot_DSharp.Services
         {
             DiscordMember member = await guild.GetMemberAsync(user.Id);
 
-            WAVMemberCompitProfile compitProfile = wavCompit.GetCompitProfile(member.Id.ToString());
+            CompitionProfile compitProfile = wavCompit.GetCompitProfile(member.Id.ToString());
             if (compitProfile is null)
             {
                 throw new NullReferenceException($"Couldn't get compitition profile for {member}");

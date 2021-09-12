@@ -10,12 +10,12 @@ namespace WAV_Bot_DSharp.Database.Models
     /// <summary>
     /// Представляет собой структуру, в виде которой хранится информация о пользователях в БД
     /// </summary>
-    public class WAVMember 
+    public class ServerMember 
     { 
-        public WAVMember(string uid)
+        public ServerMember(string uid)
         {
             DiscordUID = uid;
-            OsuServers = new List<WAVMemberOsuProfileInfo>();
+            OsuServers = new List<OsuProfileInfo>();
             CompitionProfile = null;
             LastActivity = DateTime.Now;
             ActivityPoints = 0;
@@ -29,12 +29,12 @@ namespace WAV_Bot_DSharp.Database.Models
         /// <summary>
         /// Список серверов, на которых зарегистрирован участник
         /// </summary>
-        public List<WAVMemberOsuProfileInfo> OsuServers { get; set; }
+        public List<OsuProfileInfo> OsuServers { get; set; }
 
         /// <summary>
         /// Информация об участии в конкурсах
         /// </summary>
-        public WAVMemberCompitProfile CompitionProfile { get; set; }
+        public CompitionProfile CompitionProfile { get; set; }
 
         /// <summary>
         /// Дата последней активности

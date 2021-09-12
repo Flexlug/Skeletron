@@ -11,14 +11,14 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         /// </summary>
         /// <param name="uid">Discord id</param>
         /// <returns></returns>
-        public WAVMemberCompitProfile GetCompitProfile(string uid);
+        public CompitionProfile GetCompitProfile(string uid);
 
         /// <summary>
         /// Добавить информацию о профиле 
         /// </summary>
         /// <param name="uid">ID участника</param>
         /// <param name="compitProfile">Конкурсный профиль участника</param>
-        public void AddCompitProfile(string uid, WAVMemberCompitProfile compitProfile);
+        public void AddCompitProfile(string uid, CompitionProfile compitProfile);
 
         /// <summary>
         /// Добавить в БД информацию о скоре участника

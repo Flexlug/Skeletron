@@ -34,7 +34,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// Get next gatari user
         /// </summary>
         /// <returns></returns>
-        public Task<WAVMember> NextGatariUserAsync();
+        public Task<ServerMember> NextGatariUserAsync();
 
         /// <summary>
         /// Update time for latest score for gatari user
@@ -61,6 +61,6 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// Get next bacho user
         /// </summary>
         /// <returns></returns>
-        public Task<WAVMember> NextBanchoUserAsync();
+        public Task<ServerMember> NextBanchoUserAsync();
     }
 }

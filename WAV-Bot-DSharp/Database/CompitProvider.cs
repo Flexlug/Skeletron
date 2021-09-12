@@ -35,11 +35,11 @@ namespace WAV_Bot_DSharp.Database
             logger.LogInformation("WAVCompitProvider loaded");
         }
 
-        public WAVMemberCompitProfile GetCompitProfile(string uid)
+        public CompitionProfile GetCompitProfile(string uid)
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
-                WAVMember member = session.Query<WAVMember>()
+                ServerMember member = session.Query<ServerMember>()
                                           .Include(x => x.CompitionProfile)
                                           .FirstOrDefault(x => x.DiscordUID == uid);
 
@@ -47,11 +47,11 @@ namespace WAV_Bot_DSharp.Database
             }
         }
 
-        public void AddCompitProfile(string uid, WAVMemberCompitProfile compitProfile)
+        public void AddCompitProfile(string uid, CompitionProfile compitProfile)
         {
             using (IDocumentSession session = store.OpenSession())
             {
-                WAVMember member = session.Query<WAVMember>()
+                ServerMember member = session.Query<ServerMember>()
                                           .Include(x => x.OsuServers)
                                           .FirstOrDefault(x => x.DiscordUID == uid);
 
@@ -176,7 +176,7 @@ namespace WAV_Bot_DSharp.Database
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
-                WAVMember member = session.Query<WAVMember>()
+                ServerMember member = session.Query<ServerMember>()
                                           .Include(x => x.CompitionProfile)
                                           .FirstOrDefault(x => x.DiscordUID == uid);
 
