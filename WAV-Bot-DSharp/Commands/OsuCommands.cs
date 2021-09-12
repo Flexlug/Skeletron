@@ -37,8 +37,8 @@ namespace WAV_Bot_DSharp.Commands
         private OsuRegex osuRegex;
         private OsuEnums osuEnums;
 
-        private IWAVMembersProvider wavMembers;
-        private IWAVCompitProvider wavCompit;
+        private IMembersProvider wavMembers;
+        private ICompitProvider wavCompit;
 
         private BanchoApi api;
         private GatariApi gapi;
@@ -54,8 +54,8 @@ namespace WAV_Bot_DSharp.Commands
                            OsuEnums osuEnums,
                            BanchoApi api,
                            GatariApi gapi,
-                           IWAVMembersProvider wavMembers,
-                           IWAVCompitProvider wavProvider)
+                           IMembersProvider wavMembers,
+                           ICompitProvider wavProvider)
         {
             ModuleName = "osu!";
 

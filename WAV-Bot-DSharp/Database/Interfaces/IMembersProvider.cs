@@ -4,7 +4,7 @@ using WAV_Osu_NetApi.Models;
 
 namespace WAV_Bot_DSharp.Database.Interfaces
 {
-    public interface IWAVMembersProvider
+    public interface IMembersProvider
     {
         /// <summary>
         /// Получить участника из БД (или добавить его, если таковой отсутсвует)

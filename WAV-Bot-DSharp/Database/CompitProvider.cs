@@ -13,18 +13,18 @@ using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Database
 {
-    public class WAVCompitProvider : IWAVCompitProvider
+    public class CompitProvider : ICompitProvider
     {
         private IDocumentStore store;
 
         private BanchoApi api;
         private GatariApi gapi;
 
-        private ILogger<WAVCompitProvider> logger;
+        private ILogger<CompitProvider> logger;
 
-        public WAVCompitProvider(BanchoApi api,
+        public CompitProvider(BanchoApi api,
                                  GatariApi gapi,
-                                 ILogger<WAVCompitProvider> logger)
+                                 ILogger<CompitProvider> logger)
         {
             this.store = DocumentStoreProvider.Store;
 

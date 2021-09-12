@@ -4,7 +4,7 @@ using WAV_Bot_DSharp.Database.Models;
 
 namespace WAV_Bot_DSharp.Database.Interfaces
 {
-    public interface IWAVCompitProvider
+    public interface ICompitProvider
     {
         /// <summary>
         /// Получить информацию об участии данного пользователя в конкурсах WAV

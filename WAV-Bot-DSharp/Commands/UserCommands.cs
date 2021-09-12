@@ -29,7 +29,7 @@ namespace WAV_Bot_DSharp.Commands
     public sealed class UserCommands : SkBaseCommandModule
     {
         private ILogger<UserCommands> logger;
-        private IWAVMembersProvider wavMembers;
+        private IMembersProvider wavMembers;
 
         private OsuEnums osuEnums;
 
@@ -39,7 +39,7 @@ namespace WAV_Bot_DSharp.Commands
         private Settings settings;
 
         public UserCommands(ILogger<UserCommands> logger,
-                            IWAVMembersProvider wavMembers,
+                            IMembersProvider wavMembers,
                             OsuEnums osuEnums,
                             DiscordClient client,
                             DiscordGuild guild,

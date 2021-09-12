@@ -15,16 +15,16 @@ using Microsoft.Extensions.Logging;
 
 namespace WAV_Bot_DSharp.Database
 {
-    public class WAVMembersProvider : IWAVMembersProvider
+    public class MembersProvider : IMembersProvider
     {
         private IDocumentStore store;
 
-        private ILogger<WAVCompitProvider> logger;
+        private ILogger<CompitProvider> logger;
 
         private int iter = 0;
 
-        public WAVMembersProvider(DiscordClient client,
-                                  ILogger<WAVCompitProvider> logger)
+        public MembersProvider(DiscordClient client,
+                                  ILogger<CompitProvider> logger)
         {
             this.store = DocumentStoreProvider.Store;
 

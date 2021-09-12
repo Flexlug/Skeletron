@@ -37,8 +37,8 @@ namespace WAV_Bot_DSharp.Commands
 
         private DiscordGuild guild;
 
-        private IWAVCompitProvider wavCompit;
-        private IWAVMembersProvider wavMembers;
+        private ICompitProvider wavCompit;
+        private IMembersProvider wavMembers;
         private ICompititionService compititionService;
 
         private ISheetGenerator generator;
@@ -48,8 +48,8 @@ namespace WAV_Bot_DSharp.Commands
                                    OsuEnums osuEnums,
                                    DiscordClient client,
                                    DiscordGuild guild,
-                                   IWAVMembersProvider wavMembers,
-                                   IWAVCompitProvider wavCompit,
+                                   IMembersProvider wavMembers,
+                                   ICompitProvider wavCompit,
                                    ICompititionService compititionService,
                                    ISheetGenerator generator,
                                    IShedulerService sheduler)

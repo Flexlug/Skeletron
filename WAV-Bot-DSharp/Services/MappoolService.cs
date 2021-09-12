@@ -28,7 +28,7 @@ namespace WAV_Bot_DSharp.Services
 
         private IMappoolProvider mappoolProvider;
         private ICompititionService compitService;
-        private IWAVCompitProvider compitProvider;
+        private ICompitProvider compitProvider;
 
         private DiscordChannel announceChannel;
         private DiscordChannel debugChannel;
@@ -54,7 +54,7 @@ namespace WAV_Bot_DSharp.Services
 
         public MappoolService(ILogger<MappoolService> logger,
                               IMappoolProvider mappoolProvider,
-                              IWAVCompitProvider compitProvider,
+                              ICompitProvider compitProvider,
                               ICompititionService compitService,
                               DiscordClient client,
                               OsuRegex regex,

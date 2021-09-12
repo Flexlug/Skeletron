@@ -24,8 +24,8 @@ namespace WAV_Bot_DSharp.Services
 {
     public class CompititionService : ICompititionService
     {
-        private IWAVCompitProvider wavCompit;
-        private IWAVMembersProvider wavMembers;
+        private ICompitProvider wavCompit;
+        private IMembersProvider wavMembers;
 
         private IShedulerService sheduler;
         private SheduledTask recountTask;
@@ -59,8 +59,8 @@ namespace WAV_Bot_DSharp.Services
 
         private ILogger<CompititionService> logger;
 
-        public CompititionService(IWAVCompitProvider wavCompit,
-                                  IWAVMembersProvider wavMembers,
+        public CompititionService(ICompitProvider wavCompit,
+                                  IMembersProvider wavMembers,
                                   IShedulerService sheduler,
                                   OsuRegex osuRegex,
                                   OsuEnums osuEnums,
