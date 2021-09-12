@@ -211,6 +211,28 @@ namespace WAV_Bot_DSharp.Commands
             }
         }
 
+        [Command("map-search"), Description("Поиск карт по заданной строке"), RequireGuild]
+        public async Task OsuSearch(CommandContext ctx, 
+            [Description("Поисковый запрос"), RemainingText] string querry)
+        {
+            if (string.IsNullOrEmpty(querry))
+            {
+                await ctx.RespondAsync("Задан пустой поисковый запрос");
+                return;
+            }
+
+            var res = api.Search(querry);
+
+            if (res is null || res.Count == 0)
+            {
+                await ctx.RespondAsync("Ничего не найдено");
+                return;
+            }
+
+            var b = res.First();
+            await ctx.RespondAsync(embed: osuEmbeds.BeatmapToEmbed(b.beatmaps.Last(), b));
+        }
+
         [Command("osu"), Description("Получить информацию об osu! профиле"), RequireGuild]
         public async Task OsuProfile(CommandContext commandContext,
             [Description("osu! никнейм")] string nickname,
