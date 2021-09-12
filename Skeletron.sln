@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31423.177
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Bot-DSharp", "WAV-Bot-DSharp\WAV-Bot-DSharp.csproj", "{9EC912DD-8BC4-45F0-93E9-A16B958FC5C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skeletron", "Skeletron\Skeletron.csproj", "{9EC912DD-8BC4-45F0-93E9-A16B958FC5C3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Osu-Recognizer", "WAV_Osu-Recognizer\WAV-Osu-Recognizer.csproj", "{DB9596BD-F4D1-490C-8E65-C3693DAEC318}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Osu.NET.Recognizer", "Osu.NET.Recognizer\Osu.NET.Recognizer.csproj", "{DB9596BD-F4D1-490C-8E65-C3693DAEC318}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Osu-Recognizer-Test", "WAB-Osu-Recognizer-Tes\WAV-Osu-Recognizer-Test.csproj", "{CDAA2B7D-7E8C-49B8-B9B1-58DE0178BBAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Osu.NET.Recognizer_Test", "Osu.NET.Recognizer_Test\Osu.NET.Recognizer_Test.csproj", "{CDAA2B7D-7E8C-49B8-B9B1-58DE0178BBAF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Osu-NetApi", "WAV-Osu-NetApi\WAV-Osu-NetApi.csproj", "{6BC803EE-45A3-45F6-B2A2-C78687C4DE90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Osu.NET.Api", "Osu.NET.Api\Osu.NET.Api.csproj", "{6BC803EE-45A3-45F6-B2A2-C78687C4DE90}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Osu-NetApi-Test", "WAV-Osu-NetApi-Test\WAV-Osu-NetApi-Test.csproj", "{A393B866-B449-43B4-BD5F-719082C125CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Osu.NET.Api_Test", "Osu.NET.Api_Test\Osu.NET.Api_Test.csproj", "{A393B866-B449-43B4-BD5F-719082C125CB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WAV-Raven-Test", "WAV-Raven-Test\WAV-Raven-Test.csproj", "{FE2E76B1-7A30-46E5-84B4-4CC8F58053F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RavenTest", "RavenTest\RavenTest.csproj", "{FE2E76B1-7A30-46E5-84B4-4CC8F58053F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
