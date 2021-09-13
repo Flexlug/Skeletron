@@ -232,8 +232,7 @@ namespace Skeletron.Services
                 return;
             }
 
-            RecountMember(dMember, profileInfo, member.CompitionProfile);
-            logger.LogInformation($"Recounted {dMember.Username}");
+            RecountMember(dMember, profileInfo, member.CompitionProfile).Wait();
         }
 
         public async Task StopCompition()
@@ -473,7 +472,7 @@ namespace Skeletron.Services
         {
             double avgPP = await CalculateAvgPP(osuProfile.OsuId, osuProfile.Server);
 
-            logger.LogDebug($"avgPP for {user.Username}: {avgPP}");
+            logger.LogDebug($"Recounted avgPP for {user.Username}: {avgPP}");
             CompitionProfile compitProfile = new CompitionProfile()
             {
                 AvgPP = avgPP,
@@ -485,7 +484,7 @@ namespace Skeletron.Services
 
             if (compitProfile.Category != oldCompitProfile.Category)
             {
-                logger.LogDebug($"Category upgrade for {user.Username} – {compitProfile.Category}");
+                logger.LogInformation($"Category upgrade for {user.Username} – {compitProfile.Category}");
                 if (compitProfile.Notifications)
                     await SendNewCategoryDMNotification(user, compitProfile);
             }
