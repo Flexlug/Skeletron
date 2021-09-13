@@ -86,19 +86,19 @@ namespace Skeletron.SlashCommands
                                              .WithContent(res));
         }
 
-        [SlashCommand("vote", "Проголосовать за выбранную карту")]
-        public async Task Vote(InteractionContext ctx,
-            [Option("id", "ID карты")] long bmId)
-        {
-            string res = mappoolService.Vote(ctx.Member.Id.ToString(), (int)bmId);
+        //[SlashCommand("vote", "Проголосовать за выбранную карту")]
+        //public async Task Vote(InteractionContext ctx,
+        //    [Option("id", "ID карты")] long bmId)
+        //{
+        //    string res = mappoolService.Vote(ctx.Member.Id.ToString(), (int)bmId);
 
-            if (res == "done")
-                res = ":ok_hand:";
+        //    if (res == "done")
+        //        res = ":ok_hand:";
 
-            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                                          new DiscordInteractionResponseBuilder()
-                                             .AsEphemeral(true)
-                                             .WithContent(res));
-        }
+        //    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+        //                                  new DiscordInteractionResponseBuilder()
+        //                                     .AsEphemeral(true)
+        //                                     .WithContent(res));
+        //}
     }
 }
