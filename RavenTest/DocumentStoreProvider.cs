@@ -23,11 +23,11 @@ namespace WAV_Raven_Test
                 // Define the cluster node URLs (required)
                 Urls = new[]
                 {
-                    "http://192.168.2.71:8080"
+                    ""
                 },
 
                 // Define a default database (optional)
-                Database = "TestBase",
+                Database = "",
 
                 // Initialize the Document Store
             }.Initialize();

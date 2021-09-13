@@ -10,6 +10,7 @@ using Skeletron.Database.Models;
 using Skeletron.Utils;
 using Raven.Client.Documents;
 using Skeletron.Services;
+using Skeletron.Database;
 
 namespace WAV_Raven_Test
 {
@@ -17,30 +18,14 @@ namespace WAV_Raven_Test
     {
         static void Main(string[] args)
         {
-            var store = DocumentStoreProvider.Store;
+            WAV_Raven_Test.DocumentStoreProvider provider = new WAV_Raven_Test.DocumentStoreProvider();
 
-            Random rnd = new Random();
-
-            List<WAVMembers> allMembers = null;
-
-            using (var session = store.OpenSession())
+            MappoolProvider mprovider = new MappoolProvider(null)
             {
-                var wavMembers = session.Query<WAVMember>().ToList();
+                store = WAV_Raven_Test.DocumentStoreProvider.Store
+            };
 
-                allMembers = wavMembers.Select(x => new ServerMember(x.DiscordUID)
-                {
-                    ActivityPoints = x.ActivityPoints,
-                    CompitionProfile = x.CompitionProfile,
-                    DiscordUID = x.DiscordUID,
-                    LastActivity = x.LastActivity,
-                    OsuServers = x.OsuServers
-                }).ToList();
-
-                session.Store(allMembers);
-                session.SaveChanges();
-            }
-
-            Console.WriteLine("Done");
+            Console.WriteLine(mprovider.MapsCount(CompitCategory.Gamma));
         }
     }
 }
