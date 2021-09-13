@@ -78,5 +78,16 @@ namespace Skeletron.SlashCommands
                                  .AsEphemeral(true)
                                  .WithContent(":ok_hand:"));
         }
+
+        [SlashCommand("get-for", "Показать предлагаемые карты для следующего W.w.W. для выбранной категории.")]
+        [SlashRequireUserPermissions(Permissions.BanMembers)]
+        public async Task GetMappol(InteractionContext ctx,
+            [Option("category", "Конкурсная категория")] CompitCategory category)
+        {
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                                         new DiscordInteractionResponseBuilder()
+                                            .AddEmbed(mappoolService.GetCategoryMappool(category))
+                                            .AsEphemeral(true));
+        }
     }
 }
