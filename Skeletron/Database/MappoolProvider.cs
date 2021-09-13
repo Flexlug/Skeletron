@@ -41,6 +41,7 @@ namespace Skeletron.Database
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
                 var alreadySubmitedMap = session.Query<OfferedMap>()
+                                                .Customize(x => x.WaitForNonStaleResults(TimeSpan.FromSeconds(5)))
                                                 .ToList();
 
                 return alreadySubmitedMap;
@@ -52,6 +53,7 @@ namespace Skeletron.Database
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
                 var categoryMaps = session.Query<OfferedMap>()
+                                          .Customize(x => x.WaitForNonStaleResults(TimeSpan.FromSeconds(5)))
                                           .Include(x => x.Votes)
                                           .Select(x => x)
                                           .Where(x => x.Category == category)
