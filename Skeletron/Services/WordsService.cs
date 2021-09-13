@@ -6,10 +6,10 @@ using DSharpPlus.Entities;
 
 using Microsoft.Extensions.Logging;
 
-using WAV_Bot_DSharp.Database.Interfaces;
-using WAV_Bot_DSharp.Services.Interfaces;
+using Skeletron.Database.Interfaces;
+using Skeletron.Services.Interfaces;
 
-namespace WAV_Bot_DSharp.Services
+namespace Skeletron.Services
 {
     public class WordsService : IWordsService
     {

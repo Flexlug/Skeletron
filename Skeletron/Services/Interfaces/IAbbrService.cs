@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WAV_Bot_DSharp.Services.Interfaces
+namespace Skeletron.Services.Interfaces
 {
     public interface IAbbrService
     {

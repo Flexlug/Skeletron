@@ -3,11 +3,11 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
-using WAV_Bot_DSharp.Services.Interfaces;
+using Skeletron.Services.Interfaces;
 
 using Microsoft.Extensions.Logging;
 
-namespace WAV_Bot_DSharp.Commands
+namespace Skeletron.Commands
 {
     /// <summary>
     /// Предоставляет команды для osu!

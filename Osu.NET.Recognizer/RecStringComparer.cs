@@ -3,7 +3,7 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace WAV_Osu_Recognizer
+namespace OsuNET_Recognizer
 {
     public static class RecStringComparer
     {

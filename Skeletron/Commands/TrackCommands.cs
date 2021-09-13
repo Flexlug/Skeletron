@@ -3,15 +3,15 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
-using WAV_Bot_DSharp.Services.Interfaces;
+using Skeletron.Services.Interfaces;
 
 using Microsoft.Extensions.Logging;
 
-using WAV_Osu_NetApi;
-using WAV_Osu_NetApi.Models.Gatari;
-using WAV_Osu_NetApi.Models.Bancho;
+using OsuNET_Api;
+using OsuNET_Api.Models.Gatari;
+using OsuNET_Api.Models.Bancho;
 
-namespace WAV_Bot_DSharp.Commands
+namespace Skeletron.Commands
 {
     [RequireUserPermissions(DSharpPlus.Permissions.Administrator), RequireGuild]
     public class TrackCommands : SkBaseCommandModule

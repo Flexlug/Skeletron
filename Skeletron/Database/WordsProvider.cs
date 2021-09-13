@@ -7,10 +7,10 @@ using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 
-using WAV_Bot_DSharp.Database.Interfaces;
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Database.Interfaces;
+using Skeletron.Database.Models;
 
-namespace WAV_Bot_DSharp.Database
+namespace Skeletron.Database
 {
     public class WordsProvider : IWordsProvider
     {

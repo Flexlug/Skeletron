@@ -8,10 +8,10 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
-using WAV_Bot_DSharp.Database.Models;
-using WAV_Bot_DSharp.Services.Interfaces;
+using Skeletron.Database.Models;
+using Skeletron.Services.Interfaces;
 
-namespace WAV_Bot_DSharp.Services
+namespace Skeletron.Services
 {
     public class SheetGenerator : ISheetGenerator
     {

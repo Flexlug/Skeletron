@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WAV_Bot_DSharp.Services.Models
+namespace Skeletron.Services.Models
 {
     /// <summary>
     /// Запланированная задача, которая должна выполняться один раз или через заданный промежуток времени

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-using WAV_Osu_NetApi.Models.Gatari;
+using OsuNET_Api.Models.Gatari;
 
-namespace WAV_Bot_DSharp.Services.Interfaces
+namespace Skeletron.Services.Interfaces
 {
     public interface ITrackService
     {

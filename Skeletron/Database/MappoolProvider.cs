@@ -8,10 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using WAV_Bot_DSharp.Database.Interfaces;
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Database.Interfaces;
+using Skeletron.Database.Models;
 
-namespace WAV_Bot_DSharp.Database
+namespace Skeletron.Database
 {
     public class MappoolProvider : IMappoolProvider
     {

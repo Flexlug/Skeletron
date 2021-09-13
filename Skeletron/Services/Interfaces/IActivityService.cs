@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 using DSharpPlus.Entities;
 
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Database.Models;
 
-namespace WAV_Bot_DSharp.Services.Interfaces
+namespace Skeletron.Services.Interfaces
 {
     /// <summary>
     /// Предоставляет доступ к сервису, отслеживающему активность пользователей
@@ -30,13 +30,13 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// </summary>
         /// <param name="page">Номер страницы</param>
         /// <returns></returns>
-        public Task<List<ServerMember>> ViewActivityInfoAsync(int page);
+        public Task<List<WAVMembers>> ViewActivityInfoAsync(int page);
 
         /// <summary>
         /// Получить список AFK пользователей
         /// </summary>
         /// <returns>Список AFK пользователей</returns>
-        public Task<List<ServerMember>> GetAFKUsersAsync(int page);
+        public Task<List<WAVMembers>> GetAFKUsersAsync(int page);
 
         /// <summary>
         /// Удаляет пользователя из списка отслеживания
@@ -56,7 +56,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// </summary>
         /// <param name="user">Uid пользователя</param>
         /// <returns>Дату последней активности пользователя</returns>
-        public Task<ServerMember> GetUserAsync(ulong user);
+        public Task<WAVMembers> GetUserAsync(ulong user);
 
         /// <summary>
         /// Вручную обновить ингформацию об активности пользователя. Последняя активность будет выставлена на текущую дату и время

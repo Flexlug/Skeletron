@@ -4,9 +4,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using WAV_Osu_NetApi.Models;
+using OsuNET_Api.Models;
 
-namespace WAV_Bot_DSharp.Database.Models
+namespace Skeletron.Database.Models
 {
     /// <summary>
     /// Информация о участнике WAV на конкретном osu сервере

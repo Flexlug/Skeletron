@@ -2,9 +2,9 @@
 
 using Raven.Client.Documents;
 
-using WAV_Bot_DSharp.Configurations;
+using Skeletron.Configurations;
 
-namespace WAV_Bot_DSharp.Database
+namespace Skeletron.Database
 {
     public class DocumentStoreProvider
     {

@@ -7,12 +7,12 @@ using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
 
 
-using WAV_Bot_DSharp.Services.Interfaces;
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Services.Interfaces;
+using Skeletron.Database.Models;
 
 using Microsoft.Extensions.Logging;
 
-namespace WAV_Bot_DSharp.SlashCommands
+namespace Skeletron.SlashCommands
 {
     [SlashModuleLifespan(SlashModuleLifespan.Singleton)]
     [SlashCommandGroup("mappool", "Команды для управления предложкой")]
@@ -85,6 +85,7 @@ namespace WAV_Bot_DSharp.SlashCommands
                                              .AsEphemeral(true)
                                              .WithContent(res));
         }
+
         [SlashCommand("vote", "Проголосовать за выбранную карту")]
         public async Task Vote(InteractionContext ctx,
             [Option("id", "ID карты")] long bmId)

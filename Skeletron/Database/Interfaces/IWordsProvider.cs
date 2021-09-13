@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WAV_Bot_DSharp.Database.Interfaces
+namespace Skeletron.Database.Interfaces
 {
     public interface IWordsProvider
     {

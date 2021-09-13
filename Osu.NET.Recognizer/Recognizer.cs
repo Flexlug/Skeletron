@@ -10,7 +10,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
-namespace WAV_Osu_Recognizer
+namespace OsuNET_Recognizer
 {
     /// <summary>
     /// Класс, отвечающий за распознование карт

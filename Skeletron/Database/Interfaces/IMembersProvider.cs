@@ -1,8 +1,8 @@
-﻿using WAV_Bot_DSharp.Database.Models;
+﻿using Skeletron.Database.Models;
 
-using WAV_Osu_NetApi.Models;
+using OsuNET_Api.Models;
 
-namespace WAV_Bot_DSharp.Database.Interfaces
+namespace Skeletron.Database.Interfaces
 {
     public interface IMembersProvider
     {
@@ -10,7 +10,7 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         /// Получить участника из БД (или добавить его, если таковой отсутсвует)
         /// </summary>
         /// <param name="uid">Discord id участника, добавляемого в БД</param>
-        public ServerMember GetMember(string uid);
+        public WAVMembers GetMember(string uid);
 
         /// <summary>
         /// Добавить или обновить данные о сервере, на котором играет участник
@@ -31,6 +31,6 @@ namespace WAV_Bot_DSharp.Database.Interfaces
         /// Получить одного 
         /// </summary>
         /// <returns></returns>
-        public ServerMember Next();
+        public WAVMembers Next();
     }
 }

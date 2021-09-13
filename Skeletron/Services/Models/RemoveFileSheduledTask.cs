@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace WAV_Bot_DSharp.Services.Models
+namespace Skeletron.Services.Models
 {
     /// <summary>
     /// Планируемая задача на удаление файла

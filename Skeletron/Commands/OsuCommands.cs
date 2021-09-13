@@ -11,17 +11,17 @@ using DSharpPlus.CommandsNext.Attributes;
 
 using Microsoft.Extensions.Logging;
 
-using WAV_Bot_DSharp.Converters;
-using WAV_Bot_DSharp.Database.Models;
-using WAV_Bot_DSharp.Database.Interfaces;
-using WAV_Bot_DSharp.Services.Entities;
+using Skeletron.Converters;
+using Skeletron.Database.Models;
+using Skeletron.Database.Interfaces;
+using Skeletron.Services.Entities;
 
-using WAV_Osu_NetApi;
-using WAV_Osu_NetApi.Models;
-using WAV_Osu_NetApi.Models.Bancho;
-using WAV_Osu_NetApi.Models.Gatari;
+using OsuNET_Api;
+using OsuNET_Api.Models;
+using OsuNET_Api.Models.Bancho;
+using OsuNET_Api.Models.Gatari;
 
-namespace WAV_Bot_DSharp.Commands
+namespace Skeletron.Commands
 {
     public class OsuCommands : SkBaseCommandModule
     {
@@ -403,7 +403,7 @@ namespace WAV_Bot_DSharp.Commands
         {
             string discordId = user.Id.ToString();
 
-            ServerMember member = wavMembers.GetMember(discordId);
+            WAVMembers member = wavMembers.GetMember(discordId);
 
             if (!((commandContext.Channel.Name?.Contains("-bot") ?? false) ||
                   (commandContext.Channel.Name?.Contains("dev-announce") ?? false) ||

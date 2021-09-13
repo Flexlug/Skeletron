@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WAV_Bot_DSharp.Database.Models
+namespace Skeletron.Database.Models
 {
     public enum CompitCategory
     {

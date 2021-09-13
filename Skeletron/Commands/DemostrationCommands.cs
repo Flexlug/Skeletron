@@ -10,7 +10,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 using Microsoft.Extensions.Logging;
 
-namespace WAV_Bot_DSharp.Commands
+namespace Skeletron.Commands
 {
     /// <summary>
     /// Class with demonstration of possibilities.

@@ -7,10 +7,10 @@ using RestSharp;
 
 using Newtonsoft.Json;
 
-using WAV_Osu_NetApi.Models.Gatari;
-using WAV_Osu_NetApi.Models.Gatari.Responses;
+using OsuNET_Api.Models.Gatari;
+using OsuNET_Api.Models.Gatari.Responses;
 
-namespace WAV_Osu_NetApi
+namespace OsuNET_Api
 {
     /// <summary>
     /// Gatari server methods implementation

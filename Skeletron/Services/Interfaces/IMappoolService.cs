@@ -2,11 +2,11 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Database.Models;
 
-using WAV_Osu_NetApi.Models.Bancho;
+using OsuNET_Api.Models.Bancho;
 
-namespace WAV_Bot_DSharp.Services.Interfaces
+namespace Skeletron.Services.Interfaces
 {
 	public interface IMappoolService
 	{
@@ -73,6 +73,12 @@ namespace WAV_Bot_DSharp.Services.Interfaces
 		/// </summary>
 		/// <returns></returns>
 		public Task<string> UpdateMappoolStatus();
+
+		/// <summary>
+		/// ОБновить Embed маппула для отдельной категории
+		/// </summary>
+		/// <returns></returns>
+		public Task<string> UpdateCategoryMappoolStatus(CompitCategory cat);
 
 		/// <summary>
 		/// Отключить отслеживание предложки без подведения итогов

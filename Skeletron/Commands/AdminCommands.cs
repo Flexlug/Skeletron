@@ -14,9 +14,9 @@ using DSharpPlus.Interactivity.Extensions;
 
 using Microsoft.Extensions.Logging;
 
-using WAV_Bot_DSharp.Services.Interfaces;
+using Skeletron.Services.Interfaces;
 
-namespace WAV_Bot_DSharp.Commands
+namespace Skeletron.Commands
 {
     /// <summary>
     /// Commands that can only be used by Server Administrators. The Administrator permission is required (or to be the server owner).

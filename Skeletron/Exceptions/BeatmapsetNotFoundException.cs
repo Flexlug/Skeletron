@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WAV_Bot_DSharp.Exceptions
+namespace Skeletron.Exceptions
 {
     public class BeatmapsetNotFoundException : Exception
     {

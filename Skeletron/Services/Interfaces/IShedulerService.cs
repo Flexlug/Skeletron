@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-using WAV_Bot_DSharp.Services.Models;
+using Skeletron.Services.Models;
 
-namespace WAV_Bot_DSharp.Services.Interfaces
+namespace Skeletron.Services.Interfaces
 {
     public interface IShedulerService
     {

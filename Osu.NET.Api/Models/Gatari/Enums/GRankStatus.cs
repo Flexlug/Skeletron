@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace WAV_Osu_NetApi.Models.Gatari.Enums
+namespace OsuNET_Api.Models.Gatari.Enums
 {
     public enum GRankStatus
     {

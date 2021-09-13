@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 using DSharpPlus.Entities;
 
-using WAV_Osu_NetApi.Models.Bancho;
-using WAV_Osu_NetApi.Models.Gatari;
+using OsuNET_Api.Models.Bancho;
+using OsuNET_Api.Models.Gatari;
 
 using Microsoft.Extensions.Logging;
 
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Database.Models;
 
-namespace WAV_Bot_DSharp.Converters
+namespace Skeletron.Converters
 {
     /// <summary>
     /// Class with Osu utils

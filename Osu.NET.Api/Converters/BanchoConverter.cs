@@ -2,9 +2,9 @@
 using System.Text;
 using System.Collections.Generic;
 
-using WAV_Osu_NetApi.Models.Bancho;
+using OsuNET_Api.Models.Bancho;
 
-namespace WAV_Osu_NetApi.Converters
+namespace OsuNET_Api.Converters
 {
     public static class BanchoConverter
     {

@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 
-using WAV_Bot_DSharp.Converters;
-using WAV_Bot_DSharp.Database.Interfaces;
-using WAV_Bot_DSharp.Database.Models;
-using WAV_Bot_DSharp.Services.Interfaces;
-using WAV_Bot_DSharp.Services.Models;
+using Skeletron.Converters;
+using Skeletron.Database.Interfaces;
+using Skeletron.Database.Models;
+using Skeletron.Services.Interfaces;
+using Skeletron.Services.Models;
 
-using WAV_Osu_NetApi;
-using WAV_Osu_NetApi.Models;
-using WAV_Osu_NetApi.Models.Bancho;
-using WAV_Osu_NetApi.Models.Gatari;
+using OsuNET_Api;
+using OsuNET_Api.Models;
+using OsuNET_Api.Models.Bancho;
+using OsuNET_Api.Models.Gatari;
 
 using Microsoft.Extensions.Logging;
 
-namespace WAV_Bot_DSharp.Services
+namespace Skeletron.Services
 {
     public class CompititionService : ICompititionService
     {
@@ -119,7 +119,7 @@ namespace WAV_Bot_DSharp.Services
             }
             else
             {
-                StartRecountTask();
+                StartRecountTask().Wait();
             }
         }
 
@@ -182,6 +182,12 @@ namespace WAV_Bot_DSharp.Services
         public void RecountTask()
         {
             var member = wavMembers.Next();
+
+            if (member is null)
+            {
+                logger.LogWarning($"Couldn't get next member");
+                return;
+            }
 
             if (member.OsuServers.Count == 0)
             {

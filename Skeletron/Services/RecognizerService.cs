@@ -13,22 +13,22 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
 
-using WAV_Bot_DSharp.Services.Interfaces;
-using WAV_Bot_DSharp.Configurations;
-using WAV_Bot_DSharp.Threading;
-using WAV_Bot_DSharp.Converters;
-using WAV_Bot_DSharp.Exceptions;
+using Skeletron.Services.Interfaces;
+using Skeletron.Configurations;
+using Skeletron.Threading;
+using Skeletron.Converters;
+using Skeletron.Exceptions;
 
-using WAV_Osu_Recognizer;
+using OsuNET_Recognizer;
 
-using WAV_Osu_NetApi;
-using WAV_Osu_NetApi.Models.Bancho;
-using WAV_Osu_NetApi.Models.Gatari;
+using OsuNET_Api;
+using OsuNET_Api.Models.Bancho;
+using OsuNET_Api.Models.Gatari;
 
 using OneOf;
 using DSharpPlus.EventArgs;
 
-namespace WAV_Bot_DSharp.Services.Entities
+namespace Skeletron.Services.Entities
 {
     /// <summary>
     /// Реализация сервиса, который будет отслеживать скриншоты и скоры из osu!
@@ -428,8 +428,8 @@ namespace WAV_Bot_DSharp.Services.Entities
                 logger.LogDebug($"Got mapper: {mapper}. Comparing...");
 
                 List<Tuple<Beatmapset, double>> bsm = bmsl.Select(x => Tuple.Create(x, 
-                                                                                    WAV_Osu_Recognizer.RecStringComparer.Compare(x.creator, mapper) +
-                                                                                    WAV_Osu_Recognizer.RecStringComparer.Compare(x.title, mapName)))
+                                                                                    OsuNET_Recognizer.RecStringComparer.Compare(x.creator, mapper) +
+                                                                                    OsuNET_Recognizer.RecStringComparer.Compare(x.title, mapName)))
                                                                   .OrderByDescending(x => x.Item2)
                                                                   .ToList();
 
@@ -451,7 +451,7 @@ namespace WAV_Bot_DSharp.Services.Entities
                 logger.LogInformation($"Couldn't get mapper");
 
                 List<Tuple<Beatmapset, double>> bsm = bmsl.Select(x => Tuple.Create(x,
-                                                                    WAV_Osu_Recognizer.RecStringComparer.Compare(x.title, mapName)))
+                                                                    OsuNET_Recognizer.RecStringComparer.Compare(x.title, mapName)))
                                                   .OrderByDescending(x => x.Item2)
                                                   .ToList();
 
@@ -481,7 +481,7 @@ namespace WAV_Bot_DSharp.Services.Entities
 
             if (!string.IsNullOrEmpty(diffName))
             {
-                List<Tuple<Beatmap, double>> bmds = bms.beatmaps.Select(x => Tuple.Create(x, WAV_Osu_Recognizer.RecStringComparer.Compare(x.version, diffName)))
+                List<Tuple<Beatmap, double>> bmds = bms.beatmaps.Select(x => Tuple.Create(x, OsuNET_Recognizer.RecStringComparer.Compare(x.version, diffName)))
                                                          .OrderByDescending(x => x.Item2)
                                                          .ToList();
 

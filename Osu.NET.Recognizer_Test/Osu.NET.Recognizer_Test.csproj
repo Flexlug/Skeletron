@@ -12,8 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WAV-Osu-NetApi\Osu.NET.Api.csproj" />
-    <ProjectReference Include="..\WAV_Osu-Recognizer\Osu.NET.Recognizer.csproj" />
+    <ProjectReference Include="..\Osu.NET.Api\Osu.NET.Api.csproj" />
+    <ProjectReference Include="..\Osu.NET.Recognizer\Osu.NET.Recognizer.csproj" />
   </ItemGroup>
 
 </Project>

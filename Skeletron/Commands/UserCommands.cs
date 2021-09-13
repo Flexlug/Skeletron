@@ -15,12 +15,12 @@ using GoogleApi.Entities.Search.Web.Request;
 
 using Microsoft.Extensions.Logging;
 
-using WAV_Bot_DSharp.Configurations;
-using WAV_Bot_DSharp.Converters;
-using WAV_Bot_DSharp.Database.Interfaces;
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Configurations;
+using Skeletron.Converters;
+using Skeletron.Database.Interfaces;
+using Skeletron.Database.Models;
 
-namespace WAV_Bot_DSharp.Commands
+namespace Skeletron.Commands
 {
     /// <summary>
     /// Commands that can be used by @everyone. 
@@ -94,7 +94,7 @@ namespace WAV_Bot_DSharp.Commands
         public async Task GetProfile(CommandContext commandContext,
             DiscordMember dmember)
         {
-            ServerMember member = wavMembers.GetMember(dmember.Id.ToString());
+            WAVMembers member = wavMembers.GetMember(dmember.Id.ToString());
 
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
                 .WithTitle($"Информация об участнике WAV")

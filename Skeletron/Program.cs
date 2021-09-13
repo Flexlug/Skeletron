@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
-using WAV_Bot_DSharp.Configurations;
+using Skeletron.Configurations;
 
-namespace WAV_Bot_DSharp
+namespace Skeletron
 {
     class Program
     {

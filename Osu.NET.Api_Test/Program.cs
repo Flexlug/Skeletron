@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 
-using WAV_Osu_NetApi;
+using OsuNET_Api;
 
 using Newtonsoft.Json;
 
-namespace WAV_Osu_NetApi_Test
+namespace OsuNET_Api_Test
 {
     class Program
     {
@@ -19,7 +19,7 @@ namespace WAV_Osu_NetApi_Test
             BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
             Console.WriteLine(api.ReloadToken());
 
-            foreach (var m in api.Search("Under The Covers - Join Us For A Bite [Sister Location]", WAV_Osu_NetApi.Models.Bancho.MapType.Any))
+            foreach (var m in api.Search("Under The Covers - Join Us For A Bite [Sister Location]", OsuNET_Api.Models.Bancho.MapType.Any))
             {
                 Console.WriteLine($"{m.creator} - {m.artist} {m.title}");
                 foreach (var mm in m.beatmaps)

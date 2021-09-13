@@ -6,9 +6,9 @@ using DSharpPlus.SlashCommands;
 
 using Microsoft.Extensions.Logging;
 
-using WAV_Bot_DSharp.Services.Interfaces;
+using Skeletron.Services.Interfaces;
 
-namespace WAV_Bot_DSharp.SlashCommands
+namespace Skeletron.SlashCommands
 {
     [SlashModuleLifespan(SlashModuleLifespan.Singleton)]
     public class UserSlashCommands : ApplicationCommandModule

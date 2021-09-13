@@ -15,18 +15,18 @@ using DSharpPlus.SlashCommands;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 
-using WAV_Osu_NetApi;
+using OsuNET_Api;
 
-using WAV_Bot_DSharp.Commands;
-using WAV_Bot_DSharp.Services.Entities;
-using WAV_Bot_DSharp.Configurations;
-using WAV_Bot_DSharp.Converters;
-using WAV_Bot_DSharp.Services.Interfaces;
+using Skeletron.Commands;
+using Skeletron.Services.Entities;
+using Skeletron.Configurations;
+using Skeletron.Converters;
+using Skeletron.Services.Interfaces;
 
-using WAV_Bot_DSharp.SlashCommands;
-using WAV_Bot_DSharp.Services;
-using WAV_Bot_DSharp.Database;
-using WAV_Bot_DSharp.Database.Interfaces;
+using Skeletron.SlashCommands;
+using Skeletron.Services;
+using Skeletron.Database;
+using Skeletron.Database.Interfaces;
 
 using Serilog;
 
@@ -34,7 +34,7 @@ using NumbersAPI.NET;
 using GoogleApi;
 using DSharpPlus.SlashCommands.EventArgs;
 
-namespace WAV_Bot_DSharp
+namespace Skeletron
 {
     public class Bot : IDisposable
     {
@@ -105,6 +105,7 @@ namespace WAV_Bot_DSharp
                 .AddSingleton<OsuEnums>()
                 .AddSingleton<OsuRegex>()
                 .AddSingleton<NumbersApi>()
+                .AddSingleton<EmojiUtlis>()
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
                 .AddSingleton(new GoogleSearch())

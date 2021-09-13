@@ -7,9 +7,9 @@ using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
 
-using WAV_Bot_DSharp.Commands;
+using Skeletron.Commands;
 
-namespace WAV_Bot_DSharp.Services.Entities
+namespace Skeletron.Services.Entities
 {
     public class CustomHelpFormatter : BaseHelpFormatter
     {

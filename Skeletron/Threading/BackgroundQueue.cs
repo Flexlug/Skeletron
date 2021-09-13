@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WAV_Bot_DSharp.Threading
+namespace Skeletron.Threading
 {
     public class BackgroundQueue
     {

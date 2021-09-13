@@ -16,14 +16,14 @@ using DSharpPlus.CommandsNext.Attributes;
 using OsuParsers.Decoders;
 using OsuParsers.Replays;
 
-using WAV_Osu_NetApi.Models;
+using OsuNET_Api.Models;
 
-using WAV_Bot_DSharp.Converters;
-using WAV_Bot_DSharp.Database.Interfaces;
-using WAV_Bot_DSharp.Database.Models;
-using WAV_Bot_DSharp.Services.Interfaces;
+using Skeletron.Converters;
+using Skeletron.Database.Interfaces;
+using Skeletron.Database.Models;
+using Skeletron.Services.Interfaces;
 
-namespace WAV_Bot_DSharp.Commands
+namespace Skeletron.Commands
 {
     [Group("www")]
     public class CompititionCommands : SkBaseCommandModule
@@ -162,7 +162,7 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            ServerMember member = wavMembers.GetMember(discordUser.Id.ToString());
+            WAVMembers member = wavMembers.GetMember(discordUser.Id.ToString());
 
             if (member.CompitionProfile is null)
             {
@@ -201,7 +201,7 @@ namespace WAV_Bot_DSharp.Commands
         [Command("recount-manual"), Description("Пересчитать среднее PP для заданного участника"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task RecountManual(CommandContext context, DiscordMember dmember)
         {
-            ServerMember member = wavMembers.GetMember(dmember.Id.ToString());
+            WAVMembers member = wavMembers.GetMember(dmember.Id.ToString());
             
             if (member.OsuServers.Count == 0)
             {
@@ -284,7 +284,7 @@ namespace WAV_Bot_DSharp.Commands
             [Description("Регистрируемый участник")] DiscordUser dmember,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
         {
-            ServerMember member = wavMembers.GetMember(dmember.Id.ToString());
+            WAVMembers member = wavMembers.GetMember(dmember.Id.ToString());
 
             if (member.OsuServers.Count == 0)
             {
@@ -409,7 +409,7 @@ namespace WAV_Bot_DSharp.Commands
                 return;
             }
 
-            ServerMember wavMember = wavMembers.GetMember(commandContext.User.Id.ToString());
+            WAVMembers wavMember = wavMembers.GetMember(commandContext.User.Id.ToString());
             CompitionProfile compitProfile = wavCompit.GetCompitProfile(commandContext.User.Id.ToString());
             if (compitProfile is null)
             {
@@ -528,7 +528,7 @@ namespace WAV_Bot_DSharp.Commands
             sb.AppendLine($"Discord nickname: `{msg.Author.Username}`");
             sb.AppendLine($"Score: `{replay.ReplayScore:N0}`"); // Format: 123456789 -> 123 456 789
             sb.AppendLine($"Category: `{osuEnums.CategoryToString(wavMember.CompitionProfile.Category) ?? "No category"}`");
-            sb.AppendLine($"Mods: `{osuEnums.ModsToString((WAV_Osu_NetApi.Models.Bancho.Mods)replay.Mods)}`");
+            sb.AppendLine($"Mods: `{osuEnums.ModsToString((OsuNET_Api.Models.Bancho.Mods)replay.Mods)}`");
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder().WithAuthor(msg.Author.Username, iconUrl: msg.Author.AvatarUrl)
                                                                  .WithTitle($"Added replay {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}")

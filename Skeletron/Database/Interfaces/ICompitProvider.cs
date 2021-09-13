@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Database.Models;
 
-namespace WAV_Bot_DSharp.Database.Interfaces
+namespace Skeletron.Database.Interfaces
 {
     public interface ICompitProvider
     {

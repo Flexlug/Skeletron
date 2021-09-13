@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace WAV_Osu_NetApi.Models
+namespace OsuNET_Api.Models
 {
     /// <summary>
     /// Реализованные в API osu! сервера

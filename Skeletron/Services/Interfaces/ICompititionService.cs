@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 using DSharpPlus.Entities;
 
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Database.Models;
 
-namespace WAV_Bot_DSharp.Services.Interfaces
+namespace Skeletron.Services.Interfaces
 {
     public interface ICompititionService
     {

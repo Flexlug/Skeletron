@@ -1,4 +1,4 @@
-﻿namespace WAV_Bot_DSharp.Services.Interfaces
+﻿namespace Skeletron.Services.Interfaces
 {
     public interface IRecognizerService
     {

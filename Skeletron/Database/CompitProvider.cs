@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 
-using WAV_Bot_DSharp.Database.Models;
-using WAV_Bot_DSharp.Database.Interfaces;
+using Skeletron.Database.Models;
+using Skeletron.Database.Interfaces;
 
-using WAV_Osu_NetApi;
+using OsuNET_Api;
 
 using Microsoft.Extensions.Logging;
 
-namespace WAV_Bot_DSharp.Database
+namespace Skeletron.Database
 {
     public class CompitProvider : ICompitProvider
     {
@@ -39,7 +39,7 @@ namespace WAV_Bot_DSharp.Database
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
-                ServerMember member = session.Query<ServerMember>()
+                WAVMembers member = session.Query<WAVMembers>()
                                           .Include(x => x.CompitionProfile)
                                           .FirstOrDefault(x => x.DiscordUID == uid);
 
@@ -51,7 +51,7 @@ namespace WAV_Bot_DSharp.Database
         {
             using (IDocumentSession session = store.OpenSession())
             {
-                ServerMember member = session.Query<ServerMember>()
+                WAVMembers member = session.Query<WAVMembers>()
                                           .Include(x => x.OsuServers)
                                           .FirstOrDefault(x => x.DiscordUID == uid);
 
@@ -176,7 +176,7 @@ namespace WAV_Bot_DSharp.Database
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
-                ServerMember member = session.Query<ServerMember>()
+                WAVMembers member = session.Query<WAVMembers>()
                                           .Include(x => x.CompitionProfile)
                                           .FirstOrDefault(x => x.DiscordUID == uid);
 

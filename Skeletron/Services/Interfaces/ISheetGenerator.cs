@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Database.Models;
 
-namespace WAV_Bot_DSharp.Services.Interfaces
+namespace Skeletron.Services.Interfaces
 {
     public interface ISheetGenerator
     {

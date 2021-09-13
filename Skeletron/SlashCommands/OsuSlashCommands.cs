@@ -6,14 +6,14 @@ using DSharpPlus.SlashCommands;
 
 using Microsoft.Extensions.Logging;
 
-using WAV_Bot_DSharp.Converters;
+using Skeletron.Converters;
 
-using WAV_Osu_NetApi;
-using WAV_Osu_NetApi.Models.Gatari;
-using WAV_Osu_NetApi.Models.Bancho;
+using OsuNET_Api;
+using OsuNET_Api.Models.Gatari;
+using OsuNET_Api.Models.Bancho;
 using DSharpPlus;
 
-namespace WAV_Bot_DSharp.SlashCommands
+namespace Skeletron.SlashCommands
 {
     [SlashModuleLifespan(SlashModuleLifespan.Singleton)]
     class OsuSlashCommands : ApplicationCommandModule

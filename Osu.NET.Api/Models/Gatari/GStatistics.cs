@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace WAV_Osu_NetApi.Models.Gatari
+namespace OsuNET_Api.Models.Gatari
 {
     public class GStatistics
     {

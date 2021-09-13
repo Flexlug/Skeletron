@@ -1,8 +1,8 @@
 ﻿using System;
 
-using WAV_Bot_DSharp.Services.Interfaces;
+using Skeletron.Services.Interfaces;
 
-namespace WAV_Bot_DSharp.Services.Models
+namespace Skeletron.Services.Models
 {
     /// <summary>
     /// Задача на обновление лидерборда во время конкурса

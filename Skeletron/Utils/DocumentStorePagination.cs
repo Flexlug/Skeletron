@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Raven.Client.Documents.Linq;
 using Raven.Client.Documents.Session;
 
-namespace WAV_Bot_DSharp.Utils
+namespace Skeletron.Utils
 {
     public static class DocumentStorePagination
     {

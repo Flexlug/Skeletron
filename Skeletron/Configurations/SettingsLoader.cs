@@ -3,7 +3,7 @@ using System.Reflection;
 
 using Newtonsoft.Json;
 
-namespace WAV_Bot_DSharp.Configurations
+namespace Skeletron.Configurations
 {
     /// <summary>
     /// Singleton class that loads settings from a file on the first usage.

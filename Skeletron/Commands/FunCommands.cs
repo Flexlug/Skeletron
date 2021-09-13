@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using NumbersAPI.NET;
 using NumbersAPI.NET.Exceptions;
 
-namespace WAV_Bot_DSharp.Commands
+namespace Skeletron.Commands
 {
     [RequireGuild]
     public sealed class FunCommands : SkBaseCommandModule

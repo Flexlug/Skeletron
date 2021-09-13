@@ -8,7 +8,7 @@ using DSharpPlus.SlashCommands;
 
 using Microsoft.Extensions.Logging;
 
-namespace WAV_Bot_DSharp.SlashCommands
+namespace Skeletron.SlashCommands
 {
     public class AbbrSlashCommands : ApplicationCommandModule
     {

@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 using Microsoft.Extensions.Logging;
 
-namespace WAV_Bot_DSharp.Converters
+namespace Skeletron.Converters
 {
     public class OsuRegex
     {

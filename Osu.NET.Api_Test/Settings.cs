@@ -2,7 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 
-namespace WAV_Osu_NetApi_Test
+namespace OsuNET_Api_Test
 {
     public class Settings
     {

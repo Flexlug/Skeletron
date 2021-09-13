@@ -1,6 +1,6 @@
-using WAV_Osu_NetApi.Models.Gatari.Enums;
+using OsuNET_Api.Models.Gatari.Enums;
 
-namespace WAV_Osu_NetApi.Models.Gatari
+namespace OsuNET_Api.Models.Gatari
 { 
     public class GBeatmap
     {

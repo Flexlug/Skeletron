@@ -2,13 +2,13 @@
 using System.Timers;
 using System.Collections.Generic;
 
-using WAV_Bot_DSharp.Threading;
-using WAV_Bot_DSharp.Services.Models;
-using WAV_Bot_DSharp.Services.Interfaces;
+using Skeletron.Threading;
+using Skeletron.Services.Models;
+using Skeletron.Services.Interfaces;
 
 using Microsoft.Extensions.Logging;
 
-namespace WAV_Bot_DSharp.Services.Entities
+namespace Skeletron.Services.Entities
 {
     public class ShedulerService : IShedulerService
     {

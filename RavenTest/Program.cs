@@ -2,14 +2,14 @@
 using System.Linq;
 using System.Collections.Generic;
 
-using WAV_Bot_DSharp.Services.Models;
+using Skeletron.Services.Models;
 
 using Raven.Client;
 using Raven.Client.Documents.Session;
-using WAV_Bot_DSharp.Database.Models;
-using WAV_Bot_DSharp.Utils;
+using Skeletron.Database.Models;
+using Skeletron.Utils;
 using Raven.Client.Documents;
-using WAV_Bot_DSharp.Services;
+using Skeletron.Services;
 
 namespace WAV_Raven_Test
 {
@@ -21,24 +21,24 @@ namespace WAV_Raven_Test
 
             Random rnd = new Random();
 
-            List<CompitScore> allScores = new List<CompitScore>();
+            List<WAVMembers> allMembers = null;
 
-            for (int cat = 0; cat <= 6; cat++) {
-                if (cat == 2)
-                    continue;
-                for (int i = 0; i < rnd.Next(5, 10); i++)
-                    allScores.Add(new CompitScore()
-                    {
-                        Category = (CompitCategory)cat,
-                        DiscordUID = rnd.Next().ToString(),
-                        Nickname = rnd.Next().ToString(),
-                        Score = rnd.Next(1, 100000),
-                        ScoreUrl = "sample_string"
-                    });
+            using (var session = store.OpenSession())
+            {
+                var wavMembers = session.Query<WAVMember>().ToList();
+
+                allMembers = wavMembers.Select(x => new ServerMember(x.DiscordUID)
+                {
+                    ActivityPoints = x.ActivityPoints,
+                    CompitionProfile = x.CompitionProfile,
+                    DiscordUID = x.DiscordUID,
+                    LastActivity = x.LastActivity,
+                    OsuServers = x.OsuServers
+                }).ToList();
+
+                session.Store(allMembers);
+                session.SaveChanges();
             }
-
-            SheetGenerator generator = new SheetGenerator();
-            var file = generator.CompitScoresToFile(allScores);
 
             Console.WriteLine("Done");
         }

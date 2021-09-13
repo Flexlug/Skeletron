@@ -1,4 +1,4 @@
-namespace WAV_Osu_NetApi.Models.Bancho
+namespace OsuNET_Api.Models.Bancho
 {
     public class ScoreStatistics
     {

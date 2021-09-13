@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WAV_Bot_DSharp.Configurations
+namespace Skeletron.Configurations
 {
     public class Settings
     {

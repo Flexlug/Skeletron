@@ -10,11 +10,11 @@ using DSharpPlus;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
 
-using WAV_Bot_DSharp.Services.Interfaces;
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Services.Interfaces;
+using Skeletron.Database.Models;
 using DSharpPlus.Entities;
 
-namespace WAV_Bot_DSharp.SlashCommands
+namespace Skeletron.SlashCommands
 {
     [SlashModuleLifespan(SlashModuleLifespan.Singleton)]
     [SlashCommandGroup("mappool-admin", "Команды для управления предложкой", false)]

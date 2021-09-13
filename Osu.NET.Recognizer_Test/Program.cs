@@ -4,12 +4,12 @@ using System.Linq;
 using System.Drawing;
 using System.Collections.Generic;
 
-using WAV_Osu_NetApi;
+using OsuNET_Api;
 
-using WAV_Osu_Recognizer;
+using OsuNET_Recognizer;
 
 using Newtonsoft.Json;
-using WAV_Osu_NetApi.Models.Bancho;
+using OsuNET_Api.Models.Bancho;
 
 namespace WAV_Osu_Recognizer_Test
 {

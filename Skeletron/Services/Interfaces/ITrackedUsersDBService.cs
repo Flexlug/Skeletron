@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Database.Models;
 
-using WAV_Osu_NetApi.Models.Gatari;
+using OsuNET_Api.Models.Gatari;
 
-namespace WAV_Bot_DSharp.Services.Interfaces
+namespace Skeletron.Services.Interfaces
 {
     public interface ITrackedUsersDBService
     {
@@ -34,7 +34,7 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// Get next gatari user
         /// </summary>
         /// <returns></returns>
-        public Task<ServerMember> NextGatariUserAsync();
+        public Task<WAVMembers> NextGatariUserAsync();
 
         /// <summary>
         /// Update time for latest score for gatari user
@@ -61,6 +61,6 @@ namespace WAV_Bot_DSharp.Services.Interfaces
         /// Get next bacho user
         /// </summary>
         /// <returns></returns>
-        public Task<ServerMember> NextBanchoUserAsync();
+        public Task<WAVMembers> NextBanchoUserAsync();
     }
 }

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 using RestSharp;
 
-using WAV_Osu_NetApi.Converters;
-using WAV_Osu_NetApi.Models.Bancho;
+using OsuNET_Api.Converters;
+using OsuNET_Api.Models.Bancho;
 
 using Newtonsoft.Json;
 
-namespace WAV_Osu_NetApi
+namespace OsuNET_Api
 {
     /// <summary>
     /// Класс для взаимодействия с Bancho API

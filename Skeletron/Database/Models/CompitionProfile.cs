@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WAV_Osu_NetApi.Models;
+using OsuNET_Api.Models;
 
-namespace WAV_Bot_DSharp.Database.Models
+namespace Skeletron.Database.Models
 {
     public class CompitionProfile
     {

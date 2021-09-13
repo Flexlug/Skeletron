@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WAV_Osu_NetApi.Models.Bancho;
+using OsuNET_Api.Models.Bancho;
 
-namespace WAV_Bot_DSharp.Database.Models
+namespace Skeletron.Database.Models
 {
     /// <summary>
     /// Общая информация о конкурсе

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Text;
 
-using WAV_Osu_NetApi.Models;
-using WAV_Osu_NetApi.Models.Bancho;
+using OsuNET_Api.Models;
+using OsuNET_Api.Models.Bancho;
 
-using WAV_Bot_DSharp.Database.Models;
+using Skeletron.Database.Models;
 
 using Microsoft.Extensions.Logging;
 
-namespace WAV_Bot_DSharp.Converters
+namespace Skeletron.Converters
 {
     public class OsuEnums
     {

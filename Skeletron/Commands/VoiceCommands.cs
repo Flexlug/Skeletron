@@ -6,7 +6,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
 
-namespace WAV_Bot_DSharp.Commands
+namespace Skeletron.Commands
 {
     ///// <summary>
     ///// Commands to control the bot in voice channels. 

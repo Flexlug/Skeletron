@@ -6,14 +6,14 @@ using DSharpPlus;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 
-using WAV_Bot_DSharp.Database.Models;
-using WAV_Bot_DSharp.Database.Interfaces;
+using Skeletron.Database.Models;
+using Skeletron.Database.Interfaces;
 
-using WAV_Osu_NetApi.Models;
+using OsuNET_Api.Models;
 
 using Microsoft.Extensions.Logging;
 
-namespace WAV_Bot_DSharp.Database
+namespace Skeletron.Database
 {
     public class MembersProvider : IMembersProvider
     {
@@ -37,17 +37,17 @@ namespace WAV_Bot_DSharp.Database
         /// </summary>
         /// <param name="uid">Discord uid</param>
         /// <returns></returns>
-        public ServerMember GetMember(string uid)
+        public WAVMembers GetMember(string uid)
         {
             using (IDocumentSession session = store.OpenSession())
             {
-                ServerMember member = session.Query<ServerMember>()
+                WAVMembers member = session.Query<WAVMembers>()
                                           .Include(x => x.OsuServers)
                                           .FirstOrDefault(x => x.DiscordUID == uid);
 
                 if (member is null)
                 {
-                    member = new ServerMember(uid);
+                    member = new WAVMembers(uid);
                     session.Store(member);
                     session.SaveChanges();
                 }
@@ -66,7 +66,7 @@ namespace WAV_Bot_DSharp.Database
         {
             using (IDocumentSession session = store.OpenSession())
             {
-                ServerMember member = session.Query<ServerMember>()
+                WAVMembers member = session.Query<WAVMembers>()
                                           .Include(x => x.OsuServers)
                                           .FirstOrDefault(x => x.DiscordUID == uid);
 
@@ -98,7 +98,7 @@ namespace WAV_Bot_DSharp.Database
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
-                ServerMember member = session.Query<ServerMember>()
+                WAVMembers member = session.Query<WAVMembers>()
                                           .Include(x => x.OsuServers)
                                           .Include(x => x.CompitionProfile)
                                           .FirstOrDefault(x => x.DiscordUID == uid);
@@ -107,16 +107,16 @@ namespace WAV_Bot_DSharp.Database
             }
         }
 
-        public ServerMember Next()
+        public WAVMembers Next()
         {
             using (IDocumentSession session = store.OpenSession(new SessionOptions() { NoTracking = true }))
             {
-                int count = session.Query<ServerMember>().Count();
+                int count = session.Query<WAVMembers>().Count();
 
                 if (iter >= count)
                     iter = 0;
 
-                var res = session.Query<ServerMember>()
+                var res = session.Query<WAVMembers>()
                                  .Skip(iter)
                                  .Take(1)
                                  .FirstOrDefault();

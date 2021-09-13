@@ -5,10 +5,10 @@ using DSharpPlus.Entities;
 
 using Microsoft.Extensions.Logging;
 
-using WAV_Osu_NetApi.Models.Bancho;
-using WAV_Osu_NetApi.Models.Gatari.Enums;
+using OsuNET_Api.Models.Bancho;
+using OsuNET_Api.Models.Gatari.Enums;
 
-namespace WAV_Bot_DSharp.Converters
+namespace Skeletron.Converters
 {
     public class OsuEmoji
     {

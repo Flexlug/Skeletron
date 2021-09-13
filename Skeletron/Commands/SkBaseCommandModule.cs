@@ -1,6 +1,6 @@
 ﻿using DSharpPlus.CommandsNext;
 
-namespace WAV_Bot_DSharp.Commands
+namespace Skeletron.Commands
 {
     public class SkBaseCommandModule : BaseCommandModule
     {

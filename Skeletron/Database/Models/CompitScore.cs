@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
-namespace WAV_Bot_DSharp.Database.Models
+namespace Skeletron.Database.Models
 {
     /// <summary>
     /// Информация о скоре пользователя

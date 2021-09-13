@@ -5,14 +5,14 @@ using System.Text;
 
 using Newtonsoft.Json;
 
-namespace WAV_Bot_DSharp.Database.Models
+namespace Skeletron.Database.Models
 {
     /// <summary>
     /// Представляет собой структуру, в виде которой хранится информация о пользователях в БД
     /// </summary>
-    public class ServerMember 
+    public class WAVMembers 
     { 
-        public ServerMember(string uid)
+        public WAVMembers(string uid)
         {
             DiscordUID = uid;
             OsuServers = new List<OsuProfileInfo>();
