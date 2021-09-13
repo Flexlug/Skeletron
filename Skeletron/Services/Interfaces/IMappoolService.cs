@@ -25,14 +25,6 @@ namespace Skeletron.Services.Interfaces
 		public DiscordEmbed GetCategoryMappool(DiscordMember user);
 
 		/// <summary>
-		/// Добавить голос за карту
-		/// </summary>
-		/// <param name="memberId">Discord ID голосующего</param>
-		/// <param name="bmId">ID карты</param>
-		/// <returns>Возвращает строку "done" в случае успеха. Иначе возвращает ошибку</returns>
-		public string Vote(string memberId, int bmId);
-
-		/// <summary>
 		/// Добавить карту
 		/// </summary>
 		/// <param name="memberId">Discord ID предлагающего карту</param>

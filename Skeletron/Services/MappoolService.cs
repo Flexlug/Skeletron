@@ -68,6 +68,7 @@ namespace Skeletron.Services
             this.logger = logger;
 
             this.client = client;
+            client.MessageReactionAdded += OnReaction;
 
             this.mappoolProvider = mappoolProvider;
             this.compitService = compitService;
@@ -153,6 +154,9 @@ namespace Skeletron.Services
                 return "Вы не зарегистрированы в конкурсе.";
 
             var cat = compitProfile.Category;
+
+            if (mappoolProvider.MapsCount(cat) >= 9)
+                return "Превышен лимит на количество предложенных карт.";
 
             var ids = osuRegex.GetBMandBMSIdFromBanchoUrl(url);
             var bBeatmap = bapi.GetBeatmap(ids.Item2);
@@ -582,40 +586,57 @@ namespace Skeletron.Services
 
             DiscordEmbed beginnerEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Beginner")
+                .WithImageUrl(beginnerChosenMap.Beatmap.beatmapset.covers.Card2x)
                 .WithDescription(OfferedMapToLongString(beginnerChosenMap))
                 .Build();
 
             DiscordEmbed alphaEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Alpha")
+                .WithImageUrl(alphaChosenMap.Beatmap.beatmapset.covers.Card2x)
                 .WithDescription(OfferedMapToLongString(alphaChosenMap))
                 .Build();
 
             DiscordEmbed betaEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Beta")
+                .WithImageUrl(betaChosenMap.Beatmap.beatmapset.covers.Card2x)
                 .WithDescription(OfferedMapToLongString(betaChosenMap))
                 .Build();
 
             DiscordEmbed gammaEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Gamma")
+                .WithImageUrl(gammaChosenMap.Beatmap.beatmapset.covers.Card2x)
                 .WithDescription(OfferedMapToLongString(gammaChosenMap))
                 .Build();
 
             DiscordEmbed deltaEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Delta")
+                .WithImageUrl(deltaChosenMap.Beatmap.beatmapset.covers.Card2x)
                 .WithDescription(OfferedMapToLongString(deltaChosenMap))
                 .Build();
 
             DiscordEmbed epsilonEmbed = new DiscordEmbedBuilder()
                 .WithTitle("Выбранная карта для Epsilon")
+                .WithImageUrl(epsilonChosenMap.Beatmap.beatmapset.covers.Card2x)
                 .WithDescription(OfferedMapToLongString(epsilonChosenMap))
                 .Build();
 
-            await beginnerMappoolAnnounceMsg.ModifyAsync(beginnerEmbed);
-            await alphaMappoolAnnounceMsg.ModifyAsync(alphaEmbed);
-            await betaMappoolAnnounceMsg.ModifyAsync(betaEmbed);
-            await gammaMappoolAnnounceMsg.ModifyAsync(gammaEmbed);
-            await deltaMappoolAnnounceMsg.ModifyAsync(deltaEmbed);
-            await epsilonMappoolAnnounceMsg.ModifyAsync(epsilonEmbed);
+            beginnerMappoolAnnounceMsg = await beginnerMappoolAnnounceMsg.ModifyAsync(beginnerEmbed);
+            await beginnerMappoolAnnounceMsg.DeleteAllReactionsAsync();
+
+            alphaMappoolAnnounceMsg = await alphaMappoolAnnounceMsg.ModifyAsync(alphaEmbed);
+            await alphaMappoolAnnounceMsg.DeleteAllReactionsAsync();
+
+            betaMappoolAnnounceMsg = await betaMappoolAnnounceMsg.ModifyAsync(betaEmbed);
+            await betaMappoolAnnounceMsg.DeleteAllReactionsAsync();
+
+            gammaMappoolAnnounceMsg = await gammaMappoolAnnounceMsg.ModifyAsync(gammaEmbed);
+            await gammaMappoolAnnounceMsg.DeleteAllReactionsAsync();
+
+            deltaMappoolAnnounceMsg = await deltaMappoolAnnounceMsg.ModifyAsync(deltaEmbed);
+            await deltaMappoolAnnounceMsg.DeleteAllReactionsAsync();
+
+            epsilonMappoolAnnounceMsg = await epsilonMappoolAnnounceMsg.ModifyAsync(epsilonEmbed);
+            await epsilonMappoolAnnounceMsg.DeleteAllReactionsAsync();
 
             await compitService.SetMap($@"https://osu.ppy.sh/beatmapsets/{beginnerChosenMap.Beatmap.beatmapset_id}#osu/{beginnerChosenMap.Beatmap.id}", "beginner");
             await compitService.SetMap($@"https://osu.ppy.sh/beatmapsets/{alphaChosenMap.Beatmap.beatmapset_id}#osu/{alphaChosenMap.Beatmap.id}", "alpha");
@@ -629,7 +650,7 @@ namespace Skeletron.Services
         {
             StringBuilder str = new StringBuilder();
 
-            str.AppendLine($"`{map.Beatmap.id}` {osuEmoji.RankStatusEmoji(map.Beatmap.ranked)} [{map.Beatmap.beatmapset.artist} - {map.Beatmap.beatmapset.title} [{map.Beatmap.version}]](https://osu.ppy.sh/beatmapsets/{map.Beatmap.beatmapset_id}#osu/{map.Beatmap.id})");
+            str.AppendLine($"{osuEmoji.RankStatusEmoji(map.Beatmap.ranked)} [{map.Beatmap.beatmapset.artist} - {map.Beatmap.beatmapset.title} [{map.Beatmap.version}]](https://osu.ppy.sh/beatmapsets/{map.Beatmap.beatmapset_id}#osu/{map.Beatmap.id})");
             str.AppendLine($"▸ {map.Beatmap.difficulty_rating}★ ▸**CS** {map.Beatmap.cs} ▸**HP**: {map.Beatmap.drain} ▸**AR**: {map.Beatmap.ar} ▸**OD**: {map.Beatmap.accuracy}");
             str.Append($"Предложил: {(map.AdminMap ? "<@&708869211312619591>" : $"<@{map.SuggestedBy}>")} ");
             str.AppendLine($"Проголосовало: {map.Votes.Count}");
@@ -640,22 +661,94 @@ namespace Skeletron.Services
         public string OfferedMapToShortString(OfferedMap map) =>
             $"{osuEmoji.RankStatusEmoji(map.Beatmap.ranked)} [{map.Beatmap.beatmapset.artist} - {map.Beatmap.beatmapset.title} [{map.Beatmap.version}]](https://osu.ppy.sh/beatmapsets/{map.Beatmap.beatmapset_id}#osu/{map.Beatmap.id}) : {map.Votes.Count}";
 
-        public string Vote(string memberId, int bmId)
+        private async Task OnReaction(DiscordClient sender, DSharpPlus.EventArgs.MessageReactionAddEventArgs e)
         {
-            var compitProfile = compitProvider.GetCompitProfile(memberId);
+            CompitCategory? cat = null;
+
+            if (e.User.Username == "Skeletron")
+                return;
+
+            if (e.Message.Id == beginnerMappoolAnnounceMsg.Id)
+                cat = CompitCategory.Beginner;
+
+            if (e.Message.Id == alphaMappoolAnnounceMsg.Id)
+                cat = CompitCategory.Alpha;
+
+            if (e.Message.Id == betaMappoolAnnounceMsg.Id)
+                cat = CompitCategory.Beta;
+
+            if (e.Message.Id == gammaMappoolAnnounceMsg.Id)
+                cat = CompitCategory.Gamma;
+
+            if (e.Message.Id == deltaMappoolAnnounceMsg.Id)
+                cat = CompitCategory.Delta;
+
+            if (e.Message.Id == epsilonMappoolAnnounceMsg.Id)
+                cat = CompitCategory.Epsilon;
+
+            if (cat is null)
+                return;
+
+            logger.LogDebug($"Detected vote attempt – {e.User.Username} – {cat}");
+            await Vote(e.User, e.Emoji, (CompitCategory)cat);
+
+            await e.Message.DeleteReactionAsync(e.Emoji, e.User);
+        }
+
+        public async Task Vote(DiscordUser user, DiscordEmoji voteEmoji, CompitCategory cat)
+        {
+            var compitProfile = compitProvider.GetCompitProfile(user.Id.ToString());
 
             if (compitProfile is null)
-                return "Вы не зарегистрированы в конкурсе.";
+            {
+                logger.LogDebug($"Голосующий не зарегистрирован в конкурсе – {user.Username}");
+                return;
+            }
 
-            if (!mappoolProvider.CheckMapOffered(bmId, compitProfile.Category))
-                return "Такой карты для данной категории нет.";
+            if (compitProfile.Category != cat)
+            {
+                logger.LogDebug($"Категория голосующего не соответствует категории карты. {user.Username}. {compitProfile.Category} – {cat}");
+                return;
+            }
 
-            if (mappoolProvider.CheckUserVoted(memberId))
-                return "Вы уже голосовали.";
+            if (mappoolProvider.CheckUserVoted(user.Id.ToString()))
+            {
+                logger.LogDebug($"Человек уже проголосовал или предложил карту - {user.Username}");
+                return;
+            }
 
-            mappoolProvider.MapVote(memberId, compitProfile.Category, bmId);
+            int index = 0;
+            try
+            {
+                index = emoji.EmojiToDigit(voteEmoji);
+            }
+            catch(ArgumentOutOfRangeException ex)
+            {
+                logger.LogDebug($"Голосующий использовал недопустимый эмодзи - {user.Username} – {voteEmoji.Name}");
+                return;
+            }
+            catch(Exception e)
+            {
+                logger.LogError($"Неожиданное исключение: {e.Message}\n{e.StackTrace}");
+                return;
+            }
 
-            return "done";
+            List<OfferedMap> maps = mappoolProvider
+                .GetCategoryMaps(cat)
+                .OrderBy(x => x.AdditionDate)
+                .ToList();
+
+            if (index == 0 || index > maps.Count)
+            {
+                logger.LogError($"Индекс, соответствующий эмодзи голосующего, выходит за границы массива – {user.Username} – {index}");
+                return;
+            }
+
+            mappoolProvider.MapVote(user.Id.ToString(), cat, maps.ElementAt(index - 1).BeatmapId);
+
+            logger.LogError($"Отдан голос – {user.Username} – bmId: {maps.ElementAt(index - 1).BeatmapId}, index: {index}");
+
+            await UpdateCategoryMappoolStatus(cat);
         }
     }
 }

@@ -82,5 +82,11 @@ namespace Skeletron.Database.Interfaces
         /// <param name="category"></param>
         /// <param name="beatmapId"></param>
         public void MapRemove(CompitCategory category, int beatmapId);
+
+        /// <summary>
+        /// Получить количество предложенных карт для категории
+        /// </summary>
+        /// <param name="category"></param>
+        public int MapsCount(CompitCategory category);
     }
 }

@@ -65,16 +65,16 @@ namespace Skeletron.Converters
         {
             int i = emoji.Name switch
             {
-                ":one:" => 1,
-                ":two:" => 2,
-                ":three:" => 3,
-                ":four:" => 4,
-                ":five:" => 5,
-                ":six:" => 6,
-                ":seven:" => 7,
-                ":eight:" => 8,
-                ":nine:" => 9,
-                ":keycap_ten:" => 10,
+                "1️⃣" => 1,
+                "2️⃣" => 2,
+                "3️⃣" => 3,
+                "4️⃣" => 4,
+                "5️⃣" => 5,
+                "6️⃣" => 6,
+                "7️⃣" => 7,
+                "8️⃣" => 8,
+                "9️⃣" => 9,
+                "🔟" => 10,
                 _ => throw new ArgumentOutOfRangeException($"Couldn't convert emoji {emoji.Name} to digit")
             };
 

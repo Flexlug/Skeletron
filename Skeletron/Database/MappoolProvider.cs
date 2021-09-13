@@ -15,12 +15,11 @@ namespace Skeletron.Database
 {
     public class MappoolProvider : IMappoolProvider
     {
-        private IDocumentStore store;
+        public IDocumentStore store;
 
         private ILogger<MappoolProvider> logger;
 
-        public MappoolProvider(DiscordClient client,
-                               ILogger<MappoolProvider> logger)
+        public MappoolProvider(ILogger<MappoolProvider> logger)
         {
             this.store = DocumentStoreProvider.Store;
 
@@ -201,6 +200,15 @@ namespace Skeletron.Database
 
                 session.SaveChanges();
             }
+        }
+
+        public int MapsCount(CompitCategory category)
+        {
+            using (var session = store.OpenSession())
+                return session
+                    .Query<OfferedMap>()
+                    .Where(x => x.Category == category)
+                    .Count();
         }
     }
 }
