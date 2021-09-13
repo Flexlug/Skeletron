@@ -16,7 +16,7 @@ using Skeletron.Converters;
 namespace Skeletron.Commands
 {
     [RequireGuild]
-    [Group("mappool-spectate")]
+    [Group("mappool")]
     public class MappoolCommands : SkBaseCommandModule
     {
         private IMappoolService mappoolService;
