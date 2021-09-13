@@ -469,37 +469,37 @@ namespace Skeletron.Services
                 .ToList();
 
             DiscordEmbed beginnerEmbed = new DiscordEmbedBuilder()
-                .WithTitle("Топ-3 карт для Beginner")
+                .WithTitle("Предложенные карты для Beginner")
                 .WithDescription(await OfferedMapsToString(beginnerMappoolTop))
                 .WithFooter($"Время последнего обновления маппула: {DateTime.Now}")
                 .Build();
 
             DiscordEmbed alphaEmbed = new DiscordEmbedBuilder()
-                .WithTitle("Топ-3 карт для Alpha")
+                .WithTitle("Предложенные карты для Alpha")
                 .WithDescription(await OfferedMapsToString(alphaMappoolTop))
                 .WithFooter($"Время последнего обновления маппула: {DateTime.Now}")
                 .Build();
 
             DiscordEmbed betaEmbed = new DiscordEmbedBuilder()
-                .WithTitle("Топ-3 карта для Beta")
+                .WithTitle("Предложенные карты для Beta")
                 .WithDescription(await OfferedMapsToString(betaMappoolTop))
                 .WithFooter($"Время последнего обновления маппула: {DateTime.Now}")
                 .Build();
 
             DiscordEmbed gammaEmbed = new DiscordEmbedBuilder()
-                .WithTitle("Топ-3 карта для Gamma")
+                .WithTitle("Предложенные карты для Gamma")
                 .WithDescription(await OfferedMapsToString(gammaMappoolTop))
                 .WithFooter($"Время последнего обновления маппула: {DateTime.Now}")
                 .Build();
 
             DiscordEmbed deltaEmbed = new DiscordEmbedBuilder()
-                .WithTitle("Топ-3 карта для Delta")
+                .WithTitle("Предложенные карты для Delta")
                 .WithDescription(await OfferedMapsToString(deltaMappoolTop))
                 .WithFooter($"Время последнего обновления маппула: {DateTime.Now}")
                 .Build();
 
             DiscordEmbed epsilonEmbed = new DiscordEmbedBuilder()
-                .WithTitle("Топ-3 карта для Epsilon")
+                .WithTitle("Предложенные карты для Epsilon")
                 .WithDescription(await OfferedMapsToString(epsilonMappoolTop))
                 .WithFooter($"Время последнего обновления маппула: {DateTime.Now}")
                 .Build();
