@@ -400,7 +400,7 @@ namespace Skeletron.Services
                 .ToList();
 
             DiscordEmbed categoryEmbed = new DiscordEmbedBuilder()
-                .WithTitle($"Топ-3 карт для {category}")
+                .WithTitle($"Предложенные карты для {category}")
                 .WithDescription(await OfferedMapsToString(categoryTop))
                 .WithFooter($"Время последнего обновления маппула: {DateTime.Now}")
                 .Build();
