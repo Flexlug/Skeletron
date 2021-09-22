@@ -50,6 +50,7 @@
     <None Remove="Database\Models\WAVMember.cs~RF146850fc.TMP" />
     <None Remove="trackedUsers.db-shm" />
     <None Remove="trackedUsers.db-wal" />
+    <None Remove="NumbersAPI.NET" />
   </ItemGroup>
 
   <ItemGroup>
@@ -83,6 +84,9 @@
   <ItemGroup>
     <Reference Include="NumbersAPI.NET">
       <HintPath>F:\Documents\Coding\C#\NumbersAPI.NET\NumbersAPI.NET\bin\Release\net5.0\NumbersAPI.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="NumbersAPI.NET">
+      <HintPath>..\..\..\..\..\..\..\Users\flexlug\Projects\NumbersAPI.NET\NumbersAPI.NET\bin\Release\net5.0\NumbersAPI.NET.dll</HintPath>
     </Reference>
   </ItemGroup>
 

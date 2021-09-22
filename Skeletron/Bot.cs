@@ -115,9 +115,9 @@ namespace Skeletron
                 .AddSingleton<IRecognizerService, RecognizerService>()
                 .AddSingleton<IMembersProvider, MembersProvider>()
                 .AddSingleton<ICompitProvider, CompitProvider>()
-                .AddSingleton<ICompititionService, CompititionService>()
+                //.AddSingleton<ICompititionService, CompititionService>()
                 .AddSingleton<IMappoolProvider, MappoolProvider>()
-                .AddSingleton<IMappoolService, MappoolService>()
+                //.AddSingleton<IMappoolService, MappoolService>()
                 .AddSingleton<IWordsService, WordsService>()
                 .BuildServiceProvider();
         }
@@ -140,8 +140,8 @@ namespace Skeletron
             CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
-            CommandsNext.RegisterCommands<CompititionCommands>();
-            CommandsNext.RegisterCommands<MappoolCommands>();
+            //CommandsNext.RegisterCommands<CompititionCommands>();
+            //CommandsNext.RegisterCommands<MappoolCommands>();
 
             var slashCommandsConfiguration = new SlashCommandsConfiguration()
             {
@@ -153,8 +153,8 @@ namespace Skeletron
             // Register slash commands modules
             SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
             SlashCommands.RegisterCommands<UserSlashCommands>(WAV_UID);
-            SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
-            SlashCommands.RegisterCommands<AdminMappoolSlashCommands>(WAV_UID);
+            //SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
+            //SlashCommands.RegisterCommands<AdminMappoolSlashCommands>(WAV_UID);
 
             SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
 
