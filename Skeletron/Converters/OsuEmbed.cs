@@ -26,12 +26,12 @@ namespace Skeletron.Converters
 
         private DiscordGuild wav_guild;
 
-        private DiscordRole beginnerRole;
-        private DiscordRole alphaRole;
-        private DiscordRole betaRole;
-        private DiscordRole gammaRole;
-        private DiscordRole deltaRole;
-        private DiscordRole epsilonRole;
+        //private DiscordRole beginnerRole;
+        //private DiscordRole alphaRole;
+        //private DiscordRole betaRole;
+        //private DiscordRole gammaRole;
+        //private DiscordRole deltaRole;
+        //private DiscordRole epsilonRole;
 
         public OsuEmbed(OsuEmoji emoji, OsuEnums enums, ILogger<OsuEmbed> logger, DiscordGuild guild)
         {
@@ -40,12 +40,12 @@ namespace Skeletron.Converters
 
             this.wav_guild = guild;
 
-            this.beginnerRole = guild.GetRole(830432931150692362);
-            this.alphaRole = guild.GetRole(816610025258352641);
-            this.betaRole = guild.GetRole(816609978240204821);
-            this.gammaRole = guild.GetRole(816609883763376188);
-            this.deltaRole = guild.GetRole(816609826301935627);
-            this.epsilonRole = guild.GetRole(816609630359912468);
+            //this.beginnerRole = guild.GetRole(830432931150692362);
+            //this.alphaRole = guild.GetRole(816610025258352641);
+            //this.betaRole = guild.GetRole(816609978240204821);
+            //this.gammaRole = guild.GetRole(816609883763376188);
+            //this.deltaRole = guild.GetRole(816609826301935627);
+            //this.epsilonRole = guild.GetRole(816609630359912468);
 
             this.logger = logger;
 
@@ -150,160 +150,160 @@ namespace Skeletron.Converters
         }
 
 
-        public DiscordEmbed ScoresToLeaderBoard(CompitInfo compitInfo,
-                                                List<CompitScore> beginnerScores = null,
-                                                List<CompitScore> alphaScores = null,
-                                                List<CompitScore> betaScores = null,
-                                                List<CompitScore> gammaScores = null,
-                                                List<CompitScore> deltaScores = null,
-                                                List<CompitScore> epsilonScores = null)
-        {
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
+        //public DiscordEmbed ScoresToLeaderBoard(CompitInfo compitInfo,
+        //                                        List<CompitScore> beginnerScores = null,
+        //                                        List<CompitScore> alphaScores = null,
+        //                                        List<CompitScore> betaScores = null,
+        //                                        List<CompitScore> gammaScores = null,
+        //                                        List<CompitScore> deltaScores = null,
+        //                                        List<CompitScore> epsilonScores = null)
+        //{
+        //    DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
 
-            embedBuilder.WithTitle("W.w.W participant list")
-                        .WithFooter($"Last update: {DateTime.Now}");
+        //    embedBuilder.WithTitle("W.w.W participant list")
+        //                .WithFooter($"Last update: {DateTime.Now}");
 
-            StringBuilder descrSb = new StringBuilder();
+        //    StringBuilder descrSb = new StringBuilder();
 
 
-            descrSb.AppendLine($"{beginnerRole.Mention}\n[{compitInfo.BeginnerMap.beatmapset.artist} {compitInfo.BeginnerMap.beatmapset.title} [{compitInfo.BeginnerMap.version}] by {compitInfo.BeginnerMap.beatmapset.creator}]({compitInfo.BeginnerMap.url})");
-            if (beginnerScores is not null && beginnerScores.Count != 0)
-            {
-                foreach (var score in beginnerScores.OrderByDescending(x => x.Score))
-                    descrSb.AppendLine($"`{score.DiscordNickname}`");
-                descrSb.AppendLine();
-            }
-            else
-            {
-                descrSb.AppendLine($"-\n");
-            }
+        //    descrSb.AppendLine($"{beginnerRole.Mention}\n[{compitInfo.BeginnerMap.beatmapset.artist} {compitInfo.BeginnerMap.beatmapset.title} [{compitInfo.BeginnerMap.version}] by {compitInfo.BeginnerMap.beatmapset.creator}]({compitInfo.BeginnerMap.url})");
+        //    if (beginnerScores is not null && beginnerScores.Count != 0)
+        //    {
+        //        foreach (var score in beginnerScores.OrderByDescending(x => x.Score))
+        //            descrSb.AppendLine($"`{score.DiscordNickname}`");
+        //        descrSb.AppendLine();
+        //    }
+        //    else
+        //    {
+        //        descrSb.AppendLine($"-\n");
+        //    }
 
-            descrSb.AppendLine($"{alphaRole.Mention}\n[{compitInfo.AlphaMap.beatmapset.artist} {compitInfo.AlphaMap.beatmapset.title} [{compitInfo.AlphaMap.version}] by {compitInfo.AlphaMap.beatmapset.creator}]({compitInfo.AlphaMap.url})");
-            if (alphaScores is not null && alphaScores.Count != 0)
-            {
-                foreach (var score in alphaScores.OrderByDescending(x => x.Nickname))
-                    descrSb.AppendLine($"`{score.DiscordNickname}`");
-                descrSb.AppendLine();
-            }
-            else
-            {
-                descrSb.AppendLine($"-\n");
-            }
+        //    descrSb.AppendLine($"{alphaRole.Mention}\n[{compitInfo.AlphaMap.beatmapset.artist} {compitInfo.AlphaMap.beatmapset.title} [{compitInfo.AlphaMap.version}] by {compitInfo.AlphaMap.beatmapset.creator}]({compitInfo.AlphaMap.url})");
+        //    if (alphaScores is not null && alphaScores.Count != 0)
+        //    {
+        //        foreach (var score in alphaScores.OrderByDescending(x => x.Nickname))
+        //            descrSb.AppendLine($"`{score.DiscordNickname}`");
+        //        descrSb.AppendLine();
+        //    }
+        //    else
+        //    {
+        //        descrSb.AppendLine($"-\n");
+        //    }
 
-            descrSb.AppendLine($"{betaRole.Mention}\n[{compitInfo.BetaMap.beatmapset.artist} {compitInfo.BetaMap.beatmapset.title} [{compitInfo.BetaMap.version}] by {compitInfo.BetaMap.beatmapset.creator}]({compitInfo.BetaMap.url})");
-            if (betaScores is not null && betaScores.Count != 0)
-            {
-                foreach (var score in betaScores.OrderByDescending(x => x.Nickname))
-                    descrSb.AppendLine($"`{score.DiscordNickname}`");
-                descrSb.AppendLine();
-            }
-            else
-            {
-                descrSb.AppendLine($"-\n");
-            }
+        //    descrSb.AppendLine($"{betaRole.Mention}\n[{compitInfo.BetaMap.beatmapset.artist} {compitInfo.BetaMap.beatmapset.title} [{compitInfo.BetaMap.version}] by {compitInfo.BetaMap.beatmapset.creator}]({compitInfo.BetaMap.url})");
+        //    if (betaScores is not null && betaScores.Count != 0)
+        //    {
+        //        foreach (var score in betaScores.OrderByDescending(x => x.Nickname))
+        //            descrSb.AppendLine($"`{score.DiscordNickname}`");
+        //        descrSb.AppendLine();
+        //    }
+        //    else
+        //    {
+        //        descrSb.AppendLine($"-\n");
+        //    }
 
-            descrSb.AppendLine($"{gammaRole.Mention}\n[{compitInfo.GammaMap.beatmapset.artist} {compitInfo.GammaMap.beatmapset.title} [{compitInfo.GammaMap.version}] by {compitInfo.GammaMap.beatmapset.creator}]({compitInfo.GammaMap.url})");
-            if (gammaScores is not null && gammaScores.Count != 0)
-            {
-                foreach (var score in gammaScores.OrderByDescending(x => x.Nickname))
-                    descrSb.AppendLine($"`{score.DiscordNickname}`");
-                descrSb.AppendLine();
-            }
-            else
-            {
-                descrSb.AppendLine($"-\n");
-            }
+        //    descrSb.AppendLine($"{gammaRole.Mention}\n[{compitInfo.GammaMap.beatmapset.artist} {compitInfo.GammaMap.beatmapset.title} [{compitInfo.GammaMap.version}] by {compitInfo.GammaMap.beatmapset.creator}]({compitInfo.GammaMap.url})");
+        //    if (gammaScores is not null && gammaScores.Count != 0)
+        //    {
+        //        foreach (var score in gammaScores.OrderByDescending(x => x.Nickname))
+        //            descrSb.AppendLine($"`{score.DiscordNickname}`");
+        //        descrSb.AppendLine();
+        //    }
+        //    else
+        //    {
+        //        descrSb.AppendLine($"-\n");
+        //    }
 
-            descrSb.AppendLine($"{deltaRole.Mention}\n[{compitInfo.DeltaMap.beatmapset.artist} {compitInfo.DeltaMap.beatmapset.title} [{compitInfo.DeltaMap.version}] by {compitInfo.DeltaMap.beatmapset.creator}]({compitInfo.DeltaMap.url})");
-            if (deltaScores is not null && deltaScores.Count != 0)
-            {
-                foreach (var score in deltaScores.OrderByDescending(x => x.Nickname))
-                    descrSb.AppendLine($"`{score.DiscordNickname}`");
-                descrSb.AppendLine();
-            }
-            else
-            {
-                descrSb.AppendLine($"-\n");
-            }
+        //    descrSb.AppendLine($"{deltaRole.Mention}\n[{compitInfo.DeltaMap.beatmapset.artist} {compitInfo.DeltaMap.beatmapset.title} [{compitInfo.DeltaMap.version}] by {compitInfo.DeltaMap.beatmapset.creator}]({compitInfo.DeltaMap.url})");
+        //    if (deltaScores is not null && deltaScores.Count != 0)
+        //    {
+        //        foreach (var score in deltaScores.OrderByDescending(x => x.Nickname))
+        //            descrSb.AppendLine($"`{score.DiscordNickname}`");
+        //        descrSb.AppendLine();
+        //    }
+        //    else
+        //    {
+        //        descrSb.AppendLine($"-\n");
+        //    }
 
-            descrSb.AppendLine($"{epsilonRole.Mention}\n[{compitInfo.EpsilonMap.beatmapset.artist} {compitInfo.EpsilonMap.beatmapset.title} [{compitInfo.EpsilonMap.version}] by {compitInfo.EpsilonMap.beatmapset.creator}]({compitInfo.EpsilonMap.url})");
-            if (epsilonScores is not null && epsilonScores.Count != 0)
-            {
-                foreach (var score in epsilonScores.OrderByDescending(x => x.Nickname))
-                    descrSb.AppendLine($"`{score.DiscordNickname}`");
-                descrSb.AppendLine();
-            }
-            else
-            {
-                descrSb.AppendLine($"-\n");
-            }
+        //    descrSb.AppendLine($"{epsilonRole.Mention}\n[{compitInfo.EpsilonMap.beatmapset.artist} {compitInfo.EpsilonMap.beatmapset.title} [{compitInfo.EpsilonMap.version}] by {compitInfo.EpsilonMap.beatmapset.creator}]({compitInfo.EpsilonMap.url})");
+        //    if (epsilonScores is not null && epsilonScores.Count != 0)
+        //    {
+        //        foreach (var score in epsilonScores.OrderByDescending(x => x.Nickname))
+        //            descrSb.AppendLine($"`{score.DiscordNickname}`");
+        //        descrSb.AppendLine();
+        //    }
+        //    else
+        //    {
+        //        descrSb.AppendLine($"-\n");
+        //    }
 
-            embedBuilder.WithDescription(descrSb.ToString());
+        //    embedBuilder.WithDescription(descrSb.ToString());
 
-            return embedBuilder.Build();
-        }
+        //    return embedBuilder.Build();
+        //}
 
-        public DiscordEmbed CompitInfoToEmbed(CompitInfo compitInfo)
-        {
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
+        //public DiscordEmbed CompitInfoToEmbed(CompitInfo compitInfo)
+        //{
+        //    DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
 
-            string beginner = string.Empty,
-                   alpha = string.Empty,
-                   beta = string.Empty,
-                   gamma = string.Empty,
-                   delta = string.Empty,
-                   epsilon = string.Empty;
+        //    string beginner = string.Empty,
+        //           alpha = string.Empty,
+        //           beta = string.Empty,
+        //           gamma = string.Empty,
+        //           delta = string.Empty,
+        //           epsilon = string.Empty;
 
-            if (compitInfo.BeginnerMap is null)
-                beginner = "Нет";
-            else
-                beginner = $"{compitInfo.BeginnerMap.beatmapset.artist} - {compitInfo.BeginnerMap.beatmapset.title}\n{compitInfo.BeginnerMap.url}";
+        //    if (compitInfo.BeginnerMap is null)
+        //        beginner = "Нет";
+        //    else
+        //        beginner = $"{compitInfo.BeginnerMap.beatmapset.artist} - {compitInfo.BeginnerMap.beatmapset.title}\n{compitInfo.BeginnerMap.url}";
 
-            if (compitInfo.AlphaMap is null)
-                alpha = "Нет";
-            else
-                alpha = $"{compitInfo.AlphaMap.beatmapset.artist} - {compitInfo.AlphaMap.beatmapset.title}\n{compitInfo.AlphaMap.url}";
+        //    if (compitInfo.AlphaMap is null)
+        //        alpha = "Нет";
+        //    else
+        //        alpha = $"{compitInfo.AlphaMap.beatmapset.artist} - {compitInfo.AlphaMap.beatmapset.title}\n{compitInfo.AlphaMap.url}";
 
-            if (compitInfo.BetaMap is null)
-                beta = "Нет";
-            else
-                beta = $"{compitInfo.BetaMap.beatmapset.artist} - {compitInfo.BetaMap.beatmapset.title}\n{compitInfo.BetaMap.url}";
+        //    if (compitInfo.BetaMap is null)
+        //        beta = "Нет";
+        //    else
+        //        beta = $"{compitInfo.BetaMap.beatmapset.artist} - {compitInfo.BetaMap.beatmapset.title}\n{compitInfo.BetaMap.url}";
 
-            if (compitInfo.GammaMap is null)
-                gamma = "Нет";
-            else
-                gamma = $"{compitInfo.GammaMap.beatmapset.artist} - {compitInfo.GammaMap.beatmapset.title}\n{compitInfo.GammaMap.url}";
+        //    if (compitInfo.GammaMap is null)
+        //        gamma = "Нет";
+        //    else
+        //        gamma = $"{compitInfo.GammaMap.beatmapset.artist} - {compitInfo.GammaMap.beatmapset.title}\n{compitInfo.GammaMap.url}";
 
-            if (compitInfo.DeltaMap is null)
-                delta = "Нет";
-            else
-                delta = $"{compitInfo.DeltaMap.beatmapset.artist} - {compitInfo.DeltaMap.beatmapset.title}\n{compitInfo.DeltaMap.url}";
+        //    if (compitInfo.DeltaMap is null)
+        //        delta = "Нет";
+        //    else
+        //        delta = $"{compitInfo.DeltaMap.beatmapset.artist} - {compitInfo.DeltaMap.beatmapset.title}\n{compitInfo.DeltaMap.url}";
 
-            if (compitInfo.EpsilonMap is null)
-                epsilon = "Нет";
-            else
-                epsilon = $"{compitInfo.EpsilonMap.beatmapset.artist} - {compitInfo.EpsilonMap.beatmapset.title}\n{compitInfo.EpsilonMap.url}";
+        //    if (compitInfo.EpsilonMap is null)
+        //        epsilon = "Нет";
+        //    else
+        //        epsilon = $"{compitInfo.EpsilonMap.beatmapset.artist} - {compitInfo.EpsilonMap.beatmapset.title}\n{compitInfo.EpsilonMap.url}";
 
-            embed.WithTitle("W.w.W status")
-                 .AddField("Запущен", compitInfo.IsRunning ? "Да" : "Нет")
-                 .AddField("Дата начала", compitInfo.StartDate?.ToString() ?? "Нет")
-                 .AddField("Дата завершения", compitInfo.Deadline?.ToString() ?? "Нет")
-                 .AddField("Канал для лидерборда", string.IsNullOrEmpty(compitInfo.LeaderboardChannelUID) ? 
-                                                                        "Нет" : 
-                                                                        wav_guild.GetChannel(ulong.Parse(compitInfo.LeaderboardChannelUID)).Name)
-                 .AddField("Канал для скоров", string.IsNullOrEmpty(compitInfo.ScoresChannelUID) ? 
-                                                                    "Нет" :
-                                                                    wav_guild.GetChannel(ulong.Parse(compitInfo.ScoresChannelUID)).Name)
-                 .AddField("Лидерборд", string.IsNullOrEmpty(compitInfo.LeaderboardMessageUID) ? "Нет" : compitInfo.LeaderboardMessageUID)
-                 .AddField("Карта Beginner", beginner)
-                 .AddField("Карта Alpha", alpha)
-                 .AddField("Карта Beta", beta)
-                 .AddField("Карта Gamma", gamma)
-                 .AddField("Карта Delta", delta)
-                 .AddField("Карта Epsilon", epsilon);
+        //    embed.WithTitle("W.w.W status")
+        //         .AddField("Запущен", compitInfo.IsRunning ? "Да" : "Нет")
+        //         .AddField("Дата начала", compitInfo.StartDate?.ToString() ?? "Нет")
+        //         .AddField("Дата завершения", compitInfo.Deadline?.ToString() ?? "Нет")
+        //         .AddField("Канал для лидерборда", string.IsNullOrEmpty(compitInfo.LeaderboardChannelUID) ? 
+        //                                                                "Нет" : 
+        //                                                                wav_guild.GetChannel(ulong.Parse(compitInfo.LeaderboardChannelUID)).Name)
+        //         .AddField("Канал для скоров", string.IsNullOrEmpty(compitInfo.ScoresChannelUID) ? 
+        //                                                            "Нет" :
+        //                                                            wav_guild.GetChannel(ulong.Parse(compitInfo.ScoresChannelUID)).Name)
+        //         .AddField("Лидерборд", string.IsNullOrEmpty(compitInfo.LeaderboardMessageUID) ? "Нет" : compitInfo.LeaderboardMessageUID)
+        //         .AddField("Карта Beginner", beginner)
+        //         .AddField("Карта Alpha", alpha)
+        //         .AddField("Карта Beta", beta)
+        //         .AddField("Карта Gamma", gamma)
+        //         .AddField("Карта Delta", delta)
+        //         .AddField("Карта Epsilon", epsilon);
 
-            return embed.Build();
-        }
+        //    return embed.Build();
+        //}
 
         /// <summary>
         /// Получить Discord embed на основе gatari профиля
