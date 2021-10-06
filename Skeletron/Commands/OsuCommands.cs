@@ -333,7 +333,13 @@ namespace Skeletron.Commands
             switch (choosedServer)
             {
                 case OsuServer.Gatari:
-                    GScore gscore = gapi.GetUserRecentScores(userInfo.OsuId, 0, 1, true).First();
+                    GScore gscore = gapi.GetUserRecentScores(userInfo.OsuId, 0, 1, true).FirstOrDefault();
+
+                    if (gscore is null)
+                    {
+                        await commandContext.RespondAsync("У Вас нет недавно сыгранных карт в режиме osu!std.");
+                        return;
+                    }
 
                     GUser guser = null;
                     if (!gapi.TryGetUser(userInfo.OsuId, ref guser))
@@ -348,7 +354,13 @@ namespace Skeletron.Commands
                     return;
 
                 case OsuServer.Bancho:
-                    Score score = api.GetUserRecentScores(userInfo.OsuId, true, 0, 1).First();
+                    Score score = api.GetUserRecentScores(userInfo.OsuId, true, 0, 1).FirstOrDefault();
+
+                    if (score is null)
+                    {
+                        await commandContext.RespondAsync("У Вас нет недавно сыгранных карт в режиме osu!std.");
+                        return;
+                    }
 
                     User user = null;
                     if (!api.TryGetUser(userInfo.OsuId, ref user))
