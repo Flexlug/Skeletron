@@ -18,12 +18,16 @@ namespace OsuNET_Recognizer
     public class Recognizer
     {
         private TesseractEngine ocr;
+        private TesseractEngine ocr_multi_lang;
 
         public Recognizer()
         {
             ocr = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default);
             //ocr.SetVariable("tessedit_char_whitelist", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-[]!.?\'\"()~:_");
             ocr.SetVariable("classify_enable_learning", false);
+
+            ocr_multi_lang = new TesseractEngine("./tessdata", "eng+rus", EngineMode.Default);
+            ocr_multi_lang.SetVariable("classify_enable_learning", "false");
         }
 
         /// <summary>
@@ -47,6 +51,28 @@ namespace OsuNET_Recognizer
             bbmp.Save(fileName);
 
             Page pageName = ocr.Process(img);
+            string mapName = pageName.GetText();
+            pageName.Dispose();
+
+            bbmp.Dispose();
+
+            return mapName;
+        }
+
+        public string RecognizeWholeImage(Image image)
+        {
+            Bitmap bbmp = new Bitmap(image);
+
+            bbmp = ResizeImage(bbmp, bbmp.Width * 3, bbmp.Height * 3);
+            ToGrayScale(bbmp);
+            bbmp = AddTopWhiteSpace(bbmp);
+
+            string fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"temp/{DateTime.Now.Ticks}_BW.jpg");
+
+            Pix img = PixConverter.ToPix(bbmp);
+            bbmp.Save(fileName);
+
+            Page pageName = ocr_multi_lang.Process(img);
             string mapName = pageName.GetText();
             pageName.Dispose();
 

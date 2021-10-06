@@ -55,10 +55,10 @@ namespace Skeletron.Services.Entities
         private ILogger<RecognizerService> logger;
         private IShedulerService sheduler;
 
-        public RecognizerService(DiscordClient client, 
-                                 Settings settings, 
-                                 ILogger<RecognizerService> logger, 
-                                 OsuEmoji emoji, 
+        public RecognizerService(DiscordClient client,
+                                 Settings settings,
+                                 ILogger<RecognizerService> logger,
+                                 OsuEmoji emoji,
                                  OsuEmbed utils,
                                  OsuRegex regex,
                                  IShedulerService sheduler)
@@ -110,7 +110,7 @@ namespace Skeletron.Services.Entities
                 return;
             }
 
-            if (!((e.Channel.Name?.Contains("-osu") ?? true) || 
+            if (!((e.Channel.Name?.Contains("-osu") ?? true) ||
                   (e.Channel.Name?.Contains("bot-debug") ?? true)))
             {
                 logger.LogDebug($"Not osu channel");
@@ -149,9 +149,9 @@ namespace Skeletron.Services.Entities
         private bool check(MessageReactionAddEventArgs args, DiscordMessage message)
         {
             logger.LogInformation($"emoji: {args.Emoji}, id equals: {args.Message.Id == message.Id}, isBot: {args.Message.Author.IsBot}");
-            return args.Emoji == eyesEmoji && 
-                   args.Message.Id == message.Id && 
-                   !args.User.IsBot && 
+            return args.Emoji == eyesEmoji &&
+                   args.Message.Id == message.Id &&
+                   !args.User.IsBot &&
                    args.Message.Author.Username == message.Author.Username;
         }
 
@@ -198,7 +198,7 @@ namespace Skeletron.Services.Entities
             }
 
             GBeatmap gBeatmap;
-            DiscordEmbed embed = null; 
+            DiscordEmbed embed = null;
             DiscordMessage msg = null;
             DiscordEmbedBuilder embedBuilder = null;
             var buttons = new List<DiscordButtonComponent>(new[]
@@ -285,9 +285,9 @@ namespace Skeletron.Services.Entities
             await resp.Result.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder()
                                          .WithContent("Ответьте на это сообщение ссылкой на правильную карту (bancho url)"));
 
-            var msg_res = await interactivity.WaitForMessageAsync((new_msg) => 
+            var msg_res = await interactivity.WaitForMessageAsync((new_msg) =>
                                                                             new_msg.ReferencedMessage?.Id == msg.Id &&
-                                                                            new_msg.Author.Id == message.Author.Id, 
+                                                                            new_msg.Author.Id == message.Author.Id,
                                                                   TimeSpan.FromMinutes(1));
             if (msg_res.TimedOut)
             {
@@ -413,7 +413,7 @@ namespace Skeletron.Services.Entities
             }
 
             string mapper = string.Empty;
-            
+
             mapper = rawrecedText.Select(x => x)
                                  .FirstOrDefault(x =>
                                  {
@@ -427,7 +427,7 @@ namespace Skeletron.Services.Entities
                 mapper = mapper?.Substring(10);
                 logger.LogDebug($"Got mapper: {mapper}. Comparing...");
 
-                List<Tuple<Beatmapset, double>> bsm = bmsl.Select(x => Tuple.Create(x, 
+                List<Tuple<Beatmapset, double>> bsm = bmsl.Select(x => Tuple.Create(x,
                                                                                     OsuNET_Recognizer.RecStringComparer.Compare(x.creator, mapper) +
                                                                                     OsuNET_Recognizer.RecStringComparer.Compare(x.title, mapName)))
                                                                   .OrderByDescending(x => x.Item2)
@@ -472,7 +472,7 @@ namespace Skeletron.Services.Entities
             if (bms == null)
             {
                 logger.LogInformation($"No matching beatmapsets");
-                return new BeatmapsetNotFoundException(); 
+                return new BeatmapsetNotFoundException();
             }
             else
             {
@@ -501,6 +501,20 @@ namespace Skeletron.Services.Entities
 
                 return result;
             }
+        }
+
+        public async Task<string> PerformOcr(DiscordAttachment attachment)
+        {
+            var otherWebClient = new WebClient();
+            string webFileName = $"{DateTime.Now.Ticks}-{attachment.FileName}";
+            otherWebClient.DownloadFile(attachment.Url, $"downloads/{webFileName}");
+
+            string fileName = $"downloads/{webFileName}";
+            Image image = Image.FromFile(fileName);
+
+            string res = recognizer.RecognizeWholeImage(image);
+
+            return res;
         }
     }
 }
