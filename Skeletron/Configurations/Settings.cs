@@ -17,11 +17,14 @@ namespace Skeletron.Configurations
         public int ClientId { get; set; }
         public string Secret { get; set; }
 
-        // Other credentials
+        // Google credentials
         public string GoogleClientID { get; set; }
         public string GoogleClientSecret { get; set; }
         public string GoogleKey { get; set; }
         public string SearchKey { get; set; }
+
+        // VK credentials
+        public string VkSecret { get; set; }
 
         public Settings() : this("", DefaultPrefixes) { }
 

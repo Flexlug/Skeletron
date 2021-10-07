@@ -119,6 +119,7 @@ namespace Skeletron
                 .AddSingleton<IMappoolProvider, MappoolProvider>()
                 //.AddSingleton<IMappoolService, MappoolService>()
                 .AddSingleton<IWordsService, WordsService>()
+                .AddSingleton<IVkService, VkService>()
                 .BuildServiceProvider();
         }
 

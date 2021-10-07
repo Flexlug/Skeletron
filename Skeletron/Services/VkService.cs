@@ -11,10 +11,11 @@ using Microsoft.Extensions.Logging;
 using VkNet;
 using VkNet.Model;
 using VkNet.Model.Attachments;
-using WAV_Bot_DSharp.Converters;
-using WAV_Bot_DSharp.Services.Interfaces;
+using Skeletron.Converters;
+using Skeletron.Services.Interfaces;
+using Skeletron.Configurations;
 
-namespace WAV_Bot_DSharp.Services
+namespace Skeletron.Services
 {
     internal class VkService : IVkService
     {
@@ -23,12 +24,14 @@ namespace WAV_Bot_DSharp.Services
 
         private ILogger<VkService> logger;
 
-        public VkService(VkApi api,
+        public VkService(Settings settings,
                          VkRegex regex,
                          DiscordClient client,
                          ILogger<VkService> logger)
         {
-            this.api = api;
+            api = new VkApi();
+            api.Authorize(new ApiAuthParams() { ClientSecret = settings.VkSecret });
+
             this.regex = regex;
             this.logger = logger;
 
