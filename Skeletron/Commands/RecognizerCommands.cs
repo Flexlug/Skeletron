@@ -29,12 +29,6 @@ namespace Skeletron.Commands
             logger.LogInformation("RecognizerCommands loaded");
         }
 
-        [Command("dummy"), Description("Send a message to a specified channel in a special guild"), Hidden]
-        public async Task DummyCommand(CommandContext commandContext)
-        {
-            await commandContext.RespondAsync("As dummy as me");
-        }
-
         [Command("ocr"), Description("Permorm an OCR process and recognize text on image. Languages: ENG + RUS")]
         public async Task OcrImage(CommandContext commandContext)
         {
