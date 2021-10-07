@@ -4,7 +4,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>WAV_Bot_DSharp</RootNamespace>
+    <RootNamespace>Skeletron</RootNamespace>
     <Platforms>AnyCPU;x86;x64</Platforms>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <Deterministic>false</Deterministic>
