@@ -104,12 +104,14 @@ namespace Skeletron
                 .AddSingleton<OsuEmbed>()
                 .AddSingleton<OsuEnums>()
                 .AddSingleton<OsuRegex>()
+                .AddSingleton<VkRegex>()
                 .AddSingleton<NumbersApi>()
                 .AddSingleton<EmojiUtlis>()
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
                 .AddSingleton(new GoogleSearch())
                 .AddSingleton<IWordsProvider, WordsProvider>()
+                .AddSingleton<IVkService, VkService>()
                 .AddSingleton<ISheetGenerator, SheetGenerator>()
                 .AddSingleton<IShedulerService, ShedulerService>()
                 .AddSingleton<IRecognizerService, RecognizerService>()
@@ -119,7 +121,6 @@ namespace Skeletron
                 .AddSingleton<IMappoolProvider, MappoolProvider>()
                 //.AddSingleton<IMappoolService, MappoolService>()
                 .AddSingleton<IWordsService, WordsService>()
-                .AddSingleton<IVkService, VkService>()
                 .BuildServiceProvider();
         }
 
@@ -141,6 +142,7 @@ namespace Skeletron
             CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
+            CommandsNext.RegisterCommands<VkCommands>();
             //CommandsNext.RegisterCommands<CompititionCommands>();
             //CommandsNext.RegisterCommands<MappoolCommands>();
 
