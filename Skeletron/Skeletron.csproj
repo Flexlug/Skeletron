@@ -55,11 +55,11 @@
 
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.13.0" />
-    <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-00963" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-00963" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-00963" />
-    <PackageReference Include="DSharpPlus.Rest" Version="4.2.0-nightly-00963" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.2.0-nightly-00963" />
+    <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01024" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01024" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01024" />
+    <PackageReference Include="DSharpPlus.Rest" Version="4.2.0-nightly-01024" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.2.0-nightly-01024" />
     <PackageReference Include="GoogleApi" Version="3.10.11" />
     <PackageReference Include="IDoEverything.DSharpPlus.SlashCommands" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />    
