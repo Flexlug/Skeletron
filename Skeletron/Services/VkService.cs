@@ -60,7 +60,7 @@ namespace Skeletron.Services
             {
                 post = await api.Wall.GetByIdAsync(new string[] { post_id });
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogWarning($"Ошибка парсинга поста из группы VK. id: {post_id}, expetion: {e.Message} {e.Source} {e.StackTrace}");
                 return;
@@ -83,10 +83,9 @@ namespace Skeletron.Services
             #region Main content
             var sb = new StringBuilder();
             var builder = new DiscordEmbedBuilder()
-                .WithFooter($"Лайков: {p.Likes.Count}, Репостов: {p.Reposts.Count}, Просмотров: {p.Views.Count}", @"https://vk.com/images/icons/favicons/fav_logo.ico")
                 .WithUrl($"http://vk.com/wall{post_id}")
                 .WithTitle(p.Date?.ToString() ?? "");
-            
+
             sb.AppendLine(p.Text);
             sb.AppendLine();
 
@@ -100,7 +99,7 @@ namespace Skeletron.Services
 
                 builder.WithAuthor(group.Name, $"http://vk.com/club{group.Id}", group.Photo50.AbsoluteUri);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogInformation($"Не удалось получить информацию об авторе поста VK {p.FromId}");
             }
@@ -110,6 +109,7 @@ namespace Skeletron.Services
             #region Attachments
             bool hasImage = false;
             int imgCount = 0;
+            List<string> imageUrls = new();
 
             foreach (var a in p.Attachments)
             {
@@ -120,16 +120,27 @@ namespace Skeletron.Services
 
                         var size = photo.Sizes.First(x => x.Width == photo.Sizes.Max(x => x.Width) && x.Height == photo.Sizes.Max(x => x.Height));
 
-                        if (hasImage)
-                        {
-                            sb.Append($"[Картинка{++imgCount}]({size.Url.AbsoluteUri}), ");
-                        }
-                        else
-                        {
-                            builder.WithImageUrl(size.Url);
-                            hasImage = true;
-                            sb.Append($"[Картинка{++imgCount}]({size.Url.AbsoluteUri}) ");
-                        }
+                        imageUrls.Add(size.Url.AbsoluteUri);
+
+                        //if (imgCount == 0)
+                        //{
+                        //    builder.WithImageUrl(size.Url.AbsoluteUri);
+                        //    imgCount++;
+                        //}
+                        //else
+                        //{
+                        //    if (imgCount < 4)
+                        //    {
+                        //        imageUrls.Add(new DiscordEmbedBuilder()
+                        //            .WithImageUrl(size.Url.AbsoluteUri)
+                        //            .WithUrl($"http://vk.com/wall{post_id}"));
+                        //        imgCount++;
+                        //    }
+                        //    else
+                        //    {
+                        //        sb.Append($"[Картинка{++imgCount}]({size.Url.AbsoluteUri}), ");
+                        //    }
+                        //}
 
                         break;
 
@@ -140,9 +151,33 @@ namespace Skeletron.Services
             }
             #endregion
 
+            #region Constructing message
             builder.WithDescription(sb.ToString());
 
-            await channel.SendMessageAsync(builder);
+            if (imageUrls.Count != 0)
+                builder.WithImageUrl(imageUrls[0]);
+
+            List<DiscordMessageBuilder> messages = new();
+
+            List<DiscordEmbedBuilder> finalEmbeds = new();
+            finalEmbeds.Add(builder);
+            for (int i = 1; i < imageUrls.Count; i++)
+                finalEmbeds.Add(new DiscordEmbedBuilder()
+                    .WithImageUrl(imageUrls[i])
+                    .WithUrl($"http://vk.com/wall{post_id}"));
+
+            finalEmbeds
+                [(finalEmbeds.Count - 1) / 4 * 4]
+                .WithFooter($"Лайков: {p.Likes.Count}, Репостов: {p.Reposts.Count}, Просмотров: {p.Views.Count}", @"https://vk.com/images/icons/favicons/fav_logo.ico");
+
+            for (int i = 0; i < finalEmbeds.Count; i += 4)
+                messages.Add(new DiscordMessageBuilder()
+                    .AddEmbeds(finalEmbeds.Skip(i).Take(4).Select(x => x.Build()).ToList()));
+
+            foreach (var msg in messages)
+                await msg.SendAsync(channel);
+
+            #endregion
         }
     }
 }
