@@ -91,10 +91,12 @@ namespace Skeletron.Services
             // Repost handle
             if (p.CopyHistory is not null && p.CopyHistory.Count != 0)
             {
+                sb.AppendLine($"[{new string('➦', 1)}](http://vk.com/wall{p.FromId}_{p.Id}) {(string.IsNullOrEmpty(p.Text) ? "*repost*" : p.Text)}\n");
+
                 for (int i = 0; i < p.CopyHistory.Count; i++) 
                 {
                     Post repost = p.CopyHistory[i];
-                    sb.AppendLine($"[{new string('➦', i + 1)}](http://vk.com/wall{repost.FromId}_{repost.Id}) {(string.IsNullOrEmpty(repost.Text) ? "*repost*" : repost.Text)}\n"); 
+                    sb.AppendLine($"[{new string('➦', i + 2)}](http://vk.com/wall{repost.FromId}_{repost.Id}) {(string.IsNullOrEmpty(repost.Text) ? "*repost*" : repost.Text)}\n"); 
                 }
 
                 p = p.CopyHistory.Last();
