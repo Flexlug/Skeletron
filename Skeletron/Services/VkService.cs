@@ -73,6 +73,7 @@ namespace Skeletron.Services
             }
 
             Post p = post.WallPosts.FirstOrDefault();
+            Post source_post = p;
             if (p is null)
             {
                 logger.LogDebug($"Не удалось получить пост VK по из коллекции WallPosts. id: {post_id}");
@@ -82,12 +83,22 @@ namespace Skeletron.Services
 
             #region Main content
             var sb = new StringBuilder();
-            var builder = new DiscordEmbedBuilder()
-                .WithUrl($"http://vk.com/wall{post_id}")
-                .WithTitle(p.Date?.ToString() ?? "");
+            var builder = new DiscordEmbedBuilder();
 
             sb.AppendLine(p.Text);
             sb.AppendLine();
+
+            // Repost handle
+            if (p.CopyHistory is not null && p.CopyHistory.Count != 0)
+            {
+                for (int i = 0; i < p.CopyHistory.Count; i++) 
+                {
+                    Post repost = p.CopyHistory[i];
+                    sb.AppendLine($"[{new string('➦', i + 1)}](http://vk.com/wall{repost.FromId}_{repost.Id}) {(string.IsNullOrEmpty(repost.Text) ? "*repost*" : repost.Text)}\n"); 
+                }
+
+                p = p.CopyHistory.Last();
+            }
 
             #endregion
 
@@ -96,8 +107,7 @@ namespace Skeletron.Services
             try
             {
                 group = (await api.Groups.GetByIdAsync(new string[] { p.FromId.ToString().Replace("-", string.Empty) }, null, null)).First();
-
-                builder.WithAuthor(group.Name, $"http://vk.com/club{group.Id}", group.Photo50.AbsoluteUri);
+                builder.WithAuthor(group.Name, $"http://vk.com/wall-{group.Id}_{source_post.Id}", group.Photo50.AbsoluteUri);
             }
             catch (Exception e)
             {
@@ -155,7 +165,8 @@ namespace Skeletron.Services
             builder.WithDescription(sb.ToString());
 
             if (imageUrls.Count != 0)
-                builder.WithImageUrl(imageUrls[0]);
+                builder.WithImageUrl(imageUrls[0])
+                       .WithUrl($"http://vk.com/wall{post_id}");
 
             List<DiscordMessageBuilder> messages = new();
 
@@ -168,7 +179,7 @@ namespace Skeletron.Services
 
             finalEmbeds
                 [(finalEmbeds.Count - 1) / 4 * 4]
-                .WithFooter($"Лайков: {p.Likes.Count}, Репостов: {p.Reposts.Count}, Просмотров: {p.Views.Count}", @"https://vk.com/images/icons/favicons/fav_logo.ico");
+                .WithFooter($"Лайков: {source_post.Likes.Count}, Репостов: {source_post.Reposts.Count}, Просмотров: {source_post.Views.Count}", @"https://vk.com/images/icons/favicons/fav_logo.ico");
 
             for (int i = 0; i < finalEmbeds.Count; i += 4)
                 messages.Add(new DiscordMessageBuilder()
