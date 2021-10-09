@@ -85,21 +85,33 @@ namespace Skeletron.Services
             var sb = new StringBuilder();
             var builder = new DiscordEmbedBuilder();
 
-            sb.AppendLine(p.Text);
-            sb.AppendLine();
-
+            IReadOnlyCollection<Group> historyGroups = null;
             // Repost handle
             if (p.CopyHistory is not null && p.CopyHistory.Count != 0)
             {
-                sb.AppendLine($"[{new string('➦', 1)}](http://vk.com/wall{p.FromId}_{p.Id}) {(string.IsNullOrEmpty(p.Text) ? "*repost*" : p.Text)}\n");
+                historyGroups = await api.Groups.GetByIdAsync(
+                    p.CopyHistory.Select(x => Math.Abs((long)x.OwnerId).ToString())
+                                 .Append(source_post.FromId.ToString().Replace("-", string.Empty))
+                                 .ToList()
+                    , null, null);
 
-                for (int i = 1; i < p.CopyHistory.Count; i++) 
+                sb.AppendLine($"{(string.IsNullOrEmpty(p.Text) ? string.Empty : p.Text)}");
+
+                for (int i = 0; i < p.CopyHistory.Count; i++)
                 {
                     Post repost = p.CopyHistory[i];
-                    sb.AppendLine($"[{new string('➦', i + 2)}](http://vk.com/wall{repost.FromId}_{repost.Id}) {(string.IsNullOrEmpty(repost.Text) ? "*repost*" : repost.Text)}\n"); 
+                    sb.AppendLine($"{new string('➦', i + 1)} *repost from [**{historyGroups.ElementAt(i).Name}**](http://vk.com/wall{repost.FromId}_{repost.Id})*");
+                    if (!string.IsNullOrEmpty(repost.Text))
+                        sb.AppendLine(repost.Text);
+                    sb.AppendLine();
                 }
 
                 p = p.CopyHistory.Last();
+            }
+            else
+            {
+                sb.AppendLine(p.Text);
+                sb.AppendLine();
             }
 
             #endregion
@@ -108,8 +120,8 @@ namespace Skeletron.Services
             Group group = null;
             try
             {
-                group = (await api.Groups.GetByIdAsync(new string[] { p.FromId.ToString().Replace("-", string.Empty) }, null, null)).First();
-                builder.WithAuthor(group.Name, $"http://vk.com/wall-{group.Id}_{source_post.Id}", group.Photo50.AbsoluteUri);
+                group = historyGroups?.Last() ?? (await api.Groups.GetByIdAsync(new string[] { source_post.FromId.ToString().Replace("-", string.Empty) }, null, null)).First();
+                builder.WithAuthor(group.Name, $"http://vk.com/wall-{source_post.Id}_{source_post.Id}", group.Photo50.AbsoluteUri);
             }
             catch (Exception e)
             {
