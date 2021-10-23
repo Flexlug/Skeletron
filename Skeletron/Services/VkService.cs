@@ -121,7 +121,7 @@ namespace Skeletron.Services
             try
             {
                 group = historyGroups?.Last() ?? (await api.Groups.GetByIdAsync(new string[] { source_post.FromId.ToString().Replace("-", string.Empty) }, null, null)).First();
-                builder.WithAuthor(group.Name, $"http://vk.com/wall-{source_post.Id}_{source_post.Id}", group.Photo50.AbsoluteUri);
+                builder.WithAuthor(group.Name, $"http://vk.com/wall{source_post.OwnerId}_{source_post.Id}", group.Photo50.AbsoluteUri);
             }
             catch (Exception e)
             {
