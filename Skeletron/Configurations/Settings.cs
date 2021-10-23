@@ -8,6 +8,7 @@ namespace Skeletron.Configurations
 
         public string DB_IP { get; set; }
         public string DB_NAME { get; set; }
+        public string DB_CERT { get; set; }
 
         // Discord credential
         public string Token { get; set; }
