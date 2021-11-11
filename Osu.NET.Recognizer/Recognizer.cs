@@ -18,7 +18,7 @@ namespace OsuNET_Recognizer
     public class Recognizer
     {
         private TesseractEngine ocr;
-        private TesseractEngine ocr_multi_lang;
+        //private TesseractEngine ocr_multi_lang;
 
         public Recognizer()
         {
@@ -26,8 +26,8 @@ namespace OsuNET_Recognizer
             //ocr.SetVariable("tessedit_char_whitelist", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-[]!.?\'\"()~:_");
             ocr.SetVariable("classify_enable_learning", false);
 
-            ocr_multi_lang = new TesseractEngine("./tessdata", "eng+rus", EngineMode.Default);
-            ocr_multi_lang.SetVariable("classify_enable_learning", "false");
+            //ocr_multi_lang = new TesseractEngine("./tessdata", "eng+rus", EngineMode.Default);
+            //ocr_multi_lang.SetVariable("classify_enable_learning", "false");
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace OsuNET_Recognizer
             Pix img = PixConverter.ToPix(bbmp);
             bbmp.Save(fileName);
 
-            Page pageName = ocr_multi_lang.Process(img);
+            Page pageName = ocr.Process(img);
             string mapName = pageName.GetText();
             pageName.Dispose();
 

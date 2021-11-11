@@ -102,7 +102,7 @@ namespace Skeletron.Commands
                   e.Channel.Name.Contains("dev-announce")))
                 return;
 
-            if (e.Message.Content[0] == '>' || e.Message.Content[0] == '!')
+            if (e.Message.Content[0] == '>' || e.Message.Content[0] == '!' || e.Message.Content[0] == '<' || e.Message.Content[0..2] == "y!" )
                 return;
 
             // Check, if it is map url from bancho
