@@ -280,17 +280,14 @@ namespace Skeletron.Commands
 
         [Command("d"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Удалить сообщение и уведомить автора об этом.")]
         public async Task DeleteMessageByLinkAndNotify(CommandContext commandContext,
-        [Description("Удаляемое сообщение.")] DiscordMessage msg,
-        [Description("Причина."), RemainingText] string reason)
+            [Description("Удаляемое сообщение.")] DiscordMessage msg,
+            [Description("Причина."), RemainingText] string reason = "not stated")
         {
             if (msg is null)
             {
                 await commandContext.RespondAsync("Deleting message is not specified");
                 return;
             }
-
-            if (string.IsNullOrEmpty(reason))
-                reason = "not stated";
 
             DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
                 .WithFooter($"Mod: {commandContext.Message.Author.Username} {msg.Timestamp}", iconUrl: commandContext.Message.Author.AvatarUrl)
@@ -305,7 +302,7 @@ namespace Skeletron.Commands
             if (!user.IsBot)
             {
                 DiscordDmChannel targetChannel = await user.CreateDmChannelAsync();
-                await targetChannel.SendMessageAsync(content: $"Удалено по причине по причине: {reason}", embed: builder.Build());
+                await targetChannel.SendMessageAsync(content: $"Удалено по причине: {reason}", embed: builder.Build());
 
                 if (msg.Embeds?.Count != 0)
                     foreach (var embed in msg.Embeds)
@@ -340,16 +337,13 @@ namespace Skeletron.Commands
 
         [Command("d"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Удалить сообщение и уведомить автора об этом.")]
         public async Task DeleteMessageAndNotify(CommandContext commandContext,
-        [Description("Причина."), RemainingText] string reason)
+            [Description("Причина."), RemainingText] string reason = "not stated")
         {
             if (commandContext.Message.Reference is null)
             {
                 await commandContext.RespondAsync("Resending message is not specified");
                 return;
             }
-
-            if (string.IsNullOrEmpty(reason))
-                reason = "not stated";
 
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Reference.Message.Id);
 
@@ -360,8 +354,8 @@ namespace Skeletron.Commands
 
         [Command("rd"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Переслать сообщение в другой канал и удалить его с предыдущего.")]
         public async Task ResendAndDeleteAsync(CommandContext commandContext,
-        [Description("Канал, куда необходимо переслать сообщение.")] DiscordChannel targetChannel,
-        [Description("Причина."), RemainingText] string reason)
+            [Description("Канал, куда необходимо переслать сообщение.")] DiscordChannel targetChannel,
+            [Description("Причина."), RemainingText] string reason = "not stated")
         {
             if (commandContext.Message.Reference is null)
             {
@@ -375,20 +369,18 @@ namespace Skeletron.Commands
                 return;
             }
 
-            if (string.IsNullOrEmpty(reason))
-                reason = "not stated";
-
+            // redirect message
             DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Reference.Message.Id);
 
-            DiscordEmbedBuilder builder = new DiscordEmbedBuilder()
+            DiscordEmbedBuilder redirectedMsg = new DiscordEmbedBuilder()
                 .WithFooter($"Mod: {commandContext.Message.Author.Username} {msg.Timestamp}", iconUrl: commandContext.Message.Author.AvatarUrl)
                 .WithDescription(msg.Content);
 
             if (!(msg.Author is null))
-                builder.WithAuthor(name: $"From {msg.Channel.Name} by {msg.Author.Username}",
+                redirectedMsg.WithAuthor(name: $"From {msg.Channel.Name} by {msg.Author.Username}",
                                    iconUrl: msg.Author.AvatarUrl);
 
-            await targetChannel.SendMessageAsync(content: $"{msg.Author.Mention}\nПеренаправлено по причине: {reason}", embed: builder.Build());
+            await targetChannel.SendMessageAsync(content: $"{msg.Author.Mention}\nПеренаправлено по причине: {reason}", embed: redirectedMsg.Build());
 
             if (msg.Embeds?.Count != 0)
                 foreach (var embed in msg.Embeds)
@@ -407,6 +399,7 @@ namespace Skeletron.Commands
                 }
             }
 
+            // log
             await LogChannel.SendMessageAsync(
                 embed: new DiscordEmbedBuilder().WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
                                     .AddField("**Action**:", "resend message", true)
@@ -417,6 +410,22 @@ namespace Skeletron.Commands
                                     .WithFooter()
                                     .Build());
             await msg.Channel.DeleteMessagesAsync(new[] { msg, commandContext.Message }, reason);
+
+            // notify in DM
+            DiscordMember user = await wavGuild.GetMemberAsync(msg.Author.Id);
+            if (!user.IsBot)
+            {
+                DiscordDmChannel dmChannel = await user.CreateDmChannelAsync();
+                await dmChannel.SendMessageAsync(content: $"Перенаправлено по причине: {reason}", embed: redirectedMsg.Build());
+
+                if (msg.Embeds?.Count != 0)
+                    foreach (var embed in msg.Embeds)
+                        await dmChannel.SendMessageAsync(embed: embed);
+
+                if (msg.Attachments?.Count != 0)
+                    foreach (var att in msg.Attachments)
+                        await dmChannel.SendMessageAsync(att.Url);
+            }
         }
 
         [Command("get-sheduled-tasks-list"), RequirePermissions(Permissions.Administrator)]
