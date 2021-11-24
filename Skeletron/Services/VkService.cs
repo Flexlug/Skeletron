@@ -29,7 +29,7 @@ namespace Skeletron.Services
                          ILogger<VkService> logger)
         {
             api = new VkApi();
-            api.Authorize(new ApiAuthParams() { AccessToken = settings.VkSecret });
+            api.Authorize(new ApiAuthParams() { AccessToken = settings.VkSecret,  });
 
             this.regex = regex;
             this.logger = logger;
@@ -58,7 +58,7 @@ namespace Skeletron.Services
             WallGetObject post = null;
             try
             {
-                post = await api.Wall.GetByIdAsync(new string[] { post_id });
+                post = await api.Wall.GetByIdAsync(new string[] { post_id }, true);
             }
             catch (Exception e)
             {
@@ -134,6 +134,7 @@ namespace Skeletron.Services
             bool hasImage = false;
             int imgCount = 0;
             List<string> imageUrls = new();
+            List<(string, string)> fields = new();
 
             foreach (var a in p.Attachments)
             {
@@ -146,25 +147,25 @@ namespace Skeletron.Services
 
                         imageUrls.Add(size.Url.AbsoluteUri);
 
-                        //if (imgCount == 0)
-                        //{
-                        //    builder.WithImageUrl(size.Url.AbsoluteUri);
-                        //    imgCount++;
-                        //}
-                        //else
-                        //{
-                        //    if (imgCount < 4)
-                        //    {
-                        //        imageUrls.Add(new DiscordEmbedBuilder()
-                        //            .WithImageUrl(size.Url.AbsoluteUri)
-                        //            .WithUrl($"http://vk.com/wall{post_id}"));
-                        //        imgCount++;
-                        //    }
-                        //    else
-                        //    {
-                        //        sb.Append($"[Картинка{++imgCount}]({size.Url.AbsoluteUri}), ");
-                        //    }
-                        //}
+                        break;
+
+                    case "VkNet.Model.Attachments.Video":
+                        Video video = a.Instance as Video;
+
+                        sb.Append($"[[**видео**](https://vk.com/video{video.OwnerId}_{video.Id})] ");
+
+                        break;
+
+                    case "VkNet.Model.Attachments.Poll":
+                        Poll poll = a.Instance as Poll;
+
+                        (string, string) strPoll = new(
+                            poll.Question,
+                            string.Join(' ',
+                                poll.Answers
+                                    .Select(x => $"**{x.Text}** - {x.Votes} ({x.Rate:#.##}%)\n")));
+
+                        fields.Add(strPoll);
 
                         break;
 
@@ -177,6 +178,10 @@ namespace Skeletron.Services
 
             #region Constructing message
             builder.WithDescription(sb.ToString());
+
+            if (fields.Count != 0)
+                foreach (var field in fields)
+                    builder.AddField(field.Item1, field.Item2);
 
             if (imageUrls.Count != 0)
                 builder.WithImageUrl(imageUrls[0])
@@ -194,7 +199,7 @@ namespace Skeletron.Services
             finalEmbeds
                 [(finalEmbeds.Count - 1) / 4 * 4]
                 .WithFooter($"Лайков: {source_post.Likes.Count}, Репостов: {source_post.Reposts.Count}, Просмотров: {source_post.Views.Count}", @"https://vk.com/images/icons/favicons/fav_logo.ico");
-
+            
             for (int i = 0; i < finalEmbeds.Count; i += 4)
                 messages.Add(new DiscordMessageBuilder()
                     .AddEmbeds(finalEmbeds.Skip(i).Take(4).Select(x => x.Build()).ToList()));

@@ -8,6 +8,7 @@ using OsuNET_Api.Models.Gatari;
 using Skeletron.Converters;
 using Skeletron.Database.Interfaces;
 using Skeletron.Database.Models;
+using Skeletron.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Skeletron.Services
     /// <summary>
     /// Сервис, отслеживащий ссылки из osu
     /// </summary>
-    internal class OsuService
+    public class OsuService : IOsuService
     {
         private ILogger<OsuService> _logger;
 
@@ -189,7 +190,7 @@ namespace Skeletron.Services
             }
         }
 
-        public async Task<string> SetOsuProfileFor(DiscordUser user, string nickname, params string[] args)
+        public async Task<string> SetOsuProfile(DiscordUser user, string nickname, params string[] args)
         {
             string discordId = user.Id.ToString();
 
@@ -250,6 +251,5 @@ namespace Skeletron.Services
                 return "Вас не удалось найти в базе данных участников WAV.";
             }
         }
-
     }
 }
