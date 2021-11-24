@@ -31,7 +31,7 @@ using DSharpPlus.EventArgs;
 namespace Skeletron.Services.Entities
 {
     /// <summary>
-    /// Реализация сервиса, который будет отслеживать скриншоты и скоры из osu!
+    /// Реализация сервиса, который будет отслеживать скриншоты из osu!
     /// </summary>
     public class RecognizerService : IRecognizerService
     {
@@ -53,20 +53,17 @@ namespace Skeletron.Services.Entities
         DiscordEmoji eyesEmoji;
 
         private ILogger<RecognizerService> logger;
-        private IShedulerService sheduler;
 
         public RecognizerService(DiscordClient client,
                                  Settings settings,
                                  ILogger<RecognizerService> logger,
                                  OsuEmoji emoji,
                                  OsuEmbed utils,
-                                 OsuRegex regex,
-                                 IShedulerService sheduler)
+                                 OsuRegex regex)
         {
             this.client = client;
             this.logger = logger;
             this.utils = utils;
-            this.sheduler = sheduler;
 
             this.emoji = emoji;
             this.regex = regex;
