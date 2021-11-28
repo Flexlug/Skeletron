@@ -322,7 +322,7 @@ namespace Skeletron.Commands
                         .WithFooter()
                         .Build());
 
-            await LogChannel.SendMessageAsync(content: $"Deleted message: \n{new string('=', 20)}\n{msg.Content}");
+            // await LogChannel.SendMessageAsync(content: $"Deleted message: \n{new string('=', 20)}\n{msg.Content}");
 
             if (msg.Embeds?.Count != 0)
                 foreach (var embed in msg.Embeds)
