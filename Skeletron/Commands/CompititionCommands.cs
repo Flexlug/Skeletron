@@ -26,6 +26,7 @@ using Skeletron.Services.Interfaces;
 namespace Skeletron.Commands
 {
     [Group("www")]
+    [Hidden]
     public class CompititionCommands : SkBaseCommandModule
     {
         private ILogger<CompititionCommands> logger;

@@ -117,9 +117,9 @@ namespace Skeletron
                 .AddSingleton<IRecognizerService, RecognizerService>()
                 .AddSingleton<IMembersProvider, MembersProvider>()
                 .AddSingleton<ICompitProvider, CompitProvider>()
-                //.AddSingleton<ICompititionService, CompititionService>()
+                .AddSingleton<ICompititionService, CompititionService>()
                 .AddSingleton<IMappoolProvider, MappoolProvider>()
-                //.AddSingleton<IMappoolService, MappoolService>()
+                .AddSingleton<IMappoolService, MappoolService>()
                 .AddSingleton<IWordsService, WordsService>()
                 .AddSingleton<IOsuService, OsuService>()
                 .BuildServiceProvider();
@@ -144,8 +144,8 @@ namespace Skeletron
             CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
             CommandsNext.RegisterCommands<VkCommands>();
-            //CommandsNext.RegisterCommands<CompititionCommands>();
-            //CommandsNext.RegisterCommands<MappoolCommands>();
+            CommandsNext.RegisterCommands<CompititionCommands>();
+            CommandsNext.RegisterCommands<MappoolCommands>();
 
             var slashCommandsConfiguration = new SlashCommandsConfiguration()
             {

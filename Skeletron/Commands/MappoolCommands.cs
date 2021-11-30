@@ -17,6 +17,7 @@ namespace Skeletron.Commands
 {
     [RequireGuild]
     [Group("mappool")]
+    [Hidden]
     public class MappoolCommands : SkBaseCommandModule
     {
         private IMappoolService mappoolService;
