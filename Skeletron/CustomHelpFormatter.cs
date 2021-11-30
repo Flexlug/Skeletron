@@ -81,6 +81,8 @@ namespace Skeletron.Services.Entities
                 if (!(commands.Module is SingletonCommandModule))
                     continue;
 
+                bool isGroup = commands is CommandGroup;
+
                 SkBaseCommandModule skModule = (commands.Module as SingletonCommandModule).Instance as SkBaseCommandModule;
 
                 if (string.IsNullOrEmpty(skModule.ModuleName))
@@ -89,7 +91,7 @@ namespace Skeletron.Services.Entities
                 if (!comsDict.ContainsKey(skModule.ModuleName))
                     comsDict.Add(skModule.ModuleName, new List<string>());
 
-                comsDict[skModule.ModuleName].Add($"`{commands.Name}`");
+                comsDict[skModule.ModuleName].Add($"`{commands.Name}{(isGroup ? " (group)" : string.Empty)}`");
             }
 
             foreach (var kvp in comsDict)
