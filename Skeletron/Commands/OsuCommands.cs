@@ -108,7 +108,7 @@ namespace Skeletron.Commands
                 return;
             }
 
-            if (args.Contains("-gatari"))
+            if (args.Any(x => x.ToLower() == "-gatari"))
             {
                 GUser guser = null;
                 if (!gapi.TryGetUser(nickname, ref guser))
