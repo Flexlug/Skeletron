@@ -198,7 +198,8 @@ namespace Skeletron.Services
 
             finalEmbeds
                 [(finalEmbeds.Count - 1) / 4 * 4]
-                .WithFooter($"Лайков: {source_post.Likes.Count}, Репостов: {source_post.Reposts.Count}, Просмотров: {source_post.Views.Count}", @"https://vk.com/images/icons/favicons/fav_logo.ico");
+                .WithFooter($"Лайков: {source_post.Likes.Count}, Репостов: {source_post.Reposts.Count}, Просмотров: {source_post.Views.Count}", @"https://vk.com/images/icons/favicons/fav_logo.ico")
+                .WithTimestamp(source_post.Date);
             
             for (int i = 0; i < finalEmbeds.Count; i += 4)
                 messages.Add(new DiscordMessageBuilder()
