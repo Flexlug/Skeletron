@@ -157,9 +157,9 @@ namespace Skeletron
             // Register slash commands modules
             SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
             SlashCommands.RegisterCommands<UserSlashCommands>(WAV_UID);
-            //SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
-            //SlashCommands.RegisterCommands<AdminMappoolSlashCommands>(WAV_UID);
-
+            SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
+            SlashCommands.RegisterCommands<AdminMappoolSlashCommands>(WAV_UID);
+            
             SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
 
             // Registering OnCommandError method for the CommandErrored event

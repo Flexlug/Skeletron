@@ -31,44 +31,24 @@ namespace Skeletron.SlashCommands
             logger.LogInformation("MappolSlashCommands loaded");
         }
 
-        //[SlashCommand("get-for", "Показать предлагаемые карты для следующего W.w.W. для выбранной категории.")]
-        //public async Task GetMappol(InteractionContext ctx,
-        //    [Option("category", "Конкурсная категория")] CompitCategory category)
-        //{
-        //    //if (!((ctx.Channel.Name?.Contains("-bot") ?? false) ||
-        //    //      (ctx.Channel.Name?.Contains("dev-announce") ?? false) ||
-        //    //      (ctx.Channel.Name?.Contains("-scores") ?? false)))
-        //    //{
-        //    //    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-        //    //                                  new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")
-        //    //                                                                         .AsEphemeral(true));
-        //    //    return;
-        //    //}
+        [SlashCommand("get-for", "Показать предлагаемые карты для следующего W.w.W. для выбранной категории.")]
+        public async Task GetMappol(InteractionContext ctx,
+            [Option("category", "Конкурсная категория")] CompitCategory category)
+        {
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                                         new DiscordInteractionResponseBuilder()
+                                            .AddEmbed(mappoolService.GetCategoryMappool(category))
+                                            .AsEphemeral(true));
+        }
 
-        //    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-        //                                 new DiscordInteractionResponseBuilder()
-        //                                    .AddEmbed(mappoolService.GetCategoryMappool(category))
-        //                                    .AsEphemeral(true));
-        //}
-
-        //[SlashCommand("get", "Показать предлагаемые карты для следующего W.w.W.")]
-        //public async Task GetMappol(InteractionContext ctx)
-        //{
-        //    //if (!((ctx.Channel.Name?.Contains("-bot") ?? false) ||
-        //    //      (ctx.Channel.Name?.Contains("dev-announce") ?? false) ||
-        //    //      (ctx.Channel.Name?.Contains("-scores") ?? false)))
-        //    //{
-        //    //    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-        //    //                                  new DiscordInteractionResponseBuilder().WithContent("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.")
-        //    //                                                                         .AsEphemeral(true));
-        //    //    return;
-        //    //}
-
-        //    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-        //                                 new DiscordInteractionResponseBuilder()
-        //                                    .AddEmbed(mappoolService.GetCategoryMappool(ctx.Member))
-        //                                    .AsEphemeral(true));
-        //}
+        [SlashCommand("get", "Показать предлагаемые карты для следующего W.w.W.")]
+        public async Task GetMappol(InteractionContext ctx)
+        {
+            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                                         new DiscordInteractionResponseBuilder()
+                                            .AddEmbed(mappoolService.GetCategoryMappool(ctx.Member))
+                                            .AsEphemeral(true));
+        }
 
         [SlashCommand("offer", "Предложить карту на W.w.W и проголосовать за неё.")]
         public async Task AddMap(InteractionContext ctx,
@@ -85,20 +65,5 @@ namespace Skeletron.SlashCommands
                                              .AsEphemeral(true)
                                              .WithContent(res));
         }
-
-        //[SlashCommand("vote", "Проголосовать за выбранную карту")]
-        //public async Task Vote(InteractionContext ctx,
-        //    [Option("id", "ID карты")] long bmId)
-        //{
-        //    string res = mappoolService.Vote(ctx.Member.Id.ToString(), (int)bmId);
-
-        //    if (res == "done")
-        //        res = ":ok_hand:";
-
-        //    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-        //                                  new DiscordInteractionResponseBuilder()
-        //                                     .AsEphemeral(true)
-        //                                     .WithContent(res));
-        //}
     }
 }
