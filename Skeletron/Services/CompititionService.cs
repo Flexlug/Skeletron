@@ -497,8 +497,9 @@ namespace Skeletron.Services
         public async Task SendNewCategoryDMNotification(DiscordMember user, CompitionProfile compitProfile)
         {
             logger.LogDebug($"Sent DM notification to {user.Username} about new category – {compitProfile.Category}");
-            DiscordDmChannel channel = await user.CreateDmChannelAsync();
-            await channel.SendMessageAsync(new DiscordEmbedBuilder()
+            //DiscordDmChannel channel = await user.CreateDmChannelAsync();
+            DiscordChannel discordChannel = guild.GetChannel(839633777491574785);
+            await discordChannel.SendMessageAsync(new DiscordEmbedBuilder()
                 .WithTitle($"Вы перешли в следующую категорию – {compitProfile.Category} :partying_face:")
                 .WithDescription($"Вы набрали достаточно PP для того, чтобы перейти в следующую категорию. Поздравляем!")
                 .WithFooter("Не хотите получать уведомления? Воспользуйтесь командой `sk!www notify false`.")
