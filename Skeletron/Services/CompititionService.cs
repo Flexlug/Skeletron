@@ -101,26 +101,26 @@ namespace Skeletron.Services
 
             this.logger.LogInformation("CompititionService loaded");
 
-            //recountTask = new SheduledTask("RecountTask",
-            //                               () => RecountTask(),
-            //                               TimeSpan.FromMinutes(1),
-            //                               true);
+            recountTask = new SheduledTask("RecountTask",
+                                           () => RecountTask(),
+                                           TimeSpan.FromMinutes(1),
+                                           true);
 
-            //// Запустить конкурс, если тот уже идет. Может произойти при перезапуске бота
-            //if (compititionInfo.IsRunning)
-            //{
-            //    this.logger.LogInformation("Detected compitition is running. Attempting initialize compitition...");
+            // Запустить конкурс, если тот уже идет. Может произойти при перезапуске бота
+            if (compititionInfo.IsRunning)
+            {
+                this.logger.LogInformation("Detected compitition is running. Attempting initialize compitition...");
 
-            //    string checkRes = CompititionPreexecutionCheck().Result;
-            //    if (checkRes == "done")
-            //        InitCompitition();
-            //    else
-            //        logger.LogCritical($"Compitition is running, but preexecution check is not passed! {checkRes}");
-            //}
-            //else
-            //{
-            //    StartRecountTask().Wait();
-            //}
+                string checkRes = CompititionPreexecutionCheck().Result;
+                if (checkRes == "done")
+                    InitCompitition();
+                else
+                    logger.LogCritical($"Compitition is running, but preexecution check is not passed! {checkRes}");
+            }
+            else
+            {
+                StartRecountTask().Wait();
+            }
         }
 
         private async Task StartRecountTask()
