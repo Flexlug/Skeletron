@@ -501,7 +501,7 @@ namespace Skeletron.Services
             DiscordChannel discordChannel = guild.GetChannel(839633777491574785);
             await discordChannel.SendMessageAsync(new DiscordEmbedBuilder()
                 .WithTitle($"Вы перешли в следующую категорию – {compitProfile.Category} :partying_face:")
-                .WithDescription($"Вы набрали достаточно PP для того, чтобы перейти в следующую категорию. Поздравляем!")
+                .WithDescription($"Поздравляем, {user.Mention}!\nВы набрали достаточно PP для того, чтобы перейти в следующую категорию. Поздравляем!")
                 .WithFooter("Не хотите получать уведомления? Воспользуйтесь командой `sk!www notify false`.")
                 .Build());
         }
