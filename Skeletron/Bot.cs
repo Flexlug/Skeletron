@@ -70,8 +70,6 @@ namespace Skeletron
 
             // Activating Interactivity module for the DiscordClient
             Discord.UseInteractivity(new InteractivityConfiguration());
-            // Activating VoiceNext module
-            Discord.UseVoiceNext();
 
             Discord.ClientErrored += Discord_ClientErrored;
 
@@ -147,6 +145,9 @@ namespace Skeletron
             CommandsNext.RegisterCommands<CompititionCommands>();
             CommandsNext.RegisterCommands<MappoolCommands>();
 
+            // Registering OnCommandError method for the CommandErrored event
+            CommandsNext.CommandErrored += OnCommandError;
+
             var slashCommandsConfiguration = new SlashCommandsConfiguration()
             {
                 Services = Services
@@ -159,11 +160,8 @@ namespace Skeletron
             SlashCommands.RegisterCommands<UserSlashCommands>(WAV_UID);
             SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
             SlashCommands.RegisterCommands<AdminMappoolSlashCommands>(WAV_UID);
-            
-            SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
 
-            // Registering OnCommandError method for the CommandErrored event
-            CommandsNext.CommandErrored += OnCommandError;
+            SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
         }
 
         private async Task SlashCommands_SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
