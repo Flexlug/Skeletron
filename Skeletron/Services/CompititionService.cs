@@ -498,12 +498,16 @@ namespace Skeletron.Services
         {
             logger.LogDebug($"Sent DM notification to {user.Username} about new category – {compitProfile.Category}");
             DiscordDmChannel channel = await user.CreateDmChannelAsync();
-            //DiscordChannel channel = guild.GetChannel(839633777491574785);
-            await channel.SendMessageAsync(new DiscordEmbedBuilder()
+            DiscordChannel debugChannel = guild.GetChannel(839633777491574785);
+
+            var msg = new DiscordEmbedBuilder()
                 .WithTitle($"Вы перешли в следующую категорию – {compitProfile.Category} :partying_face:")
                 .WithDescription($"Поздравляем, {user.Mention}!\nВы набрали достаточно PP для того, чтобы перейти в следующую категорию. Поздравляем!")
                 .WithFooter("Не хотите получать уведомления? Воспользуйтесь командой `sk!www notify false`.")
-                .Build());
+                .Build();
+
+            await channel.SendMessageAsync(msg);
+            await debugChannel.SendMessageAsync(msg);
         }
 
         /// <summary>
