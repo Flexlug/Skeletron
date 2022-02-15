@@ -190,7 +190,7 @@ namespace Skeletron.Services.Entities
             // returned exception
             if (res.IsT2)
             {
-                await message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(client, 800151438553776178));
+                //await message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(client, 800151438553776178));
                 return;
             }
 
