@@ -145,6 +145,7 @@ namespace Skeletron.Converters
             sb.AppendLine($"**Playcount:** `{user.statistics.play_count}` (`{(Math.Round((double)user.statistics.play_time / 3600))}` hrs)");
             sb.AppendLine($"**Ranks**: {osuEmoji.RankingEmoji("XH")}`{user.statistics.grade_counts.ssh}` {osuEmoji.RankingEmoji("X")}`{user.statistics.grade_counts.ss}` {osuEmoji.RankingEmoji("SH")}`{user.statistics.grade_counts.sh}` {osuEmoji.RankingEmoji("S")}`{user.statistics.grade_counts.s}` {osuEmoji.RankingEmoji("A")}`{user.statistics.grade_counts.a}`");
             sb.AppendLine($"**Playstyle:** {(user.playstyle is null ? string.Empty : string.Join(", ", user.playstyle))}\n");
+            sb.AppendLine($"**Server:** bancho");
 
             if (scores != null && scores?.Count != 0)
             {
@@ -341,14 +342,14 @@ namespace Skeletron.Converters
         {
             DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder();
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(); 
 
-            sb.AppendLine($"**Server:** gatari");
             sb.AppendLine($"**Rank:** `{stats.rank}` ({user.country} `#{stats.country_rank}`)");
             sb.AppendLine($"**Level:** `{stats.level}` + `{stats.level_progress}%`");
             sb.AppendLine($"**PP:** `{stats.pp} PP` **Acc**: `{Math.Round(stats.avg_accuracy, 2)}%`");
             sb.AppendLine($"**Playcount:** `{stats.playcount}` (`{(Math.Round((double)stats.playtime / 3600))}` hrs)");
             sb.AppendLine($"**Ranks**: {osuEmoji.RankingEmoji("XH")}`{stats.xh_count}` {osuEmoji.RankingEmoji("X")}`{stats.x_count}` {osuEmoji.RankingEmoji("SH")}`{stats.sh_count}` {osuEmoji.RankingEmoji("S")}`{stats.s_count}` {osuEmoji.RankingEmoji("A")}`{stats.a_count}`\n");
+            sb.AppendLine($"**Server:** gatari");
             //sb.AppendLine($"**Playstyle:** {user.play string.Join(", ", user.playstyle)}\n");
             sb.AppendLine("Top 5 scores:");
 
