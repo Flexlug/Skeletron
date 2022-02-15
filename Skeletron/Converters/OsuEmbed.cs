@@ -120,7 +120,17 @@ namespace Skeletron.Converters
                 sb.Append("**Supporter:** ");
                 sb.AppendLine(string.Concat(Enumerable.Repeat($"{osuEmoji.RankStatusEmoji(RankStatus.Loved)}️", user.support_level)));
             }
-            
+
+            if (user.title is not null)
+            {
+                sb.AppendLine($"**Title:** __**{user.title}**__");
+            }
+
+            if (user.groups is not null && user.groups.Count != 0)
+            { 
+                sb.AppendLine($"**Groups:** {string.Join(", ", user.groups.Select(x => $"__**{x.short_name}**__"))}");
+            }
+
             if (user.statistics.global_rank is null || user.statistics.country_rank is null)
             {
                 sb.AppendLine($"**Rank:** `-` ({user.country_code} `-`)");
