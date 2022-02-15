@@ -663,6 +663,9 @@ namespace Skeletron.Services
 
         private async Task OnReaction(DiscordClient sender, DSharpPlus.EventArgs.MessageReactionAddEventArgs e)
         {
+            if (!spectatingEnabled)
+                return;
+
             CompitCategory? cat = null;
 
             if (e.User.Username == "Skeletron")
