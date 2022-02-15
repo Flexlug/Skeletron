@@ -9,7 +9,7 @@ using OsuNET_Api.Models.Bancho;
 using OsuNET_Api.Models.Gatari;
 
 using Microsoft.Extensions.Logging;
-
+using OsuNET_Api.Models;
 using Skeletron.Database.Models;
 
 namespace Skeletron.Converters
@@ -115,8 +115,21 @@ namespace Skeletron.Converters
 
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine($"**Server:** bancho");
-            sb.AppendLine($"**Rank:** `#{user.statistics.global_rank}` ({user.country_code} `#{user.statistics.country_rank}`)");
+            if (user.is_supporter)
+            {
+                sb.Append("**Supporter:** ");
+                sb.AppendLine(string.Concat(Enumerable.Repeat($"{osuEmoji.RankStatusEmoji(RankStatus.Loved)}️", user.support_level)));
+            }
+            
+            if (user.statistics.global_rank is null || user.statistics.country_rank is null)
+            {
+                sb.AppendLine($"**Rank:** `-` ({user.country_code} `-`)");
+            }
+            else
+            {
+                sb.AppendLine($"**Rank:** `#{user.statistics.global_rank}` ({user.country_code} `#{user.statistics.country_rank}`)");
+            }
+
             sb.AppendLine($"**Level:** `{user.statistics.level.current}` + `{user.statistics.level.progress}%`");
             sb.AppendLine($"**PP:** `{user.statistics.pp} PP` **Acc**: `{user.statistics.hit_accuracy:f2}%`");
             sb.AppendLine($"**Playcount:** `{user.statistics.play_count}` (`{(Math.Round((double)user.statistics.play_time / 3600))}` hrs)");
@@ -143,6 +156,7 @@ namespace Skeletron.Converters
                 }
                 sb.AppendLine($"\nAvg: `{Math.Round(avg_pp / scores.Count, 2)} PP`");
             }
+
             embedBuilder.WithTitle(user.username)
                         .WithUrl($"https://osu.ppy.sh/users/{user.id}")
                         .WithThumbnail(user.avatar_url)

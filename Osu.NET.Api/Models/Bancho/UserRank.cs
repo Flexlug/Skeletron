@@ -6,7 +6,7 @@ namespace OsuNET_Api.Models.Bancho
 {
     public class UserRank
     {
-        public int global { get; set; }
-        public int country { get; set; }
+        public int? global { get; set; }
+        public int? country { get; set; }
     }
 }
