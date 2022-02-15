@@ -77,7 +77,8 @@ namespace Skeletron.Converters
             embedMsg.AppendLine($"▸**Length**: {mapLen.Minutes}:{string.Format("{0:00}", mapLen.Seconds)}, **BPM**: {bm.bpm}");
             embedMsg.AppendLine($"▸**Difficulty**: {bm.difficulty_rating}★");
             embedMsg.AppendLine($"▸**CS**: {bm.cs} ▸**HP**: {bm.drain} ▸**AR**: {bm.ar} ▸**OD**: {bm.accuracy}");
-
+            embedMsg.AppendLine($"▶️ : {bms.play_count} ❤️: {bms.favourite_count} ");
+            
             embedMsg.AppendLine();
             embedMsg.Append($"Bancho: {banchoRankEmoji} : [link](https://osu.ppy.sh/beatmapsets/{bms.id}#osu/{bm.id})\nLast updated: {bm.last_updated}\n");
 

@@ -468,7 +468,7 @@ namespace Skeletron.Services.Entities
 
             if (bms == null)
             {
-                logger.LogInformation($"No matching beatmapsets");
+                logger.LogInformation("No matching beatmapsets");
                 return new BeatmapsetNotFoundException();
             }
             else

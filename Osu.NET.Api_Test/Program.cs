@@ -4,6 +4,8 @@ using System.IO;
 using OsuNET_Api;
 
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using OsuNET_Api.Models.Bancho;
 
 namespace OsuNET_Api_Test
 {
@@ -19,12 +21,12 @@ namespace OsuNET_Api_Test
             BanchoApi api = new BanchoApi(settings.ClientId, settings.Secret);
             Console.WriteLine(api.ReloadToken());
 
-            foreach (var m in api.Search("Under The Covers - Join Us For A Bite [Sister Location]", OsuNET_Api.Models.Bancho.MapType.Any))
-            {
-                Console.WriteLine($"{m.creator} - {m.artist} {m.title}");
-                foreach (var mm in m.beatmaps)
-                    Console.WriteLine($"\t{mm.version}");
-            }
+            //foreach (var m in api.Search("Under The Covers - Join Us For A Bite [Sister Location]", OsuNET_Api.Models.Bancho.MapType.Any))
+            //{
+            //    Console.WriteLine($"{m.creator} - {m.artist} {m.title}");
+            //    foreach (var mm in m.beatmaps)
+            //        Console.WriteLine($"\t{mm.version}");
+            //}
 
             //while (true)
             //{
@@ -112,15 +114,15 @@ namespace OsuNET_Api_Test
             //Console.WriteLine(users);
 
             #region Get best scores
-            //List<Score> scores = api.GetUserBestScores(9604150, 100);
+            List<Score> scores = api.GetUserBestScores(6885792, 500);
 
-            ///Console.WriteLine($"Scores count: {scores.Count}");
+            Console.WriteLine($"Scores count: {scores.Count}");
 
-            //string scores_s = JsonConvert.SerializeObject(scores);
-            //using (StreamWriter sw = new StreamWriter("best_scores_mindblock.json"))
-            //    sw.Write(scores_s);
+            string scores_s = JsonConvert.SerializeObject(scores);
+            using (StreamWriter sw = new StreamWriter("best_scores_flexlug_1.json"))
+                sw.Write(scores_s);
 
-            //Console.ReadKey();
+            Console.ReadKey();
             #endregion
 
             #region Bancho tracker
