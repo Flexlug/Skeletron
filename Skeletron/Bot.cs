@@ -120,6 +120,7 @@ namespace Skeletron
                 .AddSingleton<IMappoolService, MappoolService>()
                 .AddSingleton<IWordsService, WordsService>()
                 .AddSingleton<IOsuService, OsuService>()
+                .AddSingleton<IUtilityService, UtilityService>()
                 .BuildServiceProvider();
         }
 

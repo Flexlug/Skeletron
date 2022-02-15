@@ -28,8 +28,9 @@ namespace Skeletron.Commands
 
         private ILogger<AdminCommands> logger;
 
-        private IShedulerService sheduler;
-        private IWordsService words;
+        private readonly IShedulerService sheduler;
+        private readonly IUtilityService service;
+        private readonly IWordsService words;
 
         private DiscordChannel LogChannel;
         private DiscordGuild wavGuild;
@@ -38,12 +39,14 @@ namespace Skeletron.Commands
                             DiscordClient client,
                             DiscordGuild wavGuild,
                             IShedulerService sheduler,
+                            IUtilityService service,
                             IWordsService words)
         {
             ModuleName = "Администрирование";
 
             this.logger = logger;
             this.sheduler = sheduler;
+            this.service = service;
             this.words = words;
 
             this.wavGuild = wavGuild;
