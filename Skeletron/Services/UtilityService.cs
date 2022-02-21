@@ -16,7 +16,7 @@ namespace Skeletron.Services
         private DiscordClient client;
         private DiscordGuild guild;
 
-        private Regex messagePattern = new Regex(@"discord\.com\/channels\/([0-9]*)\/([0-9]*)\/([0-9]*)");
+        private Regex messagePattern = new Regex(@"(?<!\\)https?:\/\/(?:ptb\.|canary\.)?discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)");
 
         private ILogger<UtilityService> logger;
 
