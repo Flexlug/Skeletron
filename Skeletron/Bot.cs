@@ -30,7 +30,7 @@ using Skeletron.Database.Interfaces;
 
 using Serilog;
 
-using NumbersAPI.NET;
+//using NumbersAPI.NET;
 using GoogleApi;
 using DSharpPlus.SlashCommands.EventArgs;
 
@@ -103,7 +103,7 @@ namespace Skeletron
                 .AddSingleton<OsuEnums>()
                 .AddSingleton<OsuRegex>()
                 .AddSingleton<VkRegex>()
-                .AddSingleton<NumbersApi>()
+                //.AddSingleton<NumbersApi>()
                 .AddSingleton<EmojiUtlis>()
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
@@ -113,13 +113,13 @@ namespace Skeletron
                 .AddSingleton<ISheetGenerator, SheetGenerator>()
                 .AddSingleton<IShedulerService, ShedulerService>()
                 .AddSingleton<IRecognizerService, RecognizerService>()
-                .AddSingleton<IMembersProvider, MembersProvider>()
-                .AddSingleton<ICompitProvider, CompitProvider>()
-                .AddSingleton<ICompititionService, CompititionService>()
-                .AddSingleton<IMappoolProvider, MappoolProvider>()
-                .AddSingleton<IMappoolService, MappoolService>()
-                .AddSingleton<IWordsService, WordsService>()
-                .AddSingleton<IOsuService, OsuService>()
+                //.AddSingleton<IMembersProvider, MembersProvider>()
+                //.AddSingleton<ICompitProvider, CompitProvider>()
+                //.AddSingleton<ICompititionService, CompititionService>()
+                //.AddSingleton<IMappoolProvider, MappoolProvider>()
+                //.AddSingleton<IMappoolService, MappoolService>()
+                //.AddSingleton<IWordsService, WordsService>()
+                //.AddSingleton<IOsuService, OsuService>()
                 .AddSingleton<IUtilityService, UtilityService>()
                 .BuildServiceProvider();
         }
@@ -136,15 +136,15 @@ namespace Skeletron
             CommandsNext.SetHelpFormatter<CustomHelpFormatter>();
 
             // Registering command classes
-            CommandsNext.RegisterCommands<UserCommands>();
+            //CommandsNext.RegisterCommands<UserCommands>();
             CommandsNext.RegisterCommands<AdminCommands>();
             CommandsNext.RegisterCommands<DemonstrationCommands>();
             CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
-            CommandsNext.RegisterCommands<OsuCommands>();
+            //CommandsNext.RegisterCommands<OsuCommands>();
             CommandsNext.RegisterCommands<VkCommands>();
-            CommandsNext.RegisterCommands<CompititionCommands>();
-            CommandsNext.RegisterCommands<MappoolCommands>();
+            //CommandsNext.RegisterCommands<CompititionCommands>();
+            //CommandsNext.RegisterCommands<MappoolCommands>();
 
             // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;
@@ -157,10 +157,10 @@ namespace Skeletron
             SlashCommands = Discord.UseSlashCommands(slashCommandsConfiguration);
 
             // Register slash commands modules
-            SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
-            SlashCommands.RegisterCommands<UserSlashCommands>(WAV_UID);
-            SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
-            SlashCommands.RegisterCommands<AdminMappoolSlashCommands>(WAV_UID);
+            //SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
+            //SlashCommands.RegisterCommands<UserSlashCommands>(WAV_UID);
+            //SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
+            //SlashCommands.RegisterCommands<AdminMappoolSlashCommands>(WAV_UID);
 
             SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
         }

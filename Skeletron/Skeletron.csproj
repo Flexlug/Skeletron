@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>Skeletron</RootNamespace>
     <Platforms>AnyCPU;x86;x64</Platforms>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
@@ -11,11 +11,11 @@
     <AssemblyVersion>1.0.*</AssemblyVersion>
     <FileVersion>1.0.*</FileVersion>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -55,12 +55,12 @@
 
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.13.0" />
-    <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01054" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01054" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01054" />
-    <PackageReference Include="DSharpPlus.Rest" Version="4.2.0-nightly-01054" />
-    <PackageReference Include="DSharpPlus.SlashCommands" Version="4.2.0-nightly-01054" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.2.0-nightly-01054" />
+    <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01102" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01102" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01102" />
+    <PackageReference Include="DSharpPlus.Rest" Version="4.2.0-nightly-01102" />
+    <PackageReference Include="DSharpPlus.SlashCommands" Version="4.2.0-nightly-01102" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.2.0-nightly-01102" />
     <PackageReference Include="GoogleApi" Version="3.10.11" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />    
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -74,21 +74,14 @@
     <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+    <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="VkNet" Version="1.67.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Osu.NET.Api\Osu.NET.Api.csproj" />
     <ProjectReference Include="..\Osu.NET.Recognizer\Osu.NET.Recognizer.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="NumbersAPI.NET">
-      <HintPath>F:\Documents\Coding\C#\NumbersAPI.NET\NumbersAPI.NET\bin\Release\net5.0\NumbersAPI.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="NumbersAPI.NET">
-      <HintPath>..\..\..\..\..\..\..\Users\flexlug\Projects\NumbersAPI.NET\NumbersAPI.NET\bin\Release\net5.0\NumbersAPI.NET.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
