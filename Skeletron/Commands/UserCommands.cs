@@ -29,7 +29,7 @@ namespace Skeletron.Commands
     public sealed class UserCommands : SkBaseCommandModule
     {
         private ILogger<UserCommands> logger;
-        private IMembersProvider wavMembers;
+        //private IMembersProvider wavMembers;
 
         private OsuEnums osuEnums;
 
@@ -39,7 +39,7 @@ namespace Skeletron.Commands
         private Settings settings;
 
         public UserCommands(ILogger<UserCommands> logger,
-                            IMembersProvider wavMembers,
+                            //IMembersProvider wavMembers,
                             OsuEnums osuEnums,
                             DiscordClient client,
                             DiscordGuild guild,
@@ -50,7 +50,7 @@ namespace Skeletron.Commands
 
             this.guild = guild;
             this.logger = logger;
-            this.wavMembers = wavMembers;
+            //this.wavMembers = wavMembers;
 
             this.osuEnums = osuEnums;
 
@@ -84,58 +84,58 @@ namespace Skeletron.Commands
             await commandContext.RespondAsync($"Количество слов в сообщении: {commandContext.Message.ReferencedMessage.Content.Split().Length}");
         }
 
-        [Command("profile"), Description("Получить информацию о своём W.w.W профиле."), RequireGuild]
-        public async Task GetProfile(CommandContext commandContext)
-        {
-            await GetProfile(commandContext, commandContext.Member);
-        }
+        //[Command("profile"), Description("Получить информацию о своём W.w.W профиле."), RequireGuild]
+        //public async Task GetProfile(CommandContext commandContext)
+        //{
+        //    await GetProfile(commandContext, commandContext.Member);
+        //}
 
-        [Command("profile"), Description("Получить информацию о своём W.w.W профиле."), RequireGuild]
-        public async Task GetProfile(CommandContext commandContext,
-            DiscordMember dmember)
-        {
-            WAVMembers member = wavMembers.GetMember(dmember.Id.ToString());
+        //[Command("profile"), Description("Получить информацию о своём W.w.W профиле."), RequireGuild]
+        //public async Task GetProfile(CommandContext commandContext,
+        //    DiscordMember dmember)
+        //{
+        //    WAVMembers member = wavMembers.GetMember(dmember.Id.ToString());
 
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
-                .WithTitle($"Информация об участнике WAV")
-                .WithThumbnail(dmember.AvatarUrl);
+        //    DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
+        //        .WithTitle($"Информация об участнике WAV")
+        //        .WithThumbnail(dmember.AvatarUrl);
 
-            StringBuilder overallInfo = new StringBuilder();
-            overallInfo.AppendLine($"__Никнейм__: {dmember.DisplayName}");
+        //    StringBuilder overallInfo = new StringBuilder();
+        //    overallInfo.AppendLine($"__Никнейм__: {dmember.DisplayName}");
 
-            StringBuilder osuServersSb = new StringBuilder();
-            if (member.OsuServers.Count != 0)
-            {
-                foreach (var server in member.OsuServers)
-                    osuServersSb.AppendLine($"__{osuEnums.OsuServerToString(server.Server)}__: {server.OsuNickname}");
-            }
-            else 
-            {
-                osuServersSb.Append('-'); 
-            }
+        //    StringBuilder osuServersSb = new StringBuilder();
+        //    if (member.OsuServers.Count != 0)
+        //    {
+        //        foreach (var server in member.OsuServers)
+        //            osuServersSb.AppendLine($"__{osuEnums.OsuServerToString(server.Server)}__: {server.OsuNickname}");
+        //    }
+        //    else 
+        //    {
+        //        osuServersSb.Append('-'); 
+        //    }
 
-            StringBuilder compitSb = new StringBuilder();
-            if (member.CompitionProfile is not null)
-            {
-                if (member.CompitionProfile.NonGrata)
-                    compitSb.AppendLine("__**Non-grata: Да**__\n");
-                compitSb.AppendLine("__Зарегистрирован__: Да");
-                compitSb.AppendLine($"__Средний PP__: {Math.Round(member.CompitionProfile.AvgPP, 2)}");
-                compitSb.AppendLine($"__Сервер__: {osuEnums.OsuServerToString(member.CompitionProfile.Server)}");
-                compitSb.AppendLine($"__Категория__: {osuEnums.CategoryToString(member.CompitionProfile.Category)}");
-                compitSb.AppendLine($"__Уведомления__: {(member.CompitionProfile.Notifications ? "Да" : "Нет")}");
-            }
-            else
-            {
-                compitSb.Append("__Зарегистрирован__: Нет");
-            }
+        //    StringBuilder compitSb = new StringBuilder();
+        //    if (member.CompitionProfile is not null)
+        //    {
+        //        if (member.CompitionProfile.NonGrata)
+        //            compitSb.AppendLine("__**Non-grata: Да**__\n");
+        //        compitSb.AppendLine("__Зарегистрирован__: Да");
+        //        compitSb.AppendLine($"__Средний PP__: {Math.Round(member.CompitionProfile.AvgPP, 2)}");
+        //        compitSb.AppendLine($"__Сервер__: {osuEnums.OsuServerToString(member.CompitionProfile.Server)}");
+        //        compitSb.AppendLine($"__Категория__: {osuEnums.CategoryToString(member.CompitionProfile.Category)}");
+        //        compitSb.AppendLine($"__Уведомления__: {(member.CompitionProfile.Notifications ? "Да" : "Нет")}");
+        //    }
+        //    else
+        //    {
+        //        compitSb.Append("__Зарегистрирован__: Нет");
+        //    }
 
-            embedBuilder.WithDescription(overallInfo.ToString())
-                        .AddField("Привязанные osu! профили:", osuServersSb.ToString())
-                        .AddField("W.w.W", compitSb.ToString());
+        //    embedBuilder.WithDescription(overallInfo.ToString())
+        //                .AddField("Привязанные osu! профили:", osuServersSb.ToString())
+        //                .AddField("W.w.W", compitSb.ToString());
 
-            await commandContext.RespondAsync(embed: embedBuilder.Build());
-        }
+        //    await commandContext.RespondAsync(embed: embedBuilder.Build());
+        //}
 
         [Command("r"), Description("Переслать сообщение в другой канал."), RequireGuild]
         public async Task PingAsync(CommandContext commandContext,

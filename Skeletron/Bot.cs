@@ -95,7 +95,7 @@ namespace Skeletron
             Services = new ServiceCollection()
                 .AddLogging(conf => conf.AddSerilog(dispose: true))
                 .AddSingleton(Settings)
-                .AddSingleton(new DocumentStoreProvider(Settings))
+                //.AddSingleton(new DocumentStoreProvider(Settings))
                 .AddSingleton(Discord)
                 .AddSingleton(Guild)
                 .AddSingleton<OsuEmoji>()
@@ -108,9 +108,9 @@ namespace Skeletron
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
                 .AddSingleton(new GoogleSearch())
-                .AddSingleton<IWordsProvider, WordsProvider>()
+                //.AddSingleton<IWordsProvider, WordsProvider>()
                 .AddSingleton<IVkService, VkService>()
-                .AddSingleton<ISheetGenerator, SheetGenerator>()
+                //.AddSingleton<ISheetGenerator, SheetGenerator>()
                 .AddSingleton<IShedulerService, ShedulerService>()
                 .AddSingleton<IRecognizerService, RecognizerService>()
                 //.AddSingleton<IMembersProvider, MembersProvider>()
@@ -138,7 +138,7 @@ namespace Skeletron
             // Registering command classes
             //CommandsNext.RegisterCommands<UserCommands>();
             CommandsNext.RegisterCommands<AdminCommands>();
-            CommandsNext.RegisterCommands<DemonstrationCommands>();
+            //CommandsNext.RegisterCommands<DemonstrationCommands>();
             CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
             //CommandsNext.RegisterCommands<OsuCommands>();
@@ -149,12 +149,12 @@ namespace Skeletron
             // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;
 
-            var slashCommandsConfiguration = new SlashCommandsConfiguration()
-            {
-                Services = Services
-            };
+            //var slashCommandsConfiguration = new SlashCommandsConfiguration()
+            //{
+            //    Services = Services
+            //};
 
-            SlashCommands = Discord.UseSlashCommands(slashCommandsConfiguration);
+            //SlashCommands = Discord.UseSlashCommands(slashCommandsConfiguration);
 
             // Register slash commands modules
             //SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
@@ -162,7 +162,7 @@ namespace Skeletron
             //SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
             //SlashCommands.RegisterCommands<AdminMappoolSlashCommands>(WAV_UID);
 
-            SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
+            //SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
         }
 
         private async Task SlashCommands_SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
