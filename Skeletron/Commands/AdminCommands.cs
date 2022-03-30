@@ -39,7 +39,7 @@ namespace Skeletron.Commands
                             DiscordClient client,
                             DiscordGuild wavGuild,
                             IShedulerService sheduler,
-                            IUtilityService service,
+                            IUtilityService service)
                             //IWordsService words)
         {
             ModuleName = "Администрирование";
