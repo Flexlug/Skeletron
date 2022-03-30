@@ -14,8 +14,8 @@ namespace Skeletron.Converters
 
         public VkRegex()
         {
-            groupExportLink = new Regex(@"https:\/\/vk.com\/wall-(\d+)_(\d+)");
-            groupNormalLink = new Regex(@"https:\/\/vk.com\/.*w=wall-(\d+)_(\d+)");
+            groupExportLink = new Regex(@"(?<!\\)https:\/\/vk.com\/wall-(\d+)_(\d+)");
+            groupNormalLink = new Regex(@"(?<!\\)https:\/\/vk.com\/.*w=wall-(\d+)_(\d+)");
         }
 
         public string TryGetGroupPostIdFromExportUrl(string msg)
