@@ -47,14 +47,14 @@ FROM leptonica_builder AS tesseract_builder
 ARG TESSERACT_VERSION="4.1.0"
 ARG TESSERACT_FILENAME="libtesseract41.so"
 
-RUN wget https://github.com/tesseract-ocr/tesseract/archive/refs/tags/$tesseract_version.tar.gz \
-    && tar -xvf $tesseract_version.tar.gz \
-    && cd tesseract-$tesseract_version \
+RUN wget https://github.com/tesseract-ocr/tesseract/archive/refs/tags/$TESSERACT_VERSION.tar.gz \
+    && tar -xvf $TESSERACT_VERSION.tar.gz \
+    && cd tesseract-$TESSERACT_VERSION \
     && mkdir build && cd build \
     && cmake .. -DBUILD_SHARED_LIBS=ON \
     && make \
     && make install \
-    && cp libtesseract.so.$tesseract_version ../../$TESSERACT_FILENAME
+    && cp libtesseract.so.$TESSERACT_VERSION ../../$TESSERACT_FILENAME
 # /build/$TESSERACT_FILENAME
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS builder
