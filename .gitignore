@@ -341,3 +341,4 @@ healthchecksdb
 
 # Hidden MacOS files
 .*
+/Skeletron/bot.cfg

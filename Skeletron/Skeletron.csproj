@@ -1,6 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-
+﻿<Project Sdk="Microsoft.NET.Sdk;Microsoft.NET.Sdk.Publish">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
@@ -12,14 +10,13 @@
     <FileVersion>1.0.*</FileVersion>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <WarningLevel>5</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,17 +29,14 @@
     <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix)</Version>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <WarningLevel>5</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="Commands\AdminCommands.cs~RFe9c064.TMP" />
     <None Remove="Commands\TrackCommands.cs~RFd436c8.TMP" />
@@ -52,8 +46,9 @@
     <None Remove="trackedUsers.db-wal" />
     <None Remove="NumbersAPI.NET" />
   </ItemGroup>
-
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.8" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.13.0" />
     <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01102" />
     <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01102" />
@@ -62,26 +57,24 @@
     <PackageReference Include="DSharpPlus.SlashCommands" Version="4.2.0-nightly-01102" />
     <PackageReference Include="DSharpPlus.VoiceNext" Version="4.2.0-nightly-01102" />
     <PackageReference Include="GoogleApi" Version="3.10.11" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />    
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="OneOf" Version="3.0.190" />
     <PackageReference Include="OppaiSharp" Version="3.4.0" />
     <PackageReference Include="OsuParsers" Version="1.7.0" />
     <PackageReference Include="RavenDB.Client" Version="5.1.8" />
     <PackageReference Include="Serilog" Version="2.10.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
-    <PackageReference Include="Serilog.Expressions" Version="2.0.0" />
-    <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
+    <PackageReference Include="Serilog.Expressions" Version="3.3.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="4.2.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="VkNet" Version="1.67.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Osu.NET.Api\Osu.NET.Api.csproj" />
     <ProjectReference Include="..\Osu.NET.Recognizer\Osu.NET.Recognizer.csproj" />
   </ItemGroup>
-
 </Project>

@@ -11,7 +11,7 @@ namespace Skeletron.Configurations
     /// </summary>
     public sealed class SettingsLoader
     {
-        public string DefaultConfigFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "bot.cfg");
+        public string DefaultConfigFile = "/mnt/data/bot.cfg";
 
         /// <summary>
         /// Serializes Settings object to JSON and writes it to a file
