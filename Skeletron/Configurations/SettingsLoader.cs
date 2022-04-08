@@ -11,7 +11,7 @@ namespace Skeletron.Configurations
     /// </summary>
     public sealed class SettingsLoader
     {
-        public string DefaultConfigFile = "../mnt/data/bot.cfg";
+        public string DefaultConfigFile = "data/bot.cfg";
 
         /// <summary>
         /// Serializes Settings object to JSON and writes it to a file
