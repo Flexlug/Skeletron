@@ -22,7 +22,7 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/cmak
     && ./bootstrap \
     && make \
     && make install \
-    && rm ..\cmake-$CMAKE_VERSION.tar.gz
+    && rm ../cmake-$CMAKE_VERSION.tar.gz
     
 WORKDIR /build
 
