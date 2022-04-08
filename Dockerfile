@@ -73,6 +73,10 @@ RUN dotnet publish "Skeletron.csproj" -c Release -o /app/publish
 
 FROM debian:latest AS library_composer
 
+ARG LEPTONICA_VERSION="1.80.0"
+ARG TESSERACT_VERSION="4.1.0"
+ARG TESSERACT_FILENAME="libtesseract41.so"
+
 WORKDIR /compose
 RUN mkdir libs
 COPY --from=leptonica_builder /build/libleptonica-$LEPTONICA_VERSION.so libs
