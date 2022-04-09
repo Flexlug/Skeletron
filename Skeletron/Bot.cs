@@ -112,7 +112,7 @@ namespace Skeletron
                 .AddSingleton<IVkService, VkService>()
                 //.AddSingleton<ISheetGenerator, SheetGenerator>()
                 .AddSingleton<IShedulerService, ShedulerService>()
-                //.AddSingleton<IRecognizerService, RecognizerService>()
+                .AddSingleton<IRecognizerService, RecognizerService>()
                 //.AddSingleton<IMembersProvider, MembersProvider>()
                 //.AddSingleton<ICompitProvider, CompitProvider>()
                 //.AddSingleton<ICompititionService, CompititionService>()
@@ -139,7 +139,7 @@ namespace Skeletron
             //CommandsNext.RegisterCommands<UserCommands>();
             CommandsNext.RegisterCommands<AdminCommands>();
             //CommandsNext.RegisterCommands<DemonstrationCommands>();
-            //CommandsNext.RegisterCommands<RecognizerCommands>();
+            CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
             //CommandsNext.RegisterCommands<OsuCommands>();
             CommandsNext.RegisterCommands<VkCommands>();
