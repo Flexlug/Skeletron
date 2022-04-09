@@ -10,7 +10,7 @@ COPY . .
 WORKDIR "/src/Skeletron"
 RUN dotnet publish "Skeletron.csproj" -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 

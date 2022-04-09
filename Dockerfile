@@ -58,7 +58,7 @@ RUN wget https://github.com/tesseract-ocr/tesseract/archive/refs/tags/$TESSERACT
     && cp libtesseract.so.$TESSERACT_VERSION ../../$TESSERACT_FILENAME
 # /build/$TESSERACT_FILENAME
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:5.0 AS builder
 
 WORKDIR /src
 
@@ -93,7 +93,7 @@ RUN case ${TARGETPLATFORM} in \
     esac \
     && mv libs $ARCH
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runner
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runner
 
 WORKDIR /app
 COPY --from=builder /app/publish ./
