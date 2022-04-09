@@ -4,10 +4,6 @@ version: '3.8'
 services:
   skeletron:
     image: flexlug/skeletron:latest
-    # build: опционально, тогда image выше нахуй
-      # context: путь к папке с докерфайлом
-      # args:
-        # version: 1.54.0
     restart: unless-stopped
     volumes:
       - /var/docker_data/skeletron-config:/app/data
