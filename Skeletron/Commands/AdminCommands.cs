@@ -99,7 +99,7 @@ namespace Skeletron.Commands
         //        .Build());
         //}
 
-        [Command("uptime"), Description("Получить информацию о времени работы бота.")]
+        [Command("status"), Description("Получить информацию о времени работы бота.")]
         public async Task Uptime(CommandContext context)
         {
             TimeSpan uptime = DateTime.Now - Program.StartTime;
