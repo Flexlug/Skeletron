@@ -95,6 +95,10 @@ RUN case ${TARGETPLATFORM} in \
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runner
 
+RUN dpkg --add-architecture i386
+RUN apt-get update
+RUN apt-get install libc6-dev -y
+
 WORKDIR /app
 COPY --from=builder /app/publish ./
 COPY --from=library_composer /compose ./
