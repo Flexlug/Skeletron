@@ -43,7 +43,7 @@ namespace Skeletron
                 try
                 {
                     using (var bot = new Bot(settingsService.LoadFromFile()))
-                        bot.RunAsync().ConfigureAwait(false);
+                        await bot.RunAsync();
                 }
                 catch(Exception ex)
                 {
