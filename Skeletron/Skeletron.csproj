@@ -50,12 +50,12 @@
     <PackageReference Include="Microsoft.AspNetCore.App" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.8" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.13.0" />
-    <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01102" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01102" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01102" />
-    <PackageReference Include="DSharpPlus.Rest" Version="4.2.0-nightly-01102" />
-    <PackageReference Include="DSharpPlus.SlashCommands" Version="4.2.0-nightly-01102" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.2.0-nightly-01102" />
+    <PackageReference Include="DSharpPlus" Version="4.2.0-nightly-01109" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.2.0-nightly-01109" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.2.0-nightly-01109" />
+    <PackageReference Include="DSharpPlus.Rest" Version="4.2.0-nightly-01109" />
+    <PackageReference Include="DSharpPlus.SlashCommands" Version="4.2.0-nightly-01109" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.2.0-nightly-01109" />
     <PackageReference Include="GoogleApi" Version="3.10.11" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
