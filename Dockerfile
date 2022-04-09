@@ -1,3 +1,4 @@
+
 FROM debian:latest AS cmake
 
 ARG CMAKE_VERSION="3.15.2"
@@ -82,20 +83,21 @@ RUN mkdir libs
 COPY --from=leptonica_builder /build/libleptonica-$LEPTONICA_VERSION.so libs
 COPY --from=tesseract_builder /build/$TESSERACT_FILENAME libs
 
+ARG TARGETPLATFORM
+
 RUN case ${TARGETPLATFORM} in \
-         "linux/amd64")  ARCH=x64  ;; \
-         "linux/arm64")  ARCH=x64  ;; \
-         "linux/arm/v7") ARCH=x86  ;; \
-         "linux/arm/v6") ARCH=x86  ;; \
+         "linux/amd64")  ARCH="x64"  ;; \
+         "linux/arm64")  ARCH="x64"  ;; \
+         "linux/arm/v7") ARCH="x86"  ;; \
+         "linux/arm/v6") ARCH="x86"  ;; \
     esac \
-    && mkdir $ARCH \
     && mv libs $ARCH
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runner
 
 WORKDIR /app
-COPY --from=builder /app/publish .
-COPY --from=library_composer /compose/* .
+COPY --from=builder /app/publish ./
+COPY --from=library_composer /compose ./
 
 VOLUME ["/app/data"]
 
