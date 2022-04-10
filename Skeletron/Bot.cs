@@ -136,7 +136,7 @@ namespace Skeletron
             CommandsNext.SetHelpFormatter<CustomHelpFormatter>();
 
             // Registering command classes
-            //CommandsNext.RegisterCommands<UserCommands>();
+            CommandsNext.RegisterCommands<UserCommands>();
             CommandsNext.RegisterCommands<AdminCommands>();
             //CommandsNext.RegisterCommands<DemonstrationCommands>();
             //CommandsNext.RegisterCommands<RecognizerCommands>();
