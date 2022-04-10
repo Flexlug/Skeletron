@@ -169,6 +169,7 @@ namespace Skeletron.Commands
                 .WithTitle($"Поисковый запрос: {querry}")
                 .WithDescription(sb.ToString())
                 .WithThumbnail("https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png")
+                .WithFooter($"Results: {resp.Query.Count}")
                 .Build());
         }
     }
