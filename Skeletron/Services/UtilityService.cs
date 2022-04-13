@@ -70,7 +70,7 @@ namespace Skeletron.Services
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
                 .WithAuthor(name: msg.Author.Username, iconUrl: msg.Author.AvatarUrl)
                 .WithDescription(msg.Content)
-                .WithFooter($"From: {msg.Channel.Name}, Time: {msg.CreationTimestamp}");
+                .WithFooter($"Guild: {msg.Channel.Guild.Name}, Channel: {msg.Channel.Name}, Time: {msg.CreationTimestamp}");
 
             try
             {
