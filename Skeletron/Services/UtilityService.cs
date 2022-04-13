@@ -14,16 +14,14 @@ namespace Skeletron.Services
     public class UtilityService : IUtilityService
     {
         private DiscordClient client;
-        private DiscordGuild guild;
 
         private Regex messagePattern = new Regex(@"(?<!\\)https?:\/\/(?:ptb\.|canary\.)?discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)");
 
         private ILogger<UtilityService> logger;
 
-        public UtilityService(DiscordClient client, DiscordGuild guild, ILogger<UtilityService> logger)
+        public UtilityService(DiscordClient client, ILogger<UtilityService> logger)
         {
             this.client = client;
-            this.guild = guild;
             this.logger = logger;
 
             client.MessageCreated += OnMessageCreated;
@@ -59,6 +57,7 @@ namespace Skeletron.Services
 
             try
             {
+                DiscordGuild guild = await client.GetGuildAsync(msgParams.Item1);
                 DiscordChannel ch = guild.GetChannel(msgParams.Item2);
                 msg = await ch.GetMessageAsync(msgParams.Item3);
             }

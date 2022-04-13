@@ -21,8 +21,7 @@ namespace Skeletron.SlashCommands
         //private DiscordRole contentSpectator;
 
         public UserSlashCommands(IWordsService service,
-                                 ILogger<UserSlashCommands> logger,
-                                 DiscordGuild guild)
+                                 ILogger<UserSlashCommands> logger)
         {
             this.service = service;
 

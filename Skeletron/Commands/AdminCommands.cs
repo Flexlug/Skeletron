@@ -33,11 +33,9 @@ namespace Skeletron.Commands
         //private readonly IWordsService words;
 
         private DiscordChannel LogChannel;
-        private DiscordGuild wavGuild;
 
         public AdminCommands(ILogger<AdminCommands> logger, 
                             DiscordClient client,
-                            DiscordGuild wavGuild,
                             IShedulerService sheduler,
                             IUtilityService service)
                             //IWordsService words)
@@ -49,7 +47,6 @@ namespace Skeletron.Commands
             this.service = service;
             //this.words = words;
 
-            this.wavGuild = wavGuild;
             LogChannel = client.GetChannelAsync(816396082153521183).Result;
 
             logger.LogInformation("AdminCommands loaded");
@@ -300,8 +297,8 @@ namespace Skeletron.Commands
             if (!(msg.Author is null))
                 builder.WithAuthor(name: $"From {msg.Channel.Name} by {msg.Author.Username}",
                                    iconUrl: msg.Author.AvatarUrl);
-
-            DiscordMember user = await wavGuild.GetMemberAsync(msg.Author.Id);
+            
+            DiscordMember user = await msg.Channel.Guild.GetMemberAsync(msg.Author.Id);
             if (!user.IsBot)
             {
                 DiscordDmChannel targetChannel = await user.CreateDmChannelAsync();
@@ -415,7 +412,7 @@ namespace Skeletron.Commands
             await msg.Channel.DeleteMessagesAsync(new[] { msg, commandContext.Message }, reason);
 
             // notify in DM
-            DiscordMember user = await wavGuild.GetMemberAsync(msg.Author.Id);
+            DiscordMember user = await msg.Channel.Guild.GetMemberAsync(msg.Author.Id);
             if (!user.IsBot)
             {
                 DiscordDmChannel dmChannel = await user.CreateDmChannelAsync();

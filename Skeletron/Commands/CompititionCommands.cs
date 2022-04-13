@@ -35,8 +35,6 @@ namespace Skeletron.Commands
 
         private WebClient webClient;
 
-        private DiscordGuild guild;
-
         private ICompitProvider wavCompit;
         private IMembersProvider wavMembers;
         private ICompititionService compititionService;
@@ -46,18 +44,14 @@ namespace Skeletron.Commands
         public CompititionCommands(ILogger<CompititionCommands> logger,
                                    OsuEmbed osuEmbeds,
                                    OsuEnums osuEnums,
-                                   DiscordClient client,
-                                   DiscordGuild guild,
                                    IMembersProvider wavMembers,
                                    ICompitProvider wavCompit,
                                    ICompititionService compititionService,
-                                   ISheetGenerator generator,
-                                   IShedulerService sheduler)
+                                   ISheetGenerator generator)
         {
             this.osuEmbeds = osuEmbeds;
             this.osuEnums = osuEnums;
             this.logger = logger;
-            this.guild = guild;
             this.wavCompit = wavCompit;
             this.wavMembers = wavMembers;
             this.compititionService = compititionService;
@@ -72,21 +66,21 @@ namespace Skeletron.Commands
 
 
 
-        [Command("start"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
-        public async Task StartCompit(CommandContext commandContext)
-        {
-            string checkResult = await compititionService.CompititionPreexecutionCheck();
+        //[Command("start"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
+        //public async Task StartCompit(CommandContext commandContext)
+        //{
+        //    string checkResult = await compititionService.CompititionPreexecutionCheck();
 
-            if (checkResult == "done")
-            {
-                await compititionService.InitCompitition();
-                await commandContext.RespondAsync("Starting...");
-            }
-            else
-            {
-                await commandContext.RespondAsync($"`{checkResult}`");
-            }
-        }
+        //    if (checkResult == "done")
+        //    {
+        //        await compititionService.InitCompitition();
+        //        await commandContext.RespondAsync("Starting...");
+        //    }
+        //    else
+        //    {
+        //        await commandContext.RespondAsync($"`{checkResult}`");
+        //    }
+        //}
 
         [Command("stop"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task StopCompit(CommandContext commandContext)
@@ -95,12 +89,12 @@ namespace Skeletron.Commands
             await commandContext.RespondAsync("Stopped");
         }
 
-        [Command("update-leaderboard"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
-        public async Task UpdateLeaderboard(CommandContext commandContext)
-        {
-            await compititionService.UpdateLeaderboard();
-            await commandContext.RespondAsync("Leaderboard updated");
-        }
+        //[Command("update-leaderboard"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
+        //public async Task UpdateLeaderboard(CommandContext commandContext)
+        //{
+        //    await compititionService.UpdateLeaderboard();
+        //    await commandContext.RespondAsync("Leaderboard updated");
+        //}
 
         [Command("set-map"), Description("Задать карту для выбранной категории"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task SetMap(CommandContext commandContext,
@@ -271,7 +265,7 @@ namespace Skeletron.Commands
             [Description("Регистрируемый участник")] string strMember,
             [Description("Сервер, на котором находится основной osu! профиль")] string strServer)
         {
-            DiscordUser duser = (await guild.GetAllMembersAsync()).FirstOrDefault(x => x.Username == strMember);
+            DiscordUser duser = (await commandContext.Guild.GetAllMembersAsync()).FirstOrDefault(x => x.Username == strMember);
             if (duser is null)
             {
                 await commandContext.RespondAsync("Не удалось найти такого пользователя.");
@@ -361,13 +355,13 @@ namespace Skeletron.Commands
             await compititionService.SendWelcomeMessage(compitInfo, wwwNumber);
         }
 
-        [Command("status"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
-        public async Task GetStatus(CommandContext commandContext)
-        {
-            CompitInfo compitInfo = wavCompit.GetCompitionInfo();
+        //[Command("status"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
+        //public async Task GetStatus(CommandContext commandContext)
+        //{
+        //    CompitInfo compitInfo = wavCompit.GetCompitionInfo();
 
-            await commandContext.RespondAsync(osuEmbeds.CompitInfoToEmbed(compitInfo));
-        }
+        //    await commandContext.RespondAsync(osuEmbeds.CompitInfoToEmbed(compitInfo));
+        //}
 
         [Command("reset-scores"), RequireUserPermissions(Permissions.Administrator), RequireGuild]
         public async Task ResetAllScores(CommandContext commandContext)
@@ -376,189 +370,189 @@ namespace Skeletron.Commands
 
             await commandContext.RespondAsync("Все скоры удалены.");
         }
+        //[Command("submit"), Description("Отправить свой скор (к сообщению необходимо прикрепить свой реплей в формате .osr)."), RequireDirectMessage, Cooldown(1, 30, CooldownBucketType.User)]
+        //public async Task SubmitScore(CommandContext commandContext)
+        //{
+        //    DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Id);
+        //    logger.LogInformation($"DM {msg.Author}: {msg.Content} : {msg.Attachments.Count}");
 
-        [Command("submit"), Description("Отправить свой скор (к сообщению необходимо прикрепить свой реплей в формате .osr)."), RequireDirectMessage, Cooldown(1, 30, CooldownBucketType.User)]
-        public async Task SubmitScore(CommandContext commandContext)
-        {
-            DiscordMessage msg = await commandContext.Channel.GetMessageAsync(commandContext.Message.Id);
-            logger.LogInformation($"DM {msg.Author}: {msg.Content} : {msg.Attachments.Count}");
+        //    if (msg.Attachments.Count == 0)
+        //    {
+        //        await commandContext.RespondAsync("Вы не прикрепили к сообщению никаких файлов.");
+        //        return;
+        //    }
 
-            if (msg.Attachments.Count == 0)
-            {
-                await commandContext.RespondAsync("Вы не прикрепили к сообщению никаких файлов.");
-                return;
-            }
+        //    if (msg.Attachments.Count > 1)
+        //    {
+        //        await commandContext.RespondAsync("К сообщению можно прикрепить только один файл.");
+        //        return;
+        //    }
 
-            if (msg.Attachments.Count > 1)
-            {
-                await commandContext.RespondAsync("К сообщению можно прикрепить только один файл.");
-                return;
-            }
+        //    DiscordAttachment attachment = msg.Attachments.First();
 
-            DiscordAttachment attachment = msg.Attachments.First();
+        //    if (!attachment.FileName.EndsWith("osr"))
+        //    {
+        //        await commandContext.RespondAsync("Файл не является реплеем.");
+        //        return;
+        //    }
 
-            if (!attachment.FileName.EndsWith("osr"))
-            {
-                await commandContext.RespondAsync("Файл не является реплеем.");
-                return;
-            }
+        //    CompitInfo compitInfo = compititionService.GetCompitInfo();
 
-            CompitInfo compitInfo = compititionService.GetCompitInfo();
+        //    if (!compitInfo.IsRunning)
+        //    {
+        //        await commandContext.RespondAsync("На данный момент конкурс ещё не запущен. Следите за обновлениями.");
+        //        return;
+        //    }
 
-            if (!compitInfo.IsRunning)
-            {
-                await commandContext.RespondAsync("На данный момент конкурс ещё не запущен. Следите за обновлениями.");
-                return;
-            }
+        //    WAVMembers wavMember = wavMembers.GetMember(commandContext.User.Id.ToString());
+        //    CompitionProfile compitProfile = wavCompit.GetCompitProfile(commandContext.User.Id.ToString());
+        //    if (compitProfile is null)
+        //    {
+        //        await commandContext.RespondAsync("Вы не зарегистрированы на конкурсе.");
+        //        return;
+        //    }
 
-            WAVMembers wavMember = wavMembers.GetMember(commandContext.User.Id.ToString());
-            CompitionProfile compitProfile = wavCompit.GetCompitProfile(commandContext.User.Id.ToString());
-            if (compitProfile is null)
-            {
-                await commandContext.RespondAsync("Вы не зарегистрированы на конкурсе.");
-                return;
-            }
+        //    if (compitProfile.NonGrata)
+        //    {
+        //        await commandContext.RespondAsync("Извините, но вы не можете принять участие в данном конкурсе, т.к. внесены в черный список.");
+        //        return;
+        //    }
 
-            if (compitProfile.NonGrata)
-            {
-                await commandContext.RespondAsync("Извините, но вы не можете принять участие в данном конкурсе, т.к. внесены в черный список.");
-                return;
-            }
+        //    var scores = wavCompit.GetUserScores(commandContext.User.Id.ToString());
+        //    if (!(scores is null || scores.Count == 0))
+        //    {
+        //        await commandContext.RespondAsync("Вы уже отправляли свой скор.");
+        //        return;
+        //    }
 
-            var scores = wavCompit.GetUserScores(commandContext.User.Id.ToString());
-            if (!(scores is null || scores.Count == 0))
-            {
-                await commandContext.RespondAsync("Вы уже отправляли свой скор.");
-                return;
-            }
+        //    Replay replay = null;
 
-            Replay replay = null;
+        //    string fileName = string.Empty;
+        //    try
+        //    {
+        //        fileName = $"{DateTime.Now.Ticks}-{attachment.FileName}";
+        //        webClient.DownloadFile(attachment.Url, $"downloads/{fileName}");
 
-            string fileName = string.Empty;
-            try
-            {
-                fileName = $"{DateTime.Now.Ticks}-{attachment.FileName}";
-                webClient.DownloadFile(attachment.Url, $"downloads/{fileName}");
+        //        replay = ReplayDecoder.Decode($"downloads/{fileName}");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        logger.LogCritical(e, "Exception while parsing score");
+        //        await commandContext.RespondAsync("Не удалось считать реплей. Возмонжо он повержден.");
+        //        return;
+        //    }
 
-                replay = ReplayDecoder.Decode($"downloads/{fileName}");
-            }
-            catch (Exception e)
-            {
-                logger.LogCritical(e, "Exception while parsing score");
-                await commandContext.RespondAsync("Не удалось считать реплей. Возмонжо он повержден.");
-                return;
-            }
+        //    if (!replay.Mods.HasFlag(OsuParsers.Enums.Mods.ScoreV2))
+        //    {
+        //        await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен с использованием скор системы V1. Для конкурса обязательно использование мода Score V2.");
+        //        return;
+        //    }
 
-            if (!replay.Mods.HasFlag(OsuParsers.Enums.Mods.ScoreV2))
-            {
-                await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен с использованием скор системы V1. Для конкурса обязательно использование мода Score V2.");
-                return;
-            }
-
-            const int allowedMods = (int)(OsuParsers.Enums.Mods.Perfect | OsuParsers.Enums.Mods.SuddenDeath | OsuParsers.Enums.Mods.ScoreV2 | OsuParsers.Enums.Mods.NoFail);
-            if (((int)replay.Mods | allowedMods) != allowedMods)
-            {
-                await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен с запрещенными на W.W.W модами. \nРазрешенные на W.W.W моды - `SD`, `PF`, `NF`\nСкор система: V2");
-                return;
-            }
-
-
-            if (replay.ReplayTimestamp + TimeSpan.FromHours(3) < compitInfo.StartDate)
-            {
-                await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен не во время конкурса.");
-                return;
-            }
-
-            bool correctMap = false;
-
-            switch (compitProfile.Category)
-            {
-                case CompitCategory.Beginner:
-                    if (replay.BeatmapMD5Hash == compitInfo.BeginnerMap.checksum)
-                        correctMap = true;
-                    break;
-
-                case CompitCategory.Alpha:
-                    if (replay.BeatmapMD5Hash == compitInfo.AlphaMap.checksum)
-                        correctMap = true;
-                    break;
-
-                case CompitCategory.Beta:
-                    if (replay.BeatmapMD5Hash == compitInfo.BetaMap.checksum)
-                        correctMap = true;
-                    break;
-
-                case CompitCategory.Gamma:
-                    if (replay.BeatmapMD5Hash == compitInfo.GammaMap.checksum)
-                        correctMap = true;
-                    break;
-
-                case CompitCategory.Delta:
-                    if (replay.BeatmapMD5Hash == compitInfo.DeltaMap.checksum)
-                        correctMap = true;
-                    break;
-
-                case CompitCategory.Epsilon:
-                    if (replay.BeatmapMD5Hash == compitInfo.EpsilonMap.checksum)
-                        correctMap = true;
-                    break;
-            }
-
-            if (!correctMap)
-            {
-                await commandContext.RespondAsync($"Мы не можем принять данный скор по причине того, что он поставлен не на той карте, которая выдана вашей категории {osuEnums.CategoryToString(wavMember.CompitionProfile.Category)}.");
-                return;
-            }
-
-            string osuNickname = wavMember.OsuServers.FirstOrDefault(x => x.Server == compitProfile.Server).OsuNickname;
-            if (replay.PlayerName != osuNickname)
-            {
-                await commandContext.RespondAsync($"Ваш никнейм не совпадает с автором скора. Если вы меняли никнейм, вызовите `sk!wmw recount`.");
-                return;
-            }
-
-            // НЕ ВКЛЮЧАТЬ
-            // ГЛЮЧИТ
-            //if (wavCompit.CheckScoreExists(replay.OnlineId.ToString()))
-            //{
-            //    await commandContext.RespondAsync($"Вы уже отправляли раннее данный скор.");
-            //    return;
-            //}
-
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"Osu nickname: `{replay.PlayerName}`");
-            sb.AppendLine($"Discord nickname: `{msg.Author.Username}`");
-            sb.AppendLine($"Score: `{replay.ReplayScore:N0}`"); // Format: 123456789 -> 123 456 789
-            sb.AppendLine($"Category: `{osuEnums.CategoryToString(wavMember.CompitionProfile.Category) ?? "No category"}`");
-            sb.AppendLine($"Mods: `{osuEnums.ModsToString((OsuNET_Api.Models.Bancho.Mods)replay.Mods)}`");
-
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder().WithAuthor(msg.Author.Username, iconUrl: msg.Author.AvatarUrl)
-                                                                 .WithTitle($"Added replay {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}")
-                                                                 .WithUrl(attachment.Url)
-                                                                 .WithDescription(sb.ToString())
-                                                                 .AddField("OSR Link:", attachment.Url)
-                                                                 .AddField("File name:", $"`{attachment.FileName}`")
-                                                                 .WithTimestamp(DateTime.Now);
-
-            DiscordChannel wavScoresChannel = guild.GetChannel(ulong.Parse(compitInfo.ScoresChannelUID));
-            DiscordMessage scoreMessage = await wavScoresChannel.SendMessageAsync(new DiscordMessageBuilder()
-                                                            .WithFile(new FileStream($"downloads/{fileName}", FileMode.Open))
-                                                            .WithEmbed(embed));
+        //    const int allowedMods = (int)(OsuParsers.Enums.Mods.Perfect | OsuParsers.Enums.Mods.SuddenDeath | OsuParsers.Enums.Mods.ScoreV2 | OsuParsers.Enums.Mods.NoFail);
+        //    if (((int)replay.Mods | allowedMods) != allowedMods)
+        //    {
+        //        await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен с запрещенными на W.W.W модами. \nРазрешенные на W.W.W моды - `SD`, `PF`, `NF`\nСкор система: V2");
+        //        return;
+        //    }
 
 
-            await compititionService.SubmitScore(new CompitScore()
-            {
-                DiscordUID = commandContext.User.Id.ToString(),
-                DiscordNickname = $"{commandContext.User.Username}#{commandContext.User.Discriminator}",
-                Nickname = osuNickname,
-                Category = compitProfile.Category,
-                Score = replay.ReplayScore,
-                ScoreId = replay.OnlineId.ToString(),
-                ScoreUrl = scoreMessage.Attachments.FirstOrDefault()?.Url
-            });
+        //    if (replay.ReplayTimestamp + TimeSpan.FromHours(3) < compitInfo.StartDate)
+        //    {
+        //        await commandContext.RespondAsync("Мы не можем принять данный скор по причине того, что он поставлен не во время конкурса.");
+        //        return;
+        //    }
 
-            await commandContext.RespondAsync("Ваш скор был отправлен на рассмотрение. Спасибо за участие!");
-        }
+        //    bool correctMap = false;
+
+        //    switch (compitProfile.Category)
+        //    {
+        //        case CompitCategory.Beginner:
+        //            if (replay.BeatmapMD5Hash == compitInfo.BeginnerMap.checksum)
+        //                correctMap = true;
+        //            break;
+
+        //        case CompitCategory.Alpha:
+        //            if (replay.BeatmapMD5Hash == compitInfo.AlphaMap.checksum)
+        //                correctMap = true;
+        //            break;
+
+        //        case CompitCategory.Beta:
+        //            if (replay.BeatmapMD5Hash == compitInfo.BetaMap.checksum)
+        //                correctMap = true;
+        //            break;
+
+        //        case CompitCategory.Gamma:
+        //            if (replay.BeatmapMD5Hash == compitInfo.GammaMap.checksum)
+        //                correctMap = true;
+        //            break;
+
+        //        case CompitCategory.Delta:
+        //            if (replay.BeatmapMD5Hash == compitInfo.DeltaMap.checksum)
+        //                correctMap = true;
+        //            break;
+
+        //        case CompitCategory.Epsilon:
+        //            if (replay.BeatmapMD5Hash == compitInfo.EpsilonMap.checksum)
+        //                correctMap = true;
+        //            break;
+        //    }
+
+        //    if (!correctMap)
+        //    {
+        //        await commandContext.RespondAsync($"Мы не можем принять данный скор по причине того, что он поставлен не на той карте, которая выдана вашей категории {osuEnums.CategoryToString(wavMember.CompitionProfile.Category)}.");
+        //        return;
+        //    }
+
+        //    string osuNickname = wavMember.OsuServers.FirstOrDefault(x => x.Server == compitProfile.Server).OsuNickname;
+        //    if (replay.PlayerName != osuNickname)
+        //    {
+        //        await commandContext.RespondAsync($"Ваш никнейм не совпадает с автором скора. Если вы меняли никнейм, вызовите `sk!wmw recount`.");
+        //        return;
+        //    }
+
+        //    НЕ ВКЛЮЧАТЬ
+        //     ГЛЮЧИТ
+        //    if (wavCompit.CheckScoreExists(replay.OnlineId.ToString()))
+        //    {
+        //        await commandContext.RespondAsync($"Вы уже отправляли раннее данный скор.");
+        //        return;
+        //    }
+
+        //    StringBuilder sb = new StringBuilder();
+        //    sb.AppendLine($"Osu nickname: `{replay.PlayerName}`");
+        //    sb.AppendLine($"Discord nickname: `{msg.Author.Username}`");
+        //    sb.AppendLine($"Score: `{replay.ReplayScore:N0}`"); // Format: 123456789 -> 123 456 789
+        //    sb.AppendLine($"Category: `{osuEnums.CategoryToString(wavMember.CompitionProfile.Category) ?? "No category"}`");
+        //    sb.AppendLine($"Mods: `{osuEnums.ModsToString((OsuNET_Api.Models.Bancho.Mods)replay.Mods)}`");
+
+        //    DiscordEmbedBuilder embed = new DiscordEmbedBuilder().WithAuthor(msg.Author.Username, iconUrl: msg.Author.AvatarUrl)
+        //                                                         .WithTitle($"Added replay {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}")
+        //                                                         .WithUrl(attachment.Url)
+        //                                                         .WithDescription(sb.ToString())
+        //                                                         .AddField("OSR Link:", attachment.Url)
+        //                                                         .AddField("File name:", $"`{attachment.FileName}`")
+        //                                                         .WithTimestamp(DateTime.Now);
+
+        //    DiscordChannel wavScoresChannel = guild.GetChannel(ulong.Parse(compitInfo.ScoresChannelUID));
+        //    DiscordMessage scoreMessage = await wavScoresChannel.SendMessageAsync(new DiscordMessageBuilder()
+        //                                                    .WithFile(new FileStream($"downloads/{fileName}", FileMode.Open))
+        //                                                    .WithEmbed(embed));
+
+
+        //    await compititionService.SubmitScore(new CompitScore()
+        //    {
+        //        DiscordUID = commandContext.User.Id.ToString(),
+        //        DiscordNickname = $"{commandContext.User.Username}#{commandContext.User.Discriminator}",
+        //        Nickname = osuNickname,
+        //        Category = compitProfile.Category,
+        //        Score = replay.ReplayScore,
+        //        ScoreId = replay.OnlineId.ToString(),
+        //        ScoreUrl = scoreMessage.Attachments.FirstOrDefault()?.Url
+        //    });
+
+        //    await commandContext.RespondAsync("Ваш скор был отправлен на рассмотрение. Спасибо за участие!");
+        //}
+
 
         [Command("profile"), Description("Получить информацию о своём W.w.W профиле."), RequireGuild]
         public async Task GetProfile(CommandContext commandContext)

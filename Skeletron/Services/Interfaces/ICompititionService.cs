@@ -83,7 +83,7 @@ namespace Skeletron.Services.Interfaces
         /// </summary>
         /// <param name="score">Новый скор</param>
         /// <returns></returns>
-        public Task SubmitScore(CompitScore score);
+        //public Task SubmitScore(CompitScore score);
 
         /// <summary>
         /// Остановить конкурс
@@ -94,13 +94,13 @@ namespace Skeletron.Services.Interfaces
         /// <summary>
         /// Запустить конкурс. Создать лидерборд.
         /// </summary>
-        public Task InitCompitition();
+        //public Task InitCompitition();
 
         /// <summary>
         /// Обновить лидерборд
         /// </summary>
         /// <returns></returns>
-        public Task UpdateLeaderboard();
+        //public Task UpdateLeaderboard();
 
         /// <summary>
         /// Задать статус non-grata для заданного пользователя

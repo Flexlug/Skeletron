@@ -26,8 +26,6 @@ namespace Skeletron.Commands
     {
         private ILogger<OsuCommands> logger;
 
-        private DiscordGuild guild;
-
         private OsuEmbed osuEmbeds;
         private OsuEnums osuEnums;
 
@@ -39,7 +37,6 @@ namespace Skeletron.Commands
 
         public OsuCommands(ILogger<OsuCommands> logger,
                            DiscordClient client, 
-                           DiscordGuild guild,
                            OsuEmbed osuEmbeds,
                            OsuEnums osuEnums,
                            BanchoApi api,
@@ -53,8 +50,6 @@ namespace Skeletron.Commands
             this.logger = logger;
 
             this.wavMembers = wavMembers;
-
-            this.guild = guild;
 
             this.osuEmbeds = osuEmbeds;
             this.osuEnums = osuEnums;
@@ -248,7 +243,7 @@ namespace Skeletron.Commands
             [Description("Никнейм osu! профиля")] string nickname,
             [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
         {
-            DiscordMember dmember = await guild.GetMemberAsync(uid);
+            DiscordMember dmember = await commandContext.Guild.GetMemberAsync(uid);
             if (dmember is null)
             {
                 await commandContext.RespondAsync("Не удалось найти такого пользователя.");

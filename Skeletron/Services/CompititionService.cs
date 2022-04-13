@@ -36,7 +36,7 @@ namespace Skeletron.Services
         private OsuEnums osuEnums;
         private OsuEmbed osuEmbed;
 
-        private LeaderboardUpdateSheduledTask leaderboardUpdateTask;
+        //private LeaderboardUpdateSheduledTask leaderboardUpdateTask;
 
         private DiscordGuild guild;
         private DiscordClient client;
@@ -59,69 +59,68 @@ namespace Skeletron.Services
 
         private ILogger<CompititionService> logger;
 
-        public CompititionService(ICompitProvider wavCompit,
-                                  IMembersProvider wavMembers,
-                                  IShedulerService sheduler,
-                                  OsuRegex osuRegex,
-                                  OsuEnums osuEnums,
-                                  OsuEmbed osuEmbed,
-                                  DiscordClient client,
-                                  DiscordGuild guild,
-                                  BanchoApi bapi,
-                                  GatariApi gapi,
-                                  ILogger<CompititionService> logger)
-        {
-            this.logger = logger;
+        //public CompititionService(ICompitProvider wavCompit,
+        //                          IMembersProvider wavMembers,
+        //                          IShedulerService sheduler,
+        //                          OsuRegex osuRegex,
+        //                          OsuEnums osuEnums,
+        //                          OsuEmbed osuEmbed,
+        //                          DiscordClient client,
+        //                          BanchoApi bapi,
+        //                          GatariApi gapi,
+        //                          ILogger<CompititionService> logger)
+        //{
+        //    this.logger = logger;
 
-            this.wavCompit = wavCompit;
-            this.wavMembers = wavMembers;
-            this.sheduler = sheduler;
-            this.client = client;
+        //    this.wavCompit = wavCompit;
+        //    this.wavMembers = wavMembers;
+        //    this.sheduler = sheduler;
+        //    this.client = client;
 
-            this.osuRegex = osuRegex;
-            this.osuEnums = osuEnums;
-            this.osuEmbed = osuEmbed;
+        //    this.osuRegex = osuRegex;
+        //    this.osuEnums = osuEnums;
+        //    this.osuEmbed = osuEmbed;
 
-            this.bapi = bapi;
-            this.gapi = gapi;
+        //    this.bapi = bapi;
+        //    this.gapi = gapi;
 
-            this.compititionInfo = wavCompit.GetCompitionInfo();
+        //    this.compititionInfo = wavCompit.GetCompitionInfo();
 
-            this.leaderboardUpdateTask = new LeaderboardUpdateSheduledTask(this);
+        //    this.leaderboardUpdateTask = new LeaderboardUpdateSheduledTask(this);
 
-            this.guild = guild;
+        //    this.guild = client.GetGuildAsync(708860200341471264).Result;
 
-            this.beginnerRole = guild.GetRole(915129427040538644);
-            this.alphaRole = guild.GetRole(915129468174106644);
-            this.betaRole = guild.GetRole(915129493532852274);
-            this.gammaRole = guild.GetRole(915129516639264778);
-            this.deltaRole = guild.GetRole(915129540945281044);
-            this.epsilonRole = guild.GetRole(915129563477053440);
-            this.nonGrata = guild.GetRole(915129789986250812);
+        //    this.beginnerRole = guild.GetRole(915129427040538644);
+        //    this.alphaRole = guild.GetRole(915129468174106644);
+        //    this.betaRole = guild.GetRole(915129493532852274);
+        //    this.gammaRole = guild.GetRole(915129516639264778);
+        //    this.deltaRole = guild.GetRole(915129540945281044);
+        //    this.epsilonRole = guild.GetRole(915129563477053440);
+        //    this.nonGrata = guild.GetRole(915129789986250812);
 
-            this.logger.LogInformation("CompititionService loaded");
+        //    this.logger.LogInformation("CompititionService loaded");
 
-            recountTask = new SheduledTask("RecountTask",
-                                           () => RecountTask(),
-                                           TimeSpan.FromMinutes(1),
-                                           true);
+        //    recountTask = new SheduledTask("RecountTask",
+        //                                   () => RecountTask(),
+        //                                   TimeSpan.FromMinutes(1),
+        //                                   true);
 
-            // Запустить конкурс, если тот уже идет. Может произойти при перезапуске бота
-            if (compititionInfo.IsRunning)
-            {
-                this.logger.LogInformation("Detected compitition is running. Attempting initialize compitition...");
+        //    // Запустить конкурс, если тот уже идет. Может произойти при перезапуске бота
+        //    if (compititionInfo.IsRunning)
+        //    {
+        //        this.logger.LogInformation("Detected compitition is running. Attempting initialize compitition...");
 
-                string checkRes = CompititionPreexecutionCheck().Result;
-                if (checkRes == "done")
-                    InitCompitition();
-                else
-                    logger.LogCritical($"Compitition is running, but preexecution check is not passed! {checkRes}");
-            }
-            else
-            {
-                StartRecountTask().Wait();
-            }
-        }
+        //        string checkRes = CompititionPreexecutionCheck().Result;
+        //        if (checkRes == "done")
+        //            InitCompitition();
+        //        else
+        //            logger.LogCritical($"Compitition is running, but preexecution check is not passed! {checkRes}");
+        //    }
+        //    else
+        //    {
+        //        StartRecountTask().Wait();
+        //    }
+        //}
 
         private async Task StartRecountTask()
         {
@@ -152,32 +151,32 @@ namespace Skeletron.Services
         /// <summary>
         /// Запустить конкурс. Создать лидерборд.
         /// </summary>
-        public async Task InitCompitition()
-        {
-            await StopRecountTask();
+        //public async Task InitCompitition()
+        //{
+        //    await StopRecountTask();
 
-            if (!string.IsNullOrEmpty(compititionInfo.LeaderboardMessageUID))
-            {
-                leaderboardMessage = await leaderboardChannel.GetMessageAsync(ulong.Parse(compititionInfo.LeaderboardMessageUID)) ??
-                                     await leaderboardChannel.SendMessageAsync(osuEmbed.ScoresToLeaderBoard(compititionInfo,
-                                                                                                            wavCompit.GetCategoryBestScores(CompitCategory.Beginner),
-                                                                                                            wavCompit.GetCategoryBestScores(CompitCategory.Alpha),
-                                                                                                            wavCompit.GetCategoryBestScores(CompitCategory.Beta),
-                                                                                                            wavCompit.GetCategoryBestScores(CompitCategory.Gamma),
-                                                                                                            wavCompit.GetCategoryBestScores(CompitCategory.Delta),
-                                                                                                            wavCompit.GetCategoryBestScores(CompitCategory.Epsilon)));
-            }
-            else
-            {
-                leaderboardMessage = await leaderboardChannel.SendMessageAsync(osuEmbed.ScoresToLeaderBoard(compititionInfo));
-                compititionInfo.StartDate = DateTime.Now;
-            }
+        //    if (!string.IsNullOrEmpty(compititionInfo.LeaderboardMessageUID))
+        //    {
+        //        leaderboardMessage = await leaderboardChannel.GetMessageAsync(ulong.Parse(compititionInfo.LeaderboardMessageUID)) ??
+        //                             await leaderboardChannel.SendMessageAsync(osuEmbed.ScoresToLeaderBoard(compititionInfo,
+        //                                                                                                    wavCompit.GetCategoryBestScores(CompitCategory.Beginner),
+        //                                                                                                    wavCompit.GetCategoryBestScores(CompitCategory.Alpha),
+        //                                                                                                    wavCompit.GetCategoryBestScores(CompitCategory.Beta),
+        //                                                                                                    wavCompit.GetCategoryBestScores(CompitCategory.Gamma),
+        //                                                                                                    wavCompit.GetCategoryBestScores(CompitCategory.Delta),
+        //                                                                                                    wavCompit.GetCategoryBestScores(CompitCategory.Epsilon)));
+        //    }
+        //    else
+        //    {
+        //        leaderboardMessage = await leaderboardChannel.SendMessageAsync(osuEmbed.ScoresToLeaderBoard(compititionInfo));
+        //        compititionInfo.StartDate = DateTime.Now;
+        //    }
 
-            compititionInfo.LeaderboardMessageUID = leaderboardMessage.Id.ToString();
-            compititionInfo.IsRunning = true;
+        //    compititionInfo.LeaderboardMessageUID = leaderboardMessage.Id.ToString();
+        //    compititionInfo.IsRunning = true;
 
-            UpdateCompitInfo();
-        }
+        //    UpdateCompitInfo();
+        //}
 
         public void RecountTask()
         {
@@ -245,11 +244,11 @@ namespace Skeletron.Services
             UpdateCompitInfo();
         }
 
-        public async Task SubmitScore(CompitScore score)
-        {
-            wavCompit.SubmitScore(score);
-            await UpdateLeaderboard();
-        }
+        //public async Task SubmitScore(CompitScore score)
+        //{
+        //    wavCompit.SubmitScore(score);
+        //    await UpdateLeaderboard();
+        //}
 
         /// <summary>
         /// Задать для категории карту
@@ -428,18 +427,18 @@ namespace Skeletron.Services
         /// <summary>
         /// Обновить лидерборд
         /// </summary>
-        public async Task UpdateLeaderboard()
-        {
-            DiscordEmbed newEmbed = osuEmbed.ScoresToLeaderBoard(compititionInfo,
-                                                                 wavCompit.GetCategoryBestScores(CompitCategory.Beginner),
-                                                                 wavCompit.GetCategoryBestScores(CompitCategory.Alpha),
-                                                                 wavCompit.GetCategoryBestScores(CompitCategory.Beta),
-                                                                 wavCompit.GetCategoryBestScores(CompitCategory.Gamma),
-                                                                 wavCompit.GetCategoryBestScores(CompitCategory.Delta),
-                                                                 wavCompit.GetCategoryBestScores(CompitCategory.Epsilon));
+        //public async Task UpdateLeaderboard()
+        //{
+        //    DiscordEmbed newEmbed = osuEmbed.ScoresToLeaderBoard(compititionInfo,
+        //                                                         wavCompit.GetCategoryBestScores(CompitCategory.Beginner),
+        //                                                         wavCompit.GetCategoryBestScores(CompitCategory.Alpha),
+        //                                                         wavCompit.GetCategoryBestScores(CompitCategory.Beta),
+        //                                                         wavCompit.GetCategoryBestScores(CompitCategory.Gamma),
+        //                                                         wavCompit.GetCategoryBestScores(CompitCategory.Delta),
+        //                                                         wavCompit.GetCategoryBestScores(CompitCategory.Epsilon));
 
-            await leaderboardMessage.ModifyAsync(embed: newEmbed);
-        }
+        //    await leaderboardMessage.ModifyAsync(embed: newEmbed);
+        //}
 
         /// <summary>
         /// Зарегистрировать участника в конкурсе - вычислить среднее из 5 топ скоров и присвоить роль

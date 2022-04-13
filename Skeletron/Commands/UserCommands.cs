@@ -34,7 +34,6 @@ namespace Skeletron.Commands
 
         public UserCommands(ILogger<UserCommands> logger,
                             DiscordClient client,
-                            DiscordGuild guild,
                             GoogleSearch gsearch,
                             Settings settings)
         {
