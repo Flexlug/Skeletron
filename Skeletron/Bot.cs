@@ -33,6 +33,7 @@ using Serilog;
 //using NumbersAPI.NET;
 using GoogleApi;
 using DSharpPlus.SlashCommands.EventArgs;
+using System.IO;
 
 namespace Skeletron
 {
@@ -78,6 +79,7 @@ namespace Skeletron
 
             Guild = Discord.GetGuildAsync(WAV_UID).Result;
 
+            ConfigureBot();
             ConfigureServices();
 
             RegisterCommands();
@@ -87,6 +89,18 @@ namespace Skeletron
         ~Bot()
         {
             Dispose(false);
+        }
+
+        private void ConfigureBot()
+        {
+            if (!Directory.Exists("downloads"))
+                Directory.CreateDirectory("downloads");
+
+            if (!Directory.Exists("logs"))
+                Directory.CreateDirectory("logs");
+
+            if (!Directory.Exists("temp"))
+                Directory.CreateDirectory("temp");
         }
 
         public void ConfigureServices()
