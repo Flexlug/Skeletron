@@ -416,7 +416,15 @@ namespace Skeletron.Commands
             if (!user.IsBot)
             {
                 DiscordDmChannel dmChannel = await user.CreateDmChannelAsync();
-                await dmChannel.SendMessageAsync(content: $"Перенаправлено по причине: {reason}", embed: redirectedMsg.Build());
+
+                try
+                {
+                    await dmChannel.SendMessageAsync(content: $"Перенаправлено по причине: {reason}", embed: redirectedMsg.Build());
+                }
+                catch(Exception ex)
+                {
+                    logger.LogError("Error in rd command", ex);
+                }
 
                 if (msg.Embeds?.Count != 0)
                     foreach (var embed in msg.Embeds)
@@ -425,6 +433,7 @@ namespace Skeletron.Commands
                 if (msg.Attachments?.Count != 0)
                     foreach (var att in msg.Attachments)
                         await dmChannel.SendMessageAsync(att.Url);
+
             }
         }
 
