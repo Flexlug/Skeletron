@@ -29,9 +29,6 @@ namespace Skeletron.Commands
         private OsuEmbed osuEmbeds;
         private OsuEnums osuEnums;
 
-        private IMembersProvider wavMembers;
-        private IOsuService osuService;
-
         private BanchoApi api;
         private GatariApi gapi;
 
@@ -41,20 +38,16 @@ namespace Skeletron.Commands
                            OsuEnums osuEnums,
                            BanchoApi api,
                            GatariApi gapi,
-                           IMembersProvider wavMembers,
-                           ICompitProvider wavProvider,
                            IOsuService osuService)
+                           //IMembersProvider wavMembers,
+                           //ICompitProvider wavProvider,
         {
             ModuleName = "osu!";
 
             this.logger = logger;
 
-            this.wavMembers = wavMembers;
-
             this.osuEmbeds = osuEmbeds;
             this.osuEnums = osuEnums;
-
-            this.osuService = osuService;
 
             this.api = api;
             this.gapi = gapi;
@@ -151,135 +144,135 @@ namespace Skeletron.Commands
 
         }
 
-        [Command("rs"), Description("Получить последний скор"), RequireGuild]
-        public async Task LastRecent(CommandContext commandContext,
-            params string[] args)
-        {
-            if (!((commandContext.Channel.Name?.Contains("-bot") ?? false) ||
-                  (commandContext.Channel.Name?.Contains("dev-announce") ?? false) ||
-                  (commandContext.Channel.Name?.Contains("-scores") ?? false)))
-            {
-                await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
-                return;
-            }
+        //[Command("rs"), Description("Получить последний скор"), RequireGuild]
+        //public async Task LastRecent(CommandContext commandContext,
+        //    params string[] args)
+        //{
+        //    if (!((commandContext.Channel.Name?.Contains("-bot") ?? false) ||
+        //          (commandContext.Channel.Name?.Contains("dev-announce") ?? false) ||
+        //          (commandContext.Channel.Name?.Contains("-scores") ?? false)))
+        //    {
+        //        await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
+        //        return;
+        //    }
 
-            string discordId = commandContext.Member.Id.ToString();
+        //    string discordId = commandContext.Member.Id.ToString();
 
-            OsuServer? mbChoosedServer = osuEnums.StringToOsuServer(args.FirstOrDefault()?.TrimStart('-') ?? "bancho");
-            if (mbChoosedServer is null)
-            {
-                await commandContext.RespondAsync($"Указанный сервер не поддерживается.");
-                return;
-            }
+        //    OsuServer? mbChoosedServer = osuEnums.StringToOsuServer(args.FirstOrDefault()?.TrimStart('-') ?? "bancho");
+        //    if (mbChoosedServer is null)
+        //    {
+        //        await commandContext.RespondAsync($"Указанный сервер не поддерживается.");
+        //        return;
+        //    }
 
-            OsuServer choosedServer = (OsuServer)mbChoosedServer;
+        //    OsuServer choosedServer = (OsuServer)mbChoosedServer;
 
-            OsuProfileInfo userInfo = wavMembers.GetOsuProfileInfo(discordId, choosedServer);
-            if (userInfo is null)
-            {
-                await commandContext.RespondAsync($"Не удалось найти ваш osu! профиль сервера `{choosedServer}`. Добавьте свой профиль через команду `osuset`");
-                return;
-            }
+        //    OsuProfileInfo userInfo = wavMembers.GetOsuProfileInfo(discordId, choosedServer);
+        //    if (userInfo is null)
+        //    {
+        //        await commandContext.RespondAsync($"Не удалось найти ваш osu! профиль сервера `{choosedServer}`. Добавьте свой профиль через команду `osuset`");
+        //        return;
+        //    }
 
-            switch (choosedServer)
-            {
-                case OsuServer.Gatari:
-                    GScore gscore = gapi.GetUserRecentScores(userInfo.OsuId, 0, 1, true).FirstOrDefault();
+        //    switch (choosedServer)
+        //    {
+        //        case OsuServer.Gatari:
+        //            GScore gscore = gapi.GetUserRecentScores(userInfo.OsuId, 0, 1, true).FirstOrDefault();
 
-                    if (gscore is null)
-                    {
-                        await commandContext.RespondAsync("У Вас нет недавно сыгранных карт в режиме osu!std.");
-                        return;
-                    }
+        //            if (gscore is null)
+        //            {
+        //                await commandContext.RespondAsync("У Вас нет недавно сыгранных карт в режиме osu!std.");
+        //                return;
+        //            }
 
-                    GUser guser = null;
-                    if (!gapi.TryGetUser(userInfo.OsuId, ref guser))
-                    {
-                        await commandContext.RespondAsync("Не удалось найти такого пользователя на Gatari.");
-                        return;
-                    }
+        //            GUser guser = null;
+        //            if (!gapi.TryGetUser(userInfo.OsuId, ref guser))
+        //            {
+        //                await commandContext.RespondAsync("Не удалось найти такого пользователя на Gatari.");
+        //                return;
+        //            }
 
-                    DiscordEmbed gscoreEmbed = osuEmbeds.GatariScoreToEmbed(gscore, guser);
-                    await commandContext.RespondAsync(embed: gscoreEmbed);
+        //            DiscordEmbed gscoreEmbed = osuEmbeds.GatariScoreToEmbed(gscore, guser);
+        //            await commandContext.RespondAsync(embed: gscoreEmbed);
 
-                    return;
+        //            return;
 
-                case OsuServer.Bancho:
-                    Score score = api.GetUserRecentScores(userInfo.OsuId, true, 0, 1).FirstOrDefault();
+        //        case OsuServer.Bancho:
+        //            Score score = api.GetUserRecentScores(userInfo.OsuId, true, 0, 1).FirstOrDefault();
 
-                    if (score is null)
-                    {
-                        await commandContext.RespondAsync("У Вас нет недавно сыгранных карт в режиме osu!std.");
-                        return;
-                    }
+        //            if (score is null)
+        //            {
+        //                await commandContext.RespondAsync("У Вас нет недавно сыгранных карт в режиме osu!std.");
+        //                return;
+        //            }
 
-                    User user = null;
-                    if (!api.TryGetUser(userInfo.OsuId, ref user))
-                    {
-                        await commandContext.RespondAsync("Не удалось найти такого пользователя на Gatari.");
-                        return;
-                    }
+        //            User user = null;
+        //            if (!api.TryGetUser(userInfo.OsuId, ref user))
+        //            {
+        //                await commandContext.RespondAsync("Не удалось найти такого пользователя на Gatari.");
+        //                return;
+        //            }
 
-                    DiscordEmbed scoreEmbed = osuEmbeds.BanchoScoreToEmbed(score, user);
-                    await commandContext.RespondAsync(embed: scoreEmbed);
-                    return;
-            }
+        //            DiscordEmbed scoreEmbed = osuEmbeds.BanchoScoreToEmbed(score, user);
+        //            await commandContext.RespondAsync(embed: scoreEmbed);
+        //            return;
+        //    }
 
-            await commandContext.RespondAsync($"Указанный сервер не поддерживается.");
-        }
+        //    await commandContext.RespondAsync($"Указанный сервер не поддерживается.");
+        //}
 
-        [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
-        public async Task OsuSet(CommandContext commandContext,
-            [Description("Пользователь WAV сервера")] DiscordMember member,
-            [Description("Никнейм osu! профиля")] string nickname,
-            [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
-        {
-            await SetOsuProfile(commandContext, member, nickname, args);
-        }
+        //[Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
+        //public async Task OsuSet(CommandContext commandContext,
+        //    [Description("Пользователь WAV сервера")] DiscordMember member,
+        //    [Description("Никнейм osu! профиля")] string nickname,
+        //    [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
+        //{
+        //    await SetOsuProfile(commandContext, member, nickname, args);
+        //}
 
-        [Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
-        public async Task OsuSet(CommandContext commandContext,
-            [Description("Пользователь WAV сервера")] ulong uid,
-            [Description("Никнейм osu! профиля")] string nickname,
-            [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
-        {
-            DiscordMember dmember = await commandContext.Guild.GetMemberAsync(uid);
-            if (dmember is null)
-            {
-                await commandContext.RespondAsync("Не удалось найти такого пользователя.");
-                return;
-            }
+        //[Command("osuset-manual"), Description("Добавить информацию о чужом osu! профиле"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), RequireGuild]
+        //public async Task OsuSet(CommandContext commandContext,
+        //    [Description("Пользователь WAV сервера")] ulong uid,
+        //    [Description("Никнейм osu! профиля")] string nickname,
+        //    [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
+        //{
+        //    DiscordMember dmember = await commandContext.Guild.GetMemberAsync(uid);
+        //    if (dmember is null)
+        //    {
+        //        await commandContext.RespondAsync("Не удалось найти такого пользователя.");
+        //        return;
+        //    }
 
-            await SetOsuProfile(commandContext, dmember, nickname, args);
-        }
+        //    await SetOsuProfile(commandContext, dmember, nickname, args);
+        //}
 
-        [Command("osuset"), Description("Добавить информацию о своём osu! профиле")]
-        public async Task OsuSet(CommandContext commandContext,
-            [Description("Никнейм osu! профиля")] string nickname,
-            [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
-        {
-            await SetOsuProfile(commandContext, commandContext.User, nickname, args);
-        }
+        //[Command("osuset"), Description("Добавить информацию о своём osu! профиле")]
+        //public async Task OsuSet(CommandContext commandContext,
+        //    [Description("Никнейм osu! профиля")] string nickname,
+        //    [Description("osu! cервер (по-умолчанию bancho)")] params string[] args)
+        //{
+        //    await SetOsuProfile(commandContext, commandContext.User, nickname, args);
+        //}
 
-        private async Task SetOsuProfile(CommandContext commandContext, DiscordUser user, string nickname, string[] args)
-        {
-            if (!((commandContext.Channel.Name?.Contains("-bot") ?? false) ||
-                  (commandContext.Channel.Name?.Contains("dev-announce") ?? false) ||
-                  (commandContext.Channel.Name?.Contains("-scores") ?? false)))
-            {
-                await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
-                return;
-            }
+        //private async Task SetOsuProfile(CommandContext commandContext, DiscordUser user, string nickname, string[] args)
+        //{
+        //    if (!((commandContext.Channel.Name?.Contains("-bot") ?? false) ||
+        //          (commandContext.Channel.Name?.Contains("dev-announce") ?? false) ||
+        //          (commandContext.Channel.Name?.Contains("-scores") ?? false)))
+        //    {
+        //        await commandContext.RespondAsync("Использование данной команды запрещено в этом текстовом канале. Используйте специально отведенный канал для ботов, связанных с osu!.");
+        //        return;
+        //    }
 
-            if (string.IsNullOrEmpty(nickname))
-            {
-                await commandContext.RespondAsync("Вы ввели пустой никнейм.");
-                return;
-            }
+        //    if (string.IsNullOrEmpty(nickname))
+        //    {
+        //        await commandContext.RespondAsync("Вы ввели пустой никнейм.");
+        //        return;
+        //    }
 
-            string res = await osuService.SetOsuProfile(user, nickname, args);
-            await commandContext.RespondAsync(string.IsNullOrEmpty(res) ? "Ошибка при выполнении команды" : res);
-        }
+        //    string res = await osuService.SetOsuProfile(user, nickname, args);
+        //    await commandContext.RespondAsync(string.IsNullOrEmpty(res) ? "Ошибка при выполнении команды" : res);
+        //}
     }
 
 }

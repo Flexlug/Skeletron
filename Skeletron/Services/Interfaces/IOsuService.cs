@@ -10,6 +10,6 @@ namespace Skeletron.Services.Interfaces
 {
     public interface IOsuService
     {
-        public Task<string> SetOsuProfile(DiscordUser user, string nickname, string[] args);
+        // public Task<string> SetOsuProfile(DiscordUser user, string nickname, string[] args);
     }
 }

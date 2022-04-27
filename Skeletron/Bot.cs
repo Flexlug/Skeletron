@@ -133,7 +133,7 @@ namespace Skeletron
                 //.AddSingleton<IMappoolProvider, MappoolProvider>()
                 //.AddSingleton<IMappoolService, MappoolService>()
                 //.AddSingleton<IWordsService, WordsService>()
-                //.AddSingleton<IOsuService, OsuService>()
+                .AddSingleton<IOsuService, OsuService>()
                 .AddSingleton<IUtilityService, UtilityService>()
                 .BuildServiceProvider();
         }
@@ -155,7 +155,7 @@ namespace Skeletron
             //CommandsNext.RegisterCommands<DemonstrationCommands>();
             //CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
-            //CommandsNext.RegisterCommands<OsuCommands>();
+            CommandsNext.RegisterCommands<OsuCommands>();
             CommandsNext.RegisterCommands<VkCommands>();
             //CommandsNext.RegisterCommands<CompititionCommands>();
             //CommandsNext.RegisterCommands<MappoolCommands>();

@@ -28,9 +28,6 @@ namespace Skeletron.Services
         private OsuEmbed osuEmbeds;
         private OsuEnums osuEnums;
 
-        private IMembersProvider wavMembers;
-        private ICompitProvider wavCompit;
-
         private BanchoApi api;
         private GatariApi gapi;
 
@@ -40,9 +37,7 @@ namespace Skeletron.Services
                           BanchoApi api,
                           GatariApi gapi,
                           OsuEnums osuEnums,
-                          OsuEmbed osuEmbeds,
-                          IMembersProvider wavMembers,
-                          ICompitProvider wavCompit)
+                          OsuEmbed osuEmbeds)
         {
             this.osuRegex = osuRegex;
 
@@ -50,9 +45,6 @@ namespace Skeletron.Services
             this.gapi = gapi;
             this.osuEnums = osuEnums;
             this.osuEmbeds = osuEmbeds;
-
-            this.wavMembers = wavMembers;
-            this.wavCompit = wavCompit;
 
             this._logger = logger;
             _logger.LogInformation("OsuService loaded");
@@ -190,66 +182,66 @@ namespace Skeletron.Services
             }
         }
 
-        public async Task<string> SetOsuProfile(DiscordUser user, string nickname, params string[] args)
-        {
-            string discordId = user.Id.ToString();
+        //public async Task<string> SetOsuProfile(DiscordUser user, string nickname, params string[] args)
+        //{
+        //    string discordId = user.Id.ToString();
 
-            WAVMembers member = wavMembers.GetMember(discordId);
+        //    WAVMembers member = wavMembers.GetMember(discordId);
 
-            int osu_id = 0;
-            string osu_nickname = string.Empty;
+        //    int osu_id = 0;
+        //    string osu_nickname = string.Empty;
 
-            OsuServer? mbChoosedServer = osuEnums.StringToOsuServer(args.FirstOrDefault()?.TrimStart('-') ?? "bancho");
-            if (mbChoosedServer is null)
-            {
-                return $"Указанный сервер не поддерживается.";
-            }
+        //    OsuServer? mbChoosedServer = osuEnums.StringToOsuServer(args.FirstOrDefault()?.TrimStart('-') ?? "bancho");
+        //    if (mbChoosedServer is null)
+        //    {
+        //        return $"Указанный сервер не поддерживается.";
+        //    }
 
-            OsuServer choosedServer = (OsuServer)mbChoosedServer;
+        //    OsuServer choosedServer = (OsuServer)mbChoosedServer;
 
-            switch (choosedServer)
-            {
-                case OsuServer.Gatari:
-                    GUser guser = null;
-                    if (!gapi.TryGetUser(nickname, ref guser))
-                    {
-                        return "Не удалось найти такого пользователя на Gatari.";
-                    }
-                    osu_nickname = guser.username;
-                    osu_id = guser.id;
-                    break;
+        //    switch (choosedServer)
+        //    {
+        //        case OsuServer.Gatari:
+        //            GUser guser = null;
+        //            if (!gapi.TryGetUser(nickname, ref guser))
+        //            {
+        //                return "Не удалось найти такого пользователя на Gatari.";
+        //            }
+        //            osu_nickname = guser.username;
+        //            osu_id = guser.id;
+        //            break;
 
-                case OsuServer.Bancho:
-                    User buser = null;
-                    if (!api.TryGetUser(nickname, ref buser))
-                    {
-                        return "Не удалось найти такого пользователя на Bancho.";
-                    }
-                    osu_nickname = buser.username;
-                    osu_id = buser.id;
-                    break;
+        //        case OsuServer.Bancho:
+        //            User buser = null;
+        //            if (!api.TryGetUser(nickname, ref buser))
+        //            {
+        //                return "Не удалось найти такого пользователя на Bancho.";
+        //            }
+        //            osu_nickname = buser.username;
+        //            osu_id = buser.id;
+        //            break;
 
-                default:
-                    return $"Сервер `{choosedServer}` не поддерживается.";
-            }
+        //        default:
+        //            return $"Сервер `{choosedServer}` не поддерживается.";
+        //    }
 
-            try
-            {
-                OsuProfileInfo profile = new OsuProfileInfo()
-                {
-                    OsuId = osu_id,
-                    OsuNickname = osu_nickname,
-                    Server = choosedServer
-                };
+        //    try
+        //    {
+        //        OsuProfileInfo profile = new OsuProfileInfo()
+        //        {
+        //            OsuId = osu_id,
+        //            OsuNickname = osu_nickname,
+        //            Server = choosedServer
+        //        };
 
-                wavMembers.AddOsuServerInfo(discordId, profile);
-                return $"Вы успешно добавили информацию о профиле `{osu_nickname}` на сервере `{osuEnums.OsuServerToString(choosedServer)}` для `{user.Username}`";
-            }
-            catch (NullReferenceException)
-            {
-                _logger.LogError("User not found in OsuSet command");
-                return "Вас не удалось найти в базе данных участников WAV.";
-            }
-        }
+        //        wavMembers.AddOsuServerInfo(discordId, profile);
+        //        return $"Вы успешно добавили информацию о профиле `{osu_nickname}` на сервере `{osuEnums.OsuServerToString(choosedServer)}` для `{user.Username}`";
+        //    }
+        //    catch (NullReferenceException)
+        //    {
+        //        _logger.LogError("User not found in OsuSet command");
+        //        return "Вас не удалось найти в базе данных участников WAV.";
+        //    }
+        //}
     }
 }
