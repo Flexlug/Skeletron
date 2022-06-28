@@ -67,8 +67,6 @@ namespace OsuNET_Api
             this.Secret = secret;
             this.ClientId = client_id;
 
-            client.CookieContainer = new System.Net.CookieContainer();
-
             ReloadToken();
         }
 
@@ -78,13 +76,13 @@ namespace OsuNET_Api
         /// <returns></returns>
         public bool ReloadToken()
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"oauth/token")
+            RestRequest req = new RestRequest(UrlBase + $@"oauth/token")
                 .AddParameter("client_id", ClientId)
                 .AddParameter("client_secret", Secret)
                 .AddParameter("grant_type", "client_credentials")
                 .AddParameter("scope", "public");
 
-            IRestResponse resp = client.Execute(req, Method.POST);
+            RestResponse resp = client.Execute(req, Method.Post);
 
             if (resp.StatusCode != System.Net.HttpStatusCode.OK)
                 return false;
@@ -113,7 +111,7 @@ namespace OsuNET_Api
         /// <returns></returns>
         public List<Beatmapset> Search(string querry, MapType? type = null, MapMode? mode = null, MapLang? lang = null)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmapsets/search/")
+            RestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmapsets/search/")
                 .AddHeader(@"Authorization", $@"Bearer {Token}");
 
             if (!string.IsNullOrEmpty(querry))
@@ -123,12 +121,12 @@ namespace OsuNET_Api
                 req.AddParameter("s", BanchoConverter.MapTypeToString((MapType)type));
 
             if (mode != null)
-                req.AddParameter("m", mode);
+                req.AddParameter("m", (int)mode);
 
             if (lang != null)
-                req.AddParameter("l", lang);
+                req.AddParameter("l", (int)lang);
 
-            IRestResponse resp = client.Execute(req);
+            RestResponse resp = client.Execute(req);
 
             SearchResponse beatmaps = null;
             try
@@ -170,13 +168,13 @@ namespace OsuNET_Api
                     break;
             }
 
-            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{user}/scores/recent")
+            RestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{user}/scores/recent")
                 .AddHeader(@"Authorization", $@"Bearer {Token}")
                 .AddParameter("include_fails", include_fails ? 1 : 0)
                 .AddParameter("mode", playmode)
                 .AddParameter("limit", limit);
 
-            IRestResponse resp = client.Execute(req);
+            RestResponse resp = client.Execute(req);
 
             if (string.IsNullOrEmpty(resp.Content))
                 return null;
@@ -213,12 +211,12 @@ namespace OsuNET_Api
                     break;
             }
 
-            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{user}/scores/best")
+            RestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{user}/scores/best")
                 .AddHeader(@"Authorization", $@"Bearer {Token}")
                 .AddParameter("limit", limit)
                 .AddParameter("mode", playmode);
 
-            IRestResponse resp = client.Execute(req);
+            RestResponse resp = client.Execute(req);
 
             if (string.IsNullOrEmpty(resp.Content))
                 return null;
@@ -235,10 +233,10 @@ namespace OsuNET_Api
         /// <returns></returns>
         public Beatmapset GetBeatmapset(int beatmapsetId)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmapsets/{beatmapsetId}")
+            RestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmapsets/{beatmapsetId}")
                 .AddHeader(@"Authorization", $@"Bearer {Token}");
 
-            IRestResponse resp = client.Execute(req);
+            RestResponse resp = client.Execute(req);
 
             Beatmapset bm = JsonConvert.DeserializeObject<Beatmapset>(resp.Content);
 
@@ -252,10 +250,10 @@ namespace OsuNET_Api
         /// <returns></returns>
         public Beatmap GetBeatmap(int beatmapId)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmaps/{beatmapId}")
+            RestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmaps/{beatmapId}")
                 .AddHeader(@"Authorization", $@"Bearer {Token}");
-
-            IRestResponse resp = client.Execute(req);
+            
+            RestResponse resp = client.Execute(req);
 
             Beatmap bm = JsonConvert.DeserializeObject<Beatmap>(resp.Content);
 
@@ -269,11 +267,11 @@ namespace OsuNET_Api
         /// <returns></returns>
         public Beatmap GetBeatmap(string hash)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmaps/lookup")
+            RestRequest req = new RestRequest(UrlBase + $@"api/v2/beatmaps/lookup")
                 .AddHeader(@"Authorization", $@"Bearer {Token}")
                 .AddParameter("checksum", hash);
 
-            IRestResponse resp = client.Execute(req);
+            RestResponse resp = client.Execute(req);
 
             Beatmap bm = JsonConvert.DeserializeObject<Beatmap>(resp.Content);
 
@@ -288,10 +286,10 @@ namespace OsuNET_Api
         /// <returns></returns>
         public bool TryGetUser(string userNickname, ref User user)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{userNickname}")
+            RestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{userNickname}")
                 .AddHeader(@"Authorization", $@"Bearer {Token}");
 
-            IRestResponse resp = null;
+            RestResponse resp = null;
             User userInfo;
             try
             {
@@ -323,10 +321,10 @@ namespace OsuNET_Api
         /// <returns></returns>
         public bool TryGetUser(int userId, ref User user)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{userId}")
+            RestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{userId}")
                 .AddHeader(@"Authorization", $@"Bearer {Token}");
 
-            IRestResponse resp = null;
+            RestResponse resp = null;
             User userInfo;
             try
             {

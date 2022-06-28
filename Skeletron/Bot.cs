@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using DSharpPlus.VoiceNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 
@@ -23,17 +25,11 @@ using Skeletron.Configurations;
 using Skeletron.Converters;
 using Skeletron.Services.Interfaces;
 
-using Skeletron.SlashCommands;
 using Skeletron.Services;
-using Skeletron.Database;
-using Skeletron.Database.Interfaces;
 
 using Serilog;
 
-//using NumbersAPI.NET;
 using GoogleApi;
-using DSharpPlus.SlashCommands.EventArgs;
-using System.IO;
 
 namespace Skeletron
 {

@@ -1,12 +1,11 @@
-﻿using System.Drawing;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using DSharpPlus.Entities;
 
 namespace Skeletron.Services.Interfaces
 {
-    public interface IRecognizerService
-    {
-        public Task<string> PerformOcr(DiscordAttachment attachment);
-    }
+    //public interface IRecognizerService
+    //{
+    //    public Task<string> PerformOcr(DiscordAttachment attachment);
+    //}
 }

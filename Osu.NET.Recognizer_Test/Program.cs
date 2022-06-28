@@ -1,21 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Drawing;
-using System.Collections.Generic;
-
-using OsuNET_Api;
-
-using OsuNET_Recognizer;
-
 using Newtonsoft.Json;
+using OsuNET_Api;
 using OsuNET_Api.Models.Bancho;
+using OsuNET_Recognizer;
 
 namespace WAV_Osu_Recognizer_Test
 {
     class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Recognizer rec = new Recognizer();
 

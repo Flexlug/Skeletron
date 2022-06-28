@@ -31,14 +31,14 @@ namespace OsuNET_Api
         /// <returns>Collection of scores</returns>
         public List<GScore> GetUserRecentScores(int user_id, int mode, int limit, bool include_fails)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"user/scores/recent")
+            RestRequest req = new RestRequest(UrlBase + $@"user/scores/recent")
                 .AddParameter("id", user_id)
                 .AddParameter("mode", mode)
                 .AddParameter("p", 1)
                 .AddParameter("l", limit)
                 .AddParameter("f", Convert.ToInt32(include_fails));
 
-            IRestResponse resp = client.Execute(req);
+            RestResponse resp = client.Execute(req);
 
             GScoresResponse g_resp = JsonConvert.DeserializeObject<GScoresResponse>(resp.Content);
 
@@ -54,13 +54,13 @@ namespace OsuNET_Api
         /// <returns></returns>
         public List<GScore> GetUserBestScores(int user_id, int limit, int mode = 0)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"user/scores/best")
+            RestRequest req = new RestRequest(UrlBase + $@"user/scores/best")
                 .AddParameter("id", user_id)
                 .AddParameter("mode", mode)
                 .AddParameter("p", 1)
                 .AddParameter("l", limit);
 
-            IRestResponse resp = client.Execute(req);
+            RestResponse resp = client.Execute(req);
 
             GScoresResponse g_resp = JsonConvert.DeserializeObject<GScoresResponse>(resp.Content);
 
@@ -74,10 +74,10 @@ namespace OsuNET_Api
         /// <returns></returns>
         public GBeatmap TryGetBeatmap(int id)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"beatmaps/get")
+            RestRequest req = new RestRequest(UrlBase + $@"beatmaps/get")
                 .AddParameter("bb", id);
 
-            IRestResponse resp = client.Execute(req);
+            RestResponse resp = client.Execute(req);
 
             GBeatmapResponse g_resp = null;
             try
@@ -103,10 +103,10 @@ namespace OsuNET_Api
         /// <returns>If querry ended up successfuly</returns>
         public bool TryGetUser(string user, ref GUser guser)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"users/get")
+            RestRequest req = new RestRequest(UrlBase + $@"users/get")
                 .AddParameter("u", user);
 
-            IRestResponse resp = client.Execute(req);
+            RestResponse resp = client.Execute(req);
 
             GUserResponse g_resp = null;
             try
@@ -136,10 +136,10 @@ namespace OsuNET_Api
         /// <returns>If querry ended up successfuly</returns>
         public bool TryGetUser(int user, ref GUser guser)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"users/get")
+            RestRequest req = new RestRequest(UrlBase + $@"users/get")
                 .AddParameter("u", user);
 
-            IRestResponse resp = client.Execute(req);
+            RestResponse resp = client.Execute(req);
 
             GUserResponse g_resp = null;
             try
@@ -170,11 +170,11 @@ namespace OsuNET_Api
         /// <returns>Profile statistics</returns>
         public GStatistics GetUserStats(int user, int mode = 0)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"user/stats")
+            RestRequest req = new RestRequest(UrlBase + $@"user/stats")
                 .AddParameter("u", user)
                 .AddParameter("mode", mode);
 
-            IRestResponse resp = client.Execute(req);
+            RestResponse resp = client.Execute(req);
 
             GStatistics stats = null;
 
@@ -199,11 +199,11 @@ namespace OsuNET_Api
         /// <returns>Profile statistics</returns>
         public GStatistics GetUserStats(string user, int mode = 0)
         {
-            IRestRequest req = new RestRequest(UrlBase + $@"user/stats")
+            RestRequest req = new RestRequest(UrlBase + $@"user/stats")
                 .AddParameter("u", user)
                 .AddParameter("mode", mode);
 
-            IRestResponse resp = client.Execute(req);
+            RestResponse resp = client.Execute(req);
 
             GStatistics stats = null;
 

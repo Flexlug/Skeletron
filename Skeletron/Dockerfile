@@ -58,7 +58,7 @@
     #&& cp libtesseract.so.$TESSERACT_VERSION ../../$TESSERACT_FILENAME
 ## /build/$TESSERACT_FILENAME
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:5.0 AS builder
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS builder
 
 WORKDIR /src
 
@@ -93,7 +93,7 @@ RUN dotnet publish "Skeletron.csproj" -c Release -o /app/publish
     #esac \
     #&& mv libs $ARCH
 
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runner
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runner
 
 #RUN dpkg --add-architecture i386
 #RUN apt-get update
