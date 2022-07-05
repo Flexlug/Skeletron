@@ -26,30 +26,37 @@ namespace Skeletron.Services
             _logger = logger;
             _redCrossEmoji = emoji.MissEmoji();
 
-            _client.MessageCreated += MessageResender;
-            _client.MessageReactionAdded += CheckResendedMessageDeletion;
+            _client.MessageCreated += ResendMessage;
+            _client.MessageReactionAdded += DeleteResentMessage;
 
             _logger.LogInformation("UtilityService loaded");
         }
 
-        private async Task CheckResendedMessageDeletion(DiscordClient sender, MessageReactionAddEventArgs e)
+        private async Task DeleteResentMessage(DiscordClient sender, MessageReactionAddEventArgs reactionInfo)
         {
-            if (e.User.Id == Bot.SKELETRON_UID)
+            if (reactionInfo.User.Id == Bot.SKELETRON_UID)
                 return;
 
-            if (e.Emoji.Id != _redCrossEmoji.Id)
+            if (reactionInfo.Emoji != _redCrossEmoji)
                 return;
 
-            var currentMessage = e.Message;
+            var currentMessage = reactionInfo.Message;
             if (!currentMessage.Reactions.Any(x => x.Emoji == _redCrossEmoji && x.IsMe))
+                return;
+
+            var respondedMessage = currentMessage.Reference;
+            if (respondedMessage is null)
+                return;
+
+            if (respondedMessage.Message.Author.Id != reactionInfo.User.Id)
                 return;
             
             var currentTextChannel = currentMessage.Channel;
             var currentMessageId = currentMessage.Id;
-            var allMessagesAfterCurrent = await currentTextChannel.GetMessagesBeforeAsync(currentMessageId, 5);
+            var allMessagesAfterCurrent = await currentTextChannel.GetMessagesAfterAsync(currentMessageId, 5);
 
             var deletingMessages = new List<DiscordMessage>();
-            deletingMessages.Add(e.Message);
+            deletingMessages.Add(reactionInfo.Message);
 
             foreach (var message in allMessagesAfterCurrent)
             {
@@ -81,56 +88,48 @@ namespace Skeletron.Services
             return null;
         }
 
-        private async Task MessageResender(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
+        private async Task ResendMessage(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
+            var messageWithLink = e.Message;
             var msgParams = GetMessageUrl(e.Message.Content);
 
             if (msgParams is null)
                 return;
 
-            DiscordMessage msg = null;
+            var guild = await _client.GetGuildAsync(msgParams.Item1);
+            var currentChannel = guild.GetChannel(msgParams.Item2);
+            var resendingMessage = await currentChannel.GetMessageAsync(msgParams.Item3);
 
-            try
-            {
-                DiscordGuild guild = await _client.GetGuildAsync(msgParams.Item1);
-                DiscordChannel ch = guild.GetChannel(msgParams.Item2);
-                msg = await ch.GetMessageAsync(msgParams.Item3);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error while parsing message link: {ex.Message} {ex.StackTrace}");
-                return;
-            }
+            DiscordEmbedBuilder resentMessageBuilder = new DiscordEmbedBuilder()
+                .WithAuthor(name: resendingMessage.Author.Username, iconUrl: resendingMessage.Author.AvatarUrl)
+                .WithDescription(resendingMessage.Content)
+                .WithFooter(
+                    $"Guild: {resendingMessage.Channel.Guild.Name}, Channel: {resendingMessage.Channel.Name}, Time: {resendingMessage.CreationTimestamp}");
 
-            DiscordEmbedBuilder embed = new DiscordEmbedBuilder()
-                .WithAuthor(name: msg.Author.Username, iconUrl: msg.Author.AvatarUrl)
-                .WithDescription(msg.Content)
-                .WithFooter($"Guild: {msg.Channel.Guild.Name}, Channel: {msg.Channel.Name}, Time: {msg.CreationTimestamp}");
+            DiscordMessage resentMessage = await messageWithLink.RespondAsync(resentMessageBuilder);
+            await resentMessage.CreateReactionAsync(_redCrossEmoji);
 
-            DiscordMessage lastMessage = await e.Channel.SendMessageAsync(embed);
-            
-            if (msg.Attachments is not null && msg.Attachments.Count != 0)
+            if (resendingMessage.Attachments is not null && resendingMessage.Attachments.Count != 0)
             {
                 DiscordMessageBuilder mainMsg = new DiscordMessageBuilder();
                 StringBuilder sb = new StringBuilder();
 
-                foreach (var attachment in msg.Attachments)
+                foreach (var attachment in resendingMessage.Attachments)
                     sb.AppendLine(attachment.Url);
 
                 mainMsg.WithContent(sb.ToString());
-
-                lastMessage = await e.Channel.SendMessageAsync(mainMsg);
+                
+                
+                await e.Channel.SendMessageAsync(mainMsg);
             }
 
-            if (msg.Embeds is not null && msg.Embeds.Count != 0)
+            if (resendingMessage.Embeds is not null && resendingMessage.Embeds.Count != 0)
             {
                 DiscordMessageBuilder msgBuilder = new DiscordMessageBuilder()
-                    .AddEmbeds(msg.Embeds);
+                    .AddEmbeds(resendingMessage.Embeds);
 
-                lastMessage = await e.Channel.SendMessageAsync(msgBuilder);
+                await e.Channel.SendMessageAsync(msgBuilder);
             }
-
-            await lastMessage.CreateReactionAsync(_redCrossEmoji);
         }
     }
 }
