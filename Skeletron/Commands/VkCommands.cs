@@ -12,13 +12,13 @@ namespace Skeletron.Commands
 {
     internal class VkCommands : SkBaseCommandModule
     {
-        private IVkService service;
+        private IVkPostToMessageService postToMessageService;
         private ILogger<VkCommands> logger;
 
-        public VkCommands(IVkService service,
+        public VkCommands(IVkPostToMessageService postToMessageService,
                           ILogger<VkCommands> logger)
         {
-            this.service = service;
+            this.postToMessageService = postToMessageService;
             this.logger = logger;
 
             logger.LogInformation("VkCommands loaded");

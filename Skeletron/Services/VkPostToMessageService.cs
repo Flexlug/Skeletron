@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using Microsoft.Extensions.Logging;
 using VkNet;
 using VkNet.Model;
@@ -16,38 +17,39 @@ using Skeletron.Configurations;
 
 namespace Skeletron.Services
 {
-    internal class VkService : IVkService
+    internal class VkPostToMessageService : IVkPostToMessageService
     {
-        private VkApi api;
-        private VkRegex regex;
+        private VkApi _api;
+        private VkRegex _regex;
+        private readonly DiscordEmoji _redCrossEmoji;
+        private ILogger<VkPostToMessageService> _logger;
 
-        private ILogger<VkService> logger;
-
-        public VkService(Settings settings,
+        public VkPostToMessageService(Settings settings,
                          VkRegex regex,
                          DiscordClient client,
-                         ILogger<VkService> logger)
+                         OsuEmoji emoji,
+                         ILogger<VkPostToMessageService> logger)
         {
-            api = new VkApi();
-            api.Authorize(new ApiAuthParams() { AccessToken = settings.VkSecret,  });
+            _api = new VkApi();
+            _api.Authorize(new ApiAuthParams() { AccessToken = settings.VkSecret,  });
 
-            this.regex = regex;
-            this.logger = logger;
+            _regex = regex;
+            _logger = logger;
+            _redCrossEmoji = emoji.MissEmoji();
 
             client.MessageCreated += Client_MessageCreated;
 
-            logger.LogInformation("VkService loaded");
+            _logger.LogInformation($"{nameof(VkPostToMessageService)} loaded");
         }
-
         private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
-            string id = string.Empty;
+            string id;
 
-            id = regex.TryGetGroupPostIdFromExportUrl(e.Message.Content);
+            id = _regex.TryGetGroupPostIdFromExportUrl(e.Message.Content);
             if (!string.IsNullOrWhiteSpace(id))
                 await ParseGroupPost(id, e.Message, e.Channel);
 
-            id = regex.TryGetGroupPostIdFromRegularUrl(e.Message.Content);
+            id = _regex.TryGetGroupPostIdFromRegularUrl(e.Message.Content);
             if (!string.IsNullOrWhiteSpace(id))
                 await ParseGroupPost(id, e.Message, e.Channel);
         }
@@ -58,17 +60,17 @@ namespace Skeletron.Services
             WallGetObject post = null;
             try
             {
-                post = await api.Wall.GetByIdAsync(new string[] { post_id }, true);
+                post = await _api.Wall.GetByIdAsync(new string[] { post_id }, true);
             }
             catch (Exception e)
             {
-                logger.LogWarning($"Ошибка парсинга поста из группы VK. id: {post_id}, expetion: {e.Message} {e.Source} {e.StackTrace}");
+                _logger.LogWarning($"Ошибка парсинга поста из группы VK. id: {post_id}, expetion: {e.Message} {e.Source} {e.StackTrace}");
                 return;
             }
 
             if (post is null || post.WallPosts is null || post.WallPosts.Count == 0)
             {
-                logger.LogDebug($"Не удалось получить пост VK по ссылке. id: {post_id}");
+                _logger.LogDebug($"Не удалось получить пост VK по ссылке. id: {post_id}");
                 return;
             }
 
@@ -76,7 +78,7 @@ namespace Skeletron.Services
             Post source_post = p;
             if (p is null)
             {
-                logger.LogDebug($"Не удалось получить пост VK по из коллекции WallPosts. id: {post_id}");
+                _logger.LogDebug($"Не удалось получить пост VK по из коллекции WallPosts. id: {post_id}");
                 return;
             }
             #endregion
@@ -89,7 +91,7 @@ namespace Skeletron.Services
             // Repost handle
             if (p.CopyHistory is not null && p.CopyHistory.Count != 0)
             {
-                historyGroups = await api.Groups.GetByIdAsync(
+                historyGroups = await _api.Groups.GetByIdAsync(
                     p.CopyHistory.Select(x => Math.Abs((long)x.OwnerId).ToString())
                                  .Append(source_post.FromId.ToString().Replace("-", string.Empty))
                                  .ToList()
@@ -120,12 +122,12 @@ namespace Skeletron.Services
             Group group = null;
             try
             {
-                group = historyGroups?.Last() ?? (await api.Groups.GetByIdAsync(new string[] { source_post.FromId.ToString().Replace("-", string.Empty) }, null, null)).First();
+                group = historyGroups?.Last() ?? (await _api.Groups.GetByIdAsync(new string[] { source_post.FromId.ToString().Replace("-", string.Empty) }, null, null)).First();
                 builder.WithAuthor(group.Name, $"http://vk.com/wall{source_post.OwnerId}_{source_post.Id}", group.Photo50.AbsoluteUri);
             }
             catch (Exception e)
             {
-                logger.LogInformation($"Не удалось получить информацию об авторе поста VK {p.FromId}");
+                _logger.LogInformation($"Не удалось получить информацию об авторе поста VK {p.FromId}");
             }
 
             #endregion
@@ -170,7 +172,7 @@ namespace Skeletron.Services
                         break;
 
                     default:
-                        logger.LogDebug($"Неизвестное vk вложение: {a.Type.Name}");
+                        _logger.LogDebug($"Неизвестное vk вложение: {a.Type.Name}");
                         break;
                 }
             }
@@ -206,15 +208,19 @@ namespace Skeletron.Services
                     .AddEmbeds(finalEmbeds.Skip(i).Take(4).Select(x => x.Build()).ToList()));
 
             bool firstMsg = true;
-            foreach (var msg in messages)
+            foreach (var sendingMessage in messages)
             {
                 if (firstMsg)
                 {
-                    await originalMessage.RespondAsync(msg);
+                    var sentMesage = await originalMessage.RespondAsync(sendingMessage);
+                    
+                    // Добавить реакцию, чтобы сообщение можно было удалить через MessageDeleteService
+                    await sentMesage.CreateReactionAsync(_redCrossEmoji);
                     firstMsg = false;
+                    continue;
                 }
                 
-                await msg.SendAsync(channel);
+                await sendingMessage.SendAsync(channel);
             }
 
             #endregion

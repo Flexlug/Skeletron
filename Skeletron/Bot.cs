@@ -120,7 +120,6 @@ namespace Skeletron
                 .AddSingleton(new GatariApi())
                 .AddSingleton(new GoogleSearch())
                 //.AddSingleton<IWordsProvider, WordsProvider>()
-                .AddSingleton<IVkService, VkService>()
                 //.AddSingleton<ISheetGenerator, SheetGenerator>()
                 .AddSingleton<IShedulerService, ShedulerService>()
                 //.AddSingleton<IRecognizerService, RecognizerService>()
@@ -131,7 +130,9 @@ namespace Skeletron
                 //.AddSingleton<IMappoolService, MappoolService>()
                 //.AddSingleton<IWordsService, WordsService>()
                 .AddSingleton<IOsuService, OsuService>()
+                .AddSingleton<IVkPostToMessageService, VkPostToMessageService>()
                 .AddSingleton<IMessageResendService, MessageResendService>()
+                .AddSingleton<IMessageDeleteService, MessageDeleteService>()
                 .BuildServiceProvider();
         }
 

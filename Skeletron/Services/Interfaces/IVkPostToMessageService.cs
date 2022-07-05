@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Skeletron.Services.Interfaces
 {
-    internal interface IVkService
+    internal interface IVkPostToMessageService
     {
     }
 }
