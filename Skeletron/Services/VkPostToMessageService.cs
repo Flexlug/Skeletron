@@ -17,18 +17,18 @@ using Skeletron.Configurations;
 
 namespace Skeletron.Services
 {
-    internal class VkService : IVkService
+    internal class VkPostToMessageService : IVkPostToMessageService
     {
         private VkApi _api;
         private VkRegex _regex;
         private readonly DiscordEmoji _redCrossEmoji;
-        private ILogger<VkService> _logger;
+        private ILogger<VkPostToMessageService> _logger;
 
-        public VkService(Settings settings,
+        public VkPostToMessageService(Settings settings,
                          VkRegex regex,
                          DiscordClient client,
                          OsuEmoji emoji,
-                         ILogger<VkService> logger)
+                         ILogger<VkPostToMessageService> logger)
         {
             _api = new VkApi();
             _api.Authorize(new ApiAuthParams() { AccessToken = settings.VkSecret,  });
@@ -38,50 +38,9 @@ namespace Skeletron.Services
             _redCrossEmoji = emoji.MissEmoji();
 
             client.MessageCreated += Client_MessageCreated;
-            //client.MessageReactionAdded += DeleteResentMessage;
 
             _logger.LogInformation("VkService loaded");
         }
-
-        // private async Task DeleteResentMessage(DiscordClient sender, MessageReactionAddEventArgs reactionInfo)
-        // {
-        //     if (reactionInfo.User.Id == Bot.SKELETRON_UID)
-        //         return;
-        //
-        //     if (reactionInfo.Emoji != _redCrossEmoji)
-        //         return;
-        //
-        //     var currentMessage = reactionInfo.Message;
-        //     if (!currentMessage.Reactions.Any(x => x.Emoji == _redCrossEmoji && x.IsMe))
-        //         return;
-        //
-        //     var respondedMessage = currentMessage.Reference;
-        //     if (respondedMessage is null)
-        //         return;
-        //
-        //     if (respondedMessage.Message.Author.Id != reactionInfo.User.Id)
-        //         return;
-        //     
-        //     var currentTextChannel = currentMessage.Channel;
-        //     var currentMessageId = currentMessage.Id;
-        //     var allMessagesAfterCurrent = await currentTextChannel.GetMessagesAfterAsync(currentMessageId, 5);
-        //
-        //     var deletingMessages = new List<DiscordMessage>();
-        //     deletingMessages.Add(reactionInfo.Message);
-        //
-        //     foreach (var message in allMessagesAfterCurrent)
-        //     {
-        //         if (message.Author.Id != Bot.SKELETRON_UID)
-        //         {
-        //             break;
-        //         }
-        //         
-        //         deletingMessages.Add(message);
-        //     }
-        //
-        //     await currentTextChannel.DeleteMessagesAsync(deletingMessages);
-        // }
-
         private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
             string id;
@@ -254,6 +213,8 @@ namespace Skeletron.Services
                 if (firstMsg)
                 {
                     var sentMesage = await originalMessage.RespondAsync(sendingMessage);
+                    
+                    // Добавить реакцию, чтобы сообщение можно было удалить через MessageDeleteService
                     await sentMesage.CreateReactionAsync(_redCrossEmoji);
                     firstMsg = false;
                     continue;

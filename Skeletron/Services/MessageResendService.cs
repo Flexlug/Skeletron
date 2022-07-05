@@ -27,48 +27,8 @@ namespace Skeletron.Services
             _redCrossEmoji = emoji.MissEmoji();
 
             _client.MessageCreated += ResendMessage;
-            _client.MessageReactionAdded += DeleteResentMessage;
 
-            _logger.LogInformation("UtilityService loaded");
-        }
-
-        private async Task DeleteResentMessage(DiscordClient sender, MessageReactionAddEventArgs reactionInfo)
-        {
-            if (reactionInfo.User.Id == Bot.SKELETRON_UID)
-                return;
-
-            if (reactionInfo.Emoji != _redCrossEmoji)
-                return;
-
-            var currentMessage = reactionInfo.Message;
-            if (!currentMessage.Reactions.Any(x => x.Emoji == _redCrossEmoji && x.IsMe))
-                return;
-
-            var respondedMessage = currentMessage.Reference;
-            if (respondedMessage is null)
-                return;
-
-            if (respondedMessage.Message.Author.Id != reactionInfo.User.Id)
-                return;
-            
-            var currentTextChannel = currentMessage.Channel;
-            var currentMessageId = currentMessage.Id;
-            var allMessagesAfterCurrent = await currentTextChannel.GetMessagesAfterAsync(currentMessageId, 5);
-
-            var deletingMessages = new List<DiscordMessage>();
-            deletingMessages.Add(reactionInfo.Message);
-
-            foreach (var message in allMessagesAfterCurrent)
-            {
-                if (message.Author.Id != Bot.SKELETRON_UID)
-                {
-                    break;
-                }
-                
-                deletingMessages.Add(message);
-            }
-
-            await currentTextChannel.DeleteMessagesAsync(deletingMessages);
+            _logger.LogInformation("MessageResendService loaded");
         }
 
         public Tuple<ulong, ulong, ulong> GetMessageUrl(string msg)
@@ -107,6 +67,8 @@ namespace Skeletron.Services
                     $"Guild: {resendingMessage.Channel.Guild.Name}, Channel: {resendingMessage.Channel.Name}, Time: {resendingMessage.CreationTimestamp}");
 
             DiscordMessage resentMessage = await messageWithLink.RespondAsync(resentMessageBuilder);
+            
+            // Добавить реакцию, чтобы сообщение можно было удалить через MessageDeleteService
             await resentMessage.CreateReactionAsync(_redCrossEmoji);
 
             if (resendingMessage.Attachments is not null && resendingMessage.Attachments.Count != 0)
