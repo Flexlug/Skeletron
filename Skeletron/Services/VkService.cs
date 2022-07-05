@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using Microsoft.Extensions.Logging;
 using VkNet;
 using VkNet.Model;
@@ -37,13 +38,53 @@ namespace Skeletron.Services
             _redCrossEmoji = emoji.MissEmoji();
 
             client.MessageCreated += Client_MessageCreated;
+            //client.MessageReactionAdded += DeleteResentMessage;
 
             _logger.LogInformation("VkService loaded");
         }
 
+        // private async Task DeleteResentMessage(DiscordClient sender, MessageReactionAddEventArgs reactionInfo)
+        // {
+        //     if (reactionInfo.User.Id == Bot.SKELETRON_UID)
+        //         return;
+        //
+        //     if (reactionInfo.Emoji != _redCrossEmoji)
+        //         return;
+        //
+        //     var currentMessage = reactionInfo.Message;
+        //     if (!currentMessage.Reactions.Any(x => x.Emoji == _redCrossEmoji && x.IsMe))
+        //         return;
+        //
+        //     var respondedMessage = currentMessage.Reference;
+        //     if (respondedMessage is null)
+        //         return;
+        //
+        //     if (respondedMessage.Message.Author.Id != reactionInfo.User.Id)
+        //         return;
+        //     
+        //     var currentTextChannel = currentMessage.Channel;
+        //     var currentMessageId = currentMessage.Id;
+        //     var allMessagesAfterCurrent = await currentTextChannel.GetMessagesAfterAsync(currentMessageId, 5);
+        //
+        //     var deletingMessages = new List<DiscordMessage>();
+        //     deletingMessages.Add(reactionInfo.Message);
+        //
+        //     foreach (var message in allMessagesAfterCurrent)
+        //     {
+        //         if (message.Author.Id != Bot.SKELETRON_UID)
+        //         {
+        //             break;
+        //         }
+        //         
+        //         deletingMessages.Add(message);
+        //     }
+        //
+        //     await currentTextChannel.DeleteMessagesAsync(deletingMessages);
+        // }
+
         private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
-            string id = string.Empty;
+            string id;
 
             id = _regex.TryGetGroupPostIdFromExportUrl(e.Message.Content);
             if (!string.IsNullOrWhiteSpace(id))
@@ -215,6 +256,7 @@ namespace Skeletron.Services
                     var sentMesage = await originalMessage.RespondAsync(sendingMessage);
                     await sentMesage.CreateReactionAsync(_redCrossEmoji);
                     firstMsg = false;
+                    continue;
                 }
                 
                 await sendingMessage.SendAsync(channel);
