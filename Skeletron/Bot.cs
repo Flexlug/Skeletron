@@ -35,7 +35,8 @@ namespace Skeletron
 {
     public class Bot : IDisposable
     {
-        private readonly ulong WAV_UID = 708860200341471264;
+        public const ulong GUILD_UID = 708860200341471264;
+        public const ulong SKELETRON_UID = 750768015842345050; 
 
         private CommandsNextExtension CommandsNext { get; set; }
         private SlashCommandsExtension SlashCommands { get; set; }
@@ -73,7 +74,7 @@ namespace Skeletron
             // For correct datetime recognizing
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru-RU");
 
-            Guild = Discord.GetGuildAsync(WAV_UID).Result;
+            Guild = Discord.GetGuildAsync(GUILD_UID).Result;
 
             ConfigureBot();
             ConfigureServices();
@@ -130,7 +131,7 @@ namespace Skeletron
                 //.AddSingleton<IMappoolService, MappoolService>()
                 //.AddSingleton<IWordsService, WordsService>()
                 .AddSingleton<IOsuService, OsuService>()
-                .AddSingleton<IUtilityService, UtilityService>()
+                .AddSingleton<IMessageResendService, MessageResendService>()
                 .BuildServiceProvider();
         }
 

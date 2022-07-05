@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Skeletron.Services.Interfaces
 {
-    public interface IUtilityService
+    public interface IMessageResendService
     {
     }
 }

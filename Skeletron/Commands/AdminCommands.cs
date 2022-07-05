@@ -29,7 +29,7 @@ namespace Skeletron.Commands
         private ILogger<AdminCommands> logger;
 
         private readonly IShedulerService sheduler;
-        private readonly IUtilityService service;
+        private readonly IMessageResendService service;
         //private readonly IWordsService words;
 
         private DiscordChannel LogChannel;
@@ -37,7 +37,7 @@ namespace Skeletron.Commands
         public AdminCommands(ILogger<AdminCommands> logger, 
                             DiscordClient client,
                             IShedulerService sheduler,
-                            IUtilityService service)
+                            IMessageResendService service)
                             //IWordsService words)
         {
             ModuleName = "Администрирование";
