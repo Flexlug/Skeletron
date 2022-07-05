@@ -29,7 +29,8 @@ namespace Skeletron.Commands
         private ILogger<AdminCommands> logger;
 
         private readonly IShedulerService sheduler;
-        private readonly IMessageResendService service;
+        private readonly IMessageResendService resendMessageService;
+        private readonly IMessageDeleteService deleteMessageService;
         //private readonly IWordsService words;
 
         private DiscordChannel LogChannel;
@@ -37,14 +38,16 @@ namespace Skeletron.Commands
         public AdminCommands(ILogger<AdminCommands> logger, 
                             DiscordClient client,
                             IShedulerService sheduler,
-                            IMessageResendService service)
+                            IMessageResendService resendMessageService,
+                            IMessageDeleteService deleteMessageService)
                             //IWordsService words)
         {
             ModuleName = "Администрирование";
 
             this.logger = logger;
             this.sheduler = sheduler;
-            this.service = service;
+            this.resendMessageService = resendMessageService;
+            this.deleteMessageService = deleteMessageService;
             //this.words = words;
 
             LogChannel = client.GetChannelAsync(816396082153521183).Result;

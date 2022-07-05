@@ -39,7 +39,7 @@ namespace Skeletron.Services
 
             client.MessageCreated += Client_MessageCreated;
 
-            _logger.LogInformation("VkService loaded");
+            _logger.LogInformation($"{nameof(VkPostToMessageService)} loaded");
         }
         private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {

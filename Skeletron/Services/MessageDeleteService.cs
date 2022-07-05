@@ -13,15 +13,15 @@ namespace Skeletron.Services;
 public class MessageDeleteService : IMessageDeleteService
 {
     private readonly DiscordEmoji _redCrossEmoji;
-    private readonly ILogger<MessageResendService> _logger;
+    private readonly ILogger<MessageDeleteService> _logger;
     
-    public MessageDeleteService(DiscordClient client, OsuEmoji emoji, ILogger<MessageResendService> logger)
+    public MessageDeleteService(DiscordClient client, OsuEmoji emoji, ILogger<MessageDeleteService> logger)
     {
         _redCrossEmoji = emoji.MissEmoji();
         _logger = logger;
         
         client.MessageReactionAdded += DeleteResentMessage;
-        _logger.LogInformation("MessageDeleteService loaded");
+        _logger.LogInformation($"{nameof(MessageDeleteService)} loaded");
     }
 
     private async Task DeleteResentMessage(DiscordClient sender, MessageReactionAddEventArgs reactionInfo)
@@ -32,20 +32,20 @@ public class MessageDeleteService : IMessageDeleteService
         if (reactionInfo.Emoji != _redCrossEmoji)
             return;
 
-        var currentMessage = reactionInfo.Message;
+        var currentChannel = reactionInfo.Channel;
+        var currentMessageId = reactionInfo.Message.Id;
+        var currentMessage = await currentChannel.GetMessageAsync(currentMessageId);
         if (!currentMessage.Reactions.Any(x => x.Emoji == _redCrossEmoji && x.IsMe))
             return;
 
-        var respondedMessage = currentMessage.Reference;
+        var respondedMessage = currentMessage.ReferencedMessage;
         if (respondedMessage is null)
             return;
 
-        if (respondedMessage.Message.Author.Id != reactionInfo.User.Id)
+        if (respondedMessage.Author.Id != reactionInfo.User.Id)
             return;
-            
-        var currentTextChannel = currentMessage.Channel;
-        var currentMessageId = currentMessage.Id;
-        var allMessagesAfterCurrent = await currentTextChannel.GetMessagesAfterAsync(currentMessageId, 5);
+        
+        var allMessagesAfterCurrent = await currentChannel.GetMessagesAfterAsync(currentMessageId, 5);
 
         var deletingMessages = new List<DiscordMessage>();
         deletingMessages.Add(reactionInfo.Message);
@@ -60,6 +60,6 @@ public class MessageDeleteService : IMessageDeleteService
             deletingMessages.Add(message);
         }
 
-        await currentTextChannel.DeleteMessagesAsync(deletingMessages);
+        await currentChannel.DeleteMessagesAsync(deletingMessages);
     }
 }

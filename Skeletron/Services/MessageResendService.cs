@@ -28,7 +28,7 @@ namespace Skeletron.Services
 
             _client.MessageCreated += ResendMessage;
 
-            _logger.LogInformation("MessageResendService loaded");
+            _logger.LogInformation($"{nameof(MessageResendService)} loaded");
         }
 
         public Tuple<ulong, ulong, ulong> GetMessageUrl(string msg)
