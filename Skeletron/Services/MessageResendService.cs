@@ -119,7 +119,6 @@ namespace Skeletron.Services
 
                 mainMsg.WithContent(sb.ToString());
                 
-                
                 await e.Channel.SendMessageAsync(mainMsg);
             }
 
