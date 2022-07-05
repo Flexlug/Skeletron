@@ -45,14 +45,14 @@ namespace Skeletron.Services
 
             id = regex.TryGetGroupPostIdFromExportUrl(e.Message.Content);
             if (!string.IsNullOrWhiteSpace(id))
-                await ParseGroupPost(id, e.Channel);
+                await ParseGroupPost(id, e.Message, e.Channel);
 
             id = regex.TryGetGroupPostIdFromRegularUrl(e.Message.Content);
             if (!string.IsNullOrWhiteSpace(id))
-                await ParseGroupPost(id, e.Channel);
+                await ParseGroupPost(id, e.Message, e.Channel);
         }
 
-        private async Task ParseGroupPost(string post_id, DiscordChannel channel)
+        private async Task ParseGroupPost(string post_id, DiscordMessage originalMessage, DiscordChannel channel)
         {
             #region Validation
             WallGetObject post = null;
@@ -205,8 +205,17 @@ namespace Skeletron.Services
                 messages.Add(new DiscordMessageBuilder()
                     .AddEmbeds(finalEmbeds.Skip(i).Take(4).Select(x => x.Build()).ToList()));
 
+            bool firstMsg = true;
             foreach (var msg in messages)
+            {
+                if (firstMsg)
+                {
+                    await originalMessage.RespondAsync(msg);
+                    firstMsg = false;
+                }
+                
                 await msg.SendAsync(channel);
+            }
 
             #endregion
         }
