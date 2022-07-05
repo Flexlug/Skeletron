@@ -24,7 +24,7 @@ namespace Skeletron.Services
             this.client = client;
             this.logger = logger;
 
-            client.MessageCreated += OnMessageCreated;
+            client.MessageCreated += MessageResender;
 
             logger.LogInformation("UtilityService loaded");
         }
@@ -46,7 +46,7 @@ namespace Skeletron.Services
             return null;
         }
 
-        private async Task OnMessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
+        private async Task MessageResender(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
             var msgParams = GetMessageUrl(e.Message.Content);
 
