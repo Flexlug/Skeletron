@@ -191,26 +191,8 @@ namespace OsuNET_Api
         /// <param name="limit">Scores count per one querry</param>
         /// <param name="mode">Mode: 0: osu, 1: taiko, 2: ctb, 3: mania</param>
         /// <returns></returns>
-        public List<Score> GetUserBestScores(int user, int limit, int mode = 0)
+        public List<Score> GetUserBestScores(int user, int limit, string playmode = "osu")
         {
-            string playmode = "osu";
-
-            switch (mode)
-            {
-                case 0:
-                    playmode = "osu";
-                    break;
-                case 1:
-                    playmode = "taiko";
-                    break;
-                case 2:
-                    playmode = "fruits";
-                    break;
-                case 3:
-                    playmode = "mania";
-                    break;
-            }
-
             RestRequest req = new RestRequest(UrlBase + $@"api/v2/users/{user}/scores/best")
                 .AddHeader(@"Authorization", $@"Bearer {Token}")
                 .AddParameter("limit", limit)

@@ -131,7 +131,7 @@ namespace Skeletron.Commands
                 return;
             }
 
-            List<Score> scores = api.GetUserBestScores(user.id, 5);
+            List<Score> scores = api.GetUserBestScores(user.id, 5, user.playmode);
 
             if (scores is null || scores.Count == 0)
             {
