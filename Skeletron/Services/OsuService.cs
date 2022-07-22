@@ -147,7 +147,7 @@ namespace Skeletron.Services
                 if (!api.TryGetUser(user_id, ref user))
                     return;
 
-                List<Score> scores = api.GetUserBestScores(user_id, 5);
+                List<Score> scores = api.GetUserBestScores(user_id, 5, user.playmode);
 
                 if (!(scores is null) && scores.Count == 5)
                 {
@@ -168,7 +168,7 @@ namespace Skeletron.Services
                 if (!gapi.TryGetUser(guser_id, ref guser))
                     return;
 
-                List<GScore> gscores = gapi.GetUserBestScores(guser.id, 5);
+                List<GScore> gscores = gapi.GetUserBestScores(guser.id, 5, guser.favourite_mode);
                 if (gscores is null || gscores.Count == 0)
                     return;
 

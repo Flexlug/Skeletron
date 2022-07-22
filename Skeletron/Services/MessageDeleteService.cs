@@ -23,7 +23,7 @@ public class MessageDeleteService : IMessageDeleteService
         client.MessageReactionAdded += DeleteResentMessage;
         _logger.LogInformation($"{nameof(MessageDeleteService)} loaded");
     }
-
+    
     private async Task DeleteResentMessage(DiscordClient sender, MessageReactionAddEventArgs reactionInfo)
     {
         if (reactionInfo.User.Id == Bot.SKELETRON_UID)
