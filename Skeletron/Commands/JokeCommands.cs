@@ -4,15 +4,16 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.Logging;
 using Skeletron.Services;
+using Skeletron.Services.Interfaces;
 
 namespace Skeletron.Commands;
 
 public class JokeCommands : SkBaseCommandModule
 {
     private ILogger<JokeCommands> _logger;
-    private JokeService _jokeService;
+    private IJokeService _jokeService;
     
-    public JokeCommands(ILogger<JokeCommands> logger, JokeService jokeService)
+    public JokeCommands(ILogger<JokeCommands> logger, IJokeService jokeService)
     {
         _logger = logger;
         _jokeService = jokeService;
@@ -31,6 +32,6 @@ public class JokeCommands : SkBaseCommandModule
             return;
         }
 
-        await ctx.RespondAsync("Я не знаю подходящих шуток для этого канала.");
+        await ctx.RespondAsync("Я не знаю подходящих шуток, которые будут уместны в этом канале.");
     }
 }
