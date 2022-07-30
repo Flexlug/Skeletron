@@ -109,6 +109,7 @@ namespace Skeletron
                 //.AddSingleton(new DocumentStoreProvider(Settings))
                 .AddSingleton(Discord)
                 .AddSingleton(Guild)
+                .AddSingleton<IJokeService, JokeService>()
                 .AddSingleton<OsuEmoji>()
                 .AddSingleton<OsuEmbed>()
                 .AddSingleton<OsuEnums>()
@@ -155,6 +156,7 @@ namespace Skeletron
             CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
             CommandsNext.RegisterCommands<VkCommands>();
+            CommandsNext.RegisterCommands<JokeCommands>();
             //CommandsNext.RegisterCommands<CompititionCommands>();
             //CommandsNext.RegisterCommands<MappoolCommands>();
 
