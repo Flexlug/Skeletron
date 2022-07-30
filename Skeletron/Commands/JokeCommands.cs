@@ -31,6 +31,20 @@ public class JokeCommands : SkBaseCommandModule
             await ctx.RespondAsync(joke);
             return;
         }
+        
+        if (ctx.Channel.Name.Contains("random-talks"))
+        {
+            var joke = _jokeService.GetRandomTalksJoke();
+            await ctx.RespondAsync(joke);
+            return;
+        }
+        
+        if (ctx.Channel.Name.Contains("it-and-technologies"))
+        {
+            var joke = _jokeService.GetRandomItJoke();
+            await ctx.RespondAsync(joke);
+            return;
+        }
 
         await ctx.RespondAsync("Я не знаю подходящих шуток, которые будут уместны в этом канале.");
     }
