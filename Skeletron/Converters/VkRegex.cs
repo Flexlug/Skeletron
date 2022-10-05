@@ -14,8 +14,8 @@ namespace Skeletron.Converters
 
         public VkRegex()
         {
-            groupExportLink = new Regex(@"(?<!\\)https:\/\/vk.com\/wall-(\d+)_(\d+)");
-            groupNormalLink = new Regex(@"(?<!\\)https:\/\/vk.com\/.*w=wall-(\d+)_(\d+)");
+            groupExportLink = new Regex(@"(?<!\\)https:\/\/vk.com\/wall(-?\d+)_(\d+)");
+            groupNormalLink = new Regex(@"(?<!\\)https:\/\/vk.com\/.*w=wall(-?\d+)_(\d+)");
         }
 
         public string TryGetGroupPostIdFromExportUrl(string msg)
@@ -25,7 +25,7 @@ namespace Skeletron.Converters
             if (match is null || match.Groups.Count != 3)
                 return null;
 
-            return $"-{match.Groups[1].Value}_{match.Groups[2].Value}";
+            return $"{match.Groups[1].Value}_{match.Groups[2].Value}";
         }
 
         public string TryGetGroupPostIdFromRegularUrl(string msg)
@@ -35,7 +35,7 @@ namespace Skeletron.Converters
             if (match is null || match.Groups.Count != 3)
                 return null;
 
-            return $"-{match.Groups[1].Value}_{match.Groups[2].Value}";
+            return $"{match.Groups[1].Value}_{match.Groups[2].Value}";
         }
     }
 }
