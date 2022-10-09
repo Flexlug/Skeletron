@@ -56,11 +56,14 @@ namespace Skeletron.Services
 
         private async Task ParseGroupPost(string post_id, DiscordMessage originalMessage, DiscordChannel channel)
         {
+            // Group id starts from -
+            bool isGroup = post_id[0] == '-';
+            
             #region Validation
             WallGetObject post = null;
             try
             {
-                post = await _api.Wall.GetByIdAsync(new string[] { post_id }, true);
+                post = _api.Wall.GetById(new string[] { post_id }, true);
             }
             catch (Exception e)
             {
@@ -119,15 +122,29 @@ namespace Skeletron.Services
             #endregion
 
             #region Author
-            Group group = null;
-            try
+            
+            if (isGroup)
             {
-                group = historyGroups?.Last() ?? (await _api.Groups.GetByIdAsync(new string[] { source_post.FromId.ToString().Replace("-", string.Empty) }, null, null)).First();
+                var group = post.Groups.FirstOrDefault();
+
+                if (group is null)
+                {
+                    _logger.LogInformation($"Не удалось получить информацию об авторе поста VK {p.FromId}");
+                    return;
+                }
+                
                 builder.WithAuthor(group.Name, $"http://vk.com/wall{source_post.OwnerId}_{source_post.Id}", group.Photo50.AbsoluteUri);
             }
-            catch (Exception e)
+            else
             {
-                _logger.LogInformation($"Не удалось получить информацию об авторе поста VK {p.FromId}");
+                var user = post.Profiles.FirstOrDefault();
+
+                if (user is null)
+                {
+                    _logger.LogInformation($"Не удалось получить информацию об авторе поста VK {p.FromId}");
+                    return;
+                }
+                builder.WithAuthor($"{user.FirstName} {user.LastName}", $"http://vk.com/wall{source_post.OwnerId}_{source_post.Id}", user.Photo50.AbsoluteUri);
             }
 
             #endregion
