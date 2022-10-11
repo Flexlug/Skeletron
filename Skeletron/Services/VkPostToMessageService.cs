@@ -87,41 +87,40 @@ namespace Skeletron.Services
             #endregion
 
             #region Main content
-            var sb = new StringBuilder();
-            var builder = new DiscordEmbedBuilder();
 
-            IReadOnlyCollection<Group> historyGroups = null;
+            var postMessage = p.Text;
+
+            var repostInfo = new StringBuilder();
+            
             // Repost handle
             if (p.CopyHistory is not null && p.CopyHistory.Count != 0)
             {
-                historyGroups = await _api.Groups.GetByIdAsync(
+                var historyGroups = await _api.Groups.GetByIdAsync(
                     p.CopyHistory.Select(x => Math.Abs((long)x.OwnerId).ToString())
-                                 .Append(source_post.FromId.ToString().Replace("-", string.Empty))
-                                 .ToList()
+                        .Append(source_post.FromId.ToString().Replace("-", string.Empty))
+                        .ToList()
                     , null, null);
 
-                sb.AppendLine($"{(string.IsNullOrEmpty(p.Text) ? string.Empty : p.Text)}");
+                repostInfo.AppendLine($"{(string.IsNullOrEmpty(p.Text) ? string.Empty : p.Text)}");
 
                 for (int i = 0; i < p.CopyHistory.Count; i++)
                 {
                     Post repost = p.CopyHistory[i];
-                    sb.AppendLine($"{new string('➦', i + 1)} *repost from [**{historyGroups.ElementAt(i).Name}**](http://vk.com/wall{repost.FromId}_{repost.Id})*");
+                    repostInfo.AppendLine(
+                        $"{new string('➦', i + 1)} *repost from [**{historyGroups.ElementAt(i).Name}**](http://vk.com/wall{repost.FromId}_{repost.Id})*");
                     if (!string.IsNullOrEmpty(repost.Text))
-                        sb.AppendLine(repost.Text);
-                    sb.AppendLine();
+                        repostInfo.AppendLine(repost.Text);
+                    repostInfo.AppendLine();
                 }
 
                 p = p.CopyHistory.Last();
-            }
-            else
-            {
-                sb.AppendLine(p.Text);
-                sb.AppendLine();
             }
 
             #endregion
 
             #region Author
+
+            string authorName, authorUrl, authorIconUrl;
             
             if (isGroup)
             {
@@ -132,8 +131,10 @@ namespace Skeletron.Services
                     _logger.LogInformation($"Не удалось получить информацию об авторе поста VK {p.FromId}");
                     return;
                 }
-                
-                builder.WithAuthor(group.Name, $"http://vk.com/wall{source_post.OwnerId}_{source_post.Id}", group.Photo50.AbsoluteUri);
+
+                authorName = group.Name;
+                authorUrl = $"http://vk.com/wall{source_post.OwnerId}_{source_post.Id}";
+                authorIconUrl = group.Photo50.AbsoluteUri;
             }
             else
             {
@@ -144,16 +145,22 @@ namespace Skeletron.Services
                     _logger.LogInformation($"Не удалось получить информацию об авторе поста VK {p.FromId}");
                     return;
                 }
-                builder.WithAuthor($"{user.FirstName} {user.LastName}", $"http://vk.com/wall{source_post.OwnerId}_{source_post.Id}", user.Photo50.AbsoluteUri);
+
+                authorName = user.FirstName + " " + user.LastName;
+                authorUrl = $"http://vk.com/wall{source_post.OwnerId}_{source_post.Id}";
+                authorIconUrl = user.Photo50.AbsoluteUri;
             }
 
             #endregion
 
             #region Attachments
-            bool hasImage = false;
-            int imgCount = 0;
-            List<string> imageUrls = new();
-            List<(string, string)> fields = new();
+            
+            var hasImage = false;
+            var imgCount = 0;
+            var imageUrls = new List<string>();
+            var fields = new List<(string, string)>();
+
+            var videoUrls = new StringBuilder();
 
             foreach (var a in p.Attachments)
             {
@@ -171,7 +178,7 @@ namespace Skeletron.Services
                     case "VkNet.Model.Attachments.Video":
                         Video video = a.Instance as Video;
 
-                        sb.Append($"[[**видео**](https://vk.com/video{video.OwnerId}_{video.Id})] ");
+                        videoUrls.Append($"[[**видео**](https://vk.com/video{video.OwnerId}_{video.Id})] ");
 
                         break;
 
@@ -196,34 +203,151 @@ namespace Skeletron.Services
             #endregion
 
             #region Constructing message
-            builder.WithDescription(sb.ToString());
+            
+            List<DiscordMessageBuilder> messages = new();
+            List<DiscordEmbedBuilder> finalEmbeds = new();
 
-            if (fields.Count != 0)
-                foreach (var field in fields)
-                    builder.AddField(field.Item1, field.Item2);
+            int firstEmbedWithImageIndex = 0; // also if this index is NOT 0 the message is potentially long 
+            
+            if (repostInfo.Length + postMessage.Length + videoUrls.Length > 4096)
+            {
+                // Split message in 3 embeds, where:
+                // 1 embed: author and repost info
+                // 2 embed: content
+                // 3 embed: attachments, likes, reposts and other info
+                
+                // 1-st embed
+                if (repostInfo.Length != 0)
+                {
+                    finalEmbeds.Add(new DiscordEmbedBuilder()
+                        .WithDescription(repostInfo.ToString()));
+                }
+                
+                // 2-nd embed can be splitted in more embeds. Each one contains post text, splitted in chunks
+                var messageChunks = new List<string>();
+                
+                if (postMessage.Length >= 4096)
+                {   
+                    // Split post text in chunks by spaces
+                    int startIndex = 0,
+                        endIndex = 0;
+
+                    do
+                    {
+                        endIndex += 4096;
+
+                        do
+                        {
+                            endIndex--;
+                        } while (postMessage[endIndex] != ' ');
+
+                        var strChunk = postMessage.Substring(startIndex, endIndex);
+                        messageChunks.Add(strChunk);
+
+                        startIndex = endIndex;
+                    } while (postMessage.Length - endIndex > 4096);
+
+                    var finalStrChunk = postMessage.Substring(endIndex);
+                    messageChunks.Add(finalStrChunk);
+                }
+                else
+                {
+                    messageChunks.Add(postMessage.ToString());
+                }
+                
+                foreach (var chunk in messageChunks)
+                {
+                    finalEmbeds.Add(new DiscordEmbedBuilder()
+                        .WithDescription(chunk));
+                }
+                
+                // 3rd embed
+                if (videoUrls.Length != 0)
+                {
+                    finalEmbeds.Add(new DiscordEmbedBuilder()
+                        .WithDescription(videoUrls.ToString()));
+                }
+
+                firstEmbedWithImageIndex = finalEmbeds.Count - 1;
+            }
+            else
+            {
+                var concatedPostMessage = new StringBuilder();
+
+                if (repostInfo.Length != 0)
+                {
+                    concatedPostMessage.Append(repostInfo);
+                }
+
+                concatedPostMessage.Append(postMessage);
+
+                if (videoUrls.Length != 0)
+                {
+                    concatedPostMessage.Append(videoUrls);
+                }
+                
+                finalEmbeds.Add(new DiscordEmbedBuilder()
+                    .WithDescription(concatedPostMessage.ToString()));
+            }
+
+            // In case, when post length is less than 4096 symbols topBuilder and bottomBuilder will be the same 
+            var topBuilder = finalEmbeds.First();
+            topBuilder.WithAuthor(authorName, authorUrl, authorIconUrl);
 
             if (imageUrls.Count != 0)
-                builder.WithImageUrl(imageUrls[0])
-                       .WithUrl($"http://vk.com/wall{post_id}");
+            {
+                finalEmbeds[firstEmbedWithImageIndex]
+                    .WithImageUrl(imageUrls[0])
+                    .WithUrl($"http://vk.com/wall{post_id}");
+                
+                // If embed contains more then 1 image, the top embed should contain image url too
+                for (int i = 1; i < imageUrls.Count; i++)
+                    finalEmbeds.Add(new DiscordEmbedBuilder()
+                        .WithImageUrl(imageUrls[i])
+                        .WithUrl($"http://vk.com/wall{post_id}"));
+            }
 
-            List<DiscordMessageBuilder> messages = new();
+            // bottomBuilder is last one, if:
+            // - there's more then 4 images
+            // - message is potentially very long
+            var bottomBuilder = finalEmbeds.Count > 4 || firstEmbedWithImageIndex != 0 ? 
+                    finalEmbeds.Last() :
+                    finalEmbeds.First();
+            
+            if (fields.Count != 0)
+                foreach (var field in fields)
+                    bottomBuilder.AddField(field.Item1, field.Item2);
 
-            List<DiscordEmbedBuilder> finalEmbeds = new();
-            finalEmbeds.Add(builder);
-            for (int i = 1; i < imageUrls.Count; i++)
-                finalEmbeds.Add(new DiscordEmbedBuilder()
-                    .WithImageUrl(imageUrls[i])
-                    .WithUrl($"http://vk.com/wall{post_id}"));
-
-            finalEmbeds
-                [(finalEmbeds.Count - 1) / 4 * 4]
+            bottomBuilder
                 .WithFooter($"Лайков: {source_post.Likes.Count}, Репостов: {source_post.Reposts.Count}, Просмотров: {source_post.Views.Count}", @"https://vk.com/images/icons/favicons/fav_logo.ico")
                 .WithTimestamp(source_post.Date);
-            
-            for (int i = 0; i < finalEmbeds.Count; i += 4)
+
+            // The sum characters limit per message (including embed description, fields etc.) is 6000.
+            // We'll just post potentially long embeds in seperate messages
+            // If there's a repost info - we'll merge it with first msg
+            if (firstEmbedWithImageIndex != 0)
+            {
+                var startIndex = 0;
+                
+                if (repostInfo.Length != 0)
+                {
+                    messages.Add(new DiscordMessageBuilder()
+                        .AddEmbeds(finalEmbeds.Take(2).Select(x => x.Build()).ToList()));
+
+                    startIndex = 2;
+                }
+
+                for (int i = startIndex; i < firstEmbedWithImageIndex; i++)
+                {
+                    messages.Add(new DiscordMessageBuilder()
+                        .AddEmbed(finalEmbeds[i].Build()));
+                }
+            }
+
+            for (int i = firstEmbedWithImageIndex; i < finalEmbeds.Count; i += 4)
                 messages.Add(new DiscordMessageBuilder()
                     .AddEmbeds(finalEmbeds.Skip(i).Take(4).Select(x => x.Build()).ToList()));
-
+            
             bool firstMsg = true;
             foreach (var sendingMessage in messages)
             {
