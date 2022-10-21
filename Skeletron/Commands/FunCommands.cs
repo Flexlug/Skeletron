@@ -20,7 +20,7 @@ namespace Skeletron.Commands
         private DiscordClient client;
         private ILogger<FunCommands> logger;
 
-        private Regex _flexlugHelpRegex = new Regex(@"фле*кс по*мо*ги* (\w*)", RegexOptions.Compiled); 
+        private Regex _flexlugHelpRegex = new Regex(@"фле+кс по+мо+ги+ +(.+)", RegexOptions.Compiled); 
         
         //private NumbersApi numbersApi;
         private const string NUMBERS_IMAGE_URL = @"https://cdn.discordapp.com/attachments/839633777491574785/862815944114831360/hVrxsnLy39c.png";
