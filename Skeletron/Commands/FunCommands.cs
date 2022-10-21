@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using System.Web;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -19,9 +20,11 @@ namespace Skeletron.Commands
         private DiscordClient client;
         private ILogger<FunCommands> logger;
 
+        private Regex _flexlugHelpRegex = new Regex(@"ФЛЕ*КС ПО*МО*ГИ* (\w*)", RegexOptions.Compiled); 
+        
         //private NumbersApi numbersApi;
         private const string NUMBERS_IMAGE_URL = @"https://cdn.discordapp.com/attachments/839633777491574785/862815944114831360/hVrxsnLy39c.png";
-
+        
         public FunCommands(DiscordClient client, ILogger<FunCommands> logger
             //NumbersApi api
             )
@@ -31,12 +34,28 @@ namespace Skeletron.Commands
             this.logger = logger;
             this.client = client;
             this.client.MessageCreated += Client_DetectSayHi;
+            this.client.MessageCreated += Client_FlexlugHelp;
 
             //this.numbersApi = api;
 
             logger.LogInformation("FunCommands loaded");
         }
+        
+        private async Task Client_FlexlugHelp(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
+        {
+            string msg = e.Message.Content.ToLower();
 
+            var matches = _flexlugHelpRegex.Match(msg);
+            
+            if (matches is null || matches.Groups.Count != 2)
+                return;
+
+            var question = matches.Groups[1].Value;
+            string searchQuerry = @$"https://letmegooglethat.com/?q={HttpUtility.UrlEncode(question)}";
+            
+            await e.Message.RespondAsync($"Опять все делать вместо вас???\n{searchQuerry}");
+        }
+        
         private async Task Client_DetectSayHi(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
         {
             string msg = e.Message.Content.ToLower();
