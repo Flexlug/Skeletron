@@ -67,7 +67,7 @@ namespace Skeletron.Services
             }
             catch (Exception e)
             {
-                _logger.LogWarning($"Ошибка парсинга поста из группы VK. id: {post_id}, expetion: {e.Message} {e.Source} {e.StackTrace}");
+                _logger.LogWarning($"Ошибка парсинга поста из группы VK. id: {post_id}, exception: {e.Message} {e.Source} {e.StackTrace}");
                 return;
             }
 
@@ -81,7 +81,7 @@ namespace Skeletron.Services
             Post source_post = p;
             if (p is null)
             {
-                _logger.LogDebug($"Не удалось получить пост VK по из коллекции WallPosts. id: {post_id}");
+                _logger.LogDebug($"Не удалось получить пост VK из коллекции WallPosts. id: {post_id}");
                 return;
             }
             #endregion
