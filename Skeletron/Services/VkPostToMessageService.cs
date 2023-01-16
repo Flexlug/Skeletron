@@ -164,27 +164,18 @@ namespace Skeletron.Services
 
             foreach (var a in p.Attachments)
             {
-                switch (a.Type.FullName)
+                switch (a.Instance)
                 {
-                    case "VkNet.Model.Attachments.Photo":
-                        Photo photo = a.Instance as Photo;
-
+                    case Photo photo:
                         var size = photo.Sizes.First(x => x.Width == photo.Sizes.Max(x => x.Width) && x.Height == photo.Sizes.Max(x => x.Height));
-
                         imageUrls.Add(size.Url.AbsoluteUri);
-
                         break;
 
-                    case "VkNet.Model.Attachments.Video":
-                        Video video = a.Instance as Video;
-
+                    case Video video:
                         videoUrls.Append($"[[**видео**](https://vk.com/video{video.OwnerId}_{video.Id})] ");
-
                         break;
 
-                    case "VkNet.Model.Attachments.Poll":
-                        Poll poll = a.Instance as Poll;
-
+                    case Poll poll:
                         (string, string) strPoll = new(
                             poll.Question,
                             string.Join(' ',
@@ -192,7 +183,6 @@ namespace Skeletron.Services
                                     .Select(x => $"**{x.Text}** - {x.Votes} ({x.Rate:#.##}%)\n")));
 
                         fields.Add(strPoll);
-
                         break;
 
                     default:
