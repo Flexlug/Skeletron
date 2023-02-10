@@ -23,12 +23,14 @@ namespace Skeletron.Services
         private VkRegex _regex;
         private readonly DiscordEmoji _redCrossEmoji;
         private ILogger<VkPostToMessageService> _logger;
+        private IVVTDEService _vvtdeService;
 
         public VkPostToMessageService(Settings settings,
                          VkRegex regex,
                          DiscordClient client,
                          OsuEmoji emoji,
-                         ILogger<VkPostToMessageService> logger)
+                         ILogger<VkPostToMessageService> logger,
+                         IVVTDEService vvtdeService)
         {
             _api = new VkApi();
             _api.Authorize(new ApiAuthParams() { AccessToken = settings.VkSecret,  });
@@ -36,6 +38,7 @@ namespace Skeletron.Services
             _regex = regex;
             _logger = logger;
             _redCrossEmoji = emoji.MissEmoji();
+            _vvtdeService = vvtdeService;
 
             client.MessageCreated += Client_MessageCreated;
 
@@ -160,7 +163,8 @@ namespace Skeletron.Services
             var imageUrls = new List<string>();
             var fields = new List<(string, string)>();
 
-            var videoUrls = new StringBuilder();
+            var longVideoStringUrls = new StringBuilder();
+            var videoUrls = new List<string>();
 
             foreach (var a in p.Attachments)
             {
@@ -172,7 +176,16 @@ namespace Skeletron.Services
                         break;
 
                     case Video video:
-                        videoUrls.Append($"[[**видео**](https://vk.com/video{video.OwnerId}_{video.Id})] ");
+                        // Обрабатываем только те видео, длина которых меньше полутора минут
+                        if (video.Duration > 90)
+                        {
+                            var guid = _vvtdeService.RequestVideoDownload(video);
+                            videoUrls.Add($"https://flexlug.ru/vvtde/{guid}");
+                        }
+                        else
+                        {
+                            longVideoStringUrls.Append($"[[**видео**](https://vk.com/video{video.OwnerId}_{video.Id})] ");                            
+                        }
                         break;
 
                     case Poll poll:
@@ -199,7 +212,7 @@ namespace Skeletron.Services
 
             int firstEmbedWithImageIndex = 0; // also if this index is NOT 0 the message is potentially long 
             
-            if (repostInfo.Length + postMessage.Length + videoUrls.Length > 4096)
+            if (repostInfo.Length + postMessage.Length + longVideoStringUrls.Length > 4096)
             {
                 // Split message in 3 embeds, where:
                 // 1 embed: author and repost info
@@ -252,10 +265,10 @@ namespace Skeletron.Services
                 }
                 
                 // 3rd embed
-                if (videoUrls.Length != 0)
+                if (longVideoStringUrls.Length != 0)
                 {
                     finalEmbeds.Add(new DiscordEmbedBuilder()
-                        .WithDescription(videoUrls.ToString()));
+                        .WithDescription(longVideoStringUrls.ToString()));
                 }
 
                 firstEmbedWithImageIndex = finalEmbeds.Count - 1;
@@ -271,7 +284,7 @@ namespace Skeletron.Services
 
                 concatedPostMessage.Append(postMessage);
 
-                if (videoUrls.Length != 0)
+                if (longVideoStringUrls.Length != 0)
                 {
                     concatedPostMessage.Append(videoUrls);
                 }
@@ -337,6 +350,15 @@ namespace Skeletron.Services
             for (int i = firstEmbedWithImageIndex; i < finalEmbeds.Count; i += 4)
                 messages.Add(new DiscordMessageBuilder()
                     .AddEmbeds(finalEmbeds.Skip(i).Take(4).Select(x => x.Build()).ToList()));
+
+            if (videoUrls.Count != 0)
+            {
+                foreach (var video in videoUrls)
+                {
+                    messages.Add(new DiscordMessageBuilder()
+                        .WithContent(video));
+                }
+            }
             
             bool firstMsg = true;
             foreach (var sendingMessage in messages)

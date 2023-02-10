@@ -1,0 +1,20 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Skeletron";
+
+package VVTDE;
+
+service VVTDEBridge {
+  rpc RequestDownloadVideo (VideoRequest) returns (OkReply);
+}
+
+message VideoRequest {
+  string guid = 1;
+  string url = 2;
+}
+
+// Basically that service can't answer anything
+// We just need to know that service got our message 
+message OkReply {
+  bool ok = 1;
+}

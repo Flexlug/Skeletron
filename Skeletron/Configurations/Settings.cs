@@ -26,6 +26,8 @@ namespace Skeletron.Configurations
 
         // VK credentials
         public string VkSecret { get; set; }
+        
+        public string VVTDEAddress { get; set; }
 
         public Settings() : this("", DefaultPrefixes) { }
 

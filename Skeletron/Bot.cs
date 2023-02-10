@@ -131,6 +131,7 @@ namespace Skeletron
                 //.AddSingleton<IMappoolService, MappoolService>()
                 //.AddSingleton<IWordsService, WordsService>()
                 .AddSingleton<IOsuService, OsuService>()
+                .AddSingleton<IVVTDEService, VVTDEService>()
                 .AddSingleton<IVkPostToMessageService, VkPostToMessageService>()
                 .AddSingleton<IMessageResendService, MessageResendService>()
                 .AddSingleton<IMessageDeleteService, MessageDeleteService>()
