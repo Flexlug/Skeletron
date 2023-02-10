@@ -177,7 +177,7 @@ namespace Skeletron.Services
 
                     case Video video:
                         // Обрабатываем только те видео, длина которых меньше полутора минут
-                        if (video.Duration > 90)
+                        if (video.Duration <= 90)
                         {
                             var guid = _vvtdeService.RequestVideoDownload(video);
                             videoUrls.Add($"https://flexlug.ru/vvtde/{guid}");
