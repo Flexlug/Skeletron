@@ -2,19 +2,27 @@
 
 option csharp_namespace = "Skeletron";
 
-package VVTDE;
-
 service VVTDEBridge {
-  rpc RequestDownloadVideo (VideoRequest) returns (OkReply);
+  rpc RequestDownloadVideo (VideoRequest) returns (VideoReply);
+  rpc FetchDownloadVideo (FetchVideoRequest) returns (FetchVideoReply);
 }
 
 message VideoRequest {
-  string guid = 1;
-  string url = 2;
+  string url = 1;
+  string title = 2;
+  string description = 3;
+  string imageUrl = 4;
 }
 
-// Basically that service can't answer anything
-// We just need to know that service got our message 
-message OkReply {
-  bool ok = 1;
+message VideoReply {
+  string guid = 1;
+  bool isLoaded = 2;
+}
+
+message FetchVideoRequest {
+  string guid = 1;
+}
+
+message FetchVideoReply {
+  bool isLoaded = 1;
 }

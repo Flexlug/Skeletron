@@ -164,7 +164,6 @@ namespace Skeletron.Services
             var fields = new List<(string, string)>();
 
             var longVideoStringUrls = new StringBuilder();
-            var videoUrls = new List<string>();
 
             foreach (var a in p.Attachments)
             {
@@ -177,10 +176,9 @@ namespace Skeletron.Services
 
                     case Video video:
                         // Обрабатываем только те видео, длина которых меньше полутора минут
-                        if (video.Duration <= 90)
+                        if (video.Duration <= 90 && !(video?.Live ?? true))
                         {
                             var guid = _vvtdeService.RequestVideoDownload(video);
-                            videoUrls.Add($"https://flexlug.ru/vvtde/{guid}");
                         }
                         else
                         {
@@ -283,11 +281,6 @@ namespace Skeletron.Services
                 }
 
                 concatedPostMessage.Append(postMessage);
-
-                if (longVideoStringUrls.Length != 0)
-                {
-                    concatedPostMessage.Append(videoUrls);
-                }
                 
                 finalEmbeds.Add(new DiscordEmbedBuilder()
                     .WithDescription(concatedPostMessage.ToString()));
@@ -351,15 +344,6 @@ namespace Skeletron.Services
                 messages.Add(new DiscordMessageBuilder()
                     .AddEmbeds(finalEmbeds.Skip(i).Take(4).Select(x => x.Build()).ToList()));
 
-            if (videoUrls.Count != 0)
-            {
-                foreach (var video in videoUrls)
-                {
-                    messages.Add(new DiscordMessageBuilder()
-                        .WithContent(video));
-                }
-            }
-            
             bool firstMsg = true;
             foreach (var sendingMessage in messages)
             {
