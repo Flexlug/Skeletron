@@ -18,13 +18,21 @@ namespace Skeletron.Services
         private readonly DiscordClient _client;
         private readonly Regex _messagePattern = new(@"(?<!\\)https?:\/\/(?:ptb\.|canary\.)?discord\.com\/channels\/(\d+)\/(\d+)\/(\d+)", RegexOptions.Compiled);
         private readonly DiscordEmoji _redCrossEmoji;
+        private readonly DiscordEmoji _forbiddenEmoji;
         private readonly ILogger<MessageResendService> _logger;
+
+        private readonly List<ulong> _forbiddenChannels = new List<ulong>()
+        {
+            708967215352905738,
+            739182296979996682
+        };
 
         public MessageResendService(DiscordClient client, OsuEmoji emoji, ILogger<MessageResendService> logger)
         {
             _client = client;
             _logger = logger;
             _redCrossEmoji = emoji.MissEmoji();
+            _forbiddenEmoji = DiscordEmoji.FromName(client, ":no_entry:");
 
             _client.MessageCreated += ResendMessage;
 
@@ -60,6 +68,13 @@ namespace Skeletron.Services
             var currentChannel = guild.GetChannel(msgParams.Item2);
             var resendingMessage = await currentChannel.GetMessageAsync(msgParams.Item3);
 
+            // Запрещено пересылать сообщения из каналов NSFW, Politics
+            if (_forbiddenChannels.Contains(currentChannel.Id))
+            {
+                await e.Message.CreateReactionAsync(_forbiddenEmoji);
+                return;
+            }
+            
             DiscordEmbedBuilder resentMessageBuilder = new DiscordEmbedBuilder()
                 .WithAuthor(name: resendingMessage.Author.Username, iconUrl: resendingMessage.Author.AvatarUrl)
                 .WithDescription(resendingMessage.Content)
