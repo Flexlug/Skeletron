@@ -72,6 +72,13 @@ namespace Skeletron.Commands
                 return;
             }
 
+            if (msg.Contains("вставай") && msg.Contains("ержан"))
+            {
+                await e.Message.RespondAsync(
+                    "https://cdn.discordapp.com/attachments/839633777491574785/1076823929185898567/skeletron_sleeps.jpg");
+                return;
+            }
+
             if (msg.Contains("привет") && (msg.Contains("виталий") || msg.Contains("припадочный") || msg.Contains("виталя")))
             {
                 await e.Message.RespondAsync(":skull:");
