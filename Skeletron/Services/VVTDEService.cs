@@ -13,25 +13,18 @@ public class VVTDEService : IVVTDEService
 {
     private ILogger<VVTDEService> _logger;
     private VVTDEBridge.VVTDEBridgeClient _client;
-    
+
     public VVTDEService(ILogger<VVTDEService> logger,
-                        Settings settings)
+        Settings settings)
     {
         _logger = logger;
 
-        try
-        {
-            using var channel = GrpcChannel.ForAddress(settings.VVTDEAddress);
-            _client = new VVTDEBridge.VVTDEBridgeClient(channel);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Couldn't initialize GRPC client");
-        }
-        
+        using var channel = GrpcChannel.ForAddress(settings.VVTDEAddress);
+        _client = new VVTDEBridge.VVTDEBridgeClient(channel);
+
         _logger.LogInformation($"{nameof(VVTDEService)} initialized");
     }
-    
+
     public string RequestVideoDownload(Video video)
     {
         var request = new VideoRequest()
@@ -43,7 +36,7 @@ public class VVTDEService : IVVTDEService
         
         var reply = _client.RequestDownloadVideo(request);
         _logger.LogDebug("VVTDE returned {Reply}", reply);
-
+        
         return request.Guid;
     }
 }
