@@ -27,8 +27,6 @@ namespace Skeletron.Commands
         private DiscordEmoji[] _pollEmojiCache;
 
         private ILogger<AdminCommands> logger;
-
-        private readonly IShedulerService sheduler;
         private readonly IMessageResendService resendMessageService;
         private readonly IMessageDeleteService deleteMessageService;
         //private readonly IWordsService words;
@@ -37,7 +35,6 @@ namespace Skeletron.Commands
 
         public AdminCommands(ILogger<AdminCommands> logger, 
                             DiscordClient client,
-                            IShedulerService sheduler,
                             IMessageResendService resendMessageService,
                             IMessageDeleteService deleteMessageService)
                             //IWordsService words)
@@ -45,7 +42,6 @@ namespace Skeletron.Commands
             ModuleName = "Администрирование";
 
             this.logger = logger;
-            this.sheduler = sheduler;
             this.resendMessageService = resendMessageService;
             this.deleteMessageService = deleteMessageService;
             //this.words = words;
@@ -438,26 +434,6 @@ namespace Skeletron.Commands
                         await dmChannel.SendMessageAsync(att.Url);
 
             }
-        }
-
-        [Command("get-sheduled-tasks-list"), RequirePermissions(Permissions.Administrator)]
-        public async Task GetListOFSheduledTasks(CommandContext context)
-        {
-            var sheduledTasks = sheduler.GetAllTasks();
-
-            if (sheduledTasks is null || sheduledTasks.Count == 0)
-            {
-                await context.RespondAsync("No sheduled tasks");
-                return;
-            }
-
-            DiscordEmbedBuilder embedBuilder = new DiscordEmbedBuilder()
-                .WithTitle("Запланированные задачи");
-
-            foreach (var task in sheduledTasks)
-                embedBuilder.AddField(task.Name, $"Interval: {task.Interval}, Repeat: {task.Repeat}");
-
-            await context.RespondAsync(embed: embedBuilder.Build());
         }
     }
 }
