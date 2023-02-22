@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DSharpPlus.Entities;
+using FluentScheduler;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
+using Skeletron.Commands.Interfaces;
 using Skeletron.Configurations;
 using Skeletron.Services.Interfaces;
 using VkNet.Model.Attachments;
@@ -13,11 +16,14 @@ public class VVTDEService : IVVTDEService
 {
     private ILogger<VVTDEService> _logger;
     private VVTDEBridge.VVTDEBridgeClient _client;
+    private IVVTDEJobRegistry _registry;
 
     public VVTDEService(ILogger<VVTDEService> logger,
+        IVVTDEJobRegistry registry,
         Settings settings)
     {
         _logger = logger;
+        _registry = registry;
 
         using var channel = GrpcChannel.ForAddress(settings.VVTDEAddress);
         _client = new VVTDEBridge.VVTDEBridgeClient(channel);
@@ -25,18 +31,21 @@ public class VVTDEService : IVVTDEService
         _logger.LogInformation($"{nameof(VVTDEService)} initialized");
     }
 
-    public string RequestVideoDownload(Video video)
+    public VideoReply RequestVideoDownload(Video video)
     {
         var request = new VideoRequest()
         {
-            Guid = Guid.NewGuid().ToString(),
             Url = video.UploadUrl.AbsoluteUri
         };
-        _logger.LogDebug("Created request: {RequestGuid}, {RequestUrl}", request.Guid, request.Url);
+        
+        _logger.LogDebug("Created request: {RequestUrl}", request.Url);
         
         var reply = _client.RequestDownloadVideo(request);
         _logger.LogDebug("VVTDE returned {Reply}", reply);
-        
-        return request.Guid;
+
+        return reply;
     }
+
+    public void StartVideoWait(Guid guid, DiscordMessage message)
+        => _registry.StartWait(guid, message);
 }

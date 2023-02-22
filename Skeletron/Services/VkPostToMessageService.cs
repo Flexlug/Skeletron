@@ -164,7 +164,7 @@ namespace Skeletron.Services
             var fields = new List<(string, string)>();
 
             var longVideoStringUrls = new StringBuilder();
-            var videoUrls = new List<string>();
+            var videos = new List<VideoReply>();
 
             foreach (var a in p.Attachments)
             {
@@ -179,8 +179,8 @@ namespace Skeletron.Services
                         // Обрабатываем только те видео, длина которых меньше полутора минут
                         if (video.Duration <= 90)
                         {
-                            var guid = _vvtdeService.RequestVideoDownload(video);
-                            videoUrls.Add($"https://flexlug.ru/vvtde/{guid}");
+                            var videoReply = _vvtdeService.RequestVideoDownload(video);
+                            videos.Add(videoReply);
                         }
                         else
                         {
@@ -286,7 +286,7 @@ namespace Skeletron.Services
 
                 if (longVideoStringUrls.Length != 0)
                 {
-                    concatedPostMessage.Append(videoUrls);
+                    concatedPostMessage.Append(videos);
                 }
                 
                 finalEmbeds.Add(new DiscordEmbedBuilder()
@@ -351,15 +351,6 @@ namespace Skeletron.Services
                 messages.Add(new DiscordMessageBuilder()
                     .AddEmbeds(finalEmbeds.Skip(i).Take(4).Select(x => x.Build()).ToList()));
 
-            if (videoUrls.Count != 0)
-            {
-                foreach (var video in videoUrls)
-                {
-                    messages.Add(new DiscordMessageBuilder()
-                        .WithContent(video));
-                }
-            }
-            
             bool firstMsg = true;
             foreach (var sendingMessage in messages)
             {
@@ -375,6 +366,21 @@ namespace Skeletron.Services
                 
                 await sendingMessage.SendAsync(channel);
             }
+
+            #region VVTDE
+
+            if (videos.Count != 0)
+            {
+                foreach (var video in videos)
+                {
+                    var videoMessage =
+                        await channel.SendMessageAsync($"https://vvtde.flexlug.ru/Video/Watch?guid={video.Guid}");
+                    
+                    _vvtdeService.StartVideoWait(Guid.Parse(video.Guid), videoMessage);
+                }
+            }
+            
+            #endregion
 
             #endregion
         }
