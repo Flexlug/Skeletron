@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using DSharpPlus.Entities;
 using VkNet.Model.Attachments;
 
 namespace Skeletron.Services.Interfaces;
 
 public interface IVVTDEService
 {
-    public string RequestVideoDownload(Video video);
+    VideoReply RequestVideoDownload(Video video);
+    void StartVideoWait(Guid guid, DiscordMessage message);
 }

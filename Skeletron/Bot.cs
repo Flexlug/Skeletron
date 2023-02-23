@@ -16,7 +16,7 @@ using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-
+using FluentScheduler;
 using OsuNET_Api;
 
 using Skeletron.Commands;
@@ -122,7 +122,6 @@ namespace Skeletron
                 .AddSingleton(new GoogleSearch())
                 //.AddSingleton<IWordsProvider, WordsProvider>()
                 //.AddSingleton<ISheetGenerator, SheetGenerator>()
-                .AddSingleton<IShedulerService, ShedulerService>()
                 //.AddSingleton<IRecognizerService, RecognizerService>()
                 //.AddSingleton<IMembersProvider, MembersProvider>()
                 //.AddSingleton<ICompitProvider, CompitProvider>()
@@ -130,7 +129,7 @@ namespace Skeletron
                 //.AddSingleton<IMappoolProvider, MappoolProvider>()
                 //.AddSingleton<IMappoolService, MappoolService>()
                 //.AddSingleton<IWordsService, WordsService>()
-                .AddSingleton<IOsuService, OsuService>()
+                .AddSingleton<IOsuService, OsuService>() 
                 .AddSingleton<IVVTDEService, VVTDEService>()
                 .AddSingleton<IVkPostToMessageService, VkPostToMessageService>()
                 .AddSingleton<IMessageResendService, MessageResendService>()

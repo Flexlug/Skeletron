@@ -164,6 +164,7 @@ namespace Skeletron.Services
             var fields = new List<(string, string)>();
 
             var longVideoStringUrls = new StringBuilder();
+            var videos = new List<VideoReply>();
 
             foreach (var a in p.Attachments)
             {
@@ -176,9 +177,10 @@ namespace Skeletron.Services
 
                     case Video video:
                         // Обрабатываем только те видео, длина которых меньше полутора минут
-                        if (video.Duration <= 90 && !(video?.Live ?? true))
+                        if (video.Duration <= 90)
                         {
-                            var guid = _vvtdeService.RequestVideoDownload(video);
+                            var videoReply = _vvtdeService.RequestVideoDownload(video);
+                            videos.Add(videoReply);
                         }
                         else
                         {
@@ -281,6 +283,11 @@ namespace Skeletron.Services
                 }
 
                 concatedPostMessage.Append(postMessage);
+
+                if (longVideoStringUrls.Length != 0)
+                {
+                    concatedPostMessage.Append(videos);
+                }
                 
                 finalEmbeds.Add(new DiscordEmbedBuilder()
                     .WithDescription(concatedPostMessage.ToString()));
@@ -359,6 +366,21 @@ namespace Skeletron.Services
                 
                 await sendingMessage.SendAsync(channel);
             }
+
+            #region VVTDE
+
+            if (videos.Count != 0)
+            {
+                foreach (var video in videos)
+                {
+                    var videoMessage =
+                        await channel.SendMessageAsync($"https://vvtde.flexlug.ru/Video/Watch?guid={video.Guid}");
+                    
+                    _vvtdeService.StartVideoWait(Guid.Parse(video.Guid), videoMessage);
+                }
+            }
+            
+            #endregion
 
             #endregion
         }

@@ -45,9 +45,10 @@
     <None Remove="trackedUsers.db-shm" />
     <None Remove="trackedUsers.db-wal" />
     <None Remove="NumbersAPI.NET" />
-    <Protobuf Include="Protos/vvtde.proto" GrpcServices="Client"/>
+    <Protobuf Include="Protos/vvtde.proto" GrpcServices="Client" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FluentScheduler" Version="5.5.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.8" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.13.0" />
     <PackageReference Include="DSharpPlus" Version="4.3.0-nightly-01171" />

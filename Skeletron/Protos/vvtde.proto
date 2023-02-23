@@ -1,4 +1,4 @@
-﻿syntax = "proto3";
+syntax = "proto3";
 
 option csharp_namespace = "Skeletron";
 
@@ -16,7 +16,7 @@ message VideoRequest {
 
 message VideoReply {
   string guid = 1;
-  bool isLoaded = 2;
+  bool alreadyDownloaded = 2;
 }
 
 message FetchVideoRequest {
@@ -24,5 +24,5 @@ message FetchVideoRequest {
 }
 
 message FetchVideoReply {
-  bool isLoaded = 1;
+  bool downloadComplete = 1;
 }
