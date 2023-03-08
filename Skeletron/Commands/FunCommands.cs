@@ -17,10 +17,17 @@ namespace Skeletron.Commands
     [RequireGuild]
     public sealed class FunCommands : SkBaseCommandModule
     {
+        private Random _random = new();
         private DiscordClient client;
         private ILogger<FunCommands> logger;
 
-        private Regex _flexlugHelpRegex = new Regex(@"фле+кс по+мо+ги+ +(.+)", RegexOptions.Compiled); 
+        private Regex _flexlugHelpRegex = new Regex(@"фле+кс по+мо+ги+ +(.+)", RegexOptions.Compiled);
+
+        private string[] _sayHiVariants =
+        {
+            "https://cdn.discordapp.com/attachments/776568856167972904/838014941884579880/JeRWf8iDd_4.png",
+            "https://tenor.com/ru/view/int-crawling-int-crawling-skeleton-okbr-gif-21774748"
+        };
         
         //private NumbersApi numbersApi;
         private const string NUMBERS_IMAGE_URL = @"https://cdn.discordapp.com/attachments/839633777491574785/862815944114831360/hVrxsnLy39c.png";
@@ -68,7 +75,8 @@ namespace Skeletron.Commands
 
             if (msg.Contains("вставай припадочный"))
             {
-                await e.Message.RespondAsync("https://cdn.discordapp.com/attachments/776568856167972904/838014941884579880/JeRWf8iDd_4.png");
+                var respond = _sayHiVariants[_random.Next(0, _sayHiVariants.Length - 1)];
+                await e.Message.RespondAsync(respond);
                 return;
             }
 
