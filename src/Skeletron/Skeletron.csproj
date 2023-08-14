@@ -81,4 +81,12 @@
     <ProjectReference Include="..\Osu.NET.Api\Osu.NET.Api.csproj" />
     <ProjectReference Include="..\Osu.NET.Recognizer\Osu.NET.Recognizer.csproj" />
   </ItemGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>$(SolutionDir)/build/Debug</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>$(SolutionDir)/build/Release</OutputPath>
+  </PropertyGroup>
 </Project>
