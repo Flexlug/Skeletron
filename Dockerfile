@@ -62,9 +62,9 @@ FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS builder
 
 WORKDIR /src
 
-COPY ["Skeletron/Skeletron.csproj", "Skeletron/"]
-COPY ["Osu.NET.Api/Osu.NET.Api.csproj", "Osu.NET.Api/"]
-COPY ["Osu.NET.Recognizer/Osu.NET.Recognizer.csproj", "Osu.NET.Recognizer/"]
+COPY ["src/Skeletron/", "Skeletron/"]
+COPY ["src/Osu.NET.Api/", "Osu.NET.Api/"]
+COPY ["src/Osu.NET.Recognizer/", "Osu.NET.Recognizer/"]
 
 RUN dotnet restore "Skeletron/Skeletron.csproj"
 

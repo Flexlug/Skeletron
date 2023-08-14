@@ -4,6 +4,8 @@ version: '3.8'
 services:
   skeletron:
     image: flexlug/skeletron:latest
+    build:
+      context: .
     restart: unless-stopped
     volumes:
       - /var/docker_data/skeletron-config:/app/data
