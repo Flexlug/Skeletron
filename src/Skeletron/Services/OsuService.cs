@@ -2,17 +2,13 @@
 using DSharpPlus.Entities;
 using Microsoft.Extensions.Logging;
 using OsuNET_Api;
-using OsuNET_Api.Models;
 using OsuNET_Api.Models.Bancho;
 using OsuNET_Api.Models.Gatari;
 using Skeletron.Converters;
-using Skeletron.Database.Interfaces;
-using Skeletron.Database.Models;
 using Skeletron.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Skeletron.Services

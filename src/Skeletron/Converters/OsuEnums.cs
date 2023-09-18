@@ -4,8 +4,6 @@ using System.Text;
 using OsuNET_Api.Models;
 using OsuNET_Api.Models.Bancho;
 
-using Skeletron.Database.Models;
-
 using Microsoft.Extensions.Logging;
 
 namespace Skeletron.Converters
@@ -162,70 +160,6 @@ namespace Skeletron.Converters
 
                 default:
                     throw new Exception("Error parsing OsuServer enum");
-            }
-        }
-
-        /// <summary>
-        /// Получить строковое представление конкурсной категории
-        /// </summary>
-        /// <param name="category">Категория</param>
-        /// <returns></returns>
-        public string CategoryToString(CompitCategory category)
-        {
-            switch (category)
-            {
-                case CompitCategory.Beginner:
-                    return "beginner";
-
-                case CompitCategory.Alpha:
-                    return "alpha";
-
-                case CompitCategory.Beta:
-                    return "beta";
-
-                case CompitCategory.Gamma:
-                    return "gamma";
-
-                case CompitCategory.Delta:
-                    return "delta";
-
-                case CompitCategory.Epsilon:
-                    return "epsilon";
-
-                default:
-                    throw new Exception("Error parsing CompitCategories enum");
-            }
-        }
-
-        /// <summary>
-        /// Перевести значение CompitCategory из строки
-        /// </summary>
-        /// <param name="category">Преобразуемая строка</param>
-        /// <returns></returns>
-        public CompitCategory? StringToCategory(string category)
-        {
-            switch(category)
-            {
-                case "beginner":
-                    return CompitCategory.Beginner;
-
-                case "alpha":
-                    return CompitCategory.Alpha;
-
-                case "beta":
-                    return CompitCategory.Beta;
-
-                case "gamma":
-                    return CompitCategory.Gamma;
-
-                case "delta":
-                    return CompitCategory.Delta;
-
-                case "epsilon":
-                    return CompitCategory.Epsilon;
-
-                default:
-                    return null;
             }
         }
     }

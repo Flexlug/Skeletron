@@ -24,15 +24,6 @@ namespace Skeletron.Configurations
         }
 
         /// <summary>
-        /// Serializes Settings object to JSON and writes it to default config file
-        /// </summary>
-        /// <param name="settings"></param>
-        public void SaveToFile(Settings settings)
-        {
-            SaveToFile(DefaultConfigFile, settings);
-        }
-
-        /// <summary>
         /// Deserializes a file to a Settings object
         /// </summary>
         /// <param name="configFile">File to deserialize</param>

@@ -9,11 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 
@@ -29,8 +26,6 @@ using Skeletron.Services;
 
 using Serilog;
 
-using GoogleApi;
-
 namespace Skeletron
 {
     public class Bot : IDisposable
@@ -39,7 +34,6 @@ namespace Skeletron
         public const ulong SKELETRON_UID = 750768015842345050; 
 
         private CommandsNextExtension CommandsNext { get; set; }
-        private SlashCommandsExtension SlashCommands { get; set; }
         private DiscordClient Discord { get; }
         private DiscordGuild Guild { get; }
         private Settings Settings { get; }
@@ -119,7 +113,6 @@ namespace Skeletron
                 .AddSingleton<EmojiUtlis>()
                 .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
-                .AddSingleton(new GoogleSearch())
                 //.AddSingleton<IWordsProvider, WordsProvider>()
                 //.AddSingleton<ISheetGenerator, SheetGenerator>()
                 .AddSingleton<IShedulerService, ShedulerService>()
@@ -151,39 +144,13 @@ namespace Skeletron
             // Registering command classes
             CommandsNext.RegisterCommands<UserCommands>();
             CommandsNext.RegisterCommands<AdminCommands>();
-            //CommandsNext.RegisterCommands<DemonstrationCommands>();
-            //CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
             CommandsNext.RegisterCommands<VkCommands>();
             CommandsNext.RegisterCommands<JokeCommands>();
-            //CommandsNext.RegisterCommands<CompititionCommands>();
-            //CommandsNext.RegisterCommands<MappoolCommands>();
-
-            // Registering OnCommandError method for the CommandErrored event
+            
             CommandsNext.CommandErrored += OnCommandError;
-
-            //var slashCommandsConfiguration = new SlashCommandsConfiguration()
-            //{
-            //    Services = Services
-            //};
-
-            //SlashCommands = Discord.UseSlashCommands(slashCommandsConfiguration);
-
-            // Register slash commands modules
-            //SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
-            //SlashCommands.RegisterCommands<UserSlashCommands>(WAV_UID);
-            //SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
-            //SlashCommands.RegisterCommands<AdminMappoolSlashCommands>(WAV_UID);
-
-            //SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
         }
-
-        private async Task SlashCommands_SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
-        {
-            logger.LogError($"Error on executing slash command {e.Context.CommandName} - {e.Exception}");
-        }
-
         private void RegisterEvents()
         {
             Log.Logger.Debug("Registering events");

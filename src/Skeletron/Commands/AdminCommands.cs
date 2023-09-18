@@ -55,50 +55,10 @@ namespace Skeletron.Commands
             logger.LogInformation("AdminCommands loaded");
         }
 
-        //[Command("words-clear"), RequireRoles(RoleCheckMode.Any, "Admin"), Description("Полностью сбросить игру \'words\'"), RequireGuild]
-        //public async Task ResetWords(CommandContext ctx)
-        //{
-        //    words.ClearWords();
-        //    await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 805364968593686549));
-
-        //    logger.LogInformation($"Words cleared by {ctx.Member.Nickname}");
-        //}
-
-        //[Command("words-delete"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Удалить слово из коллекции"), RequireGuild]
-        //public async Task DeleteWord(CommandContext ctx, 
-        //    [Description("Удаляемое слово")] string word)
-        //{
-        //    string checkingWord = word.ToLower();
-
-        //    if (words.CheckWord(checkingWord)) {
-        //        words.DeleteWord(checkingWord);
-        //        await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 805364968593686549));
-        //        logger.LogInformation($"Word {word} deleted by {ctx.Member.Nickname}");
-        //    }
-        //    else
-        //    {
-        //        await ctx.RespondAsync("Такого слова и так нет");
-        //    }
-        //}
-
-        //[Command("words-get"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Получить список всех использованных слов"), RequireGuild]
-        //public async Task DeleteWord(CommandContext ctx)
-        //{
-        //    var wordsList = words.GetWords();
-
-        //    if (wordsList is null || wordsList.Count == 0)
-        //    {
-        //        await ctx.RespondAsync("Слов нет");
-        //        return;
-        //    }
-
-        //    string allWords = string.Join(", ", words.GetWords());
-        //    await ctx.RespondAsync(new DiscordEmbedBuilder()
-        //        .WithTitle("Использованные слова:")
-        //        .WithDescription(allWords)
-        //        .Build());
-        //}
-
+        /// <summary>
+        /// Получить информацию о времени работы бота
+        /// </summary>
+        /// <param name="context"></param>
         [Command("status"), Description("Получить информацию о времени работы бота.")]
         public async Task Uptime(CommandContext context)
         {
