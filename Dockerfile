@@ -4,7 +4,6 @@ WORKDIR /src
 
 COPY ["src/Skeletron/", "Skeletron/"]
 COPY ["src/Osu.NET.Api/", "Osu.NET.Api/"]
-COPY ["src/Osu.NET.Recognizer/", "Osu.NET.Recognizer/"]
 
 RUN dotnet restore "Skeletron/Skeletron.csproj"
 

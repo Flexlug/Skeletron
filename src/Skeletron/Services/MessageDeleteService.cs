@@ -26,7 +26,7 @@ public class MessageDeleteService : IMessageDeleteService
     
     private async Task DeleteResentMessage(DiscordClient sender, MessageReactionAddEventArgs reactionInfo)
     {
-        if (reactionInfo.User.Id == Bot.SKELETRON_UID)
+        if (reactionInfo.User.Id == sender.CurrentUser.Id)
             return;
 
         if (reactionInfo.Emoji != _redCrossEmoji)
@@ -52,7 +52,7 @@ public class MessageDeleteService : IMessageDeleteService
 
         foreach (var message in allMessagesAfterCurrent)
         {
-            if (message.Author.Id != Bot.SKELETRON_UID)
+            if (message.Author.Id != sender.CurrentUser.Id)
             {
                 break;
             }

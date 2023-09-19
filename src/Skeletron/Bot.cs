@@ -30,12 +30,8 @@ namespace Skeletron
 {
     public class Bot : IDisposable
     {
-        public const ulong GUILD_UID = 708860200341471264;
-        public const ulong SKELETRON_UID = 750768015842345050; 
-
         private CommandsNextExtension CommandsNext { get; set; }
         private DiscordClient Discord { get; }
-        private DiscordGuild Guild { get; }
         private Settings Settings { get; }
         private IServiceProvider Services { get; set; }
         private bool IsDisposed { get; set; }
@@ -68,8 +64,6 @@ namespace Skeletron
             // For correct datetime recognizing
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru-RU");
 
-            Guild = Discord.GetGuildAsync(GUILD_UID).Result;
-
             ConfigureBot();
             ConfigureServices();
 
@@ -100,29 +94,17 @@ namespace Skeletron
             Services = new ServiceCollection()
                 .AddLogging(conf => conf.AddSerilog(dispose: true))
                 .AddSingleton(Settings)
-                //.AddSingleton(new DocumentStoreProvider(Settings))
                 .AddSingleton(Discord)
-                .AddSingleton(Guild)
                 .AddSingleton<IJokeService, JokeService>()
                 .AddSingleton<OsuEmoji>()
                 .AddSingleton<OsuEmbed>()
                 .AddSingleton<OsuEnums>()
                 .AddSingleton<OsuRegex>()
                 .AddSingleton<VkRegex>()
-                //.AddSingleton<NumbersApi>()
                 .AddSingleton<EmojiUtlis>()
-                .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
+                .AddSingleton(new BanchoApi(Settings.BanchoClientId, Settings.BanchoSecret))
                 .AddSingleton(new GatariApi())
-                //.AddSingleton<IWordsProvider, WordsProvider>()
-                //.AddSingleton<ISheetGenerator, SheetGenerator>()
                 .AddSingleton<IShedulerService, ShedulerService>()
-                //.AddSingleton<IRecognizerService, RecognizerService>()
-                //.AddSingleton<IMembersProvider, MembersProvider>()
-                //.AddSingleton<ICompitProvider, CompitProvider>()
-                //.AddSingleton<ICompititionService, CompititionService>()
-                //.AddSingleton<IMappoolProvider, MappoolProvider>()
-                //.AddSingleton<IMappoolService, MappoolService>()
-                //.AddSingleton<IWordsService, WordsService>()
                 .AddSingleton<IOsuService, OsuService>()
                 .AddSingleton<IVkPostToMessageService, VkPostToMessageService>()
                 .AddSingleton<IMessageResendService, MessageResendService>()
@@ -135,7 +117,7 @@ namespace Skeletron
             Log.Logger.Debug("Registering commands");
             var commandsNextConfiguration = new CommandsNextConfiguration
             {
-                StringPrefixes = Settings.Prefixes,
+                StringPrefixes = new[] { "sk!" },
                 Services = Services
             };
             CommandsNext = Discord.UseCommandsNext(commandsNextConfiguration);
@@ -176,8 +158,7 @@ namespace Skeletron
         {
             await Discord.UpdateStatusAsync(new DSharpPlus.Entities.DiscordActivity("тебе в душу", DSharpPlus.Entities.ActivityType.Watching), DSharpPlus.Entities.UserStatus.Online);
 
-            await Guild.GetAllMembersAsync();
-
+            Log.Logger.Information($"Bot profile name: {client.CurrentUser.Username}, profile id: {client.CurrentUser.Id}");
             Log.Logger.Information("The bot is online");
         }
 
@@ -209,7 +190,7 @@ namespace Skeletron
                 .AddField("Author", e.Context.Member.Username)
                 .Build();
 
-            e.Context.RespondAsync($"{Guild.Owner.Mention}", embed: embed);
+            e.Context.RespondAsync($"Error: ", embed: embed);
             return Task.CompletedTask;
         }
 
