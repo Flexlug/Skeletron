@@ -9,6 +9,8 @@ using OsuNET_Api.Models.Bancho;
 using OsuNET_Api.Models.Gatari;
 
 using Microsoft.Extensions.Logging;
+using OsuNET_Api.Models;
+using Skeletron.Database.Models;
 
 namespace Skeletron.Converters
 {

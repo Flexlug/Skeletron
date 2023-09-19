@@ -9,9 +9,16 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 
+using GoogleApi;
+using GoogleApi.Entities.Search;
+using GoogleApi.Entities.Search.Web.Request;
+
 using Microsoft.Extensions.Logging;
 
 using Skeletron.Configurations;
+using Skeletron.Converters;
+using Skeletron.Database.Interfaces;
+using Skeletron.Database.Models;
 
 namespace Skeletron.Commands
 {
@@ -27,6 +34,7 @@ namespace Skeletron.Commands
 
         public UserCommands(ILogger<UserCommands> logger,
                             DiscordClient client,
+                            GoogleSearch gsearch,
                             Settings settings)
         {
             ModuleName = "Разное";
@@ -118,7 +126,7 @@ namespace Skeletron.Commands
         /// <param name="commandContext">CommandContext from the message that has executed this command.</param>
         /// <param name="datetime">Datetime to recognize</param>
         /// <returns></returns>
-        [Command("datetime"), Description("Предпринимает попытку конвертировать строку в тип данных DateTime."), Hidden]
+        [Command("datetime"), Description("Предпринимает поытку конвертировать строку в тип данных DateTime."), Hidden]
         public async Task GetDatetime(CommandContext commandContext, 
             [Description("Конвертируемая строка")] DateTime datetime)
         {
@@ -131,6 +139,37 @@ namespace Skeletron.Commands
         {
             string searchQuerry = @$"https://letmegooglethat.com/?q={HttpUtility.UrlEncode(querry)}";
             await commandContext.RespondAsync(searchQuerry);
+        }
+
+        [Command("google"), Description("Запустить поиск в google по заданному запросу")]
+        public async Task GoogleSearchQuerry(CommandContext context,
+                     [Description("Запрос")] string querry)
+        {
+            if (string.IsNullOrEmpty(querry))
+            {
+                await context.RespondAsync("Вы ввели пустой запрос");
+                return;
+            }
+
+            WebSearchRequest baseSearchRequest = new WebSearchRequest()
+            {
+                Key = settings.GoogleKey,
+                Query = querry,
+                SearchEngineId = settings.SearchKey
+            };
+            BaseSearchResponse resp = await GoogleSearch.WebSearch.QueryAsync(baseSearchRequest);
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var item in resp.Items.Take(5))
+                sb.AppendLine($"[{item.Title}]({item.Link})\n{item.Snippet}\n");
+
+            await context.RespondAsync(embed: new DiscordEmbedBuilder()
+                .WithTitle($"Поисковый запрос: {querry}")
+                .WithDescription(sb.ToString())
+                .WithThumbnail("https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png")
+                .WithFooter($"Results: {resp.Query.Count}")
+                .Build());
         }
     }
 }

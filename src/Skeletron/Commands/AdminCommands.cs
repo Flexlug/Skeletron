@@ -55,10 +55,50 @@ namespace Skeletron.Commands
             logger.LogInformation("AdminCommands loaded");
         }
 
-        /// <summary>
-        /// Получить информацию о времени работы бота
-        /// </summary>
-        /// <param name="context"></param>
+        //[Command("words-clear"), RequireRoles(RoleCheckMode.Any, "Admin"), Description("Полностью сбросить игру \'words\'"), RequireGuild]
+        //public async Task ResetWords(CommandContext ctx)
+        //{
+        //    words.ClearWords();
+        //    await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 805364968593686549));
+
+        //    logger.LogInformation($"Words cleared by {ctx.Member.Nickname}");
+        //}
+
+        //[Command("words-delete"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Удалить слово из коллекции"), RequireGuild]
+        //public async Task DeleteWord(CommandContext ctx, 
+        //    [Description("Удаляемое слово")] string word)
+        //{
+        //    string checkingWord = word.ToLower();
+
+        //    if (words.CheckWord(checkingWord)) {
+        //        words.DeleteWord(checkingWord);
+        //        await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 805364968593686549));
+        //        logger.LogInformation($"Word {word} deleted by {ctx.Member.Nickname}");
+        //    }
+        //    else
+        //    {
+        //        await ctx.RespondAsync("Такого слова и так нет");
+        //    }
+        //}
+
+        //[Command("words-get"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Получить список всех использованных слов"), RequireGuild]
+        //public async Task DeleteWord(CommandContext ctx)
+        //{
+        //    var wordsList = words.GetWords();
+
+        //    if (wordsList is null || wordsList.Count == 0)
+        //    {
+        //        await ctx.RespondAsync("Слов нет");
+        //        return;
+        //    }
+
+        //    string allWords = string.Join(", ", words.GetWords());
+        //    await ctx.RespondAsync(new DiscordEmbedBuilder()
+        //        .WithTitle("Использованные слова:")
+        //        .WithDescription(allWords)
+        //        .Build());
+        //}
+
         [Command("status"), Description("Получить информацию о времени работы бота.")]
         public async Task Uptime(CommandContext context)
         {
@@ -74,6 +114,67 @@ namespace Skeletron.Commands
                      .AddField("Количество падений", Program.Failures.ToString());
 
             await context.RespondAsync(embed);
+        }
+
+        /// <summary>
+        /// A simple emoji based yes/no poll.
+        /// </summary>
+        /// <param name="commandContext">CommandContext of the message that has executed this command</param>
+        /// <param name="duration">Amount of time how long the poll should last.</param>
+        /// <param name="question">Polls question</param>
+        /// <returns></returns>
+        [Command("emojipoll"), RequireUserPermissions(Permissions.Administrator), Description("Создать опрос типа \"да\\нет\" с заданной длительностью."), Cooldown(2, 30, CooldownBucketType.Guild)]                                  
+        public async Task EmojiPollAsync(CommandContext commandContext, 
+            [Description("Длительность опроса. (к примеру 1m = 1 минута).")] TimeSpan duration, 
+            [Description("Формулировка обсуждаемого вопроса."), RemainingText] string question)
+        {
+            if (!string.IsNullOrEmpty(question))
+            {
+                var client = commandContext.Client;
+                var interactivity = client.GetInteractivity();
+                if (_pollEmojiCache == null)
+                {
+                    _pollEmojiCache = new[] {
+                        DiscordEmoji.FromName(client, ":white_check_mark:"),
+                        DiscordEmoji.FromName(client, ":x:")
+                    };
+                }
+
+                // Creating the poll message
+                var pollStartText = new StringBuilder();
+                pollStartText.Append("**").Append("Poll started for:").AppendLine("**");
+                pollStartText.Append(question);
+                var pollStartMessage = await commandContext.RespondAsync(pollStartText.ToString());
+
+                // DoPollAsync adds automatically emojis out from an emoji array to a special message and waits for the "duration" of time to calculate results.
+                var pollResult = await interactivity.DoPollAsync(pollStartMessage, _pollEmojiCache, PollBehaviour.DeleteEmojis, duration);
+                var yesVotes = pollResult[0].Total;
+                var noVotes = pollResult[1].Total;
+
+                // Printing out the result
+                var pollResultText = new StringBuilder();
+                pollResultText.AppendLine(question);
+                pollResultText.Append("Poll result: ");
+                pollResultText.Append("**");
+                if (yesVotes > noVotes)
+                {
+                    pollResultText.Append("Yes");
+                }
+                else if (yesVotes == noVotes)
+                {
+                    pollResultText.Append("Undecided");
+                }
+                else
+                {
+                    pollResultText.Append("No");
+                }
+                pollResultText.Append("**");
+                await commandContext.RespondAsync(pollResultText.ToString());
+            }
+            else
+            {
+                await commandContext.RespondAsync("Error: the question can't be empty");
+            }
         }
 
         [Command("sendtochannel"), Aliases("stc"), RequireUserPermissions(Permissions.Administrator), Description("Отправить в заданный канал простое текстовое сообщение.")]
@@ -92,7 +193,94 @@ namespace Skeletron.Commands
             await message.CreateReactionAsync(emoji);
             await ctx.Message.CreateReactionAsync(DiscordEmoji.FromGuildEmote(ctx.Client, 805364968593686549));
         }
-        
+
+        [Command("mute"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Замьютить указанного пользователя.")]
+        public async Task MuteUser(CommandContext commandContext,
+            [Description("Пользователь, которого необходимо отправить в мьют.")] DiscordMember discordMember,
+            [Description("Причина."), RemainingText] string reason)
+        {
+            DiscordRole muteRole = commandContext.Guild.Roles.FirstOrDefault(x => x.Value.Name == "Muted").Value;
+            await discordMember.GrantRoleAsync(muteRole, reason);
+
+            await commandContext.RespondAsync("", embed: new DiscordEmbedBuilder().WithAuthor(discordMember.DisplayName, iconUrl: discordMember.AvatarUrl)
+                                                                           .WithTitle("**MUTED**")
+                                                                           .WithDescription($"Reason: {(!string.IsNullOrEmpty(reason) ? reason : "not stated")}")
+                                                                           .Build());
+
+
+            await LogChannel.SendMessageAsync(
+                embed: new DiscordEmbedBuilder().WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
+                                                .AddField("**Action**:", "muted", true)
+                                                .AddField("**Target**:", discordMember.ToString(), true)
+                                                .AddField("**Reason**:", (reason != string.Empty ? reason : "not stated"), true)
+                                                .WithFooter()
+                                                .Build());
+        }
+
+        [Command("unmute"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Размьютить указанного пользователя.")]
+        public async Task UnmuteUser(CommandContext commandContext,
+            [Description("Пользователь, с короторого необходимо снять мьют.")] DiscordMember discordMember)
+        {
+            DiscordRole muteRole = commandContext.Guild.Roles.FirstOrDefault(x => x.Value.Name == "Muted").Value;
+            if (discordMember.Roles.Contains(muteRole))
+            {
+                await discordMember.RevokeRoleAsync(muteRole);
+                await commandContext.RespondAsync($"User **{discordMember.DisplayName}** is **unmuted**");
+            }
+            else
+            {
+                await commandContext.RespondAsync($"User **{discordMember.DisplayName}** is not muted");
+            }
+
+            await LogChannel.SendMessageAsync(
+                embed: new DiscordEmbedBuilder().WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
+                                                .AddField("**Action**:", "unmuted", true)
+                                                .AddField("**Target**:", discordMember.ToString(), true)
+                                                .WithFooter()
+                                                .Build());
+        }
+
+        [Command("kick"), RequireUserPermissions(Permissions.Administrator | Permissions.KickMembers | Permissions.BanMembers), Description("Кикнуть заданного пользователя.")]
+        public async Task KickUser(CommandContext commandContext,
+            [Description("Пользователь, которого необходимо кикнуть.")] DiscordMember discordMember,
+            [Description("Причина."), RemainingText] string reason = "")
+        {
+            await discordMember.RemoveAsync(reason);
+            await commandContext.RespondAsync("Отправляйся в вальхаллу.", embed: new DiscordEmbedBuilder().WithAuthor(discordMember.DisplayName, iconUrl: discordMember.AvatarUrl)
+                                                                           .WithTitle("**KICKED**")
+                                                                           .WithDescription($"Reason: {(reason != string.Empty ? reason : "not stated")}")
+                                                                           .Build());
+
+            await LogChannel.SendMessageAsync(
+                embed: new DiscordEmbedBuilder().WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
+                                                .AddField("**Action**:", "kick", true)
+                                                .AddField("**Target**:", discordMember.ToString(), true)
+                                                .AddField("**Reason**:", (reason != string.Empty ? reason : "not stated"), true)
+                                                .WithFooter()
+                                                .Build());
+        }
+
+        [Command("ban"), RequireUserPermissions(Permissions.Administrator | Permissions.BanMembers), Description("Забанить указанного ползователя.")]
+        public async Task BanUser(CommandContext commandContext,
+            [Description("Пользователь, которого необходимо забанить.")] DiscordMember discordMember,
+            [Description("Причина."), RemainingText] string reason = "")
+        {
+            await discordMember.RemoveAsync(reason);
+            await commandContext.RespondAsync("Забанен по причине конченный долбоёб.", embed: new DiscordEmbedBuilder()
+                                                                           .WithAuthor(discordMember.DisplayName, iconUrl: discordMember.AvatarUrl)
+                                                                           .WithTitle("**BANNED**")
+                                                                           .WithDescription($"Reason: {(reason != string.Empty ? reason : "not stated")}")
+                                                                           .Build());
+
+            await LogChannel.SendMessageAsync(
+                embed: new DiscordEmbedBuilder().WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
+                                                .AddField("**Action**:", "ban", true)
+                                                .AddField("**Target**:", discordMember.ToString(), true)
+                                                .AddField("**Reason**:", (string.IsNullOrEmpty(reason) ? "not stated" : reason), true)
+                                                .WithFooter()
+                                                .Build());
+        }
+
         [Command("d"), RequireRoles(RoleCheckMode.Any, "Admin", "Moder", "Assistant Moder"), Description("Удалить сообщение и уведомить автора об этом.")]
         public async Task DeleteMessageByLinkAndNotify(CommandContext commandContext,
             [Description("Удаляемое сообщение.")] DiscordMessage msg,

@@ -3,14 +3,17 @@ using System.IO;
 using System.Linq;
 using System.Globalization;
 using System.Threading.Tasks;
-using AutoMapper;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.VoiceNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 
@@ -26,12 +29,19 @@ using Skeletron.Services;
 
 using Serilog;
 
+using GoogleApi;
+
 namespace Skeletron
 {
     public class Bot : IDisposable
     {
+        public const ulong GUILD_UID = 708860200341471264;
+        public const ulong SKELETRON_UID = 750768015842345050; 
+
         private CommandsNextExtension CommandsNext { get; set; }
+        private SlashCommandsExtension SlashCommands { get; set; }
         private DiscordClient Discord { get; }
+        private DiscordGuild Guild { get; }
         private Settings Settings { get; }
         private IServiceProvider Services { get; set; }
         private bool IsDisposed { get; set; }
@@ -59,19 +69,18 @@ namespace Skeletron
             // Activating Interactivity module for the DiscordClient
             Discord.UseInteractivity(new InteractivityConfiguration());
 
+            Discord.ClientErrored += Discord_ClientErrored;
+
             // For correct datetime recognizing
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru-RU");
-            
-            Discord.ClientErrored += Discord_ClientErrored;
-            Discord.Ready += OnReady;
-            Discord.GuildDownloadCompleted += async (sender, args) =>
-            {
-                ConfigureBot();
-                ConfigureServices();
-                RegisterCommands();
 
-                Log.Logger.Information("Ready");
-            };
+            Guild = Discord.GetGuildAsync(GUILD_UID).Result;
+
+            ConfigureBot();
+            ConfigureServices();
+
+            RegisterCommands();
+            RegisterEvents();
         }
 
         ~Bot()
@@ -97,17 +106,30 @@ namespace Skeletron
             Services = new ServiceCollection()
                 .AddLogging(conf => conf.AddSerilog(dispose: true))
                 .AddSingleton(Settings)
+                //.AddSingleton(new DocumentStoreProvider(Settings))
                 .AddSingleton(Discord)
+                .AddSingleton(Guild)
                 .AddSingleton<IJokeService, JokeService>()
                 .AddSingleton<OsuEmoji>()
                 .AddSingleton<OsuEmbed>()
                 .AddSingleton<OsuEnums>()
                 .AddSingleton<OsuRegex>()
                 .AddSingleton<VkRegex>()
+                //.AddSingleton<NumbersApi>()
                 .AddSingleton<EmojiUtlis>()
-                .AddSingleton(new BanchoApi(Settings.BanchoClientId, Settings.BanchoSecret))
+                .AddSingleton(new BanchoApi(Settings.ClientId, Settings.Secret))
                 .AddSingleton(new GatariApi())
+                .AddSingleton(new GoogleSearch())
+                //.AddSingleton<IWordsProvider, WordsProvider>()
+                //.AddSingleton<ISheetGenerator, SheetGenerator>()
                 .AddSingleton<IShedulerService, ShedulerService>()
+                //.AddSingleton<IRecognizerService, RecognizerService>()
+                //.AddSingleton<IMembersProvider, MembersProvider>()
+                //.AddSingleton<ICompitProvider, CompitProvider>()
+                //.AddSingleton<ICompititionService, CompititionService>()
+                //.AddSingleton<IMappoolProvider, MappoolProvider>()
+                //.AddSingleton<IMappoolService, MappoolService>()
+                //.AddSingleton<IWordsService, WordsService>()
                 .AddSingleton<IOsuService, OsuService>()
                 .AddSingleton<IVkPostToMessageService, VkPostToMessageService>()
                 .AddSingleton<IMessageResendService, MessageResendService>()
@@ -120,7 +142,7 @@ namespace Skeletron
             Log.Logger.Debug("Registering commands");
             var commandsNextConfiguration = new CommandsNextConfiguration
             {
-                StringPrefixes = new[] { "sk!" },
+                StringPrefixes = Settings.Prefixes,
                 Services = Services
             };
             CommandsNext = Discord.UseCommandsNext(commandsNextConfiguration);
@@ -129,14 +151,45 @@ namespace Skeletron
             // Registering command classes
             CommandsNext.RegisterCommands<UserCommands>();
             CommandsNext.RegisterCommands<AdminCommands>();
+            //CommandsNext.RegisterCommands<DemonstrationCommands>();
+            //CommandsNext.RegisterCommands<RecognizerCommands>();
             CommandsNext.RegisterCommands<FunCommands>();
             CommandsNext.RegisterCommands<OsuCommands>();
             CommandsNext.RegisterCommands<VkCommands>();
             CommandsNext.RegisterCommands<JokeCommands>();
-            
+            //CommandsNext.RegisterCommands<CompititionCommands>();
+            //CommandsNext.RegisterCommands<MappoolCommands>();
+
+            // Registering OnCommandError method for the CommandErrored event
             CommandsNext.CommandErrored += OnCommandError;
+
+            //var slashCommandsConfiguration = new SlashCommandsConfiguration()
+            //{
+            //    Services = Services
+            //};
+
+            //SlashCommands = Discord.UseSlashCommands(slashCommandsConfiguration);
+
+            // Register slash commands modules
+            //SlashCommands.RegisterCommands<OsuSlashCommands>(WAV_UID);
+            //SlashCommands.RegisterCommands<UserSlashCommands>(WAV_UID);
+            //SlashCommands.RegisterCommands<MappoolSlashCommands>(WAV_UID);
+            //SlashCommands.RegisterCommands<AdminMappoolSlashCommands>(WAV_UID);
+
+            //SlashCommands.SlashCommandErrored += SlashCommands_SlashCommandErrored;
         }
-        
+
+        private async Task SlashCommands_SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
+        {
+            logger.LogError($"Error on executing slash command {e.Context.CommandName} - {e.Exception}");
+        }
+
+        private void RegisterEvents()
+        {
+            Log.Logger.Debug("Registering events");
+            Discord.Ready += OnReady;
+        }
+
         public async Task RunAsync()
         {
             if (IsRunning)
@@ -156,7 +209,9 @@ namespace Skeletron
         {
             await Discord.UpdateStatusAsync(new DSharpPlus.Entities.DiscordActivity("тебе в душу", DSharpPlus.Entities.ActivityType.Watching), DSharpPlus.Entities.UserStatus.Online);
 
-            Log.Logger.Information($"The bot is online. Bot profile name: {client.CurrentUser.Username}, profile id: {client.CurrentUser.Id}");
+            await Guild.GetAllMembersAsync();
+
+            Log.Logger.Information("The bot is online");
         }
 
         private Task OnCommandError(object sender, CommandErrorEventArgs e)
@@ -187,7 +242,7 @@ namespace Skeletron
                 .AddField("Author", e.Context.Member.Username)
                 .Build();
 
-            e.Context.RespondAsync($"Error: ", embed: embed);
+            e.Context.RespondAsync($"{Guild.Owner.Mention}", embed: embed);
             return Task.CompletedTask;
         }
 
