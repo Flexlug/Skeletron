@@ -1,7 +1,9 @@
 {
   "profiles": {
     "Skeletron": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "environmentVariables": {
+      }
     },
     "Docker": {
       "commandName": "Docker"
