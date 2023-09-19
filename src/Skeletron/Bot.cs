@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Globalization;
 using System.Threading.Tasks;
-
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -59,16 +59,19 @@ namespace Skeletron
             // Activating Interactivity module for the DiscordClient
             Discord.UseInteractivity(new InteractivityConfiguration());
 
-            Discord.ClientErrored += Discord_ClientErrored;
-
             // For correct datetime recognizing
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru-RU");
+            
+            Discord.ClientErrored += Discord_ClientErrored;
+            Discord.Ready += OnReady;
+            Discord.GuildDownloadCompleted += async (sender, args) =>
+            {
+                ConfigureBot();
+                ConfigureServices();
+                RegisterCommands();
 
-            ConfigureBot();
-            ConfigureServices();
-
-            RegisterCommands();
-            RegisterEvents();
+                Log.Logger.Information("Ready");
+            };
         }
 
         ~Bot()
@@ -133,12 +136,7 @@ namespace Skeletron
             
             CommandsNext.CommandErrored += OnCommandError;
         }
-        private void RegisterEvents()
-        {
-            Log.Logger.Debug("Registering events");
-            Discord.Ready += OnReady;
-        }
-
+        
         public async Task RunAsync()
         {
             if (IsRunning)
@@ -158,8 +156,7 @@ namespace Skeletron
         {
             await Discord.UpdateStatusAsync(new DSharpPlus.Entities.DiscordActivity("тебе в душу", DSharpPlus.Entities.ActivityType.Watching), DSharpPlus.Entities.UserStatus.Online);
 
-            Log.Logger.Information($"Bot profile name: {client.CurrentUser.Username}, profile id: {client.CurrentUser.Id}");
-            Log.Logger.Information("The bot is online");
+            Log.Logger.Information($"The bot is online. Bot profile name: {client.CurrentUser.Username}, profile id: {client.CurrentUser.Id}");
         }
 
         private Task OnCommandError(object sender, CommandErrorEventArgs e)
