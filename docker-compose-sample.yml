@@ -2,12 +2,31 @@
 version: '3.8'
 
 services:
+  skdb:
+    image: postgres:15-alpine
+    volumes:
+      - ./migrations/:/docker-entrypoint-initdb.d/
+    restart: always
+    command: -p 5433
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456789
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U postgres -d skeletron -p 5433'" ]
+      interval: 10s
+      timeout: 30s
+      retries: 3
+      start_period: 3s
+
+  
   skeletron:
     image: flexlug/skeletron:latest
     build:
       context: .
     restart: unless-stopped
     environment:
+      "PGConnectionString": "Host=skdb;Port=5433;Database=skeletron;Username=postgres;Password=123456789"
+      
       # Discord authorization
       "Token": "DISCORD_SECRET"
       
@@ -18,3 +37,4 @@ services:
       # Due to all info from VK links is being retrieved from official VK API
       # you have to specify VK Standalone Application Token
       "VkSecret": "VK_SECRET"
+      
