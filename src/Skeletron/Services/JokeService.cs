@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Skeletron.Persistence;
 using Skeletron.Services.Interfaces;
 
 namespace Skeletron.Services;
@@ -1107,8 +1108,12 @@ public class JokeService : IJokeService
     };
     
     private Random _random = new();
-    
-    public JokeService() { }
+    private readonly ISkeletronDbContext _context;
+
+    public JokeService(ISkeletronDbContext context)
+    {
+        _context = context;
+    }
 
     public string GetRandomPoliticalJoke()
     {
