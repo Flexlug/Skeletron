@@ -13,6 +13,8 @@ namespace Skeletron.Configurations
         public string BanchoSecret { get; set; }
 
         public string VkSecret { get; set; }
+        
+        public string PGConnectionString { get; set; }
 
         public Settings()
         {

@@ -1,19 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Skeletron.Persistence;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddPersistence(this IServiceCollection services, string dbString)
     {
-        var connectionString = configuration["DbConnection"];
         services.AddDbContext<SkeletronDbContext>(options =>
         {
-            options.UseNpgsql(connectionString);
+            options.UseNpgsql(dbString);
         });
-        services.AddScoped<SkeletronDbContext>(provider => provider.GetService<SkeletronDbContext>());
+        services.AddScoped<ISkeletronDbContext>(provider => provider.GetService<SkeletronDbContext>());
         return services;
     }
 }

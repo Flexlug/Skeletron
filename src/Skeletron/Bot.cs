@@ -25,6 +25,7 @@ using Skeletron.Services.Interfaces;
 using Skeletron.Services;
 
 using Serilog;
+using Skeletron.Persistence;
 
 namespace Skeletron
 {
@@ -64,13 +65,13 @@ namespace Skeletron
             
             Discord.ClientErrored += Discord_ClientErrored;
             Discord.Ready += OnReady;
-            Discord.GuildDownloadCompleted += async (sender, args) =>
+            Discord.GuildDownloadCompleted += async (_, _) =>
             {
                 ConfigureBot();
                 ConfigureServices();
                 RegisterCommands();
 
-                Log.Logger.Information("Ready");
+                logger.LogInformation("Startup complete!");
             };
         }
 
@@ -97,6 +98,7 @@ namespace Skeletron
             Services = new ServiceCollection()
                 .AddLogging(conf => conf.AddSerilog(dispose: true))
                 .AddSingleton(Settings)
+                .AddPersistence(Settings.PGConnectionString)
                 .AddSingleton(Discord)
                 .AddSingleton<IJokeService, JokeService>()
                 .AddSingleton<OsuEmoji>()
@@ -113,6 +115,20 @@ namespace Skeletron
                 .AddSingleton<IMessageResendService, MessageResendService>()
                 .AddSingleton<IMessageDeleteService, MessageDeleteService>()
                 .BuildServiceProvider();
+            
+            using (var scope = Services.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                try
+                {
+                    var context = serviceProvider.GetRequiredService<SkeletronDbContext>();
+                    DbInitializer.Initialize(context);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError($"PostgreSql initialization error, {ex}, {ex.Message}");
+                }
+            }
         }
 
         private void RegisterCommands()

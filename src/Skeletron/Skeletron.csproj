@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Osu.NET.Api\Osu.NET.Api.csproj" />
+    <ProjectReference Include="..\Skeletron.Persistence\Skeletron.Persistence.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

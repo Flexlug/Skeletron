@@ -36,8 +36,8 @@ namespace Skeletron
             BuildString =
                 $"{Assembly.GetEntryAssembly().GetName().Version} {File.GetCreationTime(Assembly.GetCallingAssembly().Location)} .NET {System.Environment.Version}";
             Log.Logger.Information(
-                $"WAV-Bot-DSharp: {Assembly.GetEntryAssembly().GetName().Version} (builded {File.GetCreationTime(Assembly.GetCallingAssembly().Location)}");
-
+                $"WAV-Bot-DSharp: {Assembly.GetEntryAssembly().GetName().Version} (built {File.GetCreationTime(Assembly.GetCallingAssembly().Location)}");
+            
             try
             {
                 using (var bot = new Bot(new Settings()))

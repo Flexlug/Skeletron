@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Osu.NET.Api", "src\Osu.NET.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skeletron.Persistence", "src\Skeletron.Persistence\Skeletron.Persistence.csproj", "{1CA9EC48-173A-4BCB-BE4B-B71A45268438}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skeletron.Domain", "src\Skeletron.Domain\Skeletron.Domain.csproj", "{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,18 +55,6 @@ Global
 		{1CA9EC48-173A-4BCB-BE4B-B71A45268438}.Release|x64.Build.0 = Release|Any CPU
 		{1CA9EC48-173A-4BCB-BE4B-B71A45268438}.Release|x86.ActiveCfg = Release|Any CPU
 		{1CA9EC48-173A-4BCB-BE4B-B71A45268438}.Release|x86.Build.0 = Release|Any CPU
-		{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}.Debug|x64.Build.0 = Debug|Any CPU
-		{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}.Debug|x86.Build.0 = Debug|Any CPU
-		{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}.Release|x64.ActiveCfg = Release|Any CPU
-		{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}.Release|x64.Build.0 = Release|Any CPU
-		{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}.Release|x86.ActiveCfg = Release|Any CPU
-		{BD7A9C22-8C1D-4856-9041-6BC5D9A385ED}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
