@@ -63,11 +63,11 @@ docker compose up -d
 - Карты (bancho, gatari)
 - Профили (bancho)
 
-![osu url demo](https://github.com/Flexlug/Skeletron/raw/master/url_demo.gif)
+![osu url demo](https://raw.githubusercontent.com/Flexlug/Skeletron/master/docs/url_demo.gif)
 
 ## Автоматическое распознавание ссылок из VK
 Бот может автоматически распознавать ссылки на посты из соц.сети VKontakte и парсить их. 
 Поддержкивается:
 
 
-![vk_demo](https://raw.githubusercontent.com/Flexlug/Skeletron/master/vk_demo.gif)
+![vk_demo](https://raw.githubusercontent.com/Flexlug/Skeletron/master/docs/vk_demo.gif)
