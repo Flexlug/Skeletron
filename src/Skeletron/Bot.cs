@@ -25,11 +25,15 @@ using Skeletron.Services.Interfaces;
 using Skeletron.Services;
 
 using Serilog;
+using System.Net.WebSockets;
+using System.Net.NetworkInformation;
 
 namespace Skeletron
 {
     public class Bot : IDisposable
     {
+        private volatile bool isRestart = false;
+
         private CommandsNextExtension CommandsNext { get; set; }
         private DiscordClient Discord { get; }
         private Settings Settings { get; }
@@ -72,6 +76,32 @@ namespace Skeletron
 
                 Log.Logger.Information("Ready");
             };
+            Discord.SocketErrored += Discord_SocketErrored;
+        }
+
+        private Task Discord_SocketErrored(DiscordClient sender, SocketErrorEventArgs e)
+        {
+            // this usually happens when the Internet is disconnected or a connection error occurs
+            if (e.Exception is WebSocketException)
+                isRestart = !Check();
+
+            return Task.CompletedTask;
+
+            bool Check()
+            {
+                try
+                {
+                    logger.LogInformation("Checking the connection");
+                    Ping ping = new Ping();
+                    PingReply pingReply = ping.Send(Settings.PingTheHost);
+                    return pingReply.Status == IPStatus.Success;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex.Message);
+                    return false;
+                }
+            }
         }
 
         ~Bot()

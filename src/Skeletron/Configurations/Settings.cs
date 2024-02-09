@@ -14,6 +14,8 @@ namespace Skeletron.Configurations
 
         public string VkSecret { get; set; }
 
+        public string PingTheHost { get; set; } = "gateway.discord.gg";
+
         public Settings()
         {
             var settingsType = typeof(Settings);
