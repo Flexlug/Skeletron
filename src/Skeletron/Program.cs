@@ -51,9 +51,12 @@ namespace Skeletron
                 }
                 catch (NeedRestartException ex)
                 {
-                    Log.Logger.Fatal(ex, "Bot failed");
+                    //Log.Logger.Fatal(ex, "Bot failed");
                     LastFailure = DateTime.Now;
                     Failures++;
+                    
+                    Log.Logger.ForContext<Program>().Fatal(ex, "Bot failed. Bot restart after 1 minute.");
+                    Thread.Sleep(60000);
                 }
             }
         }
