@@ -27,6 +27,8 @@ using Skeletron.Services;
 using Serilog;
 using System.Net.WebSockets;
 using System.Net.NetworkInformation;
+using DSharpPlus.Exceptions;
+using Skeletron.Exceptions;
 
 namespace Skeletron
 {
@@ -174,10 +176,26 @@ namespace Skeletron
                 throw new MethodAccessException("The bot is already running");
             }
 
-            await Discord.ConnectAsync();
+            try
+            {
+                await Discord.ConnectAsync();
+            }
+            catch (BadRequestException e)
+            {
+                throw new NeedRestartException(e);
+            }
+            catch (ServerErrorException e)
+            {
+                throw new NeedRestartException(e);
+            }
+
+
             IsRunning = true;
             while (IsRunning)
             {
+                if (isRestart)
+                    throw new NeedRestartException();
+                
                 await Task.Delay(200);
             }
         }

@@ -11,5 +11,7 @@ namespace Skeletron.Exceptions
     /// </summary>
     internal class NeedRestartException : Exception
     {
+        public NeedRestartException() { }
+        public NeedRestartException(Exception ex) : base("See InnerException", ex) { }
     }
 }
