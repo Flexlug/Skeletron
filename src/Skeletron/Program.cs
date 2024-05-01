@@ -1,12 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
 
 using Skeletron.Configurations;
+using Skeletron.Exceptions;
 
 namespace Skeletron
 {
@@ -38,16 +40,24 @@ namespace Skeletron
             Log.Logger.Information(
                 $"WAV-Bot-DSharp: {Assembly.GetEntryAssembly().GetName().Version} (builded {File.GetCreationTime(Assembly.GetCallingAssembly().Location)}");
 
-            try
+            bool isShutdown = false;
+            while (!isShutdown)
             {
-                using (var bot = new Bot(new Settings()))
+                try
+                {
+                    using var bot = new Bot(new Settings());
                     await bot.RunAsync();
-            }
-            catch (Exception ex)
-            {
-                Log.Logger.Fatal(ex, "Bot failed");
-                LastFailure = DateTime.Now;
-                Failures++;
+                    isShutdown = true;
+                }
+                catch (NeedRestartException ex)
+                {
+                    //Log.Logger.Fatal(ex, "Bot failed");
+                    LastFailure = DateTime.Now;
+                    Failures++;
+                    
+                    Log.Logger.ForContext<Program>().Fatal(ex, "Bot failed. Bot restart after 1 minute.");
+                    Thread.Sleep(60000);
+                }
             }
         }
     }
