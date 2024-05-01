@@ -1,19 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity.Enums;
-using DSharpPlus.Interactivity.Extensions;
-
 using Microsoft.Extensions.Logging;
-
 using Skeletron.Services.Interfaces;
 
 namespace Skeletron.Commands
@@ -210,20 +203,21 @@ namespace Skeletron.Commands
                     webClient.DownloadFile(new Uri(att.Url), $"downloads/{fileName}");
 
                     using (FileStream fs = new FileStream($"downloads/{fileName}", FileMode.Open))
-                        await targetChannel.SendMessageAsync(new DiscordMessageBuilder().WithFile(fs));                
+                        await targetChannel.SendMessageAsync(new DiscordMessageBuilder().AddFile(fs));                
                 }
             }
 
             // log
             await LogChannel.SendMessageAsync(
-                embed: new DiscordEmbedBuilder().WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
-                                    .AddField("**Action**:", "resend message", true)
-                                    .AddField("**Violator**:", msg.Author.Mention, true)
-                                    .AddField("**From**:", msg.Channel.Name, true)
-                                    .AddField("**To**:", targetChannel.Name, true)
-                                    .AddField("**Reason**:", reason, true)
-                                    .WithFooter()
-                                    .Build());
+                embed: new DiscordEmbedBuilder()
+                    .WithAuthor(name: commandContext.Message.Author.Username, iconUrl: commandContext.Message.Author.AvatarUrl)
+                    .AddField("**Action**:", "resend message", true)
+                    .AddField("**Violator**:", msg.Author.Mention, true)
+                    .AddField("**From**:", msg.Channel.Name, true)
+                    .AddField("**To**:", targetChannel.Name, true)
+                    .AddField("**Reason**:", reason, true)
+                    .WithFooter()
+                    .Build());
             await msg.Channel.DeleteMessagesAsync(new[] { msg, commandContext.Message }, reason);
 
             // notify in DM

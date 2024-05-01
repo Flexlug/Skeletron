@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.Logging;
-using VkNet;
-using VkNet.Model;
-using VkNet.Model.Attachments;
+using Skeletron.Configurations;
 using Skeletron.Converters;
 using Skeletron.Services.Interfaces;
-using Skeletron.Configurations;
+using VkNet;
+using VkNet.Model;
 
 namespace Skeletron.Services
 {
@@ -41,7 +39,7 @@ namespace Skeletron.Services
 
             _logger.LogInformation($"{nameof(VkPostToMessageService)} loaded");
         }
-        private async Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
+        private async Task Client_MessageCreated(DiscordClient sender, MessageCreateEventArgs e)
         {
             string id;
 
