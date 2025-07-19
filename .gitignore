@@ -344,3 +344,6 @@ healthchecksdb
 # Hidden MacOS files
 .*
 /Skeletron/bot.cfg
+
+# Launch settings with .env vars
+launchSettings.json
