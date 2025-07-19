@@ -1,34 +1,29 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Globalization;
+using System.Net.NetworkInformation;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-
 using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.CommandsNext;
+using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OsuNET_Api;
-
+using Serilog;
 using Skeletron.Commands;
-using Skeletron.Services.Entities;
 using Skeletron.Configurations;
 using Skeletron.Converters;
-using Skeletron.Services.Interfaces;
-
-using Skeletron.Services;
-
-using Serilog;
-using System.Net.WebSockets;
-using System.Net.NetworkInformation;
-using DSharpPlus.Exceptions;
 using Skeletron.Exceptions;
+using Skeletron.Services;
+using Skeletron.Services.Entities;
+using Skeletron.Services.Interfaces;
 
 namespace Skeletron
 {
@@ -202,7 +197,7 @@ namespace Skeletron
 
         private async Task OnReady(DiscordClient client, ReadyEventArgs e)
         {
-            await Discord.UpdateStatusAsync(new DSharpPlus.Entities.DiscordActivity("тебе в душу", DSharpPlus.Entities.ActivityType.Watching), DSharpPlus.Entities.UserStatus.Online);
+            await Discord.UpdateStatusAsync(new DiscordActivity("тебе в душу", ActivityType.Watching), UserStatus.Online);
 
             Log.Logger.Information($"The bot is online. Bot profile name: {client.CurrentUser.Username}, profile id: {client.CurrentUser.Id}");
         }
@@ -215,7 +210,7 @@ namespace Skeletron
                 return Task.CompletedTask;
             }
 
-            if (e.Exception is DSharpPlus.CommandsNext.Exceptions.CommandNotFoundException)
+            if (e.Exception is CommandNotFoundException)
             {
                 e.Context.RespondAsync($"Не удалось найти данную команду.");
                 return Task.CompletedTask;
