@@ -346,4 +346,4 @@ healthchecksdb
 /Skeletron/bot.cfg
 
 # Launch settings with .env vars
-launchSettings.json
+/src/Skeletron/Properties/launchSettings.json
